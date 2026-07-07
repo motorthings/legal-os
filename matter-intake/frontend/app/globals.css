@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* Override Tailwind v4 dark: variant to use class-based toggling */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Fraunces', Georgia, serif;
+  --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+
+  /* Mercedes-AMG Petronas F1 — Petronas teal primary */
+  --color-primary-50: #e6faf8;
+  --color-primary-100: #b3f2ec;
+  --color-primary-200: #80e9e0;
+  --color-primary-300: #4ddfd3;
+  --color-primary-400: #1ad4c6;
+  --color-primary-500: #00d2be;
+  --color-primary-600: #00b8a6;
+  --color-primary-700: #009e8e;
+  --color-primary-800: #008476;
+  --color-primary-900: #006a5e;
+  --color-primary-950: #005046;
+
+  /* Silver/ice accent */
+  --color-accent-50: #f5f7fa;
+  --color-accent-100: #e4e8ef;
+  --color-accent-200: #c8d0da;
+  --color-accent-300: #a8b4c4;
+  --color-accent-400: #8c9aad;
+  --color-accent-500: #6b7d94;
+  --color-accent-600: #55667a;
+  --color-accent-700: #434f60;
+  --color-accent-800: #313a48;
+  --color-accent-900: #1f2530;
+  --color-accent-950: #141820;
+}
+
+html {
+  font-size: 17px;
+}
+
+/* ── Theme tokens ── */
+:root {
+  --bg-body: #0a0e14;
+  --bg-card: #111820;
+  --bg-input: #0d1117;
+  --bg-secondary: #1a2230;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.10);
+  --text-primary: #e4e8ef;
+  --text-secondary: #8c9aad;
+  --text-tertiary: #55667a;
+  --text-muted-icon: #1e293b;
+}
+
+.light {
+  --bg-body: #f5f6f8;
+  --bg-card: #ffffff;
+  --bg-input: #f1f3f5;
+  --bg-secondary: #e9ecf0;
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-muted-icon: #9ca3af;
+}
+
+body {
+  background: var(--bg-body);
+  color: var(--text-primary);
+}
+
+.dark body {
+  background: #0a0e14;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(0, 210, 190, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(0, 210, 190, 0.06) 0%, transparent 40%);
+}
+
+::selection {
+  background: rgba(0, 210, 190, 0.3);
+  color: #fff;
+}

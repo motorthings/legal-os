@@ -1,0 +1,8 @@
+{
+  "buildCommand": "next build",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://contentful-contract-review-production.up.railway.app",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://kwxngptwzllzlifpwvns.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3eG5ncHR3emxsemxpZnB3dm5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4ODQxNTEsImV4cCI6MjA4MDQ2MDE1MX0.AHAPcQsSqHt8gNkTcs5mgo-Uo0r9uPsu2fSonhNgqUY"
+  }
+}

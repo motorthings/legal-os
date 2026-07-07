@@ -1,0 +1,78 @@
+{
+  "fixture": {
+    "id": "synth-014",
+    "description": "VC financing with fast close \u2014 tight deadline, clean structure, known parties",
+    "matter_summary": "Portfolio company Volt AI Inc. (AI/ML infrastructure startup, Delaware C-Corp) is raising a $25M Series A led by Andreessen Horowitz with participation from existing seed investors. We represent the company. Term sheet is signed. The lead investor requires: standard NVCA docs with minor customizations, board composition changes (adding a16z partner to 5-person board), and a $2M secondary component for founder liquidity. The company has 22 employees, standard IP assignment agreements in place, one open source dependency that needs license review. No litigation. No regulatory issues. Deadline: signing by end of next week because the investor's allocation deadline is firm. This is a fast, clean, standard Series A \u2014 the main complexity is speed, not structure. Existing client \u2014 we incorporated them 18 months ago and did their seed round."
+  },
+  "result": {
+    "overall_score": 73,
+    "overall_risk_level": "low",
+    "practice_area": {
+      "practice_area": "Corporate - Venture Capital / Emerging Companies",
+      "confidence": 98,
+      "reasoning": "The router classified this as 'Corporate M&A,' which is broadly correct but imprecise. This is a classic venture capital financing (Series A) for an emerging company, not a merger or acquisition. The matter involves standard NVCA documents, board composition changes, and a secondary component\u2014all hallmarks of a venture capital transaction. The firm's prior representation (incorporation and seed round) confirms this is a core emerging companies practice matter. No cross-practice elements are apparent."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "medium",
+      "risk_score": 65,
+      "reasoning": "Urgency is immediate: signing must occur by end of next week due to the investor's firm allocation deadline. Risk is medium: financial exposure is $25M (significant but standard for Series A), no litigation or regulatory issues exist, and the client is existing (reduces client relationship risk). Reputational risk is low given standard terms and a top-tier lead investor (a16z). The main risk is missing the deadline, which could damage the client relationship and the firm's reputation for execution speed."
+    },
+    "conflict_check": {
+      "entity_name": "Andreessen Horowitz",
+      "conflict_type": "business_conflict",
+      "detail": "The lead investor is Andreessen Horowitz (a16z), a major venture capital firm. Perkins Coie likely represents or has represented numerous a16z portfolio companies and possibly a16z itself in fund formations or other matters. This creates a potential business conflict: representing the company (Volt AI) in a transaction where a16z is the lead investor could be adverse to a16z's interests in certain negotiation points (e.g., board composition, secondary liquidity, investor rights). However, this is typically manageable with waivers and ethical walls. No direct adverse parties are named (no litigation or disputes). The open source dependency (license review) does not create a conflict. Prior representation of Volt AI (incorporation and seed round) is consistent and does not create a conflict."
+    },
+    "staffing": {
+      "recommended_role": "Partner + 1 Senior Associate + 1 Junior Associate",
+      "estimated_hours": 80,
+      "reasoning": "This is a standard Series A with moderate complexity due to the secondary component and open source license review. Partner oversight is essential for client relationship management, board composition negotiations, and final sign-off. A senior associate can handle NVCA document customization, board resolutions, and secondary mechanics. A junior associate can assist with diligence (IP assignments, open source review, employee matters) and closing logistics. Estimated 80 hours: 20 partner, 40 senior associate, 20 junior associate. The tight deadline (end of next week) requires dedicated staffing with no competing urgent matters."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing: exact number of shares and valuation (pre-money/post-money) not specified",
+        "Missing: specific open source dependency name and license type",
+        "Missing: details on secondary component structure (e.g., pro rata participation for existing investors)",
+        "Missing: board composition details beyond a16z partner addition (e.g., founder seats, investor seats)",
+        "Missing: whether any other investors (existing seed) have special rights or approval rights"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The router classified this as 'Corporate M&A,' which is broadly correct but imprecise. This is a classic venture capital financing (Series A) for an emerging company, not a merger or acquisition. The matter involves standard NVCA documents, board composition changes, and a secondary component\u2014all hallmarks of a venture capital transaction. The firm's prior representation (incorporation and seed round) confirms this is a core emerging companies practice matter. No cross-practice elements are apparent."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 35,
+        "weight": 0.25,
+        "reasoning": "Urgency is immediate: signing must occur by end of next week due to the investor's firm allocation deadline. Risk is medium: financial exposure is $25M (significant but standard for Series A), no litigation or regulatory issues exist, and the client is existing (reduces client relationship risk). Reputational risk is low given standard terms and a top-tier lead investor (a16z). The main risk is missing the deadline, which could damage the client relationship and the firm's reputation for execution speed."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "The lead investor is Andreessen Horowitz (a16z), a major venture capital firm. Perkins Coie likely represents or has represented numerous a16z portfolio companies and possibly a16z itself in fund formations or other matters. This creates a potential business conflict: representing the company (Volt AI) in a transaction where a16z is the lead investor could be adverse to a16z's interests in certain negotiation points (e.g., board composition, secondary liquidity, investor rights). However, this is typically manageable with waivers and ethical walls. No direct adverse parties are named (no litigation or disputes). The open source dependency (license review) does not create a conflict. Prior representation of Volt AI (incorporation and seed round) is consistent and does not create a conflict."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "This is a standard Series A with moderate complexity due to the secondary component and open source license review. Partner oversight is essential for client relationship management, board composition negotiations, and final sign-off. A senior associate can handle NVCA document customization, board resolutions, and secondary mechanics. A junior associate can assist with diligence (IP assignments, open source review, employee matters) and closing logistics. Estimated 80 hours: 20 partner, 40 senior associate, 20 junior associate. The tight deadline (end of next week) requires dedicated staffing with no competing urgent matters."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing: exact number of shares and valuation (pre-money/post-money) not specified; Missing: specific open source dependency name and license type; Missing: details on secondary component structure (e.g., pro rata participation for existing investors); Missing: board composition details beyond a16z partner addition (e.g., founder seats, investor seats); Missing: whether any other investors (existing seed) have special rights or approval rights"
+      }
+    ],
+    "processing_time_ms": 12742,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 12.75
+}

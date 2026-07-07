@@ -1,0 +1,640 @@
+@import "tailwindcss";
+
+/* ========================================
+   SUPERASSISTANT COLOR SYSTEM
+   ========================================
+
+   All colors are WCAG AA compliant for accessibility.
+   Use these CSS classes throughout the application.
+   DO NOT use inline styles for colors.
+*/
+
+:root {
+  /* Primary Brand Colors */
+  --color-primary: #14b8a6;           /* Teal - Main brand color */
+  --color-primary-hover: #0d9488;     /* Darker teal - Hover states */
+  --color-primary-light: #99f6e4;     /* Light teal - Subtle backgrounds */
+
+  /* Background Colors */
+  --color-bg-page: #f7f7f8;           /* Light gray - Page backgrounds */
+  --color-bg-card: #ffffff;           /* White - Cards and containers */
+  --color-bg-hover: #f7f7f8;          /* Light gray - Hover states */
+  --color-bg-disabled: #f3f4f6;       /* Very light gray - Disabled elements */
+  --color-bg-input: #f7f7f8;          /* Light gray - Input backgrounds */
+
+  /* Text Colors (WCAG AA Compliant) */
+  --color-text-primary: #1d1d22;      /* Dark gray - Primary text (16.5:1 on white) */
+  --color-text-secondary: #4b5563;    /* Medium gray - Secondary text (7.4:1 on white) */
+  --color-text-muted: #6b7280;        /* Light gray - Muted text (4.6:1 on white) */
+  --color-text-on-primary: #ffffff;   /* White - Text on teal */
+  --color-text-on-secondary: #1d1d22; /* Dark gray - Text on secondary buttons */
+  --color-text-input: #1d1d22;        /* Dark gray - Input text color */
+
+  /* Border Colors */
+  --color-border-default: #e5e5e9;    /* Light border - Default borders */
+  --color-border-hover: #d1d5db;      /* Medium border - Hover states */
+  --color-border-focus: #14b8a6;      /* Teal - Focus indicators */
+  --color-border-disabled: #e5e7eb;   /* Very light border - Disabled elements */
+
+  /* Semantic Colors */
+  --color-success: #10b981;           /* Green - Success states */
+  --color-success-bg: #d1fae5;        /* Light green - Success backgrounds */
+  --color-warning: #f59e0b;           /* Amber - Warning states */
+  --color-warning-bg: #fef3c7;        /* Light amber - Warning backgrounds */
+  --color-error: #ef4444;             /* Red - Error states */
+  --color-error-bg: #fee2e2;          /* Light red - Error backgrounds */
+  --color-info: #3b82f6;              /* Blue - Info states */
+  --color-info-bg: #dbeafe;           /* Light blue - Info backgrounds */
+
+  /* Legacy CSS Variables (for compatibility) */
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ========================================
+   INPUT STYLES
+   ======================================== */
+
+input,
+textarea,
+select {
+  color: var(--color-text-input);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
+/* Primary Button - Use for main CTAs */
+.btn-primary {
+  @apply px-6 py-1.25 rounded-lg font-medium shadow-sm transition-all;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  opacity: 0.9;
+}
+
+.btn-primary:disabled {
+  background-color: var(--color-border-default);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+/* Secondary Button - Use for secondary actions */
+.btn-secondary {
+  @apply px-6 py-1.25 rounded-lg font-medium transition-all;
+  background-color: var(--color-bg-card);
+  color: var(--color-text-on-secondary);
+  border: 1px solid var(--color-border-default);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-bg-hover);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Icon Button - Use for icon-only buttons */
+.btn-icon {
+  @apply p-3 rounded-lg transition-all;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+}
+
+.btn-icon:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.btn-icon:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ========================================
+   INPUT FIELD STYLES
+   ======================================== */
+
+.input-field {
+  @apply w-full px-4 py-2 rounded-lg transition-all;
+  border: 1px solid var(--color-border-default);
+  background-color: var(--color-bg-input);
+  color: var(--color-text-input);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.input-field:disabled {
+  background-color: var(--color-bg-disabled);
+  cursor: not-allowed;
+}
+
+/* Textarea variant */
+.textarea-field {
+  @apply w-full px-4 py-3 rounded-lg resize-none transition-all;
+  border: 1px solid var(--color-border-default);
+  background-color: var(--color-bg-input);
+  color: var(--color-text-input);
+}
+
+.textarea-field:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.textarea-field:disabled {
+  cursor: not-allowed;
+}
+
+/* ========================================
+   CARD & CONTAINER STYLES
+   ======================================== */
+
+.card {
+  background-color: var(--color-bg-card);
+  border: var(--panel-border-width, 1px) solid var(--panel-border-color, var(--color-border-default));
+  box-shadow: 0 0 var(--panel-shadow-size, 1px) var(--panel-shadow-color, rgba(0, 0, 0, 0.1));
+  @apply rounded-lg;
+  width: 100%;
+  min-width: 0;
+}
+
+.card-interactive {
+  background-color: var(--color-bg-card);
+  border: var(--panel-border-width, 1px) solid var(--panel-border-color, var(--color-border-default));
+  box-shadow: 0 0 var(--panel-shadow-size, 1px) var(--panel-shadow-color, rgba(0, 0, 0, 0.1));
+  @apply rounded-lg transition-all cursor-pointer;
+  width: 100%;
+  min-width: 0;
+}
+
+.card-interactive:hover {
+  background-color: var(--color-bg-hover);
+  box-shadow: 0 2px 8px var(--panel-shadow-color, rgba(0, 0, 0, 0.2));
+}
+
+/* Page Background */
+.page-bg {
+  background-color: var(--color-bg-page);
+}
+
+/* ========================================
+   TEXT STYLES
+   ======================================== */
+
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-on-primary {
+  color: var(--color-text-on-primary);
+}
+
+/* Heading Styles */
+.heading-1 {
+  @apply font-bold;
+  font-size: var(--page-title-font-size, 1.875rem);
+  color: var(--color-text-primary);
+}
+
+.heading-2 {
+  @apply text-2xl font-bold;
+  color: var(--color-text-primary);
+}
+
+.heading-3 {
+  @apply text-xl font-semibold;
+  color: var(--color-text-primary);
+}
+
+/* Brand Text - For logo/brand elements */
+.text-brand {
+  color: var(--color-primary);
+  @apply font-bold;
+}
+
+/* ========================================
+   LINK STYLES
+   ======================================== */
+
+.link {
+  color: var(--color-primary);
+  @apply transition-colors cursor-pointer;
+}
+
+.link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* ========================================
+   FORM ELEMENT STYLES
+   ======================================== */
+
+.label {
+  @apply block text-sm font-medium mb-2;
+  color: var(--color-text-primary);
+}
+
+.form-error {
+  @apply text-sm mt-1;
+  color: var(--color-error);
+}
+
+.form-helper {
+  @apply text-xs mt-2;
+  color: var(--color-text-muted);
+}
+
+/* ========================================
+   AVATAR STYLES
+   ======================================== */
+
+.avatar-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  @apply flex items-center justify-center rounded-full font-semibold;
+}
+
+.avatar-secondary {
+  background-color: var(--color-text-secondary);
+  color: var(--color-text-on-primary);
+  @apply flex items-center justify-center rounded-full font-semibold;
+}
+
+/* ========================================
+   BADGE STYLES
+   ======================================== */
+
+.badge-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+.badge-secondary {
+  background-color: var(--color-border-default);
+  color: var(--color-text-muted);
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+.badge-success {
+  background-color: var(--color-success);
+  color: white;
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+.badge-warning {
+  background-color: var(--color-warning);
+  color: white;
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+.badge-error {
+  background-color: var(--color-error);
+  color: white;
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+.badge-info {
+  background-color: var(--color-info);
+  color: white;
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+.badge-muted {
+  background-color: var(--color-bg-disabled);
+  color: var(--color-text-muted);
+  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+}
+
+/* ========================================
+   CHAT MESSAGE STYLES
+   ======================================== */
+
+.message-user {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  @apply rounded-lg px-4 py-3 max-w-[70%];
+}
+
+.message-assistant {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+  @apply rounded-lg px-4 py-3 max-w-[70%];
+}
+
+.message-timestamp {
+  @apply text-xs mt-1 opacity-70;
+}
+
+/* ========================================
+   PROGRESS BAR STYLES
+   ======================================== */
+
+.progress-bar-container {
+  background-color: var(--color-border-default);
+  @apply w-full h-2 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  background-color: var(--color-primary);
+  @apply h-full transition-all duration-300;
+}
+
+/* ========================================
+   LOADING SPINNER STYLES
+   ======================================== */
+
+.spinner {
+  @apply inline-block rounded-full border-2 border-solid animate-spin;
+  border-color: var(--color-primary) transparent transparent transparent;
+}
+
+.spinner-sm {
+  @apply w-4 h-4;
+}
+
+.spinner-md {
+  @apply w-6 h-6;
+}
+
+.spinner-lg {
+  @apply w-8 h-8;
+}
+
+/* Spinner dots (for chat loading) */
+.spinner-dots {
+  @apply flex space-x-2;
+}
+
+.spinner-dot {
+  @apply w-2 h-2 rounded-full animate-bounce;
+  background-color: var(--color-text-muted);
+}
+
+/* ========================================
+   DIVIDER STYLES
+   ======================================== */
+
+.divider {
+  border-top: 1px solid var(--color-border-default);
+}
+
+.divider-vertical {
+  border-left: 1px solid var(--color-border-default);
+}
+
+/* ========================================
+   SEMANTIC ALERT STYLES
+   ======================================== */
+
+.alert {
+  @apply px-4 py-3 rounded-lg border;
+}
+
+.alert-success {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: #065f46;
+}
+
+.alert-warning {
+  background-color: var(--color-warning-bg);
+  border-color: var(--color-warning);
+  color: #78350f;
+}
+
+.alert-error {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: #991b1b;
+}
+
+.alert-info {
+  background-color: var(--color-info-bg);
+  border-color: var(--color-info);
+  color: #1e40af;
+}
+
+/* ========================================
+   ICON STYLES
+   ======================================== */
+
+.icon-primary {
+  color: var(--color-primary);
+}
+
+.icon-secondary {
+  color: var(--color-text-secondary);
+}
+
+.icon-muted {
+  color: var(--color-text-muted);
+}
+
+/* ========================================
+   FOCUS INDICATORS (Accessibility)
+   ======================================== */
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.3);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   SIDEBAR & NAVIGATION STYLES
+   ======================================== */
+
+.sidebar-item {
+  @apply px-3 py-2 rounded-lg transition-all cursor-pointer;
+  color: var(--color-text-primary);
+}
+
+.sidebar-item:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.sidebar-item-active {
+  background-color: var(--color-bg-hover);
+  color: var(--color-primary);
+  @apply font-medium;
+}
+
+/* ========================================
+   ATTACHMENT/FILE STYLES
+   ======================================== */
+
+.attachment-pill {
+  @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+/* ========================================
+   STAT/METRIC STYLES
+   ======================================== */
+
+.stat-number {
+  @apply text-3xl font-bold;
+  color: var(--color-primary);
+}
+
+.stat-label {
+  @apply text-sm font-medium;
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.border-default {
+  border-color: var(--color-border-default);
+}
+
+.bg-page {
+  background-color: var(--color-bg-page);
+}
+
+.bg-card {
+  background-color: var(--color-bg-card);
+}
+
+.bg-hover {
+  background-color: var(--color-bg-hover);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+/* Shadow utilities */
+.shadow-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* ========================================
+   RANGE INPUT STYLING
+   ======================================== */
+
+/* Range input track */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 0.5rem;
+  background: var(--color-border-default);
+  border-radius: 0.5rem;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) - Track */
+input[type="range"]::-webkit-slider-track {
+  background: var(--color-border-default);
+  height: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Webkit browsers - Thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -4px;
+  background-color: var(--color-primary);
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* Firefox - Track */
+input[type="range"]::-moz-range-track {
+  background: var(--color-border-default);
+  height: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Firefox - Thumb */
+input[type="range"]::-moz-range-thumb {
+  background-color: var(--color-primary);
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  border: none;
+}
+
+/* Hover states */
+input[type="range"]:hover::-webkit-slider-thumb {
+  background-color: var(--color-primary-hover);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  background-color: var(--color-primary-hover);
+}

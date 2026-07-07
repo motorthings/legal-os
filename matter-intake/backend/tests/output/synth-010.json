@@ -1,0 +1,76 @@
+{
+  "fixture": {
+    "id": "synth-010",
+    "description": "Technology transaction \u2014 licensing deal, routine timeline, no conflicts",
+    "matter_summary": "Our client CloudMatrix Inc. (SaaS startup, Series B, 85 employees, San Francisco) is negotiating an enterprise licensing deal with JPMorgan Chase for their cloud infrastructure monitoring platform. Deal value: $1.8M annual license fee, 3-year term. We need: (1) review and negotiate the master services agreement, (2) SLA terms and uptime guarantees, (3) data security and SOC 2 compliance representations, (4) limitation of liability and indemnification provisions, (5) termination and transition assistance terms. Standard enterprise SaaS negotiation \u2014 JPMC has their own paper. Client wants to close within 30 days to recognize revenue this quarter. No conflicts. Existing client \u2014 we did their Series B financing 8 months ago."
+  },
+  "result": {
+    "overall_score": 75,
+    "overall_risk_level": "low",
+    "practice_area": {
+      "practice_area": "Technology Transactions",
+      "confidence": 95,
+      "reasoning": "The matter involves negotiating an enterprise SaaS licensing agreement, including MSA, SLA, data security, liability, and termination terms. This is squarely within Technology Transactions, which covers software licensing, cloud services, and related commercial agreements. No cross-practice elements are apparent."
+    },
+    "urgency_risk": {
+      "urgency_level": "short-term",
+      "risk_level": "medium",
+      "risk_score": 60,
+      "reasoning": "The client wants to close within 30 days to recognize revenue this quarter, indicating a short-term deadline. Financial exposure is $1.8M annual license fee over 3 years, which is significant but not extraordinary. Reputational risk is moderate due to JPMC being a high-profile counterparty. Client relationship risk is low as it is an existing client. Matter complexity is standard for enterprise SaaS negotiations."
+    },
+    "conflict_check": {
+      "entity_name": "JPMorgan Chase",
+      "conflict_type": "business_conflict",
+      "detail": "JPMorgan Chase is a major financial institution. Perkins Coie may represent other financial services clients or have business relationships that could create a business conflict. No direct adverse party is named, but the firm should check for any prior or ongoing representations of JPMC or its affiliates, as well as any conflicts arising from representing CloudMatrix against JPMC."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate",
+      "estimated_hours": 80,
+      "reasoning": "The matter is a standard enterprise SaaS negotiation but involves a high-profile counterparty (JPMC) and a 30-day timeline. Partner oversight is needed for strategic decisions and client management. A senior associate can handle document review and drafting. Estimated hours reflect typical effort for MSA, SLA, security, liability, and termination provisions."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Governing law not specified (likely Delaware or NY due to JPMC)",
+        "Exact value of the deal over the full term ($5.4M) not explicitly stated",
+        "No specific details on existing SOC 2 compliance status of CloudMatrix"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter involves negotiating an enterprise SaaS licensing agreement, including MSA, SLA, data security, liability, and termination terms. This is squarely within Technology Transactions, which covers software licensing, cloud services, and related commercial agreements. No cross-practice elements are apparent."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 40,
+        "weight": 0.25,
+        "reasoning": "The client wants to close within 30 days to recognize revenue this quarter, indicating a short-term deadline. Financial exposure is $1.8M annual license fee over 3 years, which is significant but not extraordinary. Reputational risk is moderate due to JPMC being a high-profile counterparty. Client relationship risk is low as it is an existing client. Matter complexity is standard for enterprise SaaS negotiations."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "JPMorgan Chase is a major financial institution. Perkins Coie may represent other financial services clients or have business relationships that could create a business conflict. No direct adverse party is named, but the firm should check for any prior or ongoing representations of JPMC or its affiliates, as well as any conflicts arising from representing CloudMatrix against JPMC."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is a standard enterprise SaaS negotiation but involves a high-profile counterparty (JPMC) and a 30-day timeline. Partner oversight is needed for strategic decisions and client management. A senior associate can handle document review and drafting. Estimated hours reflect typical effort for MSA, SLA, security, liability, and termination provisions."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Governing law not specified (likely Delaware or NY due to JPMC); Exact value of the deal over the full term ($5.4M) not explicitly stated; No specific details on existing SOC 2 compliance status of CloudMatrix"
+      }
+    ],
+    "processing_time_ms": 8495,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 8.5
+}

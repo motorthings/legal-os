@@ -1,0 +1,77 @@
+{
+  "fixture": {
+    "id": "synth-003",
+    "description": "IP litigation with TRO deadline \u2014 immediate urgency, clear practice area, specific jurisdiction",
+    "matter_summary": "Urgent: Our client HealthTech Devices Inc. (existing client, medical device manufacturer in Minneapolis) received notice that a competitor, Medtronic, filed a patent infringement suit in the District of Minnesota yesterday. Medtronic is also seeking a temporary restraining order to halt shipment of our client's flagship cardiac monitor product. The TRO hearing is scheduled for Monday \u2014 four days from now. The patent involves wireless telemetry for implantable cardiac devices (US Patent 11,234,567). Damages claimed exceed $50M. Our client's entire Q3 product launch depends on this shipment. We need an emergency response team assembled today."
+  },
+  "result": {
+    "overall_score": 69,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "IP Litigation - Patent",
+      "confidence": 98,
+      "reasoning": "The matter is a patent infringement lawsuit with a TRO request, squarely within IP litigation. The specific patent (US 11,234,567) and the medical device context confirm this. No cross-practice elements are apparent, though the TRO urgency may require coordination with litigation and possibly regulatory counsel."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 95,
+      "reasoning": "The TRO hearing is in 4 days, requiring immediate action. Financial exposure exceeds $50M in damages, and the client's Q3 product launch depends on the shipment. Reputational risk to the firm is high due to the emergency nature and high-profile competitor (Medtronic). Client relationship risk is elevated as an existing client with significant business impact."
+    },
+    "conflict_check": {
+      "entity_name": "Medtronic",
+      "conflict_type": "direct_adverse",
+      "detail": "Medtronic is the named adverse party in the lawsuit. As a major medical device company, there may be business conflicts if the firm represents Medtronic in other matters or has prior representations in the same industry. A full conflict check should be run against Medtronic and any subsidiaries. The client is HealthTech Devices Inc., an existing client, so no conflict with the client is expected."
+    },
+    "staffing": {
+      "recommended_role": "Partner (IP Litigation) + Senior Associate + Junior Associate",
+      "estimated_hours": 200,
+      "reasoning": "The matter is high-stakes and time-sensitive, requiring a partner to lead the emergency response and TRO opposition. A senior associate is needed for drafting and research, and a junior associate for document review and support. Estimated hours reflect the intense 4-day preparation period, including motion drafting, factual investigation, and hearing preparation."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing: specific court docket number or case number",
+        "Missing: names of Medtronic's counsel (if known)",
+        "Missing: details on the patent's validity or prior art",
+        "Missing: client's contact person for immediate coordination"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter is a patent infringement lawsuit with a TRO request, squarely within IP litigation. The specific patent (US 11,234,567) and the medical device context confirm this. No cross-practice elements are apparent, though the TRO urgency may require coordination with litigation and possibly regulatory counsel."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 5,
+        "weight": 0.25,
+        "reasoning": "The TRO hearing is in 4 days, requiring immediate action. Financial exposure exceeds $50M in damages, and the client's Q3 product launch depends on the shipment. Reputational risk to the firm is high due to the emergency nature and high-profile competitor (Medtronic). Client relationship risk is elevated as an existing client with significant business impact."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 90,
+        "weight": 0.2,
+        "reasoning": "Medtronic is the named adverse party in the lawsuit. As a major medical device company, there may be business conflicts if the firm represents Medtronic in other matters or has prior representations in the same industry. A full conflict check should be run against Medtronic and any subsidiaries. The client is HealthTech Devices Inc., an existing client, so no conflict with the client is expected."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is high-stakes and time-sensitive, requiring a partner to lead the emergency response and TRO opposition. A senior associate is needed for drafting and research, and a junior associate for document review and support. Estimated hours reflect the intense 4-day preparation period, including motion drafting, factual investigation, and hearing preparation."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing: specific court docket number or case number; Missing: names of Medtronic's counsel (if known); Missing: details on the patent's validity or prior art; Missing: client's contact person for immediate coordination"
+      }
+    ],
+    "processing_time_ms": 8949,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 8.95
+}

@@ -1,0 +1,77 @@
+{
+  "fixture": {
+    "id": "synth-013",
+    "description": "Energy project finance \u2014 Ashurst legacy strength, multi-jurisdiction, large scale, long timeline",
+    "matter_summary": "Sungate Solar Development Co. (joint venture between NextEra Energy and Macquarie Infrastructure) is developing a 450MW solar farm with 200MW battery storage in Maricopa County, Arizona. Total project cost: $680M. Financing structure: 40% equity / 60% debt. The debt syndication includes three Japanese banks (MUFG, SMBC, Mizuho), two European export credit agencies, and a Department of Energy loan guarantee. Land: 2,800 acres of BLM land under a right-of-way grant plus 400 acres of private ranch land under long-term lease. Offtake: 25-year PPA with Arizona Public Service. Key workstreams: (1) project finance documentation across three tranches, (2) EPC contract with First Solar, (3) O&M agreement, (4) interconnection agreement with CAISO, (5) DOE loan guarantee application support, (6) BLM compliance and NEPA documentation. Timeline: financial close targeted Q2 2027. This is a new client \u2014 the JV was formed specifically for this project. No known conflicts, but Macquarie's broad infrastructure portfolio needs a full conflicts check."
+  },
+  "result": {
+    "overall_score": 71,
+    "overall_risk_level": "low",
+    "practice_area": {
+      "practice_area": "Energy & Infrastructure",
+      "confidence": 95,
+      "reasoning": "The matter is a large-scale solar and battery storage project with complex project finance, EPC, O&M, interconnection, and regulatory components. This is squarely within the Energy & Infrastructure practice area, with cross-practice elements in Project Finance, Real Estate (BLM and private land), and Environmental/Regulatory (NEPA, DOE loan guarantee). The router's classification is correct."
+    },
+    "urgency_risk": {
+      "urgency_level": "short-term",
+      "risk_level": "high",
+      "risk_score": 75,
+      "reasoning": "Financial close is targeted for Q2 2027, which is approximately 18 months away, placing this in the short-term urgency category. The risk level is high due to the $680M total project cost, involvement of multiple sophisticated lenders (Japanese banks, ECAs, DOE), a new client with no prior relationship, and significant regulatory and land use compliance requirements (BLM, NEPA, CAISO interconnection). Reputational risk to the firm is elevated given the high-profile joint venture partners (NextEra Energy and Macquarie Infrastructure) and the complexity of the financing structure."
+    },
+    "conflict_check": {
+      "entity_name": "Sungate Solar Development Co.",
+      "conflict_type": "business_conflict",
+      "detail": "The client is a newly formed joint venture between NextEra Energy and Macquarie Infrastructure. NextEra Energy is a major utility and renewable energy developer; Macquarie Infrastructure has a broad infrastructure portfolio that may include investments in competing solar projects, transmission assets, or other energy infrastructure. A full conflicts check is required against both parent entities and their affiliates. Adverse parties include Arizona Public Service (offtaker), First Solar (EPC contractor), MUFG, SMBC, Mizuho (lenders), and the DOE. No direct adverse conflict is apparent from the summary, but the business conflict risk is medium due to Macquarie's extensive holdings."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate + Junior Associate",
+      "estimated_hours": 1200,
+      "reasoning": "The matter is highly complex, involving multiple workstreams (project finance, EPC, O&M, interconnection, DOE loan guarantee, BLM compliance). A partner with deep energy and project finance experience is essential to lead the engagement and manage client relationships. A senior associate with expertise in project finance documentation and regulatory compliance is needed to handle the bulk of the drafting and negotiations. A junior associate can assist with due diligence, document management, and research. Estimated hours are based on the scale of the project ($680M, multiple tranches, multiple counterparties) and the timeline to Q2 2027."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing specific contact information for the client (individual names, phone, email)",
+        "No mention of the specific BLM office or NEPA document status",
+        "No detail on the DOE loan guarantee program or application stage",
+        "No indication of whether any preliminary work has been done by other counsel"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter is a large-scale solar and battery storage project with complex project finance, EPC, O&M, interconnection, and regulatory components. This is squarely within the Energy & Infrastructure practice area, with cross-practice elements in Project Finance, Real Estate (BLM and private land), and Environmental/Regulatory (NEPA, DOE loan guarantee). The router's classification is correct."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 25,
+        "weight": 0.25,
+        "reasoning": "Financial close is targeted for Q2 2027, which is approximately 18 months away, placing this in the short-term urgency category. The risk level is high due to the $680M total project cost, involvement of multiple sophisticated lenders (Japanese banks, ECAs, DOE), a new client with no prior relationship, and significant regulatory and land use compliance requirements (BLM, NEPA, CAISO interconnection). Reputational risk to the firm is elevated given the high-profile joint venture partners (NextEra Energy and Macquarie Infrastructure) and the complexity of the financing structure."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "The client is a newly formed joint venture between NextEra Energy and Macquarie Infrastructure. NextEra Energy is a major utility and renewable energy developer; Macquarie Infrastructure has a broad infrastructure portfolio that may include investments in competing solar projects, transmission assets, or other energy infrastructure. A full conflicts check is required against both parent entities and their affiliates. Adverse parties include Arizona Public Service (offtaker), First Solar (EPC contractor), MUFG, SMBC, Mizuho (lenders), and the DOE. No direct adverse conflict is apparent from the summary, but the business conflict risk is medium due to Macquarie's extensive holdings."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is highly complex, involving multiple workstreams (project finance, EPC, O&M, interconnection, DOE loan guarantee, BLM compliance). A partner with deep energy and project finance experience is essential to lead the engagement and manage client relationships. A senior associate with expertise in project finance documentation and regulatory compliance is needed to handle the bulk of the drafting and negotiations. A junior associate can assist with due diligence, document management, and research. Estimated hours are based on the scale of the project ($680M, multiple tranches, multiple counterparties) and the timeline to Q2 2027."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing specific contact information for the client (individual names, phone, email); No mention of the specific BLM office or NEPA document status; No detail on the DOE loan guarantee program or application stage; No indication of whether any preliminary work has been done by other counsel"
+      }
+    ],
+    "processing_time_ms": 10321,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 10.32
+}

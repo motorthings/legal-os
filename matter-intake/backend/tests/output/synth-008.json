@@ -1,0 +1,77 @@
+{
+  "fixture": {
+    "id": "synth-008",
+    "description": "Cross-border data privacy \u2014 multi-jurisdiction, GDPR + US state laws, evolving regulatory landscape",
+    "matter_summary": "European e-commerce platform ShopEU GmbH (Berlin-based, EUR 890M annual revenue, expanding into the US market) needs comprehensive privacy and data protection counsel. They are launching US operations in January and need to reconcile their GDPR-compliant data practices with California (CCPA/CPRA), Colorado (CPA), and Virginia (VCDPA) requirements. Additionally: (1) they use AI-powered customer profiling that may trigger EU AI Act obligations, (2) they are negotiating data processing agreements with three US-based cloud providers, (3) their existing privacy program was built for GDPR only. This is a new client referred by the Berlin office. They need a compliance roadmap within 30 days and an ongoing advisory relationship. No litigation component."
+  },
+  "result": {
+    "overall_score": 65,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "Privacy & Data Protection",
+      "confidence": 98,
+      "reasoning": "The matter is squarely about privacy and data protection compliance, involving GDPR, CCPA/CPRA, CPA, VCDPA, and EU AI Act. The router's classification of 'Regulatory & Compliance' is correct but broad; the specific sub-practice area is Privacy & Data Protection. There are cross-practice elements with AI regulatory compliance, but the core is privacy."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 85,
+      "reasoning": "The client needs a compliance roadmap within 30 days and is launching US operations in January, indicating immediate action required. Financial exposure is high (EUR 890M revenue, expanding into US market). Reputational risk to the firm is moderate as this is a new client referral from the Berlin office. Regulatory exposure is significant due to multi-state US privacy laws and EU AI Act obligations. The matter is complex and time-sensitive."
+    },
+    "conflict_check": {
+      "entity_name": "ShopEU GmbH",
+      "conflict_type": "none_identified",
+      "detail": "No adverse parties are named in the summary. The client is a new entity (ShopEU GmbH) referred by the Berlin office. Potential conflicts could arise from prior representations of competitors in the European e-commerce space or US-based cloud providers (if the firm represents any of the three unnamed providers). A full conflict check should be run against ShopEU GmbH and any known counterparties (the three US cloud providers). No direct adverse or business conflicts are apparent from the summary."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate + Junior Associate",
+      "estimated_hours": 200,
+      "reasoning": "The matter is complex, multi-jurisdictional, and involves high stakes for a new client. Partner oversight is essential for strategic advice and client relationship management. A senior associate with privacy expertise can handle the detailed compliance analysis and drafting. A junior associate can assist with research and document review. Estimated hours: 30 days to initial roadmap (intensive work) plus ongoing advisory (likely 10-15 hours/month). Total estimate: 200 hours for the first phase."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "The three US-based cloud providers are not named, which may be needed for conflict checks and specific advice.",
+        "The specific AI-powered customer profiling details are not provided (e.g., types of data used, profiling purposes).",
+        "The client's existing privacy program details (e.g., DPO, data mapping) are not described.",
+        "The budget or fee arrangement is not mentioned."
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter is squarely about privacy and data protection compliance, involving GDPR, CCPA/CPRA, CPA, VCDPA, and EU AI Act. The router's classification of 'Regulatory & Compliance' is correct but broad; the specific sub-practice area is Privacy & Data Protection. There are cross-practice elements with AI regulatory compliance, but the core is privacy."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 15,
+        "weight": 0.25,
+        "reasoning": "The client needs a compliance roadmap within 30 days and is launching US operations in January, indicating immediate action required. Financial exposure is high (EUR 890M revenue, expanding into US market). Reputational risk to the firm is moderate as this is a new client referral from the Berlin office. Regulatory exposure is significant due to multi-state US privacy laws and EU AI Act obligations. The matter is complex and time-sensitive."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 60,
+        "weight": 0.2,
+        "reasoning": "No adverse parties are named in the summary. The client is a new entity (ShopEU GmbH) referred by the Berlin office. Potential conflicts could arise from prior representations of competitors in the European e-commerce space or US-based cloud providers (if the firm represents any of the three unnamed providers). A full conflict check should be run against ShopEU GmbH and any known counterparties (the three US cloud providers). No direct adverse or business conflicts are apparent from the summary."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is complex, multi-jurisdictional, and involves high stakes for a new client. Partner oversight is essential for strategic advice and client relationship management. A senior associate with privacy expertise can handle the detailed compliance analysis and drafting. A junior associate can assist with research and document review. Estimated hours: 30 days to initial roadmap (intensive work) plus ongoing advisory (likely 10-15 hours/month). Total estimate: 200 hours for the first phase."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "The three US-based cloud providers are not named, which may be needed for conflict checks and specific advice.; The specific AI-powered customer profiling details are not provided (e.g., types of data used, profiling purposes).; The client's existing privacy program details (e.g., DPO, data mapping) are not described.; The budget or fee arrangement is not mentioned."
+      }
+    ],
+    "processing_time_ms": 10124,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 10.13
+}

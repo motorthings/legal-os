@@ -1,0 +1,77 @@
+[
+  {
+    "id": "synth-001",
+    "description": "Clear corporate M&A with direct adverse conflict — should classify high confidence, identify conflict, medium-high risk",
+    "matter_summary": "Acme Corporation, a publicly traded semiconductor manufacturer based in Austin, TX, proposes to acquire TargetCo Inc., a privately held chip design firm in San Jose, CA, for approximately $340M in a mix of cash and stock. The deal is expected to close within 90 days. TargetCo's primary competitor is Intel. We need full due diligence on IP portfolio, employment agreements for 47 engineers, and regulatory review for CFIUS implications. TargetCo is currently in litigation with Nvidia over three chip patent disputes in the Northern District of California. Acme is an existing client of the firm; TargetCo is a new entity. The engagement letter needs to be executed by Thursday to meet the exclusivity deadline."
+  },
+  {
+    "id": "synth-002",
+    "description": "Vague litigation intake with minimal detail — should score low on data integrity, medium-low confidence",
+    "matter_summary": "We got sued. Something about a contract dispute. They filed in state court somewhere in the Midwest. Their lawyers sent a complaint but we haven't really read it yet. We think the damages might be significant but we're not sure. Need someone to look at this ASAP."
+  },
+  {
+    "id": "synth-003",
+    "description": "IP litigation with TRO deadline — immediate urgency, clear practice area, specific jurisdiction",
+    "matter_summary": "Urgent: Our client HealthTech Devices Inc. (existing client, medical device manufacturer in Minneapolis) received notice that a competitor, Medtronic, filed a patent infringement suit in the District of Minnesota yesterday. Medtronic is also seeking a temporary restraining order to halt shipment of our client's flagship cardiac monitor product. The TRO hearing is scheduled for Monday — four days from now. The patent involves wireless telemetry for implantable cardiac devices (US Patent 11,234,567). Damages claimed exceed $50M. Our client's entire Q3 product launch depends on this shipment. We need an emergency response team assembled today."
+  },
+  {
+    "id": "synth-004",
+    "description": "Cross-practice matter spanning corporate and regulatory — should flag multi-practice complexity",
+    "matter_summary": "GreenField Energy Partners, a renewable energy developer and new client referral from the London office, is forming a joint venture with a subsidiary of Shell to develop three offshore wind farms in the North Sea. Total project value estimated at £2.1 billion. The deal involves: (1) JV corporate structure formation under UK law, (2) regulatory approvals from the UK Department for Energy Security and Net Zero, (3) maritime lease negotiations with the Crown Estate, (4) power purchase agreements with three UK utility companies, and (5) environmental impact assessments already underway. Shell's existing wind portfolio raises potential business conflict questions — we have represented BP in two matters in the past 18 months. Timeline: LOI signed, definitive agreements targeted within 6 months."
+  },
+  {
+    "id": "synth-005",
+    "description": "Employment class action — clear practice area, high exposure, business conflict with existing client",
+    "matter_summary": "A group of 340 current and former warehouse employees filed a class action against RapidShip Logistics (prospective client, $2.4B revenue, headquartered in Chicago) alleging systematic wage and hour violations under FLSA and Illinois state law. Allegations include: off-the-clock work, missed meal breaks, unpaid overtime spanning a 3-year period, and misclassification of shift supervisors as exempt. Estimated class damages: $85M-$120M not including penalties. RapidShip's primary competitor, FastFleet Delivery, is an existing firm client — we handle their commercial contracts. We need a conflicts check before the engagement meeting on Friday. RapidShip wants a litigation strategy memo within 10 business days."
+  },
+  {
+    "id": "synth-006",
+    "description": "Regulatory investigation with immediate urgency — DOJ/CID, existing client, maximum risk",
+    "matter_summary": "CRITICAL: Our long-standing client Apex Financial Services (Fortune 500 investment bank, $12B annual revenue) received a Civil Investigative Demand from the DOJ Antitrust Division this morning regarding their bond trading desk operations from 2022-2025. The CID requests trading records, internal communications, and executive calendars for 14 named individuals including 3 current Managing Directors. DOJ is coordinating with the SEC and the UK Financial Conduct Authority. Apex's General Counsel needs an immediate response team: (1) document preservation and litigation hold, (2) preliminary CID response strategy, (3) internal investigation scoping, (4) PR/crisis communications coordination. The CID response is due in 30 days but the document hold must be in place within 48 hours. This is the firm's largest client relationship — approximately $45M annually."
+  },
+  {
+    "id": "synth-007",
+    "description": "Routine real estate transaction — low risk, long timeline, straightforward",
+    "matter_summary": "Westside Commercial Properties LLC, a repeat client, is acquiring a Class B office building at 450 Commerce Drive, Denver, CO, for $12.4M. Standard commercial real estate transaction. The property is currently owned by an institutional investor (KBS Real Estate Investment Trust). Buyer is securing financing through Wells Fargo with a standard 65% LTV commercial mortgage. We need: purchase agreement review, title examination, environmental Phase I review coordination, and closing. No litigation or disputes. Timeline: 90-day due diligence period, target closing in 120 days. This is the client's fourth acquisition with us this year — they're building a Denver office portfolio."
+  },
+  {
+    "id": "synth-008",
+    "description": "Cross-border data privacy — multi-jurisdiction, GDPR + US state laws, evolving regulatory landscape",
+    "matter_summary": "European e-commerce platform ShopEU GmbH (Berlin-based, EUR 890M annual revenue, expanding into the US market) needs comprehensive privacy and data protection counsel. They are launching US operations in January and need to reconcile their GDPR-compliant data practices with California (CCPA/CPRA), Colorado (CPA), and Virginia (VCDPA) requirements. Additionally: (1) they use AI-powered customer profiling that may trigger EU AI Act obligations, (2) they are negotiating data processing agreements with three US-based cloud providers, (3) their existing privacy program was built for GDPR only. This is a new client referred by the Berlin office. They need a compliance roadmap within 30 days and an ongoing advisory relationship. No litigation component."
+  },
+  {
+    "id": "synth-009",
+    "description": "White collar/internal investigation — existing client, sensitive, partner-level staffing needed",
+    "matter_summary": "The Audit Committee of our client Meridian Pharmaceuticals (publicly traded, NASDAQ: MRDN, $4.7B market cap) has engaged us to conduct an independent internal investigation into potential FCPA violations in their Latin American operations. A whistleblower complaint alleges that country managers in Brazil and Mexico authorized approximately $2.3M in payments to government officials to expedite drug approvals between 2023-2025. The company self-reported to the SEC and DOJ yesterday. We need: (1) forensic accounting team to review payments, (2) interviews with 20+ current and former employees across 4 countries, (3) coordination with Brazilian and Mexican local counsel, (4) SEC/DOJ liaison. The Board wants preliminary findings within 60 days. This is extremely sensitive — Meridian's stock dropped 8% on the self-report news."
+  },
+  {
+    "id": "synth-010",
+    "description": "Technology transaction — licensing deal, routine timeline, no conflicts",
+    "matter_summary": "Our client CloudMatrix Inc. (SaaS startup, Series B, 85 employees, San Francisco) is negotiating an enterprise licensing deal with JPMorgan Chase for their cloud infrastructure monitoring platform. Deal value: $1.8M annual license fee, 3-year term. We need: (1) review and negotiate the master services agreement, (2) SLA terms and uptime guarantees, (3) data security and SOC 2 compliance representations, (4) limitation of liability and indemnification provisions, (5) termination and transition assistance terms. Standard enterprise SaaS negotiation — JPMC has their own paper. Client wants to close within 30 days to recognize revenue this quarter. No conflicts. Existing client — we did their Series B financing 8 months ago."
+  },
+  {
+    "id": "synth-011",
+    "description": "Bankruptcy/restructuring — multiple creditor classes, distressed timeline, conflict complexity",
+    "matter_summary": "Midwest Steel Processing Inc. (Toledo, OH, $420M annual revenue, 1,200 employees) is considering a Chapter 11 restructuring filing. They have $180M in secured debt with a syndicate led by Bank of America, $65M in unsecured trade debt to approximately 400 suppliers, and $40M in underfunded pension obligations to the United Steelworkers. Operations are cash-flow negative ($4M/month burn). The company has received a non-binding offer from a private equity firm (SteelRiver Capital) for a stalking horse asset purchase, but the union is threatening to oppose. Key suppliers have begun demanding cash-on-delivery terms. We need: (1) restructuring strategy options within 2 weeks, (2) DIP financing negotiations, (3) union/labor negotiations strategy, (4) potential 363 sale preparation. Client is a new relationship — we have no prior conflicts in steel manufacturing, but we do represent Bank of America in unrelated commercial lending matters, which needs a waiver analysis."
+  },
+  {
+    "id": "synth-012",
+    "description": "Quick partner referral — minimal detail, tests whether the system asks for more or guesses",
+    "matter_summary": "Client referral from Sarah in the London office — something about a supply chain contract dispute with a Chinese manufacturer. She said the client is a mid-size UK retailer. That's all I have right now. Can someone look into whether we can take this?"
+  },
+  {
+    "id": "synth-013",
+    "description": "Energy project finance — Ashurst legacy strength, multi-jurisdiction, large scale, long timeline",
+    "matter_summary": "Sungate Solar Development Co. (joint venture between NextEra Energy and Macquarie Infrastructure) is developing a 450MW solar farm with 200MW battery storage in Maricopa County, Arizona. Total project cost: $680M. Financing structure: 40% equity / 60% debt. The debt syndication includes three Japanese banks (MUFG, SMBC, Mizuho), two European export credit agencies, and a Department of Energy loan guarantee. Land: 2,800 acres of BLM land under a right-of-way grant plus 400 acres of private ranch land under long-term lease. Offtake: 25-year PPA with Arizona Public Service. Key workstreams: (1) project finance documentation across three tranches, (2) EPC contract with First Solar, (3) O&M agreement, (4) interconnection agreement with CAISO, (5) DOE loan guarantee application support, (6) BLM compliance and NEPA documentation. Timeline: financial close targeted Q2 2027. This is a new client — the JV was formed specifically for this project. No known conflicts, but Macquarie's broad infrastructure portfolio needs a full conflicts check."
+  },
+  {
+    "id": "synth-014",
+    "description": "VC financing with fast close — tight deadline, clean structure, known parties",
+    "matter_summary": "Portfolio company Volt AI Inc. (AI/ML infrastructure startup, Delaware C-Corp) is raising a $25M Series A led by Andreessen Horowitz with participation from existing seed investors. We represent the company. Term sheet is signed. The lead investor requires: standard NVCA docs with minor customizations, board composition changes (adding a16z partner to 5-person board), and a $2M secondary component for founder liquidity. The company has 22 employees, standard IP assignment agreements in place, one open source dependency that needs license review. No litigation. No regulatory issues. Deadline: signing by end of next week because the investor's allocation deadline is firm. This is a fast, clean, standard Series A — the main complexity is speed, not structure. Existing client — we incorporated them 18 months ago and did their seed round."
+  },
+  {
+    "id": "synth-015",
+    "description": "Healthcare fraud investigation — DOJ, qui tam, criminal exposure, maximum sensitivity",
+    "matter_summary": "EMERGENCY: Federal prosecutors in the Eastern District of New York unsealed a qui tam complaint this morning against our prospective client Premier Healthcare Systems (hospital network, 12 hospitals, New York/New Jersey, $3.8B revenue). The relator is a former VP of Revenue Cycle Management who alleges systematic upcoding of Medicare claims ($40M-$70M estimated overbilling) and kickback arrangements with three medical device suppliers between 2021-2024. The government has intervened. Search warrants were executed at Premier's headquarters and two hospitals simultaneously this morning — office sealed, documents seized. The former VP/relator wore a wire for 9 months. Premier's board fired the CEO and CFO by noon. They contacted us at 2pm. We need: (1) immediate crisis response — defense team, document preservation coordination despite seizure, (2) parallel DOJ criminal and HHS-OIG civil negotiation strategies, (3) internal investigation scoping alongside government timeline, (4) board governance and disclosure counsel (publicly traded, NASDAQ: PHCS, trading halted pending news), (5) PR/crisis communications. This is a bet-the-company matter. We have never represented Premier before. Full conflicts check required — we must verify we don't represent any of the three device suppliers named in the complaint. The board chair asked: 'Can you start tonight?'"
+  }
+]

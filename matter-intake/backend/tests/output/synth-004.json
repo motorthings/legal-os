@@ -1,0 +1,78 @@
+{
+  "fixture": {
+    "id": "synth-004",
+    "description": "Cross-practice matter spanning corporate and regulatory \u2014 should flag multi-practice complexity",
+    "matter_summary": "GreenField Energy Partners, a renewable energy developer and new client referral from the London office, is forming a joint venture with a subsidiary of Shell to develop three offshore wind farms in the North Sea. Total project value estimated at \u00a32.1 billion. The deal involves: (1) JV corporate structure formation under UK law, (2) regulatory approvals from the UK Department for Energy Security and Net Zero, (3) maritime lease negotiations with the Crown Estate, (4) power purchase agreements with three UK utility companies, and (5) environmental impact assessments already underway. Shell's existing wind portfolio raises potential business conflict questions \u2014 we have represented BP in two matters in the past 18 months. Timeline: LOI signed, definitive agreements targeted within 6 months."
+  },
+  "result": {
+    "overall_score": 75,
+    "overall_risk_level": "low",
+    "practice_area": {
+      "practice_area": "Energy & Infrastructure",
+      "confidence": 95,
+      "reasoning": "The matter involves a joint venture for offshore wind farm development, regulatory approvals, maritime leases, and power purchase agreements, all squarely within Energy & Infrastructure. The project value and nature confirm this classification. There are cross-practice elements in corporate (JV structure), real estate (maritime leases), and environmental law (impact assessments), but the core is energy infrastructure."
+    },
+    "urgency_risk": {
+      "urgency_level": "short-term",
+      "risk_level": "medium",
+      "risk_score": 55,
+      "reasoning": "The LOI is signed and definitive agreements are targeted within 6 months, indicating a short-term timeline but not immediate urgency. Financial exposure is high (\u00a32.1 billion), but the client is new and the matter is transactional with no pending litigation or regulatory deadlines. Reputational risk is moderate due to the high-profile nature and potential conflict with BP representation. Regulatory approvals are needed but not yet filed, so risk is manageable."
+    },
+    "conflict_check": {
+      "entity_name": "Shell",
+      "conflict_type": "business_conflict",
+      "detail": "The matter involves a joint venture with a subsidiary of Shell. Perkins Coie has represented BP in two matters in the past 18 months. Shell and BP are direct competitors in the energy sector, particularly in offshore wind. This creates a business conflict concern because representing a joint venture partner of Shell while having an active relationship with BP could raise issues of confidentiality and loyalty. No direct adverse party is named, but the industry competition is significant. Further conflict checks should be run against Shell entities and the specific BP matters to assess whether any waivers or ethical walls are needed."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate + Junior Associate",
+      "estimated_hours": 800,
+      "reasoning": "The matter is complex, involving corporate structuring, regulatory approvals, maritime leases, and PPAs across multiple UK entities. A partner is needed for client relationship management and strategic oversight, a senior associate for drafting and negotiation of key documents, and a junior associate for due diligence and regulatory filings. The 6-month timeline and \u00a32.1 billion value justify a dedicated team. Estimated hours assume 4-5 months of active work with moderate intensity."
+    },
+    "data_integrity": {
+      "completeness": 75,
+      "clarity": 85,
+      "issues": [
+        "Missing specific client contact information (individual name, email, phone)",
+        "Missing exact jurisdiction details (e.g., which UK court or regulatory body for approvals)",
+        "Missing counterparty details (specific Shell subsidiary name)",
+        "Missing matter value breakdown (e.g., legal fees estimate or budget)",
+        "Missing any existing relationship with the London office referrer"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter involves a joint venture for offshore wind farm development, regulatory approvals, maritime leases, and power purchase agreements, all squarely within Energy & Infrastructure. The project value and nature confirm this classification. There are cross-practice elements in corporate (JV structure), real estate (maritime leases), and environmental law (impact assessments), but the core is energy infrastructure."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 45,
+        "weight": 0.25,
+        "reasoning": "The LOI is signed and definitive agreements are targeted within 6 months, indicating a short-term timeline but not immediate urgency. Financial exposure is high (\u00a32.1 billion), but the client is new and the matter is transactional with no pending litigation or regulatory deadlines. Reputational risk is moderate due to the high-profile nature and potential conflict with BP representation. Regulatory approvals are needed but not yet filed, so risk is manageable."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "The matter involves a joint venture with a subsidiary of Shell. Perkins Coie has represented BP in two matters in the past 18 months. Shell and BP are direct competitors in the energy sector, particularly in offshore wind. This creates a business conflict concern because representing a joint venture partner of Shell while having an active relationship with BP could raise issues of confidentiality and loyalty. No direct adverse party is named, but the industry competition is significant. Further conflict checks should be run against Shell entities and the specific BP matters to assess whether any waivers or ethical walls are needed."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is complex, involving corporate structuring, regulatory approvals, maritime leases, and PPAs across multiple UK entities. A partner is needed for client relationship management and strategic oversight, a senior associate for drafting and negotiation of key documents, and a junior associate for due diligence and regulatory filings. The 6-month timeline and \u00a32.1 billion value justify a dedicated team. Estimated hours assume 4-5 months of active work with moderate intensity."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 80,
+        "weight": 0.15,
+        "reasoning": "Missing specific client contact information (individual name, email, phone); Missing exact jurisdiction details (e.g., which UK court or regulatory body for approvals); Missing counterparty details (specific Shell subsidiary name); Missing matter value breakdown (e.g., legal fees estimate or budget); Missing any existing relationship with the London office referrer"
+      }
+    ],
+    "processing_time_ms": 9734,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 9.74
+}

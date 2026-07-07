@@ -1,0 +1,81 @@
+{
+  "fixture": {
+    "id": "synth-012",
+    "description": "Quick partner referral \u2014 minimal detail, tests whether the system asks for more or guesses",
+    "matter_summary": "Client referral from Sarah in the London office \u2014 something about a supply chain contract dispute with a Chinese manufacturer. She said the client is a mid-size UK retailer. That's all I have right now. Can someone look into whether we can take this?"
+  },
+  "result": {
+    "overall_score": 64,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "Commercial Litigation / International Arbitration",
+      "confidence": 70,
+      "reasoning": "The router classified this as Litigation, which is broadly correct. However, the cross-border element (UK retailer vs. Chinese manufacturer) and the nature of a supply chain contract dispute suggest this could involve international arbitration or litigation in multiple jurisdictions. The matter may also touch on trade law or contract law, but the primary classification remains litigation with a cross-border nuance."
+    },
+    "urgency_risk": {
+      "urgency_level": "routine",
+      "risk_level": "medium",
+      "risk_score": 40,
+      "reasoning": "No specific deadlines or court dates are mentioned. The referral is a preliminary inquiry, so urgency is low (routine). Risk is medium because the dispute involves a foreign counterparty (China), which can complicate enforcement and increase costs, but no financial stakes or reputational risks are quantified. The client is a mid-size UK retailer, likely an existing or new client referral, so client relationship risk is moderate."
+    },
+    "conflict_check": {
+      "entity_name": null,
+      "conflict_type": "none_identified",
+      "detail": "No specific client name, adverse party name, or industry details are provided. The summary only mentions a 'mid-size UK retailer' and a 'Chinese manufacturer'. Without names, a thorough conflict check cannot be performed. However, given the lack of identifying information, no conflicts are apparent at this stage. Further details are needed to run a proper conflict search."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate (with international arbitration experience)",
+      "estimated_hours": 40,
+      "reasoning": "The matter is a preliminary inquiry with limited information. A partner should handle the initial assessment and client communication to evaluate the case and determine next steps. A senior associate with experience in cross-border disputes and supply chain contracts can assist with research and drafting. Estimated hours are low for initial evaluation; if the matter proceeds, hours will increase significantly."
+    },
+    "data_integrity": {
+      "completeness": 30,
+      "clarity": 40,
+      "issues": [
+        "Client name not provided",
+        "Adverse party (Chinese manufacturer) not named",
+        "No details on the nature of the dispute or breach",
+        "No contract value or financial exposure mentioned",
+        "No jurisdiction or governing law specified",
+        "No timeline or deadlines indicated",
+        "No information on whether the client is existing or new",
+        "Referral source is vague (Sarah in London office)"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 75,
+        "weight": 0.25,
+        "reasoning": "The router classified this as Litigation, which is broadly correct. However, the cross-border element (UK retailer vs. Chinese manufacturer) and the nature of a supply chain contract dispute suggest this could involve international arbitration or litigation in multiple jurisdictions. The matter may also touch on trade law or contract law, but the primary classification remains litigation with a cross-border nuance."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 60,
+        "weight": 0.25,
+        "reasoning": "No specific deadlines or court dates are mentioned. The referral is a preliminary inquiry, so urgency is low (routine). Risk is medium because the dispute involves a foreign counterparty (China), which can complicate enforcement and increase costs, but no financial stakes or reputational risks are quantified. The client is a mid-size UK retailer, likely an existing or new client referral, so client relationship risk is moderate."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 60,
+        "weight": 0.2,
+        "reasoning": "No specific client name, adverse party name, or industry details are provided. The summary only mentions a 'mid-size UK retailer' and a 'Chinese manufacturer'. Without names, a thorough conflict check cannot be performed. However, given the lack of identifying information, no conflicts are apparent at this stage. Further details are needed to run a proper conflict search."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is a preliminary inquiry with limited information. A partner should handle the initial assessment and client communication to evaluate the case and determine next steps. A senior associate with experience in cross-border disputes and supply chain contracts can assist with research and drafting. Estimated hours are low for initial evaluation; if the matter proceeds, hours will increase significantly."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 35,
+        "weight": 0.15,
+        "reasoning": "Client name not provided; Adverse party (Chinese manufacturer) not named; No details on the nature of the dispute or breach; No contract value or financial exposure mentioned; No jurisdiction or governing law specified; No timeline or deadlines indicated; No information on whether the client is existing or new; Referral source is vague (Sarah in London office)"
+      }
+    ],
+    "processing_time_ms": 9432,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 9.44
+}

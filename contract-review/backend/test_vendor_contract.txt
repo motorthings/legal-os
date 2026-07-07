@@ -1,0 +1,53 @@
+VENDOR SERVICE AGREEMENT
+
+This Vendor Service Agreement ("Agreement") is entered into as of December 5, 2025 ("Effective Date"), by and between:
+
+ACME Corporation ("Client")
+123 Business Street
+San Francisco, CA 94105
+
+AND
+
+Tech Solutions Inc. ("Vendor")
+456 Vendor Avenue
+Austin, TX 78701
+
+WHEREAS, Client desires to engage Vendor to provide certain services, and Vendor agrees to provide such services in accordance with the terms and conditions set forth herein.
+
+1. SERVICES
+Vendor shall provide the following services to Client:
+- Software development and maintenance
+- Cloud infrastructure management
+- Technical support and consulting
+- System integration services
+
+2. TERM
+This Agreement shall commence on the Effective Date and continue for a period of twelve (12) months, unless earlier terminated in accordance with Section 6.
+
+3. COMPENSATION
+Client agrees to pay Vendor:
+- Monthly retainer fee: $15,000
+- Additional services: $200 per hour
+- Payment terms: Net 30 days
+
+4. INTELLECTUAL PROPERTY
+All work product and deliverables created by Vendor under this Agreement shall be the exclusive property of Client upon full payment.
+
+5. CONFIDENTIALITY
+Both parties agree to maintain the confidentiality of all proprietary and confidential information disclosed during the term of this Agreement.
+
+6. TERMINATION
+Either party may terminate this Agreement with thirty (30) days written notice to the other party.
+
+7. LIABILITY
+Vendor's total liability under this Agreement shall not exceed the total fees paid by Client in the twelve (12) months preceding the claim.
+
+8. GOVERNING LAW
+This Agreement shall be governed by and construed in accordance with the laws of the State of California.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.
+
+ACME Corporation                    Tech Solutions Inc.
+By: John Smith                      By: Sarah Johnson
+Title: CEO                          Title: President
+Date: December 5, 2025             Date: December 5, 2025

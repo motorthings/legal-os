@@ -1,0 +1,79 @@
+{
+  "fixture": {
+    "id": "synth-015",
+    "description": "Healthcare fraud investigation \u2014 DOJ, qui tam, criminal exposure, maximum sensitivity",
+    "matter_summary": "EMERGENCY: Federal prosecutors in the Eastern District of New York unsealed a qui tam complaint this morning against our prospective client Premier Healthcare Systems (hospital network, 12 hospitals, New York/New Jersey, $3.8B revenue). The relator is a former VP of Revenue Cycle Management who alleges systematic upcoding of Medicare claims ($40M-$70M estimated overbilling) and kickback arrangements with three medical device suppliers between 2021-2024. The government has intervened. Search warrants were executed at Premier's headquarters and two hospitals simultaneously this morning \u2014 office sealed, documents seized. The former VP/relator wore a wire for 9 months. Premier's board fired the CEO and CFO by noon. They contacted us at 2pm. We need: (1) immediate crisis response \u2014 defense team, document preservation coordination despite seizure, (2) parallel DOJ criminal and HHS-OIG civil negotiation strategies, (3) internal investigation scoping alongside government timeline, (4) board governance and disclosure counsel (publicly traded, NASDAQ: PHCS, trading halted pending news), (5) PR/crisis communications. This is a bet-the-company matter. We have never represented Premier before. Full conflicts check required \u2014 we must verify we don't represent any of the three device suppliers named in the complaint. The board chair asked: 'Can you start tonight?'"
+  },
+  "result": {
+    "overall_score": 70,
+    "overall_risk_level": "low",
+    "practice_area": {
+      "practice_area": "White Collar & Investigations",
+      "confidence": 100,
+      "reasoning": "The matter is a textbook white collar criminal defense and government investigations case: federal qui tam complaint, government intervention, search warrants, wire-wearing informant, parallel DOJ criminal and HHS-OIG civil proceedings, and urgent crisis response. The router's classification is correct and no cross-practice elements are needed; however, the matter also implicates healthcare regulatory compliance (False Claims Act, Anti-Kickback Statute) and securities law (board governance, trading halt), but these are subsumed within the white collar framework."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 95,
+      "reasoning": "Action required within hours: search warrants executed this morning, office sealed, documents seized, CEO and CFO fired, trading halted, client contacted at 2pm and needs response tonight. Financial exposure is $40M-$70M in alleged overbilling, but the bet-the-company nature and reputational risk to the firm (high-profile, publicly traded client) elevate risk. Regulatory exposure includes potential criminal charges, civil False Claims Act penalties, and SEC disclosure obligations. Client relationship risk is high as a new client in crisis."
+    },
+    "conflict_check": {
+      "entity_name": "Premier Healthcare Systems",
+      "conflict_type": "direct_adverse",
+      "detail": "Direct adverse parties include the United States (DOJ, EDNY) and the relator (former VP). The three medical device suppliers named in the complaint must be checked against firm's client database to ensure no current representation. Additionally, any prior representation of Premier Healthcare Systems or its affiliates (12 hospitals, NY/NJ) must be verified. Business conflicts may arise if the firm represents competitors in the hospital or healthcare sector in the region. The firm has never represented Premier before, so no prior representation conflict, but full conflicts check is critical."
+    },
+    "staffing": {
+      "recommended_role": "Partner (White Collar/Investigations) + Senior Associate + Associate + Paralegal",
+      "estimated_hours": 500,
+      "reasoning": "Given the bet-the-company nature, immediate crisis response, and parallel criminal/civil proceedings, a partner with deep white collar and healthcare fraud experience is essential. A senior associate to manage document preservation and internal investigation scoping, an associate for research and drafting, and a paralegal for document management. Estimated hours reflect initial 30-day intensive phase (crisis response, document preservation, government negotiations, internal investigation kickoff)."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing: exact names of the three medical device suppliers (needed for conflict check)",
+        "Missing: specific court docket number or case name for the qui tam complaint",
+        "Missing: contact information for the board chair or general counsel",
+        "Missing: details on any prior counsel or existing legal team",
+        "Missing: insurance coverage information (D&O, E&O)",
+        "Missing: budget or fee arrangement expectations"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 98,
+        "weight": 0.25,
+        "reasoning": "The matter is a textbook white collar criminal defense and government investigations case: federal qui tam complaint, government intervention, search warrants, wire-wearing informant, parallel DOJ criminal and HHS-OIG civil proceedings, and urgent crisis response. The router's classification is correct and no cross-practice elements are needed; however, the matter also implicates healthcare regulatory compliance (False Claims Act, Anti-Kickback Statute) and securities law (board governance, trading halt), but these are subsumed within the white collar framework."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 5,
+        "weight": 0.25,
+        "reasoning": "Action required within hours: search warrants executed this morning, office sealed, documents seized, CEO and CFO fired, trading halted, client contacted at 2pm and needs response tonight. Financial exposure is $40M-$70M in alleged overbilling, but the bet-the-company nature and reputational risk to the firm (high-profile, publicly traded client) elevate risk. Regulatory exposure includes potential criminal charges, civil False Claims Act penalties, and SEC disclosure obligations. Client relationship risk is high as a new client in crisis."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 90,
+        "weight": 0.2,
+        "reasoning": "Direct adverse parties include the United States (DOJ, EDNY) and the relator (former VP). The three medical device suppliers named in the complaint must be checked against firm's client database to ensure no current representation. Additionally, any prior representation of Premier Healthcare Systems or its affiliates (12 hospitals, NY/NJ) must be verified. Business conflicts may arise if the firm represents competitors in the hospital or healthcare sector in the region. The firm has never represented Premier before, so no prior representation conflict, but full conflicts check is critical."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "Given the bet-the-company nature, immediate crisis response, and parallel criminal/civil proceedings, a partner with deep white collar and healthcare fraud experience is essential. A senior associate to manage document preservation and internal investigation scoping, an associate for research and drafting, and a paralegal for document management. Estimated hours reflect initial 30-day intensive phase (crisis response, document preservation, government negotiations, internal investigation kickoff)."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing: exact names of the three medical device suppliers (needed for conflict check); Missing: specific court docket number or case name for the qui tam complaint; Missing: contact information for the board chair or general counsel; Missing: details on any prior counsel or existing legal team; Missing: insurance coverage information (D&O, E&O); Missing: budget or fee arrangement expectations"
+      }
+    ],
+    "processing_time_ms": 12131,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 12.14
+}

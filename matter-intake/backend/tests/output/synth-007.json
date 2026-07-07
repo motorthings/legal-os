@@ -1,0 +1,76 @@
+{
+  "fixture": {
+    "id": "synth-007",
+    "description": "Routine real estate transaction \u2014 low risk, long timeline, straightforward",
+    "matter_summary": "Westside Commercial Properties LLC, a repeat client, is acquiring a Class B office building at 450 Commerce Drive, Denver, CO, for $12.4M. Standard commercial real estate transaction. The property is currently owned by an institutional investor (KBS Real Estate Investment Trust). Buyer is securing financing through Wells Fargo with a standard 65% LTV commercial mortgage. We need: purchase agreement review, title examination, environmental Phase I review coordination, and closing. No litigation or disputes. Timeline: 90-day due diligence period, target closing in 120 days. This is the client's fourth acquisition with us this year \u2014 they're building a Denver office portfolio."
+  },
+  "result": {
+    "overall_score": 84,
+    "overall_risk_level": "low",
+    "practice_area": {
+      "practice_area": "Real Estate",
+      "confidence": 95,
+      "reasoning": "The matter is a straightforward commercial real estate acquisition. The router's classification is correct. There are no cross-practice elements such as litigation, regulatory, or tax issues indicated."
+    },
+    "urgency_risk": {
+      "urgency_level": "routine",
+      "risk_level": "low",
+      "risk_score": 15,
+      "reasoning": "The 90-day due diligence and 120-day closing timeline indicate a routine matter. No regulatory deadlines, litigation, or disputes. Financial exposure is moderate ($12.4M) but standard for a commercial acquisition. Reputational risk is low given the repeat client and standard transaction. Client relationship risk is low as this is the fourth acquisition with the firm this year."
+    },
+    "conflict_check": {
+      "entity_name": "KBS Real Estate Investment Trust",
+      "conflict_type": "none_identified",
+      "detail": "The adverse party is KBS Real Estate Investment Trust, an institutional investor. No conflicts are apparent from the summary. The firm should confirm no prior representation of KBS or its affiliates in a manner that would create a conflict. The buyer, Westside Commercial Properties LLC, is a repeat client, so no conflict with the buyer is expected."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Mid-Level Associate",
+      "estimated_hours": 80,
+      "reasoning": "Given the standard nature of the transaction, the repeat client, and the moderate value, a partner to oversee and a mid-level associate to handle document review, title examination coordination, and closing tasks is appropriate. Estimated hours based on typical commercial acquisition of this size and complexity."
+    },
+    "data_integrity": {
+      "completeness": 90,
+      "clarity": 95,
+      "issues": [
+        "Missing specific contact information for the client representative",
+        "No mention of whether environmental Phase I has been ordered or if a specific vendor is preferred",
+        "No detail on whether the title company has been selected"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter is a straightforward commercial real estate acquisition. The router's classification is correct. There are no cross-practice elements such as litigation, regulatory, or tax issues indicated."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 85,
+        "weight": 0.25,
+        "reasoning": "The 90-day due diligence and 120-day closing timeline indicate a routine matter. No regulatory deadlines, litigation, or disputes. Financial exposure is moderate ($12.4M) but standard for a commercial acquisition. Reputational risk is low given the repeat client and standard transaction. Client relationship risk is low as this is the fourth acquisition with the firm this year."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 60,
+        "weight": 0.2,
+        "reasoning": "The adverse party is KBS Real Estate Investment Trust, an institutional investor. No conflicts are apparent from the summary. The firm should confirm no prior representation of KBS or its affiliates in a manner that would create a conflict. The buyer, Westside Commercial Properties LLC, is a repeat client, so no conflict with the buyer is expected."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "Given the standard nature of the transaction, the repeat client, and the moderate value, a partner to oversee and a mid-level associate to handle document review, title examination coordination, and closing tasks is appropriate. Estimated hours based on typical commercial acquisition of this size and complexity."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 92,
+        "weight": 0.15,
+        "reasoning": "Missing specific contact information for the client representative; No mention of whether environmental Phase I has been ordered or if a specific vendor is preferred; No detail on whether the title company has been selected"
+      }
+    ],
+    "processing_time_ms": 7661,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 7.67
+}

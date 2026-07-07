@@ -1,0 +1,76 @@
+{
+  "fixture": {
+    "id": "synth-001",
+    "description": "Clear corporate M&A with direct adverse conflict \u2014 should classify high confidence, identify conflict, medium-high risk",
+    "matter_summary": "Acme Corporation, a publicly traded semiconductor manufacturer based in Austin, TX, proposes to acquire TargetCo Inc., a privately held chip design firm in San Jose, CA, for approximately $340M in a mix of cash and stock. The deal is expected to close within 90 days. TargetCo's primary competitor is Intel. We need full due diligence on IP portfolio, employment agreements for 47 engineers, and regulatory review for CFIUS implications. TargetCo is currently in litigation with Nvidia over three chip patent disputes in the Northern District of California. Acme is an existing client of the firm; TargetCo is a new entity. The engagement letter needs to be executed by Thursday to meet the exclusivity deadline."
+  },
+  "result": {
+    "overall_score": 68,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "Corporate M&A",
+      "confidence": 95,
+      "reasoning": "The matter is primarily a corporate acquisition with clear M&A signals: purchase price, mix of cash and stock, due diligence, and engagement letter deadline. While IP, employment, and regulatory issues are present, they are ancillary to the core transaction."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 85,
+      "reasoning": "The engagement letter must be executed by Thursday to meet the exclusivity deadline, indicating immediate action required. The $340M deal size and CFIUS implications present high financial and regulatory risk. The ongoing litigation with Nvidia adds complexity and potential reputational risk. The 90-day close timeline is short-term but the immediate deadline for the engagement letter drives the urgency level to immediate."
+    },
+    "conflict_check": {
+      "entity_name": "Intel",
+      "conflict_type": "business_conflict",
+      "detail": "TargetCo's primary competitor is Intel, which may be a current or former client of the firm. Additionally, TargetCo is in litigation with Nvidia, which could be an adverse party. Acme is an existing client, so a conflict check must ensure no adverse representation against Acme or TargetCo. The firm should also check for any prior representations of TargetCo or its competitors that could create business conflicts."
+    },
+    "staffing": {
+      "recommended_role": "Corporate M&A Partner + Senior Associate + IP Associate + Employment Associate + CFIUS Specialist",
+      "estimated_hours": 600,
+      "reasoning": "The matter involves a $340M acquisition with complex due diligence across IP, employment, and regulatory (CFIUS) areas. The partner is needed for strategic oversight and client relationship management. A senior associate can handle day-to-day M&A tasks. Specialized associates are required for IP portfolio review, employment agreements, and CFIUS analysis. The 90-day timeline and immediate engagement letter deadline necessitate a dedicated team."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing specific details on the IP portfolio (e.g., number of patents, key technologies)",
+        "No information on the structure of the cash and stock mix",
+        "Unclear whether the litigation with Nvidia is a material risk that could affect the deal"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter is primarily a corporate acquisition with clear M&A signals: purchase price, mix of cash and stock, due diligence, and engagement letter deadline. While IP, employment, and regulatory issues are present, they are ancillary to the core transaction."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 15,
+        "weight": 0.25,
+        "reasoning": "The engagement letter must be executed by Thursday to meet the exclusivity deadline, indicating immediate action required. The $340M deal size and CFIUS implications present high financial and regulatory risk. The ongoing litigation with Nvidia adds complexity and potential reputational risk. The 90-day close timeline is short-term but the immediate deadline for the engagement letter drives the urgency level to immediate."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "TargetCo's primary competitor is Intel, which may be a current or former client of the firm. Additionally, TargetCo is in litigation with Nvidia, which could be an adverse party. Acme is an existing client, so a conflict check must ensure no adverse representation against Acme or TargetCo. The firm should also check for any prior representations of TargetCo or its competitors that could create business conflicts."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter involves a $340M acquisition with complex due diligence across IP, employment, and regulatory (CFIUS) areas. The partner is needed for strategic oversight and client relationship management. A senior associate can handle day-to-day M&A tasks. Specialized associates are required for IP portfolio review, employment agreements, and CFIUS analysis. The 90-day timeline and immediate engagement letter deadline necessitate a dedicated team."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing specific details on the IP portfolio (e.g., number of patents, key technologies); No information on the structure of the cash and stock mix; Unclear whether the litigation with Nvidia is a material risk that could affect the deal"
+      }
+    ],
+    "processing_time_ms": 10007,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 10.02
+}

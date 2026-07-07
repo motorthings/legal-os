@@ -1,0 +1,77 @@
+{
+  "fixture": {
+    "id": "synth-011",
+    "description": "Bankruptcy/restructuring \u2014 multiple creditor classes, distressed timeline, conflict complexity",
+    "matter_summary": "Midwest Steel Processing Inc. (Toledo, OH, $420M annual revenue, 1,200 employees) is considering a Chapter 11 restructuring filing. They have $180M in secured debt with a syndicate led by Bank of America, $65M in unsecured trade debt to approximately 400 suppliers, and $40M in underfunded pension obligations to the United Steelworkers. Operations are cash-flow negative ($4M/month burn). The company has received a non-binding offer from a private equity firm (SteelRiver Capital) for a stalking horse asset purchase, but the union is threatening to oppose. Key suppliers have begun demanding cash-on-delivery terms. We need: (1) restructuring strategy options within 2 weeks, (2) DIP financing negotiations, (3) union/labor negotiations strategy, (4) potential 363 sale preparation. Client is a new relationship \u2014 we have no prior conflicts in steel manufacturing, but we do represent Bank of America in unrelated commercial lending matters, which needs a waiver analysis."
+  },
+  "result": {
+    "overall_score": 67,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "Bankruptcy & Restructuring",
+      "confidence": 95,
+      "reasoning": "The matter explicitly involves Chapter 11 restructuring, DIP financing, 363 sale preparation, and management of secured/unsecured debt and pension obligations. The router's classification is correct, though there are cross-practice elements in labor negotiations (union opposition) and potential litigation if the union challenges the process."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 90,
+      "reasoning": "The company is cash-flow negative at $4M/month burn, suppliers are demanding cash-on-delivery, and restructuring strategy options are needed within 2 weeks. Financial exposure is high ($180M secured debt, $65M unsecured trade debt, $40M pension obligations). Reputational risk to the firm is significant given the new client relationship and potential conflict with Bank of America. Union opposition adds litigation risk."
+    },
+    "conflict_check": {
+      "entity_name": "Bank of America",
+      "conflict_type": "business_conflict",
+      "detail": "The firm represents Bank of America in unrelated commercial lending matters. Bank of America is the lead lender in the syndicate holding $180M in secured debt. This creates a business conflict that requires a waiver analysis. No direct adverse parties are named in the summary, but the union (United Steelworkers) and suppliers could become adverse in litigation. No prior representations in steel manufacturing were identified."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate + Junior Associate",
+      "estimated_hours": 400,
+      "reasoning": "The matter is complex, involving restructuring strategy, DIP financing, labor negotiations, and 363 sale preparation. Partner oversight is essential for strategy and client management. A senior associate can handle DIP financing and sale preparation, while a junior associate can assist with document review and due diligence. The 2-week timeline for strategy options requires immediate staffing."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing specific court deadlines or hearing dates",
+        "Unclear whether the stalking horse offer includes a breakup fee or other protections",
+        "No details on the union's specific objections or legal basis for opposition",
+        "Missing information on the company's cash position and assets"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter explicitly involves Chapter 11 restructuring, DIP financing, 363 sale preparation, and management of secured/unsecured debt and pension obligations. The router's classification is correct, though there are cross-practice elements in labor negotiations (union opposition) and potential litigation if the union challenges the process."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 10,
+        "weight": 0.25,
+        "reasoning": "The company is cash-flow negative at $4M/month burn, suppliers are demanding cash-on-delivery, and restructuring strategy options are needed within 2 weeks. Financial exposure is high ($180M secured debt, $65M unsecured trade debt, $40M pension obligations). Reputational risk to the firm is significant given the new client relationship and potential conflict with Bank of America. Union opposition adds litigation risk."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "The firm represents Bank of America in unrelated commercial lending matters. Bank of America is the lead lender in the syndicate holding $180M in secured debt. This creates a business conflict that requires a waiver analysis. No direct adverse parties are named in the summary, but the union (United Steelworkers) and suppliers could become adverse in litigation. No prior representations in steel manufacturing were identified."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is complex, involving restructuring strategy, DIP financing, labor negotiations, and 363 sale preparation. Partner oversight is essential for strategy and client management. A senior associate can handle DIP financing and sale preparation, while a junior associate can assist with document review and due diligence. The 2-week timeline for strategy options requires immediate staffing."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing specific court deadlines or hearing dates; Unclear whether the stalking horse offer includes a breakup fee or other protections; No details on the union's specific objections or legal basis for opposition; Missing information on the company's cash position and assets"
+      }
+    ],
+    "processing_time_ms": 8387,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 8.39
+}

@@ -1,0 +1,78 @@
+{
+  "fixture": {
+    "id": "synth-006",
+    "description": "Regulatory investigation with immediate urgency \u2014 DOJ/CID, existing client, maximum risk",
+    "matter_summary": "CRITICAL: Our long-standing client Apex Financial Services (Fortune 500 investment bank, $12B annual revenue) received a Civil Investigative Demand from the DOJ Antitrust Division this morning regarding their bond trading desk operations from 2022-2025. The CID requests trading records, internal communications, and executive calendars for 14 named individuals including 3 current Managing Directors. DOJ is coordinating with the SEC and the UK Financial Conduct Authority. Apex's General Counsel needs an immediate response team: (1) document preservation and litigation hold, (2) preliminary CID response strategy, (3) internal investigation scoping, (4) PR/crisis communications coordination. The CID response is due in 30 days but the document hold must be in place within 48 hours. This is the firm's largest client relationship \u2014 approximately $45M annually."
+  },
+  "result": {
+    "overall_score": 63,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "White Collar & Investigations",
+      "confidence": 98,
+      "reasoning": "The matter involves a DOJ Civil Investigative Demand targeting potential antitrust violations in bond trading, requiring immediate internal investigation, document preservation, and response strategy. This is a classic white collar government investigation with parallel regulatory coordination. The cross-border element (UK FCA) and parallel SEC coordination confirm this classification. While there are antitrust elements, the primary nature is a government investigation response."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 95,
+      "reasoning": "Action required within 48 hours for document hold; CID response due in 30 days. Financial exposure is massive given $12B revenue client and $45M annual firm revenue. Reputational risk to both client and firm is extreme. Multiple regulators (DOJ, SEC, FCA) increase complexity and risk. Client relationship is critical \u2014 largest client at $45M annually."
+    },
+    "conflict_check": {
+      "entity_name": "Apex Financial Services",
+      "conflict_type": "none_identified",
+      "detail": "No adverse parties named in the CID summary. Apex Financial Services is a long-standing client, so no direct adverse conflict. However, a full conflict check should be run against the 14 named individuals and any counterparties in bond trading that may be adverse. Also check for any prior representations of competitors in the investment banking sector that could create business conflicts."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate + Junior Associate + Paralegal",
+      "estimated_hours": 500,
+      "reasoning": "Matter complexity is high due to multi-regulator coordination, large document volume, and tight deadlines. Partner oversight essential for client relationship and strategy. Senior associate for CID response drafting and internal investigation. Junior associate for document review and litigation hold. Paralegal for document preservation logistics. Estimated 500 hours over first 30 days given intensity."
+    },
+    "data_integrity": {
+      "completeness": 85,
+      "clarity": 90,
+      "issues": [
+        "Missing specific CID scope (what exact documents/communications requested)",
+        "No detail on which bond trading desks or products are under scrutiny",
+        "No information on whether any prior investigations or whistleblower complaints exist",
+        "No mention of budget or fee arrangement for this matter",
+        "No detail on UK FCA coordination status or any UK-specific deadlines"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter involves a DOJ Civil Investigative Demand targeting potential antitrust violations in bond trading, requiring immediate internal investigation, document preservation, and response strategy. This is a classic white collar government investigation with parallel regulatory coordination. The cross-border element (UK FCA) and parallel SEC coordination confirm this classification. While there are antitrust elements, the primary nature is a government investigation response."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 5,
+        "weight": 0.25,
+        "reasoning": "Action required within 48 hours for document hold; CID response due in 30 days. Financial exposure is massive given $12B revenue client and $45M annual firm revenue. Reputational risk to both client and firm is extreme. Multiple regulators (DOJ, SEC, FCA) increase complexity and risk. Client relationship is critical \u2014 largest client at $45M annually."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 60,
+        "weight": 0.2,
+        "reasoning": "No adverse parties named in the CID summary. Apex Financial Services is a long-standing client, so no direct adverse conflict. However, a full conflict check should be run against the 14 named individuals and any counterparties in bond trading that may be adverse. Also check for any prior representations of competitors in the investment banking sector that could create business conflicts."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "Matter complexity is high due to multi-regulator coordination, large document volume, and tight deadlines. Partner oversight essential for client relationship and strategy. Senior associate for CID response drafting and internal investigation. Junior associate for document review and litigation hold. Paralegal for document preservation logistics. Estimated 500 hours over first 30 days given intensity."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 87,
+        "weight": 0.15,
+        "reasoning": "Missing specific CID scope (what exact documents/communications requested); No detail on which bond trading desks or products are under scrutiny; No information on whether any prior investigations or whistleblower complaints exist; No mention of budget or fee arrangement for this matter; No detail on UK FCA coordination status or any UK-specific deadlines"
+      }
+    ],
+    "processing_time_ms": 10127,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 10.13
+}

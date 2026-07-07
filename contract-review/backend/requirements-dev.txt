@@ -1,0 +1,22 @@
+# Development dependencies
+# Install with: pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# Code formatting
+black==23.11.0
+isort==5.12.0
+
+# Linting
+ruff==0.1.6
+flake8==6.1.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.1  # For TestClient
+
+# Type checking
+mypy==1.7.1
+types-python-jose==3.3.4

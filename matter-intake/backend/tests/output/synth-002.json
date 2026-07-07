@@ -1,0 +1,81 @@
+{
+  "fixture": {
+    "id": "synth-002",
+    "description": "Vague litigation intake with minimal detail \u2014 should score low on data integrity, medium-low confidence",
+    "matter_summary": "We got sued. Something about a contract dispute. They filed in state court somewhere in the Midwest. Their lawyers sent a complaint but we haven't really read it yet. We think the damages might be significant but we're not sure. Need someone to look at this ASAP."
+  },
+  "result": {
+    "overall_score": 54,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "Commercial Litigation",
+      "confidence": 90,
+      "reasoning": "The router's classification of 'Litigation' is correct but broad. The matter is a contract dispute filed in state court, which falls squarely within Commercial Litigation. No cross-practice elements are evident from the summary."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 85,
+      "reasoning": "The client states 'ASAP' and has not yet read the complaint, indicating a pending response deadline (typically 20-30 days in state court). Financial exposure is unknown but described as 'significant.' Reputational risk is moderate as the client is being sued. The lack of action to date increases risk of default or adverse judgment."
+    },
+    "conflict_check": {
+      "entity_name": null,
+      "conflict_type": "none_identified",
+      "detail": "No adverse party, client, or specific industry is named in the summary. Without identifying information, no direct adverse or business conflicts can be identified. A full conflict check will require client and counterparty names."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Mid-Level Associate",
+      "estimated_hours": 40,
+      "reasoning": "The matter is urgent and involves potentially significant damages, requiring partner oversight for strategy and client management. A mid-level associate can handle initial document review, research, and drafting. Estimated 40 hours for initial response and case assessment."
+    },
+    "data_integrity": {
+      "completeness": 20,
+      "clarity": 30,
+      "issues": [
+        "Client identity not provided",
+        "Counterparty/adverse party not named",
+        "Specific jurisdiction/state not identified",
+        "No details on contract or dispute nature",
+        "Damages amount not specified",
+        "Complaint not reviewed or summarized",
+        "No court name or case number",
+        "No deadline or response date mentioned"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 85,
+        "weight": 0.25,
+        "reasoning": "The router's classification of 'Litigation' is correct but broad. The matter is a contract dispute filed in state court, which falls squarely within Commercial Litigation. No cross-practice elements are evident from the summary."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 15,
+        "weight": 0.25,
+        "reasoning": "The client states 'ASAP' and has not yet read the complaint, indicating a pending response deadline (typically 20-30 days in state court). Financial exposure is unknown but described as 'significant.' Reputational risk is moderate as the client is being sued. The lack of action to date increases risk of default or adverse judgment."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 60,
+        "weight": 0.2,
+        "reasoning": "No adverse party, client, or specific industry is named in the summary. Without identifying information, no direct adverse or business conflicts can be identified. A full conflict check will require client and counterparty names."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter is urgent and involves potentially significant damages, requiring partner oversight for strategy and client management. A mid-level associate can handle initial document review, research, and drafting. Estimated 40 hours for initial response and case assessment."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 25,
+        "weight": 0.15,
+        "reasoning": "Client identity not provided; Counterparty/adverse party not named; Specific jurisdiction/state not identified; No details on contract or dispute nature; Damages amount not specified; Complaint not reviewed or summarized; No court name or case number; No deadline or response date mentioned"
+      }
+    ],
+    "processing_time_ms": 7831,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 7.83
+}

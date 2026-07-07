@@ -1,0 +1,7 @@
+Charlie's Functions:
+============================================================
+1. Conceptual_Modeler
+2. Independence_Identifier
+3. Report_Builder
+4. Signal_Analyzer
+5. Meeting_Optimizer

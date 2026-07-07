@@ -1,0 +1,77 @@
+{
+  "fixture": {
+    "id": "synth-005",
+    "description": "Employment class action \u2014 clear practice area, high exposure, business conflict with existing client",
+    "matter_summary": "A group of 340 current and former warehouse employees filed a class action against RapidShip Logistics (prospective client, $2.4B revenue, headquartered in Chicago) alleging systematic wage and hour violations under FLSA and Illinois state law. Allegations include: off-the-clock work, missed meal breaks, unpaid overtime spanning a 3-year period, and misclassification of shift supervisors as exempt. Estimated class damages: $85M-$120M not including penalties. RapidShip's primary competitor, FastFleet Delivery, is an existing firm client \u2014 we handle their commercial contracts. We need a conflicts check before the engagement meeting on Friday. RapidShip wants a litigation strategy memo within 10 business days."
+  },
+  "result": {
+    "overall_score": 68,
+    "overall_risk_level": "medium",
+    "practice_area": {
+      "practice_area": "Labor & Employment",
+      "confidence": 95,
+      "reasoning": "The matter squarely involves a class action alleging FLSA and state wage and hour violations, including off-the-clock work, missed meal breaks, unpaid overtime, and misclassification. These are core Labor & Employment issues. The router's classification is correct, with no significant cross-practice elements beyond potential class action procedural expertise."
+    },
+    "urgency_risk": {
+      "urgency_level": "immediate",
+      "risk_level": "high",
+      "risk_score": 85,
+      "reasoning": "Urgency is immediate due to the engagement meeting on Friday (within days) and the requirement for a litigation strategy memo within 10 business days. Risk is high due to estimated class damages of $85M-$120M, significant financial exposure for a $2.4B revenue client, potential reputational risk from a high-profile wage and hour class action, and the need to manage a new client relationship under time pressure."
+    },
+    "conflict_check": {
+      "entity_name": "FastFleet Delivery",
+      "conflict_type": "business_conflict",
+      "detail": "RapidShip Logistics is a prospective client, but its primary competitor, FastFleet Delivery, is an existing firm client for whom we handle commercial contracts. This creates a business conflict concern, as representing RapidShip in litigation against its competitor could impact our relationship with FastFleet. No direct adverse parties are named in the summary, but the competitive dynamic requires careful ethical screening and potential waiver discussions."
+    },
+    "staffing": {
+      "recommended_role": "Partner + Senior Associate + Junior Associate",
+      "estimated_hours": 400,
+      "reasoning": "The matter involves a high-stakes class action with complex FLSA and state law claims, requiring partner oversight for strategy and client management. A senior associate is needed for class action procedural work and discovery, and a junior associate for document review and research. Estimated hours reflect initial strategy memo, case assessment, and early motion work within the 10-day timeline."
+    },
+    "data_integrity": {
+      "completeness": 75,
+      "clarity": 90,
+      "issues": [
+        "Missing specific court or venue information",
+        "No details on prior litigation history or settlement attempts",
+        "Unclear if any regulatory agency (e.g., DOL) is involved",
+        "No information on RapidShip's current legal counsel or in-house team"
+      ]
+    },
+    "dimension_scores": [
+      {
+        "dimension_name": "Practice Area Classification",
+        "score": 95,
+        "weight": 0.25,
+        "reasoning": "The matter squarely involves a class action alleging FLSA and state wage and hour violations, including off-the-clock work, missed meal breaks, unpaid overtime, and misclassification. These are core Labor & Employment issues. The router's classification is correct, with no significant cross-practice elements beyond potential class action procedural expertise."
+      },
+      {
+        "dimension_name": "Urgency & Risk Assessment",
+        "score": 15,
+        "weight": 0.25,
+        "reasoning": "Urgency is immediate due to the engagement meeting on Friday (within days) and the requirement for a litigation strategy memo within 10 business days. Risk is high due to estimated class damages of $85M-$120M, significant financial exposure for a $2.4B revenue client, potential reputational risk from a high-profile wage and hour class action, and the need to manage a new client relationship under time pressure."
+      },
+      {
+        "dimension_name": "Conflict Check Completeness",
+        "score": 75,
+        "weight": 0.2,
+        "reasoning": "RapidShip Logistics is a prospective client, but its primary competitor, FastFleet Delivery, is an existing firm client for whom we handle commercial contracts. This creates a business conflict concern, as representing RapidShip in litigation against its competitor could impact our relationship with FastFleet. No direct adverse parties are named in the summary, but the competitive dynamic requires careful ethical screening and potential waiver discussions."
+      },
+      {
+        "dimension_name": "Staffing Recommendation Quality",
+        "score": 85,
+        "weight": 0.15,
+        "reasoning": "The matter involves a high-stakes class action with complex FLSA and state law claims, requiring partner oversight for strategy and client management. A senior associate is needed for class action procedural work and discovery, and a junior associate for document review and research. Estimated hours reflect initial strategy memo, case assessment, and early motion work within the 10-day timeline."
+      },
+      {
+        "dimension_name": "Data Integrity",
+        "score": 82,
+        "weight": 0.15,
+        "reasoning": "Missing specific court or venue information; No details on prior litigation history or settlement attempts; Unclear if any regulatory agency (e.g., DOL) is involved; No information on RapidShip's current legal counsel or in-house team"
+      }
+    ],
+    "processing_time_ms": 9969,
+    "model_used": "deepseek-chat / deepseek-chat"
+  },
+  "elapsed_seconds": 9.97
+}

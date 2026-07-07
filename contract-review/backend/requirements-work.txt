@@ -1,0 +1,53 @@
+# Core FastAPI dependencies
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic>=2.11.7,<3.0.0
+email-validator>=2.0.0
+
+# External APIs
+python-dotenv==1.0.0
+supabase==2.24.0
+anthropic==0.60.0
+voyageai==0.2.1
+httpx==0.27.0
+
+# Email notifications (optional - graceful degradation if not installed)
+resend>=0.6.0
+
+# File uploads
+python-multipart==0.0.6
+python-docx>=1.1.0
+openpyxl>=3.1.0
+python-pptx>=0.6.21
+pypdf>=3.0.0
+pdfplumber>=0.11.0
+
+# PDF generation
+reportlab>=4.0.7
+
+# Authentication
+python-jose[cryptography]==3.3.0
+
+# Google Drive Integration
+llama-index-core>=0.11.0
+llama-index-readers-google>=0.2.0
+google-auth>=2.25.0
+google-auth-oauthlib>=1.1.0
+google-auth-httplib2>=0.2.0
+cryptography>=41.0.7
+
+# Notion Integration
+llama-index-readers-notion>=0.2.0
+
+# Rate limiting
+slowapi==0.1.9
+
+# Background job scheduling
+apscheduler>=3.10.4
+
+# Caching (optional - graceful fallback if not available)
+redis>=5.0.0
+
+# Task Queue
+celery[redis]>=5.3.0
+flower>=2.0.0
