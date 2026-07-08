@@ -21,6 +21,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks
 
 from app.database import get_supabase
+from app.auth import get_current_user, User
 from app.models.due_diligence import (
     DDProject,
     DDProjectCreate,
@@ -112,14 +113,17 @@ def _get_function_id() -> str:
 # ---------------------------------------------------------------------------
 
 @router.post("/projects", response_model=DDProject, status_code=201)
-async def create_project(project: DDProjectCreate):
+async def create_project(project: DDProjectCreate, user: User = Depends(get_current_user)):
     """Create a new due diligence deal project with target standards."""
+    if not user.client_id:
+        raise HTTPException(status_code=400, detail="User has no client association")
+
     supabase = get_supabase()
     function_id = _get_function_id()
 
-    # Insert project
+    # Insert project — client_id and practice_group_id from user context
     project_data = {
-        "client_id": str(project.client_id),
+        "client_id": str(user.client_id),
         "practice_group_id": str(project.practice_group_id),
         "matter_id": str(project.matter_id) if project.matter_id else None,
         "name": project.name,
@@ -127,8 +131,8 @@ async def create_project(project: DDProjectCreate):
         "deal_type": project.deal_type,
         "counterparty": project.counterparty,
         "jurisdiction": project.jurisdiction,
-        "created_by": str(project.created_by),
-        "assigned_to": str(project.created_by),
+        "created_by": str(user.id),
+        "assigned_to": str(user.id),
         "status": "draft",
     }
     result = supabase.table("dd_projects").insert(project_data).execute()
@@ -150,12 +154,12 @@ async def create_project(project: DDProjectCreate):
 
     # Audit
     audit.record(
-        client_id=project.client_id,
+        client_id=user.client_id,
         function_id=UUID(function_id),
         matter_id=project.matter_id,
         event_type="function_invocation",
         event_summary=f"Created DD project: {project.name}",
-        initiated_by=project.created_by,
+        initiated_by=user.id,
         model_used="system",
     )
 
@@ -232,10 +236,12 @@ async def get_project_report(project_id: UUID):
 async def upload_documents(
     project_id: UUID,
     files: list[UploadFile] = File(...),
-    client_id: UUID = Form(...),
-    initiated_by: UUID = Form(...),
+    user: User = Depends(get_current_user),
 ):
     """Upload one or more documents to a deal project."""
+    if not user.client_id:
+        raise HTTPException(status_code=400, detail="User has no client association")
+
     supabase = get_supabase()
     uploaded = []
 
@@ -256,7 +262,7 @@ async def upload_documents(
             supabase.table("dd_documents")
             .insert({
                 "project_id": str(project_id),
-                "client_id": str(client_id),
+                "client_id": str(user.client_id),
                 "filename": file.filename,
                 "file_size_bytes": file_size,
                 "file_type": file.filename.split(".")[-1].lower(),
@@ -282,7 +288,7 @@ async def upload_documents(
 
 
 @router.post("/projects/{project_id}/analyze", response_model=DDAnalyzeResponse)
-async def analyze_project(project_id: UUID, request: DDAnalyzeRequest, background_tasks: BackgroundTasks):
+async def analyze_project(project_id: UUID, user: User = Depends(get_current_user), background_tasks: BackgroundTasks = None):
     """Trigger background analysis of all pending documents in a project."""
     supabase = get_supabase()
 
@@ -308,7 +314,7 @@ async def analyze_project(project_id: UUID, request: DDAnalyzeRequest, backgroun
         background_tasks.add_task(
             process_dd_document,
             doc["id"],
-            str(request.initiated_by),
+            str(user.id),
         )
 
     return DDAnalyzeResponse(
@@ -344,7 +350,7 @@ async def get_deviation(deviation_id: UUID):
 
 
 @router.patch("/deviations/{deviation_id}")
-async def review_deviation(deviation_id: UUID, review: DeviationReviewUpdate):
+async def review_deviation(deviation_id: UUID, review: DeviationReviewUpdate, user: User = Depends(get_current_user)):
     """Attorney reviews a deviation and makes a decision."""
     supabase = get_supabase()
 
@@ -359,7 +365,7 @@ async def review_deviation(deviation_id: UUID, review: DeviationReviewUpdate):
         .update({
             "review_decision": review.review_decision,
             "review_notes": review.review_notes,
-            "reviewed_by": str(review.reviewed_by),
+            "reviewed_by": str(user.id),
             "reviewed_at": "now()",
         })
         .eq("id", str(deviation_id))
@@ -373,7 +379,7 @@ async def review_deviation(deviation_id: UUID, review: DeviationReviewUpdate):
         function_id=UUID(_get_function_id()),
         event_type="human_review",
         event_summary=f"Deviation {deviation_id} reviewed: {review.review_decision}",
-        initiated_by=review.reviewed_by,
+        initiated_by=user.id,
         model_used="human",
     )
 

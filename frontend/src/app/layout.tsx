@@ -3,6 +3,8 @@ import "./globals.css";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemeInit from "@/components/ThemeInit";
+import NavAuth from "@/components/NavAuth";
+import { AuthProvider } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Legal AI OS",
@@ -32,6 +34,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen pb-12">
+        <AuthProvider>
         <nav className="nav-blur sticky top-0 z-50 px-4 sm:px-8">
           <div className="max-w-6xl mx-auto py-3 flex items-center justify-between">
             <Link
@@ -47,12 +50,32 @@ export default function RootLayout({
               >
                 Due Diligence
               </Link>
+              <Link
+                href="/km"
+                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
+              >
+                KM
+              </Link>
+              <Link
+                href="/regulatory"
+                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
+              >
+                Regulatory
+              </Link>
+              <Link
+                href="/reporting"
+                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
+              >
+                Reports
+              </Link>
+              <NavAuth />
               <ThemeToggle />
             </div>
           </div>
         </nav>
         <ThemeInit />
         <main className="max-w-6xl mx-auto px-4 sm:px-8 pt-8">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

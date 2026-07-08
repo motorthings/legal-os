@@ -30,24 +30,32 @@ const FUNCTIONS = [
     name: "Due Diligence Accelerator",
     desc: "Bulk document ingestion, target standards, deviation-only reporting.",
     status: "roadmap",
+    href: "/due-diligence",
+    enabled: true,
   },
   {
     slug: "regulatory-monitor",
     name: "Regulatory Change Monitor",
     desc: "Poll regulatory sources, map changes to active matters by jurisdiction.",
     status: "roadmap",
+    href: "/regulatory",
+    enabled: true,
   },
   {
     slug: "km-intelligence",
     name: "KM & Precedent Intelligence",
     desc: "Semantic search across all firm documents with citations.",
     status: "roadmap",
+    href: "/km",
+    enabled: true,
   },
   {
     slug: "client-value-reporting",
     name: "Client Value Reporting",
     desc: "Per-client quarterly reports — time saved, risk, governance artifacts.",
     status: "roadmap",
+    href: "/reporting",
+    enabled: true,
   },
 ];
 
@@ -90,11 +98,9 @@ export default function Home() {
         {FUNCTIONS.map((fn) => (
           <Link
             key={fn.slug}
-            href={
-              fn.slug === "due-diligence" ? "/due-diligence" : `#${fn.slug}`
-            }
+            href={(fn as any).href || `#${fn.slug}`}
             className={`card p-5 no-underline ${
-              fn.slug === "due-diligence"
+              (fn as any).enabled
                 ? "hover:border-[var(--primary)]"
                 : "opacity-60 pointer-events-none"
             }`}

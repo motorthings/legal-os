@@ -83,4 +83,31 @@ except Exception:
     print("[WARN] due_diligence routes failed to load", file=sys.stderr, flush=True)
     traceback.print_exc(file=sys.stderr)
 
+try:
+    print("[legal-os] Loading reporting routes...", file=sys.stderr, flush=True)
+    from app.api.routes import reporting
+    app.include_router(reporting.router, prefix="/api/reporting", tags=["Client Value Reporting"])
+    print("[legal-os] reporting routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] reporting routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading regulatory routes...", file=sys.stderr, flush=True)
+    from app.api.routes import regulatory
+    app.include_router(regulatory.router, prefix="/api/regulatory", tags=["Regulatory Change Monitor"])
+    print("[legal-os] regulatory routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] regulatory routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading KM routes...", file=sys.stderr, flush=True)
+    from app.api.routes import km
+    app.include_router(km.router, prefix="/api/km", tags=["KM & Precedent Intelligence"])
+    print("[legal-os] KM routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] KM routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
 print("[legal-os] Ready", file=sys.stderr, flush=True)

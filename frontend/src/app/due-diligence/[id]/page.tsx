@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import FileUpload from "@/components/FileUpload";
 import {
   getProject,
   getDeviations,
@@ -11,6 +12,8 @@ import {
   DDDocument,
   DDDeviation,
 } from "@/lib/api";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -156,6 +159,81 @@ export default function ProjectDetailPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Upload + Analyze */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2">
+          <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4">
+            Upload Documents
+          </h2>
+          <FileUpload
+            projectId={id}
+            onUploadComplete={async () => {
+              const proj = await getProject(id);
+              setProject(proj);
+            }}
+          />
+        </div>
+        <div>
+          <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4">
+            Analysis
+          </h2>
+          <div className="card p-5">
+            <p className="text-sm text-[var(--text-dim)] mb-4">
+              Run AI analysis across all uploaded documents against target
+              standards. Each document is analyzed clause-by-clause.
+            </p>
+            <button
+              className="btn-primary w-full"
+              disabled={project.document_count === 0}
+              onClick={async () => {
+                try {
+                  const token = (() => {
+                    try {
+                      const stored = localStorage.getItem(
+                        "sb-rkiaocarugdbcgtonfuq-auth-token"
+                      );
+                      if (stored)
+                        return JSON.parse(stored).access_token || null;
+                    } catch {}
+                    return null;
+                  })();
+                  const res = await fetch(
+                    `${API_URL}/api/due-diligence/projects/${id}/analyze`,
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        ...(token
+                          ? { Authorization: `Bearer ${token}` }
+                          : {}),
+                      },
+                      body: JSON.stringify({ project_id: id }),
+                    }
+                  );
+                  if (!res.ok) throw new Error(await res.text());
+                  // Refresh after a moment to see results
+                  setTimeout(async () => {
+                    const [proj, devs] = await Promise.all([
+                      getProject(id),
+                      getDeviations(id).catch(() => ({
+                        deviations: [],
+                        summary: null,
+                      })),
+                    ]);
+                    setProject(proj);
+                    setDeviations(devs.deviations || []);
+                  }, 5000);
+                } catch (e: any) {
+                  setError(e.message);
+                }
+              }}
+            >
+              Analyze Documents
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Deviations */}

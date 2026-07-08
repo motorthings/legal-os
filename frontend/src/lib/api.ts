@@ -1,5 +1,34 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
+// Get Supabase access token from localStorage (set by Supabase SDK)
+function getAccessToken(): string | null {
+  try {
+    const stored = localStorage.getItem("sb-rkiaocarugdbcgtonfuq-auth-token");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed.access_token || null;
+    }
+  } catch {}
+  return null;
+}
+
+async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getAccessToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options?.headers as Record<string, string>),
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`API error: ${res.status} ${res.statusText} — ${body}`);
+  }
+  return res.json();
+}
+
 export interface DDProject {
   id: string;
   name: string;
@@ -35,16 +64,6 @@ export interface DDDeviation {
   review_notes?: string;
   confidence?: number;
 }
-
-async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    ...options,
-  });
-  if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
-  return res.json();
-}
-
 // Health
 export const getHealth = () => fetchAPI<{ status: string }>("/health");
 

@@ -4,11 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createProject } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 export default function NewProjectPage() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  if (loading) return null;
+  if (!user) {
+    router.push("/login");
+    return null;
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -18,13 +26,13 @@ export default function NewProjectPage() {
     const form = new FormData(e.currentTarget);
     try {
       const project = await createProject({
-        client_id: "00000000-0000-0000-0000-000000000001", // TODO: real client from auth
-        practice_group_id: "00000000-0000-0000-0000-000000000001", // TODO
+        client_id: user!.id, // Will be resolved server-side from JWT
+        practice_group_id: "00000000-0000-0000-0000-000000000001", // TODO: pick from user's groups
         name: form.get("name") as string,
         description: (form.get("description") as string) || undefined,
         deal_type: (form.get("deal_type") as string) || undefined,
         counterparty: (form.get("counterparty") as string) || undefined,
-        created_by: "00000000-0000-0000-0000-000000000001", // TODO
+        created_by: user!.id,
       });
       router.push(`/due-diligence/${project.id}`);
     } catch (e: any) {
