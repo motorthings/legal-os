@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Value Reporting — Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: #c8daea; --border-bright: #a0bedb;
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --rose: #e11d48; --violet: #7c3aed; --amber: #b45309;
+  }
+  .dark {
+    --bg: #0a1628; --surface: #132240; --surface2: #1a2d52;
+    --border: #1a2d52; --border-bright: #2d4570;
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --rose: #fb7185; --violet: #a78bfa; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 30% 10%, var(--metric-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, var(--primary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; line-height: 1.6; padding: 40px 20px;
+  }
+  .backlink {
+    position: fixed; top: 12px; left: 16px; z-index: 101;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface);
+  }
+  .backlink:hover { color: var(--text); border-color: var(--border-bright); }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); text-align: center; margin-bottom: 36px;
+  }
+
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px;
+  }
+  @media (max-width: 600px) { .kpi-row { grid-template-columns: 1fr; } }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; text-align: center;
+  }
+  .kpi .label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .kpi .value {
+    font-family: var(--font-mono); font-size: 2.4rem; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .kpi .sub { font-size: 12px; color: var(--text-dim); }
+  .kpi-saved .value { color: var(--metric); }
+  .kpi-risk .value { color: var(--primary); }
+  .kpi-artifacts .value { color: var(--secondary); }
+
+  .savings-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+  }
+  .savings-header {
+    display: flex; padding: 12px 16px;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .savings-row {
+    display: flex; padding: 14px 16px; align-items: center;
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .savings-row:last-child { border-bottom: none; }
+  .sfn { flex: 1.5; font-weight: 600; }
+  .sbase { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+  .sai { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+  .ssaved { flex: 0.8; font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
+  .strend { flex: 0.6; text-align: center; font-size: 14px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .risk-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+  }
+  .risk-card h3 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+    color: var(--primary);
+  }
+  .risk-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+  .risk-row .metric-label { color: var(--text-dim); }
+  .risk-row .metric-val { font-family: var(--font-mono); font-weight: 600; }
+
+  .gov-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+  }
+  .gov-card h3 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+    color: var(--secondary);
+  }
+  .artifact {
+    display: flex; align-items: center; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+  .artifact:last-child { border-bottom: none; }
+  .artifact-badge {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+    text-transform: uppercase; padding: 2px 6px; border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .ab-decision { background: var(--primary-dim); color: var(--primary); }
+  .ab-score { background: var(--metric-dim); color: var(--metric); }
+  .ab-audit { background: var(--violet)12; color: var(--violet); }
+  .ab-override { background: var(--amber)12; color: var(--amber); }
+  .artifact-date { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-left: auto; }
+
+  .output-bar {
+    margin-top: 16px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+  }
+  .output-bar strong { color: var(--text); }
+</style>
+</head>
+<body>
+<a class="backlink" href="https://legal.sickofancy.ai/guides">← Legal AI OS</a>
+<div class="container">
+  <h1>Client Value Reporting</h1>
+  <h2>Time saved · risk mitigated · governance artifacts · YoY trends</h2>
+
+  <div class="kpi-row">
+    <div class="kpi kpi-saved">
+      <div class="label">Hours Saved</div>
+      <div class="value">847</div>
+      <div class="sub">this quarter across all functions</div>
+    </div>
+    <div class="kpi kpi-risk">
+      <div class="label">Risk Flags Resolved</div>
+      <div class="value">342</div>
+      <div class="sub">compliance gaps closed</div>
+    </div>
+    <div class="kpi kpi-artifacts">
+      <div class="label">Governance Trail</div>
+      <div class="value">1,204</div>
+      <div class="sub">auditable artifacts</div>
+    </div>
+  </div>
+
+  <div class="savings-table">
+    <div class="savings-header">
+      <span class="sfn">Function</span>
+      <span class="sbase">Baseline (hrs)</span>
+      <span class="sai">AI-Assisted (hrs)</span>
+      <span class="ssaved">Saved</span>
+      <span class="strend">Trend</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">Matter Intake & Triage</span>
+      <span class="sbase">45h →</span>
+      <span class="sai">12h</span>
+      <span class="ssaved" style="color:#22c55e">33h (73%)</span>
+      <span class="strend">▲</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">Contract Review</span>
+      <span class="sbase">80h →</span>
+      <span class="sai">24h</span>
+      <span class="ssaved" style="color:#22c55e">56h (70%)</span>
+      <span class="strend">▲</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">Employment Agents</span>
+      <span class="sbase">35h →</span>
+      <span class="sai">14h</span>
+      <span class="ssaved" style="color:#f59e0b">21h (60%)</span>
+      <span class="strend">—</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">Due Diligence</span>
+      <span class="sbase">120h →</span>
+      <span class="sai">42h</span>
+      <span class="ssaved" style="color:#22c55e">78h (65%)</span>
+      <span class="strend">▲</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">Regulatory Monitor</span>
+      <span class="sbase">25h →</span>
+      <span class="sai">8h</span>
+      <span class="ssaved" style="color:#22c55e">17h (68%)</span>
+      <span class="strend">▲</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">KM Intelligence</span>
+      <span class="sbase">30h →</span>
+      <span class="sai">11h</span>
+      <span class="ssaved" style="color:#f59e0b">19h (63%)</span>
+      <span class="strend">—</span>
+    </div>
+    <div class="savings-row">
+      <span class="sfn">Value Reporting</span>
+      <span class="sbase">20h →</span>
+      <span class="sai">4h</span>
+      <span class="ssaved" style="color:#22c55e">16h (80%)</span>
+      <span class="strend">▲</span>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="risk-card">
+      <h3>Risk Mitigation</h3>
+      <div class="risk-row">
+        <span class="metric-label">Employment classification flags</span>
+        <span class="metric-val" style="color:#22c55e">47 resolved</span>
+      </div>
+      <div class="risk-row">
+        <span class="metric-label">Contract risk clauses flagged</span>
+        <span class="metric-val" style="color:#22c55e">128 flagged</span>
+      </div>
+      <div class="risk-row">
+        <span class="metric-label">Regulatory changes addressed</span>
+        <span class="metric-val" style="color:#f59e0b">23 mapped</span>
+      </div>
+      <div class="risk-row">
+        <span class="metric-label">Compliance gaps closed</span>
+        <span class="metric-val" style="color:#22c55e">89 closed</span>
+      </div>
+      <div class="risk-row">
+        <span class="metric-label">Due diligence deviations</span>
+        <span class="metric-val" style="color:#f59e0b">156 flagged</span>
+      </div>
+    </div>
+
+    <div class="gov-card">
+      <h3>Governance Artifacts</h3>
+      <div class="artifact">
+        <span class="artifact-badge ab-decision">decision</span>
+        <span>HITL override on contract risk score — downgraded</span>
+        <span class="artifact-date">2026-07-01</span>
+      </div>
+      <div class="artifact">
+        <span class="artifact-badge ab-score">score</span>
+        <span>Employment classification: contractor risk 78/100</span>
+        <span class="artifact-date">2026-06-28</span>
+      </div>
+      <div class="artifact">
+        <span class="artifact-badge ab-audit">audit</span>
+        <span>Quarterly governance review — all functions passed</span>
+        <span class="artifact-date">2026-06-30</span>
+      </div>
+      <div class="artifact">
+        <span class="artifact-badge ab-override">override</span>
+        <span>Manual conflict flag resolution for Matter 2025-0118</span>
+        <span class="artifact-date">2026-06-20</span>
+      </div>
+      <div class="artifact">
+        <span class="artifact-badge ab-score">score</span>
+        <span>Regulatory impact: CA wage transparency — critical</span>
+        <span class="artifact-date">2026-07-05</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="output-bar">
+    <strong>Report cadence:</strong> Quarterly auto-generated · <strong>Export:</strong> PDF + CSV · <strong>Benchmarks:</strong> YoY comparison · <strong>Source:</strong> Immutable audit trail
+  </div>
+</div>
+<script>
+  try {
+    if (localStorage.getItem('legal-os-theme') === 'dark' ||
+        (!localStorage.getItem('legal-os-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>

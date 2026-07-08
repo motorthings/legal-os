@@ -1,7 +1,13 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-// Get Supabase access token from localStorage (set by Supabase SDK)
+// Token provider — set by AuthProvider, falls back to localStorage
+let _getToken: (() => string | null) | null = null;
+export function setTokenProvider(fn: (() => string | null) | null) {
+  _getToken = fn;
+}
+
 function getAccessToken(): string | null {
+  if (_getToken) return _getToken();
   try {
     const stored = localStorage.getItem("sb-rkiaocarugdbcgtonfuq-auth-token");
     if (stored) {

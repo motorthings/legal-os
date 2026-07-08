@@ -6,30 +6,30 @@ const FUNCTIONS = [
     name: "Matter Intake & Triage",
     desc: "Structured evaluation of new matters in under 10 seconds.",
     status: "built",
+    href: "/matter-intake",
+    enabled: true,
   },
   {
     slug: "contract-review",
     name: "Contract Review & Analysis",
     desc: "Structured risk analysis with clause-level flagging and HITL review.",
     status: "built",
+    href: "/contract-review",
+    enabled: true,
   },
   {
     slug: "employment-agents",
     name: "Employment Legal Agents",
     desc: "AI agents for employment law — policy review, compliance, classification.",
     status: "built",
-  },
-  {
-    slug: "cowork-legal-plugin",
-    name: "Cowork Legal Plugin",
-    desc: "Legal AI plugin for the Cowork knowledge work platform.",
-    status: "built",
+    href: "/employment",
+    enabled: true,
   },
   {
     slug: "due-diligence",
     name: "Due Diligence Accelerator",
     desc: "Bulk document ingestion, target standards, deviation-only reporting.",
-    status: "roadmap",
+    status: "built",
     href: "/due-diligence",
     enabled: true,
   },
@@ -37,7 +37,7 @@ const FUNCTIONS = [
     slug: "regulatory-monitor",
     name: "Regulatory Change Monitor",
     desc: "Poll regulatory sources, map changes to active matters by jurisdiction.",
-    status: "roadmap",
+    status: "built",
     href: "/regulatory",
     enabled: true,
   },
@@ -45,7 +45,7 @@ const FUNCTIONS = [
     slug: "km-intelligence",
     name: "KM & Precedent Intelligence",
     desc: "Semantic search across all firm documents with citations.",
-    status: "roadmap",
+    status: "built",
     href: "/km",
     enabled: true,
   },
@@ -53,7 +53,7 @@ const FUNCTIONS = [
     slug: "client-value-reporting",
     name: "Client Value Reporting",
     desc: "Per-client quarterly reports — time saved, risk, governance artifacts.",
-    status: "roadmap",
+    status: "built",
     href: "/reporting",
     enabled: true,
   },
@@ -64,14 +64,11 @@ export default function Home() {
     <div>
       {/* Hero */}
       <header className="mb-10">
-        <div className="inline-block mb-3">
-          <span className="badge badge-built text-xs">Platform</span>
-        </div>
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--text)] mb-3">
           Legal AI Operating System
         </h1>
         <p className="font-mono text-sm text-[var(--text-dim)] max-w-xl">
-          Eight functions. One governance layer. Every decision auditable,
+          Seven functions. One governance layer. Every decision auditable,
           explainable, and traceable &mdash; by design.
         </p>
       </header>
@@ -92,7 +89,7 @@ export default function Home() {
 
       {/* Functions grid */}
       <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4">
-        Eight Functions
+        Seven Functions
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {FUNCTIONS.map((fn) => (
@@ -108,13 +105,6 @@ export default function Home() {
             <div className="flex items-center justify-between mb-2">
               <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 {fn.slug}
-              </span>
-              <span
-                className={`badge ${
-                  fn.status === "built" ? "badge-built" : "badge-roadmap"
-                }`}
-              >
-                {fn.status}
               </span>
             </div>
             <h3 className="font-semibold text-[15px] mb-1">{fn.name}</h3>

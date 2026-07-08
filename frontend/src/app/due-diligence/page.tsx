@@ -31,7 +31,6 @@ export default function DueDiligencePage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="badge badge-roadmap">Roadmap</span>
             <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
               {health ? `API: ${health}` : "..."}
             </span>

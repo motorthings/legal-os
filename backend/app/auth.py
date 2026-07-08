@@ -56,13 +56,14 @@ async def verify_supabase_jwt(token: str) -> dict:
 
     project_ref = supabase_url.split("//")[1].split(".")[0]
 
-    # Decode header to get key ID
+    # Decode header to get key ID and algorithm
     try:
         header = pyjwt.get_unverified_header(token)
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token format")
 
     kid = header.get("kid")
+    alg = header.get("alg", "RS256")
     if not kid:
         raise HTTPException(status_code=401, detail="No kid in token header")
 
@@ -86,19 +87,19 @@ async def verify_supabase_jwt(token: str) -> dict:
     if not key_data:
         raise HTTPException(status_code=401, detail="Unknown signing key")
 
-    # Build public key and verify
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.backends import default_backend
-
+    # Build public key — support both RSA (RS256) and EC (ES256)
     try:
-        public_key = serialization.load_der_public_key(
-            pyjwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key_data)),
-            backend=default_backend(),
-        )
+        kty = key_data.get("kty", "RSA")
+        key_json = json.dumps(key_data)
+        if kty == "EC":
+            public_key = pyjwt.algorithms.ECAlgorithm.from_jwk(key_json)
+        else:
+            public_key = pyjwt.algorithms.RSAAlgorithm.from_jwk(key_json)
+
         claims = pyjwt.decode(
             token,
             public_key,
-            algorithms=["RS256"],
+            algorithms=["RS256", "ES256"],
             audience="authenticated",
             options={"verify_exp": True},
         )

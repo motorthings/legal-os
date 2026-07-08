@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Contract Review — Project Showcase</title>
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --border: #d0d7e0;
+    --heading: #0f172a;
+    --text: #0f172a;
+    --text-dim: #475569;
+    --text-muted: #94a3b8;
+    --primary: #2563eb;
+    --primary-dim: rgba(37,99,235,0.08);
+    --success: #16a34a;
+    --success-dim: rgba(22,163,74,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(ellipse at 80% 0%, var(--primary-dim) 0%, transparent 50%);
+    color: var(--text); font-family: var(--font-display);
+    min-height: 100vh; line-height: 1.6; padding-bottom: 64px;
+  }
+  .nav { position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);background:color-mix(in srgb,var(--surface) 85%,transparent);border-bottom:1px solid var(--border); }
+  .nav-inner { max-width:900px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; justify-content:space-between; }
+  .nav-brand { font-family:var(--font-mono); font-size:13px; font-weight:600; color:var(--primary); text-decoration:none; }
+  .container { max-width:900px; margin:0 auto; padding:0 24px; }
+  .hero { border-bottom:1px solid var(--border); background:var(--surface); padding:48px 24px; }
+  .hero-inner { max-width:900px; margin:0 auto; }
+  h1 { font-size:40px; font-weight:700; letter-spacing:-0.5px; color:var(--primary); margin-bottom:8px; }
+  .tagline { font-size:20px; color:var(--text-dim); margin-bottom:24px; }
+  .stack-pills { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:24px; }
+  .stack-pill { font-family:var(--font-mono); font-size:11px; font-weight:600; padding:4px 10px; border-radius:6px; background:var(--primary-dim); color:var(--primary); }
+  .overview { font-size:16px; line-height:1.7; color:var(--text-dim); max-width:700px; }
+  section { padding:40px 0; }
+  h2 { font-family:var(--font-mono); font-size:13px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--primary); margin-bottom:24px; }
+  .highlights { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  .highlight-card { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--primary); border-radius:8px; padding:16px; font-size:14px; line-height:1.6; color:var(--text-dim); }
+  .steps { margin-bottom:24px; }
+  .step { display:flex; gap:20px; padding-bottom:28px; }
+  .step-num { width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:14px;font-weight:700;flex-shrink:0; }
+  .step-content { padding-top:4px; }
+  .step-title { font-size:17px; font-weight:700; color:var(--heading); margin-bottom:4px; }
+  .step-desc { font-size:15px; line-height:1.7; color:var(--text-dim); }
+  .agent-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
+  .agent-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; }
+  .agent-name { font-size:15px; font-weight:700; color:var(--heading); margin-bottom:4px; }
+  .agent-desc { font-size:13px; color:var(--text-muted); line-height:1.5; }
+  .footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--border); text-align:center; font-size:12px; color:var(--text-muted); }
+  .footer a { color:var(--primary); text-decoration:none; }
+
+.backlink{position:fixed;top:12px;left:16px;z-index:101;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);transition:color .15s,border-color .15s}
+.backlink:hover{color:var(--text);border-color:var(--border-bright)}
+</style>
+</head>
+<body>
+<div class="hero"><div class="hero-inner">
+  <h1>AI Contract Review</h1>
+  <p class="tagline">Intelligent Legal Operations Platform</p>
+  <div class="stack-pills">
+    <span class="stack-pill">FastAPI</span><span class="stack-pill">Supabase</span><span class="stack-pill">Claude API</span><span class="stack-pill">RAG</span><span class="stack-pill">React</span>
+  </div>
+  <div class="overview">
+    <p>Transforms contract analysis from a manual, time-intensive process into an intelligent, automated workflow. Five specialized AI agents with human-in-the-loop governance reduce contract review time by up to 80% while maintaining legal precision.</p>
+    <p>Built on a people-first philosophy: amplify attorney judgment rather than replacing it. Every analysis includes confidence scoring and explainable reasoning. Reviewer feedback feeds back into continuous improvement, compounding institutional knowledge over time.</p>
+  </div>
+</div></div>
+<div class="container">
+  <section>
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Intelligent Routing</div><div class="step-desc">Contract arrives &rarr; System classifies type (Vendor, Customer, Employment, DPA, General) with confidence scoring. Admits uncertainty rather than forcing classification.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Multi-Agent Analysis</div><div class="step-desc">Contract-type-specific agent deployed. Extracts parties, dates, key terms, obligations. Identifies red flags (critical), yellow flags (moderate concern), and novel clauses. Every flag includes a recommendation.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Weighted Risk Scoring</div><div class="step-desc">0&ndash;100 risk score across 5 weighted dimensions: Financial Exposure (25%), Compliance &amp; Legal (25%), Operational Risk (20%), Ambiguity &amp; Clarity (15%), Term Favorability (15%).</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Role-Optimized Views</div><div class="step-desc">Same analysis, 4 stakeholder perspectives: Legal (risk + clauses), Operations (business impact + SLAs), Executive (portfolio trends + outliers), Junior Staff (guided learning + context).</div></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Continuous Improvement Loop</div><div class="step-desc">Reviewer feedback &rarr; pattern extraction (weekly/monthly) &rarr; prompt refinement &rarr; accuracy tracking. Institutional knowledge compounds rather than walking out the door.</div></div></div>
+    </div>
+  </section>
+  <section>
+    <h2>Specialized Agents</h2>
+    <div class="agent-grid">
+      <div class="agent-card"><div class="agent-name">Vendor Agreement</div><div class="agent-desc">Payment terms, liability caps, termination rights, pricing protection</div></div>
+      <div class="agent-card"><div class="agent-name">Customer Contract</div><div class="agent-desc">Data ownership, export rights, usage restrictions, service levels</div></div>
+      <div class="agent-card"><div class="agent-name">Employment Agreement</div><div class="agent-desc">Compensation, equity, non-compete, IP assignment</div></div>
+      <div class="agent-card"><div class="agent-name">DPA</div><div class="agent-desc">GDPR compliance, processor obligations, sub-processors, breach notification</div></div>
+      <div class="agent-card"><div class="agent-name">General Contract</div><div class="agent-desc">Cross-cutting terms, party responsibilities, dispute resolution</div></div>
+    </div>
+  </section>
+  <section>
+    <h2>Technical Highlights</h2>
+    <div class="highlights">
+      <div class="highlight-card">5 specialized agents with contract-type-specific reasoning and evaluation criteria</div>
+      <div class="highlight-card">Weighted multi-dimensional risk scoring with explainable reasoning on every finding</div>
+      <div class="highlight-card">Full audit trail — who reviewed what, when, what feedback was given (SOC 2 / ISO 42001 ready)</div>
+      <div class="highlight-card">Confidence scoring on classification and analysis — system admits uncertainty rather than guessing</div>
+      <div class="highlight-card">RAG-powered async parallel processing for complex documents — each finding links to specific clause</div>
+      <div class="highlight-card">Feedback loop with user attribution — corrections compound into institutional knowledge</div>
+    </div>
+  </section>
+  </div>
+</body>
+</html>

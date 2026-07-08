@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="How AI-powered matter intake evaluation reduces time from inquiry to engagement letter, catches conflicts before they become malpractice risk, and produces a complete audit trail for every decision.">
+<title>Matter Intake Evaluation — Executive Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: rgba(0,0,0,0.06); --border-bright: rgba(0,0,0,0.12);
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --amber: #b45309; --amber-dim: rgba(180,83,9,0.08);
+    --violet: #7c3aed; --violet-dim: rgba(124,58,237,0.08);
+    --emerald: #059669; --emerald-dim: rgba(5,150,105,0.08);
+    --rose: #e11d48; --rose-dim: rgba(225,29,72,0.08);
+    --slate: #475569; --slate-dim: rgba(71,85,105,0.08);
+  }
+  html.dark {
+    --bg: #0a1628; --surface: #0f1f3d; --surface2: #132844;
+    --border: rgba(255,255,255,0.06); --border-bright: rgba(255,255,255,0.12);
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+    --violet: #a78bfa; --violet-dim: rgba(167,139,250,0.12);
+    --emerald: #34d399; --emerald-dim: rgba(52,211,153,0.1);
+    --rose: #fb7185; --rose-dim: rgba(251,113,133,0.12);
+    --slate: #94a3b8; --slate-dim: rgba(148,163,184,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 80% 0%, var(--primary-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 60%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    font-size: 15px; line-height: 1.7; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 32px; padding: 0 32px;
+  }
+  .nav-inner {
+    max-width: 920px; margin: 0 auto; padding: 12px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    color: var(--primary); text-decoration: none;
+  }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--text-dim); transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
+  .backlink{position:fixed;top:12px;left:16px;z-index:101;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);transition:color .15s,border-color .15s}
+  .backlink:hover{color:var(--text);border-color:var(--border-bright)}
+  .container { max-width: 920px; margin: 0 auto; padding: 0 24px 80px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .stage { animation: fadeUp 0.5s ease both; }
+  .stage:nth-child(1) { animation-delay: 0.05s; }
+  .stage:nth-child(2) { animation-delay: 0.10s; }
+  .stage:nth-child(3) { animation-delay: 0.15s; }
+  .stage:nth-child(4) { animation-delay: 0.20s; }
+  .stage:nth-child(5) { animation-delay: 0.25s; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  .hero { text-align: center; margin-bottom: 48px; padding: 32px 0 0; }
+  .hero h1 {
+    font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+    color: var(--primary); line-height: 1.15;
+  }
+  .hero .outcome-line {
+    font-size: 18px; color: var(--text-dim); max-width: 600px; margin: 0 auto;
+    font-style: italic; line-height: 1.5;
+  }
+
+  .stage { margin-bottom: 40px; }
+  .stage-head { margin-bottom: 16px; }
+  .stage-num {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .stage-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .stage-why { font-size: 14px; color: var(--text-dim); line-height: 1.7; max-width: 720px; }
+
+  .subpanel-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-top: 16px;
+  }
+  .subpanel h4 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .subpanel h4.get { color: var(--emerald); }
+  .subpanel h4.why { color: var(--amber); }
+  .subpanel p, .subpanel li { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+  .subpanel ul { list-style: none; padding: 0; }
+  .subpanel li { padding-left: 14px; position: relative; margin-bottom: 4px; }
+  .subpanel li::before { content: '&bull;'; color: var(--text-muted); position: absolute; left: 0; }
+
+  .dimension-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px;
+  }
+  .dim-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .dim-card:nth-child(1) { border-top: 3px solid var(--violet); }
+  .dim-card:nth-child(2) { border-top: 3px solid var(--amber); }
+  .dim-card:nth-child(3) { border-top: 3px solid var(--rose); }
+  .dim-card:nth-child(4) { border-top: 3px solid var(--secondary); }
+  .dim-card:nth-child(5) { border-top: 3px solid var(--metric); }
+  .dim-weight {
+    font-family: var(--font-mono); font-size: 18px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .dim-card:nth-child(1) .dim-weight { color: var(--violet); }
+  .dim-card:nth-child(2) .dim-weight { color: var(--amber); }
+  .dim-card:nth-child(3) .dim-weight { color: var(--rose); }
+  .dim-card:nth-child(4) .dim-weight { color: var(--secondary); }
+  .dim-card:nth-child(5) .dim-weight { color: var(--metric); }
+  .dim-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .dim-desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+  .metric-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px;
+  }
+  .metric-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; text-align: center;
+  }
+  .metric-num {
+    font-size: 32px; font-weight: 800; color: var(--primary);
+    font-family: var(--font-mono);
+  }
+  .metric-label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  .callout {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--primary); border-radius: 0 10px 10px 0;
+    padding: 18px 22px; margin-top: 20px; font-size: 14px; color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .callout strong { color: var(--text); }
+
+  .footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center; font-size: 12px; color: var(--text-dim);
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .subpanel-grid, .dimension-grid, .metric-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Matter Intake Evaluation</h1>
+    <p class="outcome-line">Reduce time from inquiry to engagement letter. Catch conflicts before they become malpractice risk. Every decision, fully auditable.</p>
+  </div>
+
+  <!-- Stage 1: The Bottleneck -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The Problem</div>
+      <div class="stage-title">Intake is where the money gets made or lost</div>
+      <p class="stage-why">Every new client engagement starts here. Conflicts, staffing, risk appetite, billing arrangements — all decided in the first hours. Getting it wrong means malpractice exposure, profitability loss, or missed business. Getting it right, consistently, is structural competitive advantage. At a merged firm with 52 offices and 3,500 professionals, intake is not one process. It's hundreds of processes, spread across practice groups that used to be two different firms. Standardizing intake evaluation is the highest-leverage operational move the firm can make.</p>
+    </div>
+  </div>
+
+  <!-- Stage 2: How It Works -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">How It Works</div>
+      <div class="stage-title">Two stages. Five dimensions. Zero black boxes.</div>
+      <p class="stage-why">Paste a matter summary. The system classifies practice area, urgency, and conflict triggers. Then it scores across five weighted dimensions and returns a risk level, staffing recommendation, and full reasoning chain. Every prompt, every response, every rubric version is captured. Not "the AI says take this matter" — "here's exactly why, with the raw data to prove it."</p>
+    </div>
+
+    <div class="subpanel-grid">
+      <div class="subpanel">
+        <h4 class="get">What you get</h4>
+        <ul>
+          <li>Practice area classification with confidence scoring</li>
+          <li>Conflict check triggers — adverse parties, business conflicts, prior representations</li>
+          <li>Urgency and risk assessment across regulatory, financial, and reputational dimensions</li>
+          <li>Staffing recommendation with role, hours estimate, and specialty requirements</li>
+          <li>Data integrity check — what's missing from the intake, surfaced explicitly</li>
+          <li>Overall risk badge: low / medium / high</li>
+        </ul>
+      </div>
+      <div class="subpanel">
+        <h4 class="why">Why it matters</h4>
+        <ul>
+          <li>Partners spend less time routing and more time lawyering</li>
+          <li>Conflicts are flagged before the engagement letter goes out, not after</li>
+          <li>Staffing recommendations are consistent across practice groups, not dependent on who's doing intake that day</li>
+          <li>Every decision has an immutable audit trail — when the client asks, you can show your work</li>
+          <li>The system gets smarter with every evaluation as the standards library grows</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="dimension-grid">
+      <div class="dim-card">
+        <div class="dim-weight">25%</div>
+        <div class="dim-name">Practice Area Classification</div>
+        <div class="dim-desc">Is the matter correctly classified? Cross-practice elements flagged.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">25%</div>
+        <div class="dim-name">Urgency &amp; Risk</div>
+        <div class="dim-desc">Deadlines, regulatory exposure, financial stakes, reputational risk.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">20%</div>
+        <div class="dim-name">Conflict Check</div>
+        <div class="dim-desc">Adverse parties, business conflicts, prior representations.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">15%</div>
+        <div class="dim-name">Staffing Quality</div>
+        <div class="dim-desc">Role recommendation, hours estimate, specialty requirements.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">15%</div>
+        <div class="dim-name">Data Integrity</div>
+        <div class="dim-desc">What's missing? How clear is the summary? Issues surfaced.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 3: Auditability -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The Differentiator</div>
+      <div class="stage-title">Auditability is the operating premise.</div>
+      <p class="stage-why">Every AmLaw firm evaluating AI asks the same question: "Can we trust it?" The answer isn't a policy document. It's an architecture. Every evaluation captures the full prompt, the full response, the model version, the rubric version, and the scoring formula. If a partner questions a classification six months later, the full decision context is retrievable. Nothing is a black box. The audit trail is the product.</p>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric-card">
+        <div class="metric-num">&lt;10s</div>
+        <div class="metric-label">Evaluation time</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">100%</div>
+        <div class="metric-label">Decisions auditable</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">5</div>
+        <div class="metric-label">Weighted dimensions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 4: It Scales -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The Platform</div>
+      <div class="stage-title">Start with intake. Extend everywhere.</div>
+      <p class="stage-why">The same two-stage pipeline and audit trail architecture extends to conflict waivers, engagement letters, staffing optimization, and matter budgeting. Matter intake is the wedge — the highest-leverage entry point because every partner understands the pain. But the pattern is the platform. Each new function adds capability without adding coupling.</p>
+    </div>
+
+    <div class="callout">
+      <strong>Where this fits in the Legal AI OS:</strong> Matter Intake is a Layer 2 function — a standalone application that exposes three governance endpoints. It doesn't share a database with anything. It doesn't depend on any other function. The governance layer polls it for health, metrics, and evaluation targets. It's the first function every new matter touches, which makes it the natural starting point for firm-wide AI adoption.
+    </div>
+  </div>
+
+  <div class="footer">
+    Matter Intake Evaluation — Executive Overview
+    &nbsp;&middot;&nbsp;
+    <a href="matter-intake-pipeline.html">Pipeline Deep Dive &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    <a href="legal-ai-os-ashurst-perkins-coie.html">Legal AI OS &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    
+    <br>
+    <span style="font-size:11px;opacity:0.7;">&copy; 2025-2026 Charlie Fuller</span>
+  </div>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const iconLight = toggle.querySelector('.icon-light');
+  const iconDark = toggle.querySelector('.icon-dark');
+  function setTheme(d) {
+    document.documentElement.classList.toggle('dark', d);
+    iconLight.style.display = d ? 'none' : '';
+    iconDark.style.display = d ? '' : 'none';
+    try { localStorage.setItem('diagram-theme', d ? 'dark' : 'light'); } catch(e) {}
+  }
+  toggle.addEventListener('click', () => setTheme(!document.documentElement.classList.contains('dark')));
+  try { if (localStorage.getItem('diagram-theme') === 'dark') setTheme(true); } catch(e) {}
+</script>
+</body>
+</html>

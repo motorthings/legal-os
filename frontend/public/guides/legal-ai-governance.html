@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="How every legal AI document, decision, and review is secured, traced, and audited across six governance pillars with gated data flow and confidentiality walls.">
+<title>Legal AI Governance Model — Security, Privacy, Audit & Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+
+    --bg: #f6f7fb;
+    --surface: #ffffff;
+    --surface2: #f0f2f7;
+    --border: rgba(0, 0, 0, 0.06);
+    --border-bright: rgba(0, 0, 0, 0.12);
+    --text: #0f172a;
+    --text-dim: #64748b;
+
+    --slate: #475569;
+    --slate-dim: rgba(71, 85, 105, 0.08);
+    --blue: #2563eb;
+    --blue-dim: rgba(37, 99, 235, 0.08);
+    --violet: #7c3aed;
+    --violet-dim: rgba(124, 58, 237, 0.08);
+    --teal: #0d9488;
+    --teal-dim: rgba(13, 148, 136, 0.08);
+    --emerald: #059669;
+    --emerald-dim: rgba(5, 150, 105, 0.08);
+    --amber: #d97706;
+    --amber-dim: rgba(217, 119, 6, 0.08);
+    --orange: #ea580c;
+    --orange-dim: rgba(234, 88, 12, 0.08);
+    --red: #dc2626;
+    --red-dim: rgba(220, 38, 38, 0.08);
+    --indigo: #4f46e5;
+    --indigo-dim: rgba(79, 70, 229, 0.08);
+    --rose: #e11d48;
+    --rose-dim: rgba(225, 29, 72, 0.08);
+  }
+
+  html.dark {
+      --bg: #0c1222;
+      --surface: #131c31;
+      --surface2: #1a2744;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-bright: rgba(255, 255, 255, 0.12);
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --slate: #94a3b8; --slate-dim: rgba(148, 163, 184, 0.12);
+      --blue: #60a5fa; --blue-dim: rgba(96, 165, 250, 0.12);
+      --violet: #a78bfa; --violet-dim: rgba(167, 139, 250, 0.12);
+      --teal: #2dd4bf; --teal-dim: rgba(45, 212, 191, 0.12);
+      --emerald: #34d399; --emerald-dim: rgba(52, 211, 153, 0.12);
+      --amber: #fbbf24; --amber-dim: rgba(251, 191, 36, 0.12);
+      --orange: #fb923c; --orange-dim: rgba(251, 146, 60, 0.12);
+      --red: #f87171; --red-dim: rgba(248, 113, 113, 0.12);
+      --indigo: #818cf8; --indigo-dim: rgba(129, 140, 248, 0.12);
+      --rose: #fb7185; --rose-dim: rgba(251, 113, 133, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 10% 0%, var(--indigo-dim) 0%, transparent 40%),
+      radial-gradient(at 90% 80%, var(--teal-dim) 0%, transparent 40%);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1000px; margin: 0 auto; padding: 12px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    color: var(--indigo); text-decoration: none;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero { text-align: center; margin-bottom: 48px; animation: fadeUp 0.5s ease both; }
+  .hero h1 {
+    font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--indigo), var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero p { font-size: 17px; color: var(--text-dim); max-width: 650px; margin: 0 auto; }
+
+  .section { margin-bottom: 48px; animation: fadeUp 0.5s ease both; }
+  .section-title {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px;
+  }
+
+  /* === PILLARS GRID === */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .pillar-icon {
+    font-size: 36px; margin-bottom: 10px;
+  }
+  .pillar-name {
+    font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px;
+  }
+  .pillar-desc {
+    font-size: 12px; color: var(--text-dim); line-height: 1.5;
+  }
+  .pillar-tech {
+    font-family: var(--font-mono); font-size: 10px; color: var(--indigo);
+    margin-top: 8px; display: inline-block;
+    padding: 3px 8px; border-radius: 4px;
+    background: var(--indigo-dim);
+  }
+  .pillar:nth-child(7):last-child {
+    grid-column: 1 / -1;
+    max-width: 400px;
+    justify-self: center;
+  }
+
+  /* === DATA FLOW — THE GATED PIPELINE === */
+  .gated-pipeline {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .pipeline-title {
+    font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px;
+  }
+  .pipeline-sub {
+    font-size: 13px; color: var(--text-dim); margin-bottom: 24px;
+  }
+
+  .pipeline-flow {
+    display: flex; align-items: flex-start; gap: 0;
+    overflow-x: auto; padding-bottom: 8px;
+  }
+  .pipe-stage {
+    flex: 1; min-width: 140px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 14px;
+    position: relative;
+  }
+  .pipe-arrow {
+    flex-shrink: 0; width: 32px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--border-bright); font-size: 18px;
+  }
+  .pipe-num {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    color: var(--indigo); margin-bottom: 4px;
+  }
+  .pipe-name {
+    font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px;
+  }
+  .pipe-desc {
+    font-size: 11px; color: var(--text-dim); line-height: 1.4;
+  }
+
+  /* Gates between stages */
+  .gate-marker {
+    text-align: center; margin-top: 16px;
+    display: flex; gap: 14px; overflow-x: auto;
+  }
+  .gate {
+    flex: 1; min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .gate-label {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .gate-rule {
+    font-size: 12px; color: var(--text-dim); line-height: 1.4;
+  }
+  .gate-rule strong { color: var(--text); }
+
+  /* === CONFIDENTIALITY WALLS === */
+  .walls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .wall-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .wall-card.real {
+    border-left: 4px solid var(--emerald);
+  }
+  .wall-title {
+    font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px;
+  }
+  .wall-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.6;
+  }
+  .wall-tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  .wall-tag {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+    padding: 3px 8px; border-radius: 4px;
+  }
+
+  /* === AUDIT TRAIL === */
+  .audit-layers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .audit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .audit-icon {
+    font-size: 24px; margin-bottom: 8px;
+  }
+  .audit-title {
+    font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px;
+  }
+  .audit-desc {
+    font-size: 12px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  /* === HUMAN IN THE LOOP === */
+  .hitl {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+  .hitl-flow {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; flex-wrap: wrap; margin: 20px 0;
+  }
+  .hitl-node {
+    padding: 14px 20px; border-radius: 10px;
+    background: var(--surface2); border: 1px solid var(--border);
+    font-size: 13px; font-weight: 600;
+  }
+  .hitl-node.human {
+    background: var(--emerald-dim);
+    border-color: color-mix(in srgb, var(--emerald) 30%, transparent);
+    color: var(--emerald);
+  }
+  .hitl-node.ai {
+    background: var(--indigo-dim);
+    border-color: color-mix(in srgb, var(--indigo) 25%, transparent);
+    color: var(--indigo);
+  }
+  .hitl-arrow {
+    font-size: 18px; color: var(--border-bright);
+  }
+
+  /* === COMPLIANCE MAP === */
+  .compliance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .comp-name {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    color: var(--indigo); margin-bottom: 4px;
+  }
+  .comp-how {
+    font-size: 11px; color: var(--text-dim); line-height: 1.4;
+  }
+
+  .footer {
+    margin-top: 48px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    text-align: center; font-size: 12px; color: var(--text-dim);
+  }
+  .footer a { color: var(--indigo); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .pillars, .walls-grid, .audit-layers, .compliance-grid { grid-template-columns: 1fr; }
+    .pipeline-flow { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); width: 100%; }
+    .gate-marker { flex-direction: column; }
+    .hero h1 { font-size: 28px; }
+    .hitl-flow { flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--text-dim); transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--indigo); color: var(--indigo); }
+.backlink{position:fixed;top:12px;left:16px;z-index:101;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);transition:color .15s,border-color .15s}
+.backlink:hover{color:var(--text);border-color:var(--border-bright)}
+</style>
+</head>
+<body>
+
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Legal AI Governance Model</h1>
+    <p>Confidentiality architecture is not a brake on AI adoption. It&rsquo;s the scale guardrails for operationalizing AI across 3,500 professionals and 52 offices. How every document, decision, and review is secured, traced, and audited — built for the standard a firm&rsquo;s General Counsel would demand.</p>
+  </div>
+
+  <!-- Context -->
+  <div style="max-width: 700px; margin: 0 auto 40px; text-align: center; font-size: 13px; color: var(--text-dim); line-height: 1.7;">
+    <p>This is the expanded view of <strong>Layer 1</strong> of the <a href="legal-ai-os-ashurst-perkins-coie.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">Legal AI Operating System</a>. Governance is the foundation — the layer that makes aggressive AI adoption survivable in a legal context. The seven pillars below encode the principle that confidentiality, traceability, and human oversight are structural guarantees, not policy documents. For a firm that just fought and won a constitutional battle over client confidentiality, governance is not overhead. It&rsquo;s the operating premise.</p>
+  </div>
+
+  <!-- Six Pillars -->
+  <div class="section">
+    <div class="section-title" style="color: var(--indigo);">Governance Pillars</div>
+    <div class="pillars">
+
+      <div class="pillar" style="border-top: 3px solid var(--violet);">
+        <div class="pillar-name">Confidentiality</div>
+        <div class="pillar-desc">Ethical walls between practice groups. Employment legal data is walled from commercial legal. Client A's data never touches Client B's models.</div>
+        <span class="pillar-tech" style="background: var(--violet-dim); color: var(--violet);">Row-Level Security · Tenant Isolation</span>
+      </div>
+
+      <div class="pillar" style="border-top: 3px solid var(--blue);">
+        <div class="pillar-name">Data Privacy</div>
+        <div class="pillar-desc">Client documents never leave controlled infrastructure. Embedding and analysis run inside the trust boundary. No third-party model training on client data.</div>
+        <span class="pillar-tech" style="background: var(--blue-dim); color: var(--blue);">VPC · Encryption at Rest · API-only LLM</span>
+      </div>
+
+      <div class="pillar" style="border-top: 3px solid var(--emerald);">
+        <div class="pillar-name">Traceability</div>
+        <div class="pillar-desc">Every AI classification, extraction, and risk score includes reasoning visible to the reviewer. Every human override is logged with who, when, and why.</div>
+        <span class="pillar-tech" style="background: var(--emerald-dim); color: var(--emerald);">Explainable AI · Decision Log · Chain of Custody</span>
+      </div>
+
+      <div class="pillar" style="border-top: 3px solid var(--amber);">
+        <div class="pillar-name">Auditability</div>
+        <div class="pillar-desc">Complete audit trail from upload through review. Every flag, score, override, and approval is timestamped and attributable. Compliance-ready artifacts on demand.</div>
+        <span class="pillar-tech" style="background: var(--amber-dim); color: var(--amber);">Immutable Logs · Version History · Exportable Reports</span>
+      </div>
+
+      <div class="pillar" style="border-top: 3px solid var(--orange);">
+        <div class="pillar-name">Human-in-the-Loop</div>
+        <div class="pillar-desc">AI recommends. Humans decide. Every analysis includes a confidence score. Low-confidence results are automatically escalated. No autonomous legal decisions.</div>
+        <span class="pillar-tech" style="background: var(--orange-dim); color: var(--orange);">Confidence Thresholds · Escalation Rules · Override Tracking</span>
+      </div>
+
+      <div class="pillar" style="border-top: 3px solid var(--red);">
+        <div class="pillar-name">Model Governance</div>
+        <div class="pillar-desc">Every AI agent is evaluated before deployment and monitored continuously. Hard veto rules cap any agent that fails a critical dimension. No unvetted models.</div>
+        <span class="pillar-tech" style="background: var(--red-dim); color: var(--red);">Pre-Deployment Eval · Drift Detection · Hard Veto Rules</span>
+      </div>
+
+      <div class="pillar" style="border-top: 3px solid var(--teal);">
+        <div class="pillar-name">Explainability</div>
+        <div class="pillar-desc">Every AI output includes chain-of-reasoning visible to the reviewer. Classification decisions cite the specific clause, signal, or pattern that drove the result. No black-box recommendations — the attorney can trace any conclusion back to its source.</div>
+        <span class="pillar-tech" style="background: var(--teal-dim); color: var(--teal);">Chain of Reasoning · Source Attribution · Decision Traceability</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Gated Pipeline -->
+  <div class="section">
+    <div class="section-title" style="color: var(--indigo);">Data Flow — The Gated Pipeline</div>
+    <div class="gated-pipeline">
+      <div class="pipeline-title">What happens to a document, end to end</div>
+      <div class="pipeline-sub">Every stage is gated. No data moves to the next stage without passing the current stage's controls.</div>
+
+      <div class="pipeline-flow">
+        <div class="pipe-stage">
+          <div class="pipe-num">STAGE 1</div>
+          <div class="pipe-name">Upload & Ingest</div>
+          <div class="pipe-desc">Document is encrypted in transit and at rest. Metadata captured: client, matter, practice group, uploader identity.</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage">
+          <div class="pipe-num">STAGE 2</div>
+          <div class="pipe-name">Classification</div>
+          <div class="pipe-desc">AI identifies contract type. Confidence score attached. Low confidence &rarr; human router. No assumptions about which legal team owns it.</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage">
+          <div class="pipe-num">STAGE 3</div>
+          <div class="pipe-name">Extraction & Analysis</div>
+          <div class="pipe-desc">Specialized agent extracts terms, obligations, parties. RAG grounds analysis in firm-approved standards. All reasoning is visible.</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage">
+          <div class="pipe-num">STAGE 4</div>
+          <div class="pipe-name">Risk Scoring</div>
+          <div class="pipe-desc">Weighted score across 5 dimensions. Every flag includes a recommendation. Red flags are mandatory-review — system blocks auto-approval.</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage">
+          <div class="pipe-num">STAGE 5</div>
+          <div class="pipe-name">Human Review</div>
+          <div class="pipe-desc">Attorney reviews, overrides if needed, approves or rejects. Every action logged: who, when, what changed, why. Feedback feeds system improvement.</div>
+        </div>
+      </div>
+
+      <!-- Gate markers -->
+      <div class="gate-marker">
+        <div class="gate">
+          <div class="gate-label" style="color: var(--violet);">Gate 1: Access Control</div>
+          <div class="gate-rule"><strong>RLS enforces:</strong> user must belong to the client's practice group. Employment legal sees only employment matters. Commercial sees only commercial. The wall is structural, not policy.</div>
+        </div>
+        <div class="gate">
+          <div class="gate-label" style="color: var(--blue);">Gate 2: Data Boundary</div>
+          <div class="gate-rule"><strong>No egress:</strong> documents remain within the firm's enterprise infrastructure — SOC2 Type 2, GDPR compliant. LLM API calls are stateless and covered under the firm's enterprise agreement: no training, no retention, no leakage. Embeddings stay in the firm's vector store.</div>
+        </div>
+        <div class="gate">
+          <div class="gate-label" style="color: var(--emerald);">Gate 3: Confidence Threshold</div>
+          <div class="gate-rule"><strong>Below 70% confidence:</strong> automatic escalation to human review. Red flags are always escalated regardless of confidence. No autonomous legal decision, ever.</div>
+        </div>
+        <div class="gate">
+          <div class="gate-label" style="color: var(--amber);">Gate 4: Audit Record</div>
+          <div class="gate-rule"><strong>Immutable log for every action:</strong> upload, classification, analysis, score, review, override, approval. Timestamped. Attributable. Exportable for compliance, discovery, or client audit.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confidentiality Walls — Real Example -->
+  <div class="section">
+    <div class="section-title" style="color: var(--indigo);">Confidentiality Architecture — Proven in Production</div>
+    <div class="walls-grid">
+
+      <div class="wall-card real">
+        <div class="wall-title">Ethical Wall: Employment vs. Commercial Legal</div>
+        <div class="wall-desc">At a large corporate legal department, prior contract-management tools failed because employment legal refused to put their data in a system commercial legal could access. The confidentiality gap blocked adoption entirely.</div>
+        <div class="wall-desc" style="margin-top: 8px;">The fix: <strong>Row-Level Security at the database layer</strong> that walls employment legal data from commercial legal. Not a UI filter. Not a policy document. Structural enforcement. The General Counsel signed off because the wall is provable — you can demonstrate that User A in Practice Group B cannot read Practice Group C's documents.</div>
+        <div class="wall-tags">
+          <span class="wall-tag" style="background: var(--emerald-dim); color: var(--emerald);">Row-Level Security</span>
+          <span class="wall-tag" style="background: var(--emerald-dim); color: var(--emerald);">Practice Group Scoping</span>
+          <span class="wall-tag" style="background: var(--emerald-dim); color: var(--emerald);">Database-Level Enforcement</span>
+        </div>
+      </div>
+
+      <div class="wall-card real">
+        <div class="wall-title">Client Isolation: Multi-Tenant by Design</div>
+        <div class="wall-desc">Each client's documents, analyses, and chat history are isolated at the database row level. An API query from Client A's context cannot return Client B's data. This is not application logic — it's enforced by row-level security policies that execute before any row is returned.</div>
+        <div class="wall-desc" style="margin-top: 8px;">For law firms, this maps directly to <strong>client confidentiality obligations</strong> under rules of professional conduct. If Client A requests an audit, you can prove their data was never commingled with Client B's. The RLS policy is the evidence.</div>
+        <div class="wall-tags">
+          <span class="wall-tag" style="background: var(--blue-dim); color: var(--blue);">Per-Client Tenancy</span>
+          <span class="wall-tag" style="background: var(--blue-dim); color: var(--blue);">Database-Level Isolation</span>
+          <span class="wall-tag" style="background: var(--blue-dim); color: var(--blue);">Provable Separation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Audit Trail Layers -->
+  <div class="section">
+    <div class="section-title" style="color: var(--indigo);">Audit Trail — Every Action, Attributable</div>
+    <div class="audit-layers">
+
+      <div class="audit-card" style="border-left: 3px solid var(--violet);">
+        <div class="audit-title">AI Decision Log</div>
+        <div class="audit-desc">Every AI classification, extraction, and risk score is logged with: the prompt used, the model version, the confidence score, the reasoning chain, and the timestamp. If an attorney questions a classification six months later, the full decision context is retrievable. Nothing is a black box.</div>
+      </div>
+
+      <div class="audit-card" style="border-left: 3px solid var(--emerald);">
+        <div class="audit-title">Human Override Record</div>
+        <div class="audit-desc">Every human action — override a classification, change a risk score, reject a flag, approve a contract — is logged with: user identity, timestamp, what was changed, and an optional reason. Override patterns are surfaced in portfolio reports. If a reviewer consistently downgrades risk, it's visible.</div>
+      </div>
+
+      <div class="audit-card" style="border-left: 3px solid var(--amber);">
+        <div class="audit-title">Feedback Loop Trail</div>
+        <div class="audit-desc">When an attorney flags a nuance the AI missed, that feedback is stored with full context: the contract, the clause, the AI's original analysis, and the correction. Weekly/monthly reviews surface patterns. The system gets smarter, and the improvement history is fully auditable.</div>
+      </div>
+
+      <div class="audit-card" style="border-left: 3px solid var(--blue);">
+        <div class="audit-title">Compliance Export</div>
+        <div class="audit-desc">On demand: generate a compliance report for any time window. All AI decisions, all human overrides, all escalations, system health, model versions. Ready for client audit, outside counsel review, or regulatory inquiry. The regulatory mapping mode pre-populates compliance templates with cited evidence.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Human in the Loop -->
+  <div class="section">
+    <div class="section-title" style="color: var(--indigo);">Human-in-the-Loop — The Non-Negotiable</div>
+    <div class="hitl">
+      <p style="font-size: 14px; color: var(--text-dim); max-width: 650px; margin: 0 auto 8px;">AI accelerates. Humans decide. No autonomous legal decision-making, ever. The system is designed to surface what needs attention, not to act on it.</p>
+
+      <div class="hitl-flow">
+        <div class="hitl-node ai">AI Classifies</div>
+        <div class="hitl-arrow">&rarr;</div>
+        <div class="hitl-node ai">AI Extracts & Scores</div>
+        <div class="hitl-arrow">&rarr;</div>
+        <div class="hitl-node human">Attorney Reviews</div>
+        <div class="hitl-arrow">&rarr;</div>
+        <div class="hitl-node human">Attorney Decides</div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; text-align: left; margin-top: 16px;">
+        <div style="background: var(--surface2); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 4px;">Auto-escalation triggers</div>
+          <div style="font-size: 12px; color: var(--text-dim);">Confidence below 70%. Red flag detected. Novel clause not in standards library. Ambiguous language. Conflicting terms.</div>
+        </div>
+        <div style="background: var(--surface2); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--amber); margin-bottom: 4px;">Reviewer override authority</div>
+          <div style="font-size: 12px; color: var(--text-dim);">Any AI classification, score, or flag can be overridden. Override is logged. Patterns are surfaced. The system learns from corrections.</div>
+        </div>
+        <div style="background: var(--surface2); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--emerald); margin-bottom: 4px;">Approval workflow</div>
+          <div style="font-size: 12px; color: var(--text-dim);">Contracts move through statuses: pending &rarr; in review &rarr; approved / negotiation / rejected. Each transition is logged with reviewer identity and timestamp.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Standards Map -->
+  <div class="section">
+    <div class="section-title" style="color: var(--indigo);">Compliance Readiness</div>
+    <div class="compliance-grid">
+      <div class="comp-card" style="border-top: 3px solid var(--violet);">
+        <div class="comp-name">SOC 2</div>
+        <div class="comp-how">Audit trail covers all five trust criteria. Immutable logs. Access review trail. Change management records.</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--blue);">
+        <div class="comp-name">ISO 42001</div>
+        <div class="comp-how">AI management system: governance, risk assessment, transparency, continuous improvement. All documented.</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--emerald);">
+        <div class="comp-name">GDPR / CCPA</div>
+        <div class="comp-how">Data minimization. Purpose limitation. Right to deletion. Data never leaves EU/US trust boundary.</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--amber);">
+        <div class="comp-name">Rules of Professional Conduct</div>
+        <div class="comp-how">Client confidentiality (RLS). Competence (AI is a tool, attorney supervises). Communication (client reporting function).</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--indigo);">
+        <div class="comp-name">EU AI Act</div>
+        <div class="comp-how">Legal AI is limited-risk. Human oversight mandatory. Transparency requirements met via decision log.</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--slate);">
+        <div class="comp-name">Client Audit Requests</div>
+        <div class="comp-how">Compliance export on demand. Full decision trace. Model version history. Access log. Override record.</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--teal);">
+        <div class="comp-name">State Bar Ethics Opinions</div>
+        <div class="comp-how">AI as supervised tool. No independent practice of law. Attorney-in-the-loop satisfies duty of supervision.</div>
+      </div>
+      <div class="comp-card" style="border-top: 3px solid var(--rose);">
+        <div class="comp-name">Outside Counsel Guidelines</div>
+        <div class="comp-how">Client-specific rules encoded in legal standards library. Automatic compliance checking against client OCGs.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Legal AI Governance Model
+    &nbsp;·&nbsp;
+    <a href="legal-ai-os-ashurst-perkins-coie.html">Legal AI OS &rarr;</a>
+    &nbsp;·&nbsp;
+    <a href="legal-ai-os-ashurst-perkins-coie.html">Legal AI OS &rarr;</a>
+    &nbsp;·&nbsp;
+    
+  </div>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const iconLight = toggle.querySelector('.icon-light');
+  const iconDark = toggle.querySelector('.icon-dark');
+  function setTheme(d) {
+    document.documentElement.classList.toggle('dark', d);
+    iconLight.style.display = d ? 'none' : '';
+    iconDark.style.display = d ? '' : 'none';
+    try { localStorage.setItem('diagram-theme', d ? 'dark' : 'light'); } catch(e) {}
+  }
+  toggle.addEventListener('click', () => setTheme(!document.documentElement.classList.contains('dark')));
+  try { if (localStorage.getItem('diagram-theme') === 'dark') setTheme(true); } catch(e) {}
+</script>
+
+</body>
+</html>

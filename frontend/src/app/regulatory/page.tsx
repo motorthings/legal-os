@@ -1,202 +1,298 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useState } from 'react';
+import { pollRegulatory } from '@/lib/regulatory-api';
+import type { RegulatoryAnalysis } from '@/lib/regulatory-api';
+import { Send, RefreshCw, AlertTriangle, Globe, Building2, MapPin } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+type State =
+  | { status: 'empty' }
+  | { status: 'loading' }
+  | { status: 'error'; error: string }
+  | { status: 'success'; data: RegulatoryAnalysis };
 
-function getAccessToken(): string | null {
-  try {
-    const stored = localStorage.getItem("sb-rkiaocarugdbcgtonfuq-auth-token");
-    if (stored) return JSON.parse(stored).access_token || null;
-  } catch {}
-  return null;
+function impactColor(level: string) {
+  switch (level) {
+    case 'critical': return { bg: 'rgba(239,68,68,0.1)', text: '#ef4444', border: 'rgba(239,68,68,0.2)', label: 'Critical' };
+    case 'high': return { bg: 'rgba(239,68,68,0.08)', text: '#f97316', border: 'rgba(249,115,22,0.2)', label: 'High' };
+    case 'medium': return { bg: 'rgba(245,158,11,0.1)', text: '#f59e0b', border: 'rgba(245,158,11,0.2)', label: 'Medium' };
+    case 'low': return { bg: 'rgba(34,197,94,0.1)', text: '#22c55e', border: 'rgba(34,197,94,0.2)', label: 'Low' };
+    default: return { bg: 'rgba(100,100,100,0.1)', text: '#888', border: 'rgba(100,100,100,0.2)', label: 'Unknown' };
+  }
 }
 
-async function fetchAuth<T>(path: string): Promise<T> {
-  const token = getAccessToken();
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+function statusColor(status: string) {
+  switch (status) {
+    case 'active': return '#22c55e';
+    case 'pending': return '#f59e0b';
+    case 'monitoring': return '#888';
+    default: return '#888';
+  }
 }
 
 export default function RegulatoryPage() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [polling, setPolling] = useState(false);
+  const [value, setValue] = useState('');
+  const [state, setState] = useState<State>({ status: 'empty' });
 
-  useEffect(() => {
-    fetchAuth("/api/regulatory/dashboard")
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function triggerPoll() {
-    setPolling(true);
+  const handleSubmit = async () => {
+    const text = value.trim();
+    if (!text) return;
+    setState({ status: 'loading' });
     try {
-      await fetchAuth("/api/regulatory/poll");
-      // Refresh after a moment
-      setTimeout(async () => {
-        const fresh = await fetchAuth("/api/regulatory/dashboard");
-        setData(fresh);
-        setPolling(false);
-      }, 3000);
-    } catch (e: any) {
-      setError(e.message);
-      setPolling(false);
+      const data = await pollRegulatory(text);
+      setState({ status: 'success', data });
+    } catch (err) {
+      setState({
+        status: 'error',
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
     }
-  }
+  };
 
-  if (loading) return <p className="text-sm text-[var(--text-dim)]">Loading...</p>;
-  if (error) return <div className="card p-4 text-[var(--rose)] text-sm">{error}</div>;
-
-  const summary = data?.summary || {};
-  const updates = data?.recent_updates || [];
-  const flags = data?.open_flags || [];
-  const sources = data?.sources || [];
+  const handleReset = () => {
+    setValue('');
+    setState({ status: 'empty' });
+  };
 
   return (
     <div>
-      <Link
-        href="/"
-        className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline mb-4 inline-block"
-      >
-        &larr; Dashboard
-      </Link>
+      <header className="mb-6">
+        <h1 className="text-4xl font-bold tracking-tight text-[var(--text)] mt-3 mb-2">
+          Regulatory Change Monitor
+        </h1>
+        <p className="font-mono text-sm text-[var(--text-dim)] max-w-xl">
+          Poll regulatory sources, map changes to active matters by jurisdiction,
+          and flag impacted clients automatically.
+        </p>
+      </header>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="badge badge-roadmap">Roadmap</span>
-            <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
-              v0.1.0
-            </span>
-          </div>
-          <h1 className="text-3xl font-bold">Regulatory Change Monitor</h1>
-          <p className="font-mono text-sm text-[var(--text-dim)] mt-1">
-            {summary.active_sources || 0} active sources across multiple jurisdictions
-          </p>
-        </div>
-        <button onClick={triggerPoll} disabled={polling} className="btn-primary">
-          {polling ? "Polling..." : "Poll Sources"}
-        </button>
-      </div>
+      {/* Input */}
+      {state.status !== 'success' && (
+        <div className="card p-6">
+          <textarea
+            rows={12}
+            disabled={state.status === 'loading'}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            placeholder={`Describe the regulatory landscape or jurisdiction to monitor...
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[
-          { label: "Sources", value: summary.total_sources || 0, color: "var(--secondary)" },
-          { label: "Open Flags", value: summary.open_flags_count || 0, color: "var(--primary)" },
-          { label: "Critical", value: summary.critical_flags || 0, color: "var(--rose)" },
-          { label: "Active", value: summary.active_sources || 0, color: "var(--metric)" },
-        ].map((m) => (
-          <div key={m.label} className="card p-4 text-center">
-            <div className="text-2xl font-bold mb-1" style={{ color: m.color }}>{m.value}</div>
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-dim)]">{m.label}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sources */}
-        <div>
-          <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4">
-            Sources
-          </h2>
-          <div className="grid gap-2">
-            {sources.map((s: any) => (
-              <div key={s.id} className="card p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold">{s.agency}</span>
-                  <span className={`badge ${s.status === "active" ? "badge-built" : "badge-roadmap"}`}>
-                    {s.status}
-                  </span>
-                </div>
-                <div className="text-xs text-[var(--text-dim)]">{s.name}</div>
-                <div className="flex items-center gap-2 mt-1 text-[10px] font-mono text-[var(--text-muted)]">
-                  <span>{s.jurisdiction}</span>
-                  <span>&middot;</span>
-                  <span>{s.poll_frequency}</span>
-                </div>
-              </div>
-            ))}
+Examples:
+- "Monitor California employment law changes for Q3 2026 — wage & hour, classification, and paid leave updates"
+- "Track SEC rulemaking on climate disclosure, crypto custody, and private fund adviser rules across federal register"
+- "State-level data privacy: Colorado CPA amendments, Texas TDPSA enforcement, and Oregon OCPA rulemaking"`}
+            className="w-full rounded-lg border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-transparent resize-y disabled:opacity-50 font-mono"
+            style={{ background: 'var(--surface2)' }}
+          />
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-xs text-[var(--text-muted)] font-mono">{value.length.toLocaleString()} chars</span>
+            <button
+              onClick={handleSubmit}
+              disabled={state.status === 'loading' || !value.trim()}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <Globe className="w-4 h-4" />
+              Poll Sources
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Recent Updates */}
-        <div className="lg:col-span-2">
-          <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4">
-            Recent Updates
-          </h2>
-          {updates.length === 0 ? (
-            <div className="card p-6 text-center text-sm text-[var(--text-dim)]">
-              No regulatory updates yet. Poll sources to extract changes.
+      <div className="mt-8">
+        {/* Empty */}
+        {state.status === 'empty' && (
+          <div className="card p-6 text-center py-16">
+            <div className="w-12 h-12 rounded-xl bg-[var(--primary-dim)] flex items-center justify-center mx-auto mb-4 border border-[var(--primary)]/20">
+              <Globe className="w-6 h-6 text-[var(--primary)]" />
             </div>
-          ) : (
-            <div className="grid gap-2">
-              {updates.map((u: any) => (
-                <div key={u.id} className="card p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-[var(--secondary)] uppercase">
-                        {u.agency}
-                      </span>
-                      <span className={`badge ${
-                        u.change_type === "enforcement_action" ? "badge-critical" :
-                        u.change_type === "new_regulation" ? "badge-high" :
-                        u.change_type === "amendment" ? "badge-medium" : "badge-low"
-                      }`}>
-                        {u.change_type}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-mono text-[var(--text-muted)]">
-                      {u.effective_date || "TBD"}
-                    </span>
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">{u.regulation_name}</h3>
-                  <p className="text-sm text-[var(--text-dim)] line-clamp-2">{u.change_summary}</p>
+            <h3 className="text-lg font-semibold text-[var(--text)] mb-2">Ready to monitor</h3>
+            <p className="text-sm text-[var(--text-dim)] mb-8 max-w-md mx-auto">
+              Describe a jurisdiction or regulatory domain and the system will scan across
+              federal register, state bulletins, and agency guidance.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
+              {['Multi-Source Polling', 'Impact Mapping', 'Automated Flags'].map((d) => (
+                <div key={d} className="p-3 rounded-lg border" style={{ background: 'var(--surface2)', borderColor: 'var(--border)' }}>
+                  <div className="text-xs font-medium text-[var(--text)]">{d}</div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Open Flags */}
-      {flags.length > 0 && (
-        <>
-          <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4 mt-8">
-            Open Flags
-          </h2>
-          <div className="grid gap-2">
-            {flags.map((f: any) => (
-              <div key={f.id} className="card p-4 flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`badge ${
-                      f.impact_severity === "critical" ? "badge-critical" :
-                      f.impact_severity === "high" ? "badge-high" :
-                      f.impact_severity === "medium" ? "badge-medium" : "badge-low"
-                    }`}>
-                      {f.impact_severity}
-                    </span>
-                    <span className="badge badge-roadmap">{f.status}</span>
-                  </div>
-                  <p className="text-sm">{f.impact_summary}</p>
-                </div>
-                <span className="text-[10px] font-mono text-[var(--text-muted)]">
-                  {f.matter_id ? "Linked to matter" : ""}
-                </span>
-              </div>
-            ))}
           </div>
-        </>
-      )}
+        )}
+
+        {/* Loading */}
+        {state.status === 'loading' && (
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-5 h-5 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-[var(--text-dim)]">Polling regulatory sources across jurisdictions...</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="card p-6">
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-4 bg-[var(--surface2)] rounded w-32" />
+                    <div className="h-8 bg-[var(--surface2)] rounded w-16" />
+                    <div className="h-2 bg-[var(--surface2)] rounded w-full" />
+                    <div className="h-3 bg-[var(--surface2)] rounded w-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Error */}
+        {state.status === 'error' && (
+          <div className="card p-6 border-l-4 border-l-[var(--rose)]">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-[var(--rose)] flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-[var(--rose)] mb-1">Polling failed</h3>
+                <p className="text-sm text-[var(--text-dim)] break-words">{state.error}</p>
+                <button
+                  onClick={handleReset}
+                  className="mt-3 inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success */}
+        {state.status === 'success' && (
+          <div>
+            {/* Overall */}
+            <div className="card p-6 mb-6">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-[var(--text)]">Regulatory Scan Results</h2>
+                  <p className="text-xs text-[var(--text-muted)] mt-1 font-mono">
+                    {state.data.sources.length} sources · {state.data.changes.length} changes · {state.data.processing_time_ms.toLocaleString()}ms · {state.data.model_used}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {state.data.flags.critical > 0 && (
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--rose)]/10 text-[var(--rose)] font-mono">
+                      {state.data.flags.critical} critical
+                    </span>
+                  )}
+                  {state.data.flags.high > 0 && (
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#f97316]/10 text-[#f97316] font-mono">
+                      {state.data.flags.high} high
+                    </span>
+                  )}
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#22c55e]/10 text-[#22c55e] font-mono">
+                    {state.data.flags.medium + state.data.flags.low} low/med
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sources */}
+            <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+              Monitored Sources
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+              {state.data.sources.map((s) => (
+                <div key={s.source} className="card p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: statusColor(s.status) }} />
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--text)]">{s.source}</h4>
+                      <p className="text-xs text-[var(--text-dim)]">{s.jurisdiction} · {s.agency}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-mono font-semibold text-[var(--text)]">{s.relevance}%</span>
+                    <p className="text-[10px] text-[var(--text-muted)] uppercase">{s.status}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Changes */}
+            <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+              Detected Changes
+            </h3>
+            <div className="space-y-3 mb-6">
+              {state.data.changes.map((c) => {
+                const imp = impactColor(c.impact_level);
+                return (
+                  <div key={c.id} className="card p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="text-sm font-semibold text-[var(--text)]">{c.title}</h4>
+                          <span
+                            className="text-[10px] font-medium px-1.5 py-0.5 rounded-full uppercase"
+                            style={{ background: imp.bg, color: imp.text }}
+                          >
+                            {imp.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[var(--text-dim)] mb-2">{c.summary}</p>
+                        <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)] font-mono">
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {c.jurisdiction}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Building2 className="w-3 h-3" />
+                            {c.agency}
+                          </span>
+                          <span>Effective: {c.effective_date}</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1 flex-shrink-0">
+                        {c.affected_practice_areas.map((pa) => (
+                          <span key={pa} className="text-[10px] px-1.5 py-0.5 rounded border font-mono" style={{ borderColor: 'var(--border)', color: 'var(--text-dim)' }}>
+                            {pa}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Recommendations */}
+            {state.data.recommendations.length > 0 && (
+              <>
+                <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+                  Recommendations
+                </h3>
+                <div className="card p-5 mb-6">
+                  {state.data.recommendations.map((r, i) => (
+                    <div key={i} className="flex items-start gap-2 py-2">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--amber, #f59e0b)' }} />
+                      <p className="text-sm text-[var(--text)]">{r}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            <div className="text-center">
+              <button
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-[var(--primary)] bg-[var(--primary-dim)] border border-[var(--primary)]/20 hover:opacity-80 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Run Another Scan
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

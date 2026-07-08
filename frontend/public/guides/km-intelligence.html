@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KM & Precedent Intelligence — Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: #c8daea; --border-bright: #a0bedb;
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --rose: #e11d48; --violet: #7c3aed; --amber: #b45309;
+  }
+  .dark {
+    --bg: #0a1628; --surface: #132240; --surface2: #1a2d52;
+    --border: #1a2d52; --border-bright: #2d4570;
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --rose: #fb7185; --violet: #a78bfa; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, var(--violet)0A, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; line-height: 1.6; padding: 40px 20px;
+  }
+  .backlink {
+    position: fixed; top: 12px; left: 16px; z-index: 101;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface);
+  }
+  .backlink:hover { color: var(--text); border-color: var(--border-bright); }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); text-align: center; margin-bottom: 36px;
+  }
+  .three-col {
+    display: grid; grid-template-columns: 1fr 200px 1fr;
+    gap: 20px; align-items: start; margin-bottom: 28px;
+  }
+  @media (max-width: 768px) { .three-col { grid-template-columns: 1fr; } }
+  .col h3 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+    padding-bottom: 8px; border-bottom: 2px solid;
+  }
+  .col-left h3 { color: var(--primary); border-color: var(--primary); }
+  .col-mid h3 { color: var(--violet); border-color: var(--violet); }
+  .col-right h3 { color: var(--secondary); border-color: var(--secondary); }
+
+  .doc-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; margin-bottom: 10px;
+  }
+  .doc-item .doc-type {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+    text-transform: uppercase; color: var(--primary);
+    margin-bottom: 2px;
+  }
+  .doc-item .doc-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .doc-item .doc-snippet { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+  .doc-item .doc-meta {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
+    margin-top: 6px;
+  }
+  .doc-item .relevance {
+    float: right; font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  }
+
+  .prec-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; margin-bottom: 10px;
+    text-align: center;
+  }
+  .prec-item .rel {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; color: var(--violet); margin-bottom: 6px;
+  }
+  .prec-item .link {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+  }
+  .prec-item .strength-bar {
+    height: 3px; border-radius: 3px; margin-top: 8px; background: var(--border);
+  }
+  .prec-item .strength-fill { height: 100%; border-radius: 3px; background: var(--violet); }
+
+  .graph-nodes {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .graph-node {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 20px; border: 1px solid;
+    font-size: 12px; font-weight: 600;
+  }
+  .gn-entity { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,0.06); }
+  .gn-juris { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.06); }
+  .gn-party { border-color: #f59e0b; color: #f59e0b; background: rgba(245,158,11,0.06); }
+  .gn-doctrine { border-color: #ec4899; color: #ec4899; background: rgba(236,72,153,0.06); }
+  .gn-outcome { border-color: #3b82f6; color: #3b82f6; background: rgba(59,130,246,0.06); }
+
+  .output-bar {
+    margin-top: 28px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<a class="backlink" href="https://legal.sickofancy.ai/guides">← Legal AI OS</a>
+<div class="container">
+  <h1>KM &amp; Precedent Intelligence</h1>
+  <h2>Semantic search · precedent linking · knowledge graph</h2>
+
+  <div class="three-col">
+    <div class="col col-left">
+      <h3>Semantic Search</h3>
+      <div class="doc-item">
+        <span class="relevance" style="color:#22c55e">92%</span>
+        <div class="doc-type">Brief</div>
+        <div class="doc-title">Summary Judgment — Force Majeure</div>
+        <div class="doc-snippet">California supply chain contract dispute. Court held that COVID-19 shutdowns constituted a force majeure event under the plain language of the clause...</div>
+        <div class="doc-meta">Matter 2023-1042 · 2026-04-15 · Litigation</div>
+      </div>
+      <div class="doc-item">
+        <span class="relevance" style="color:#f59e0b">68%</span>
+        <div class="doc-type">Memo</div>
+        <div class="doc-title">Non-Compete Enforceability — Delaware Law</div>
+        <div class="doc-snippet">Internal research memo analyzing recent Delaware Chancery Court decisions on non-compete scope and reasonableness for tech industry clients...</div>
+        <div class="doc-meta">Matter 2024-0873 · 2026-02-20 · Employment</div>
+      </div>
+      <div class="doc-item">
+        <span class="relevance" style="color:#22c55e">81%</span>
+        <div class="doc-type">Opinion</div>
+        <div class="doc-title">Trade Secret Damages — EDTX</div>
+        <div class="doc-snippet">Eastern District of Texas jury awarded $4.2M in trade secret misappropriation damages. Analysis of reasonable royalty vs. lost profits methodologies...</div>
+        <div class="doc-meta">Matter 2025-0118 · 2026-06-01 · IP</div>
+      </div>
+    </div>
+
+    <div class="col col-mid">
+      <h3>Precedent Links</h3>
+      <div class="prec-item">
+        <div class="rel">Cites</div>
+        <div class="link">doc-1 → doc-2</div>
+        <div class="strength-bar"><div class="strength-fill" style="width:92%"></div></div>
+      </div>
+      <div class="prec-item">
+        <div class="rel">Relies On</div>
+        <div class="link">doc-2 → doc-3</div>
+        <div class="strength-bar"><div class="strength-fill" style="width:68%"></div></div>
+      </div>
+      <div class="prec-item">
+        <div class="rel">Related</div>
+        <div class="link">doc-1 → doc-3</div>
+        <div class="strength-bar"><div class="strength-fill" style="width:81%"></div></div>
+      </div>
+      <div class="prec-item">
+        <div class="rel">Distinguishes</div>
+        <div class="link">doc-2 → doc-4</div>
+        <div class="strength-bar"><div class="strength-fill" style="width:45%"></div></div>
+      </div>
+    </div>
+
+    <div class="col col-right">
+      <h3>Knowledge Graph</h3>
+      <div class="graph-nodes">
+        <span class="graph-node gn-entity">Force Majeure</span>
+        <span class="graph-node gn-juris">California</span>
+        <span class="graph-node gn-party">Acme Corp</span>
+        <span class="graph-node gn-doctrine">Non-Compete</span>
+        <span class="graph-node gn-juris">Delaware</span>
+        <span class="graph-node gn-outcome">$4.2M Award</span>
+        <span class="graph-node gn-entity">Trade Secret</span>
+        <span class="graph-node gn-party">Beta LLC</span>
+        <span class="graph-node gn-juris">EDTX</span>
+        <span class="graph-node gn-doctrine">Reasonable Royalty</span>
+        <span class="graph-node gn-outcome">Summary Judgment</span>
+        <span class="graph-node gn-entity">Supply Chain</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="output-bar">
+    <strong>Index:</strong> All firm documents + emails + matter files · <strong>Search:</strong> Voyage AI embeddings · <strong>Graph:</strong> Neo4j · <strong>Citations:</strong> Auto-linked
+  </div>
+</div>
+<script>
+  try {
+    if (localStorage.getItem('legal-os-theme') === 'dark' ||
+        (!localStorage.getItem('legal-os-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>

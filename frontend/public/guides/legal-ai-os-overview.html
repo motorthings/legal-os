@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A five-layer operating model for enterprise legal AI — governance architecture, specialized functions, and the operational layer that connects them into a coherent platform.">
+<title>Legal AI Operating System — Platform Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ GULF STREAM RACING PALETTE ============ */
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+
+    --bg: #eef4f9;
+    --surface: #ffffff;
+    --surface2: #f5f8fc;
+    --surface-elevated: #e8f0f7;
+    --border: rgba(0, 0, 0, 0.06);
+    --border-bright: rgba(0, 0, 0, 0.12);
+    --text: #0a1628;
+    --text-dim: #3d5a7a;
+    --text-muted: #7a9ab8;
+
+    --primary: #e8621a;
+    --primary-dim: rgba(232, 98, 26, 0.08);
+    --secondary: #4a90c4;
+    --secondary-dim: rgba(74, 144, 196, 0.08);
+    --metric: #0f766e;
+    --metric-dim: rgba(15, 118, 110, 0.06);
+    --amber: #b45309;
+    --amber-dim: rgba(180, 83, 9, 0.08);
+    --violet: #7c3aed;
+    --violet-dim: rgba(124, 58, 237, 0.08);
+    --rose: #e11d48;
+    --rose-dim: rgba(225, 29, 72, 0.08);
+    --slate: #475569;
+    --slate-dim: rgba(71, 85, 105, 0.08);
+    --emerald: #059669;
+    --emerald-dim: rgba(5, 150, 105, 0.08);
+
+    --layer-knowledge: #b45309;
+    --layer-knowledge-dim: rgba(180, 83, 9, 0.06);
+    --layer-gov: #7c3aed;
+    --layer-gov-dim: rgba(124, 58, 237, 0.05);
+    --layer-exec: #4a90c4;
+    --layer-exec-dim: rgba(74, 144, 196, 0.05);
+    --layer-ops: #0f766e;
+    --layer-ops-dim: rgba(15, 118, 110, 0.05);
+    --layer-firm: #475569;
+    --layer-firm-dim: rgba(71, 85, 105, 0.05);
+  }
+
+  html.dark {
+    --bg: #0a1628;
+    --surface: #0f1f3d;
+    --surface2: #132844;
+    --surface-elevated: #162d52;
+    --border: rgba(255, 255, 255, 0.06);
+    --border-bright: rgba(255, 255, 255, 0.12);
+    --text: #e8edf5;
+    --text-dim: #9bb0d4;
+    --text-muted: #5e7aa3;
+
+    --primary: #f37021;
+    --primary-dim: rgba(243, 112, 33, 0.12);
+    --secondary: #6cace4;
+    --secondary-dim: rgba(108, 172, 228, 0.12);
+    --metric: #2dd4bf;
+    --metric-dim: rgba(45, 212, 191, 0.08);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245, 158, 11, 0.12);
+    --violet: #a78bfa;
+    --violet-dim: rgba(167, 139, 250, 0.12);
+    --rose: #fb7185;
+    --rose-dim: rgba(251, 113, 133, 0.12);
+    --slate: #94a3b8;
+    --slate-dim: rgba(148, 163, 184, 0.12);
+    --emerald: #34d399;
+    --emerald-dim: rgba(52, 211, 153, 0.1);
+
+    --layer-knowledge: #f59e0b;
+    --layer-knowledge-dim: rgba(245, 158, 11, 0.08);
+    --layer-gov: #a78bfa;
+    --layer-gov-dim: rgba(167, 139, 250, 0.07);
+    --layer-exec: #6cace4;
+    --layer-exec-dim: rgba(108, 172, 228, 0.07);
+    --layer-ops: #2dd4bf;
+    --layer-ops-dim: rgba(45, 212, 191, 0.07);
+    --layer-firm: #94a3b8;
+    --layer-firm-dim: rgba(148, 163, 184, 0.07);
+  }
+
+  /* ============ RESET + BASE ============ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 80% 0%, var(--primary-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 60%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ BACKLINK ============ */
+  .backlink {
+    position: fixed; top: 12px; left: 16px; z-index: 101;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .backlink:hover { color: var(--text); border-color: var(--border-bright); }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 32px; padding: 0 32px;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 12px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    color: var(--primary); text-decoration: none;
+  }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--text-dim); transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* ============ LAYOUT ============ */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ============ ANIMATION ============ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .layer, .fade-section { animation: fadeUp 0.5s ease both; }
+  .layer:nth-child(1) { animation-delay: 0.05s; }
+  .layer:nth-child(2) { animation-delay: 0.10s; }
+  .layer:nth-child(3) { animation-delay: 0.15s; }
+  .layer:nth-child(4) { animation-delay: 0.20s; }
+  .layer:nth-child(5) { animation-delay: 0.25s; }
+  .fade-section:nth-child(1) { animation-delay: 0.05s; }
+  .fade-section:nth-child(2) { animation-delay: 0.10s; }
+  .fade-section:nth-child(3) { animation-delay: 0.15s; }
+  .fade-section:nth-child(4) { animation-delay: 0.20s; }
+  .fade-section:nth-child(5) { animation-delay: 0.25s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    text-align: center; margin-bottom: 48px; padding: 32px 0 0;
+  }
+  .hero-kicker {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--primary); margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px;
+    color: var(--text); line-height: 1.15;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-subtitle {
+    font-size: 17px; color: var(--text-dim); max-width: 700px; margin: 0 auto;
+    font-style: italic; line-height: 1.5;
+  }
+
+  /* ============ SECTION HEADINGS ============ */
+  .section-head {
+    margin-bottom: 20px; margin-top: 48px;
+  }
+  .section-label {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 4px;
+  }
+  .section-title {
+    font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 15px; color: var(--text-dim); line-height: 1.65; max-width: 720px;
+  }
+
+  /* ============ LAYER CARDS ============ */
+  .layer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .layer--knowledge { border-left: 4px solid var(--layer-knowledge); background: color-mix(in srgb, var(--surface) 96%, var(--layer-knowledge-dim)); }
+  .layer--gov { border-left: 4px solid var(--layer-gov); background: color-mix(in srgb, var(--surface) 96%, var(--layer-gov-dim)); }
+  .layer--exec { border-left: 4px solid var(--layer-exec); background: color-mix(in srgb, var(--surface) 96%, var(--layer-exec-dim)); }
+  .layer--ops { border-left: 4px solid var(--layer-ops); background: color-mix(in srgb, var(--surface) 96%, var(--layer-ops-dim)); }
+  .layer--firm { border-left: 4px solid var(--layer-firm); background: color-mix(in srgb, var(--surface) 96%, var(--layer-firm-dim)); }
+
+  .layer-num {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .layer--knowledge .layer-num { color: var(--layer-knowledge); }
+  .layer--gov .layer-num { color: var(--layer-gov); }
+  .layer--exec .layer-num { color: var(--layer-exec); }
+  .layer--ops .layer-num { color: var(--layer-ops); }
+  .layer--firm .layer-num { color: var(--layer-firm); }
+
+  .layer-title {
+    font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px;
+  }
+  .layer-sub {
+    font-size: 14px; color: var(--text-dim); line-height: 1.65;
+  }
+  .layer-sub strong { color: var(--text); }
+
+  /* ============ PILLAR TAGS (Layer 1) ============ */
+  .pillar-tags {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
+  }
+  .pillar-tag {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 6px;
+    background: var(--violet-dim); color: var(--violet);
+    border: 1px solid color-mix(in srgb, var(--violet) 20%, transparent);
+  }
+
+  /* ============ FUNCTION CARDS (Layer 2) ============ */
+  .func-section-label {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .func-section-label .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .func-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .func-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .func-card:hover { transform: translateY(-1px); }
+  .func-card.built { border-left: 3px solid var(--emerald); }
+  .func-card.roadmap { border-left: 3px solid var(--slate); opacity: 0.85; }
+  .func-card .func-status {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;
+  }
+  .func-card.built .func-status { background: var(--emerald); color: #fff; }
+  .func-card.roadmap .func-status { background: var(--slate); color: #fff; }
+  .func-name {
+    font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px;
+  }
+  .func-desc {
+    font-size: 12px; color: var(--text-dim); line-height: 1.55; margin-bottom: 6px;
+  }
+  .func-tagline {
+    font-size: 11px; color: var(--text-muted); font-style: italic;
+  }
+
+  /* ============ PROBLEM CARDS ============ */
+  .problem-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 12px;
+  }
+  .problem-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px 24px; text-align: center;
+  }
+  .problem-stat {
+    font-family: var(--font-mono); font-size: 36px; font-weight: 800;
+    color: var(--primary); margin-bottom: 8px;
+  }
+  .problem-name {
+    font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px;
+  }
+  .problem-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.65;
+  }
+
+  /* ============ CALLOUT ============ */
+  .callout {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--primary); border-radius: 0 10px 10px 0;
+    padding: 24px 28px; margin-bottom: 32px;
+    font-size: 14px; color: var(--text-dim); line-height: 1.7;
+  }
+  .callout h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .callout strong { color: var(--text); }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center; font-size: 12px; color: var(--text-dim);
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 900px) {
+    .func-grid, .problem-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 32px; }
+    .layer { padding: 20px 18px; }
+    .section-title { font-size: 22px; }
+  }
+  @media (max-width: 500px) {
+    .hero h1 { font-size: 26px; }
+    .pillar-tags { gap: 6px; }
+    .pillar-tag { font-size: 10px; padding: 3px 8px; }
+  }
+</style>
+</head>
+<body>
+
+</div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-kicker">Enterprise Legal AI</div>
+    <h1>Legal AI Operating System</h1>
+    <p class="hero-subtitle">A roadmap for the three problems every large law firm is facing right now — and a platform for building, deploying, and governing AI where every decision is auditable, explainable, and traceable by design.</p>
+  </div>
+
+  <!-- SECTION 0: THE THREE PROBLEMS -->
+  <div class="section-head fade-section">
+    <div class="section-label">The Problems</div>
+    <div class="section-title">Three Things Keeping Your Firm Up at Night</div>
+    <p class="section-desc">If your firm is like every other AmLaw 100 firm right now, you are staring at these three numbers and trying to figure out what to do about them.</p>
+  </div>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-stat">69%</div>
+      <div class="problem-name">Shadow AI Is Already Inside Your Firm</div>
+      <div class="problem-desc">69% of legal professionals use generative AI for work — most without firm knowledge or approval. Every associate with a ChatGPT tab open is a confidentiality event waiting to happen. You cannot govern what you pretend is not happening. <strong>The question is not whether AI is being used. It is whether you have any visibility into how, or any control over what happens to the data.</strong></div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-stat">43%</div>
+      <div class="problem-name">Most Firms Have No Governance — Or Fake Governance</div>
+      <div class="problem-desc">43% of firms have no AI policy and no plans to create one. The remaining 57% mostly have a document nobody read after week one. ABA Formal Opinion 512 makes clear: the duty of competence now includes understanding the benefits and risks of relevant technology. <strong>A policy document is not governance. Governance is structural — it lives in the database, not in a PDF.</strong></div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-stat">85%</div>
+      <div class="problem-name">The Billable Hour Model Is Under Structural Pressure</div>
+      <div class="problem-desc">85% of clients say firms should disclose when AI is used on their matters. 64% of in-house teams expect to depend less on outside counsel. <strong>The billable hour is not dead — but the premium for routine work is evaporating.</strong> The firms that thrive will be the ones that use AI to deliver faster, better work — and can prove it with an audit trail.</div>
+    </div>
+  </div>
+
+  <!-- TRANSITION: PROBLEMS → ROADMAP -->
+  <div class="callout fade-section">
+    <h3>These three problems share one root cause</h3>
+    <p>Shadow AI exists because there is no safe, approved alternative. Governance is fake because nobody knows how to make it structural. The billable hour is under pressure because AI makes routine work cost zero — and clients know it. <strong>The solution to all three is the same: a governed platform that makes AI safe to use, provably compliant, and measurable in outcomes. That is what the Legal AI OS is.</strong></p>
+  </div>
+
+  <!-- SECTION 1: THE ROADMAP -->
+  <div class="section-head fade-section">
+    <div class="section-label">The Roadmap</div>
+    <div class="section-title">How You Address All Three</div>
+    <p class="section-desc">Five layers. Each independent. Governance at the center — not as something you bolt on after the fact, but as the structural foundation every function is built atop. This is the map from "AI is happening to us" to "we control how AI happens."</p>
+  </div>
+
+  <!-- Layer 1: GOVERNANCE FIRST -->
+  <div class="layer layer--gov">
+    <div class="layer-num">Layer 1 &mdash; Non-Negotiable Foundation</div>
+    <div class="layer-title">Governance &amp; Trust</div>
+    <p class="layer-sub">Everything above this layer depends on it. Nothing below it can compromise it. <strong>Governance is not a compliance checklist. It is the architecture.</strong> Three pillars are non-negotiable — without them, the system is a liability, not an asset:</p>
+
+    <!-- Three non-negotiable pillars -->
+    <div class="func-grid" style="margin-top: 16px; margin-bottom: 0;">
+      <div class="func-card built" style="border-left-color: var(--violet);">
+        <span class="func-status" style="background: var(--violet);">Pillar 1</span>
+        <div class="func-name">Auditability</div>
+        <div class="func-desc">Every evaluation captures the full prompt, the full response, the model version, the rubric version, and the scoring formula. When a partner questions a classification six months later — or when a client's outside counsel guidelines audit asks for proof — the full decision context is retrievable. Not "the AI said so." Here is exactly why, with the raw data.</div>
+        <div class="func-tagline">Full prompt capture. Response + reasoning chain. Deterministic score replay. Structured JSONL logging. Immutable.</div>
+      </div>
+      <div class="func-card built" style="border-left-color: var(--violet);">
+        <span class="func-status" style="background: var(--violet);">Pillar 2</span>
+        <div class="func-name">Explainability</div>
+        <div class="func-desc">Every AI output includes its chain of reasoning — visible to the reviewer, not hidden in a vector. Classification decisions cite the specific clause, signal, or pattern that drove the result. Risk scores decompose into their weighted dimensions. No black-box recommendations. The attorney understands <em>why</em> before they decide <em>whether</em>.</div>
+        <div class="func-tagline">Chain of reasoning. Source attribution. Dimension-level score decomposition. Visible, not hidden.</div>
+      </div>
+      <div class="func-card built" style="border-left-color: var(--violet);">
+        <span class="func-status" style="background: var(--violet);">Pillar 3</span>
+        <div class="func-name">Traceability</div>
+        <div class="func-desc">Who ran the evaluation. When. Which model version. Which rubric version. What the score was. Whether a human overrode it, and why. Full chain of custody from upload through review. Compliance-ready artifacts on demand — SOC 2, ISO 42001, EU AI Act, ABA 512, client audit requests. The answer to "prove it" is always one query away.</div>
+        <div class="func-tagline">Chain of custody. Who, when, what, why. Every override logged. Every artifact exportable.</div>
+      </div>
+    </div>
+
+    <p class="layer-sub" style="margin-top: 18px;">These three pillars are enforced by four supporting layers: <strong>Confidentiality Architecture</strong> (Row-Level Security at the database — Client A's data cannot touch Client B's models), <strong>Human-in-the-Loop Gating</strong> (AI recommends, human decides — confidence below threshold triggers mandatory escalation), <strong>Model Governance</strong> (pre-deployment multi-agent evaluation with hard veto rules), and <strong>Compliance Readiness</strong> (ABA 512, SOC 2, ISO 42001, EU AI Act, Outside Counsel Guidelines — all covered by the architecture, not a policy document).</p>
+
+    <div class="pillar-tags">
+      <span class="pillar-tag">Confidentiality Architecture</span>
+      <span class="pillar-tag">Audit Trail</span>
+      <span class="pillar-tag">Explainability</span>
+      <span class="pillar-tag">Traceability</span>
+      <span class="pillar-tag">HITL Gating</span>
+      <span class="pillar-tag">Model Governance</span>
+      <span class="pillar-tag">Data Privacy</span>
+    </div>
+  </div>
+
+  <!-- Layer 0 -->
+  <div class="layer layer--knowledge">
+    <div class="layer-num">Layer 0 &mdash; Foundation</div>
+    <div class="layer-title">Knowledge Foundation</div>
+    <p class="layer-sub">Unified knowledge base, precedent libraries, clause libraries, search infrastructure. Everything the AI functions need to reason over — inside the trust boundary. Embedding and analysis run within the firm's enterprise infrastructure. Enterprise LLM agreements cover all API calls: no training on client data, no retention, no leakage between clients. <strong>Without this layer, every function starts from zero. With it, two centuries of institutional memory becomes searchable in seconds.</strong></p>
+  </div>
+
+  <!-- Layer 2 -->
+  <div class="layer layer--exec">
+    <div class="layer-num">Layer 2 &mdash; Execution</div>
+    <div class="layer-title">Legal AI Functions</div>
+    <p class="layer-sub">Standalone applications. Each owns its UI, workflow, and data. Each exposes a governance contract — health, metrics, and evaluation targets — so the governance layer can verify compliance without coupling to implementation. Functions are independent: replace one without touching the others. <strong>Every function follows the same pattern: Router classifies, Evaluator reasons, programmatic layer applies weights and thresholds, audit trail captures everything. The LLM provides reasoning. The system provides judgment.</strong></p>
+  </div>
+
+  <!-- Layer 3 -->
+  <div class="layer layer--ops">
+    <div class="layer-num">Layer 3 &mdash; Operations</div>
+    <div class="layer-title">Program Operations</div>
+    <p class="layer-sub">The bridge between AI capability and organizational adoption. Portfolio dashboard tracks every investment — adoption rates, cost impact, quality metrics, ROI. AI literacy and enablement turns capability into daily practice. Stakeholder discovery ensures every project starts with how the work actually gets done — go in to learn, not tell. <strong>Client engagement and change management turn AI from a cost center into a retention asset: "Here is what AI saved this quarter, with the audit trail to prove it."</strong></p>
+  </div>
+
+  <!-- Layer 4 -->
+  <div class="layer layer--firm">
+    <div class="layer-num">Layer 4 &mdash; Structure</div>
+    <div class="layer-title">Organizational Model</div>
+    <p class="layer-sub">Maps AI functions to practice groups, divisions, and strategic priorities. Not every function applies to every group. The operations layer tracks adoption by division. The governance layer enforces boundaries between them — employment legal walled from commercial legal at the database layer. <strong>Corporate gets contract review and due diligence. Litigation gets matter intake and regulatory monitoring. IP gets KM intelligence with the highest confidentiality walls. Every group gets what it needs, and nothing it should not see.</strong></p>
+  </div>
+
+  <!-- SECTION 2: WHAT'S BUILT -->
+  <div class="section-head fade-section">
+    <div class="section-label">Functions</div>
+    <div class="section-title">What's Built</div>
+    <p class="section-desc">Four functions built and deployed. Four more designed and roadmapped. Each follows the same architecture pattern — classification, evaluation, programmatic scoring, audit trail.</p>
+  </div>
+
+  <!-- Built -->
+  <div class="func-section-label">
+    <span class="dot" style="background: var(--emerald);"></span>
+    <span style="color: var(--emerald);">Built / Deployed</span>
+  </div>
+  <div class="func-grid">
+    <div class="func-card built">
+      <span class="func-status">Built</span>
+      <div class="func-name">Matter Intake &amp; Triage</div>
+      <div class="func-desc">Two-stage pipeline: Router classifies practice area and urgency, Evaluator scores across 5 weighted dimensions. Programmatic scoring never trusts the LLM directly. Full audit trail — every prompt, response, and rubric version captured.</div>
+      <div class="func-tagline">Under 10 seconds. Every decision auditable. The highest-leverage entry point for firm-wide AI adoption.</div>
+    </div>
+    <div class="func-card built">
+      <span class="func-status">Built</span>
+      <div class="func-name">Contract Review &amp; Analysis</div>
+      <div class="func-desc">Five specialized agents — vendor, customer, employment, DPA, general. Classification to extraction to risk scoring to flagging. RAG-powered with 30+ legal standards. Human-in-the-loop checkpoints. Full audit trail.</div>
+      <div class="func-tagline">360 contracts per hour. Production, not demo.</div>
+    </div>
+    <div class="func-card built">
+      <span class="func-status">Built</span>
+      <div class="func-name">Employment Legal Agents</div>
+      <div class="func-desc">Separation agreement generator covering US, EMEA, and Australia jurisdictions. Legal metrics analysis agent for outside-counsel spend by firm and practice area. State annual report filing automation.</div>
+      <div class="func-tagline">Built inside a real legal department with real confidentiality constraints. RLS walls between employment and commercial legal.</div>
+    </div>
+    <div class="func-card built">
+      <span class="func-status">Configured</span>
+      <div class="func-name">Cowork Legal Plugin</div>
+      <div class="func-desc">Nine skills for in-house legal teams: contract review, NDA triage, compliance checks, risk assessment, meeting briefings, legal responses, vendor checks, signature requests, daily briefings. Playbook-driven.</div>
+      <div class="func-tagline">Playbook-driven. legal.local.md is the control document. Attorney reviews every redline before sending.</div>
+    </div>
+  </div>
+
+  <!-- Roadmap -->
+  <div class="func-section-label" style="margin-top: 8px;">
+    <span class="dot" style="background: var(--slate);"></span>
+    <span style="color: var(--slate);">Roadmap</span>
+  </div>
+  <div class="func-grid">
+    <div class="func-card roadmap">
+      <span class="func-status">Roadmap</span>
+      <div class="func-name">Due Diligence Accelerator</div>
+      <div class="func-desc">Bulk document review. Clause-level comparison against target standards. Deltas only to the reviewer. Some contract types already compressible to 2 hours from 15-20.</div>
+      <div class="func-tagline">Highest-volume automation target for corporate and finance practices.</div>
+    </div>
+    <div class="func-card roadmap">
+      <span class="func-status">Roadmap</span>
+      <div class="func-name">Regulatory Change Monitor</div>
+      <div class="func-desc">Monitors regulatory updates across jurisdictions. Maps changes to active client matters. Surfaces affected engagements. Flags compliance deadlines.</div>
+      <div class="func-tagline">Critical for multi-year, multi-jurisdiction matters in energy, environment, and financial services.</div>
+    </div>
+    <div class="func-card roadmap">
+      <span class="func-status">Roadmap</span>
+      <div class="func-name">KM &amp; Precedent Intelligence</div>
+      <div class="func-desc">Precedent-aware semantic search. Clause libraries that learn from every reviewed contract. "Have we done this before, and what did we argue?" — answered in seconds, not partner memory.</div>
+      <div class="func-tagline">Institutional memory, searchable. The firm's second brain.</div>
+    </div>
+    <div class="func-card roadmap">
+      <span class="func-status">Roadmap</span>
+      <div class="func-name">Client Value Reporting</div>
+      <div class="func-desc">Outcome reports demonstrating measurable AI value. ROI artifacts. AI governance documentation for client RFPs. "Here's what AI saved this quarter" — as a retention asset.</div>
+      <div class="func-tagline">85% of clients say firms should disclose when AI is used. Turn compliance into competitive advantage.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: ARCHITECTURE PRINCIPLE -->
+  <div class="callout fade-section">
+    <h3>Deterministic over LLM</h3>
+    <p>The platform never trusts an LLM score directly. Every classification, risk score, and recommendation goes through a programmatic scoring layer. The LLM provides reasoning. The system applies weights, thresholds, and rules. <strong>This is the architectural expression of the three pillars:</strong> auditability means the scoring is replayable. Explainability means every dimension is decomposed and visible. Traceability means the full chain — prompt to model to rubric to score to human override — is captured and immutable. Nothing is a black box. The audit trail is the product.</p>
+  </div>
+
+  <div class="footer">
+    Legal AI Operating System — Platform Overview
+    &nbsp;&middot;&nbsp;
+    <a href="legal-ai-governance.html">Governance Model &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    <a href="matter-intake-overview.html">Matter Intake &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    <a href="../portfolio/contract-review-showcase.html">Contract Review &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    <a href="legal-project-registry.html">Project Registry &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    
+    <br>
+    <span style="font-size:11px;opacity:0.7;">&copy; 2025-2026 Charlie Fuller</span>
+  </div>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const iconLight = toggle.querySelector('.icon-light');
+  const iconDark = toggle.querySelector('.icon-dark');
+  function setTheme(d) {
+    document.documentElement.classList.toggle('dark', d);
+    iconLight.style.display = d ? 'none' : '';
+    iconDark.style.display = d ? '' : 'none';
+    try { localStorage.setItem('diagram-theme', d ? 'dark' : 'light'); } catch(e) {}
+  }
+  toggle.addEventListener('click', () => setTheme(!document.documentElement.classList.contains('dark')));
+  try { if (localStorage.getItem('diagram-theme') === 'dark') setTheme(true); } catch(e) {}
+</script>
+
+</body>
+</html>

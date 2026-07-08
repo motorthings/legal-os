@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { supabase } from "./supabase";
+import { setTokenProvider } from "./api";
 import type { Session, User as SupabaseUser } from "@supabase/supabase-js";
 
 interface AuthState {
@@ -50,6 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Keep the API token provider in sync with the session
+  useEffect(() => {
+    setTokenProvider(() => session?.access_token ?? null);
+    return () => setTokenProvider(null);
+  }, [session]);
 
   async function signIn(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });

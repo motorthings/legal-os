@@ -98,7 +98,9 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     cors_origins: list[str] = [
         "http://localhost:3000",
+        "https://legal.sickofancy.ai",
         "https://legal-os.vercel.app",
+        "https://*.vercel.app",
     ]
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}

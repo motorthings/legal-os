@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulatory Change Monitor — Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: #c8daea; --border-bright: #a0bedb;
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --rose: #e11d48; --violet: #7c3aed; --amber: #b45309;
+  }
+  .dark {
+    --bg: #0a1628; --surface: #132240; --surface2: #1a2d52;
+    --border: #1a2d52; --border-bright: #2d4570;
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --rose: #fb7185; --violet: #a78bfa; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 60% 0%, var(--primary-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 70%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; line-height: 1.6; padding: 40px 20px;
+  }
+  .backlink {
+    position: fixed; top: 12px; left: 16px; z-index: 101;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface);
+  }
+  .backlink:hover { color: var(--text); border-color: var(--border-bright); }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); text-align: center; margin-bottom: 36px;
+  }
+
+  .sources {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 28px;
+  }
+  .source {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .source .name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .source .detail { font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); }
+  .source .status {
+    display: inline-block; margin-top: 8px; font-family: var(--font-mono);
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  }
+  .status-active { background: rgba(34,197,94,0.1); color: #22c55e; }
+  .status-pending { background: rgba(245,158,11,0.1); color: #f59e0b; }
+  .status-monitoring { background: rgba(100,100,100,0.1); color: #888; }
+
+  .pipeline {
+    display: flex; align-items: stretch; gap: 0; margin: 24px 0;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .pipe-step {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 16px; text-align: center;
+    flex: 1; min-width: 160px; max-width: 220px;
+    position: relative;
+  }
+  .pipe-step h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .pipe-step p { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+  .pipe-arrow {
+    display: flex; align-items: center; padding: 0 8px;
+    color: var(--text-muted); font-size: 18px; font-family: var(--font-mono);
+  }
+
+  .changes-table {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-top: 28px;
+  }
+  .changes-header {
+    display: flex; padding: 12px 16px;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .change-row {
+    display: flex; padding: 12px 16px; align-items: center;
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .change-row:last-child { border-bottom: none; }
+  .col-title { flex: 2; font-weight: 600; }
+  .col-juris { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+  .col-date { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+  .col-impact { flex: 0.7; text-align: center; }
+  .impact-badge {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+  }
+  .impact-critical { background: rgba(239,68,68,0.1); color: #ef4444; }
+  .impact-high { background: rgba(249,115,22,0.1); color: #f97316; }
+  .impact-medium { background: rgba(245,158,11,0.1); color: #f59e0b; }
+  .impact-low { background: rgba(34,197,94,0.1); color: #22c55e; }
+
+  .output-bar {
+    margin-top: 28px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<a class="backlink" href="https://legal.sickofancy.ai/guides">← Legal AI OS</a>
+<div class="container">
+  <h1>Regulatory Change Monitor</h1>
+  <h2>Multi-source polling · impact mapping · automated flags</h2>
+
+  <div class="sources">
+    <div class="source">
+      <div class="name">Federal Register</div>
+      <div class="detail">Rules · Proposed · Notices</div>
+      <span class="status status-active">active</span>
+    </div>
+    <div class="source">
+      <div class="name">State Bulletins</div>
+      <div class="detail">CA · NY · TX · DE · IL</div>
+      <span class="status status-active">active</span>
+    </div>
+    <div class="source">
+      <div class="name">Agency Guidance</div>
+      <div class="detail">SEC · DOL · EEOC · FTC</div>
+      <span class="status status-pending">pending</span>
+    </div>
+    <div class="source">
+      <div class="name">Court Rules</div>
+      <div class="detail">FRCP · Local · Standing</div>
+      <span class="status status-monitoring">monitoring</span>
+    </div>
+    <div class="source">
+      <div class="name">Industry Regs</div>
+      <div class="detail">FINRA · HIPAA · GDPR</div>
+      <span class="status status-active">active</span>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-step">
+      <h4>1. Poll</h4>
+      <p>Multi-source ingestion across federal, state, and agency feeds on configurable schedules</p>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <h4>2. Classify</h4>
+      <p>AI classifies each change by practice area, jurisdiction, and impact severity</p>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <h4>3. Map</h4>
+      <p>Cross-reference against active matters — which clients, which documents are affected</p>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <h4>4. Flag</h4>
+      <p>Severity-classified alerts with direct links to affected matters and recommended actions</p>
+    </div>
+  </div>
+
+  <div class="changes-table">
+    <div class="changes-header">
+      <span class="col-title">Change</span>
+      <span class="col-juris">Jurisdiction</span>
+      <span class="col-date">Effective</span>
+      <span class="col-impact">Impact</span>
+    </div>
+    <div class="change-row">
+      <span class="col-title">Wage transparency requirements</span>
+      <span class="col-juris">California</span>
+      <span class="col-date">2026-08-15</span>
+      <span class="col-impact"><span class="impact-badge impact-critical">critical</span></span>
+    </div>
+    <div class="change-row">
+      <span class="col-title">Non-compete ban expansion</span>
+      <span class="col-juris">Federal · FTC</span>
+      <span class="col-date">2026-09-01</span>
+      <span class="col-impact"><span class="impact-badge impact-high">high</span></span>
+    </div>
+    <div class="change-row">
+      <span class="col-title">AI hiring bias disclosure rules</span>
+      <span class="col-juris">New York</span>
+      <span class="col-date">2026-10-01</span>
+      <span class="col-impact"><span class="impact-badge impact-medium">medium</span></span>
+    </div>
+    <div class="change-row">
+      <span class="col-title">Climate disclosure amendments</span>
+      <span class="col-juris">SEC · Federal</span>
+      <span class="col-date">2026-07-30</span>
+      <span class="col-impact"><span class="impact-badge impact-low">low</span></span>
+    </div>
+  </div>
+
+  <div class="output-bar">
+    <strong>Backend:</strong> Fly.io · <strong>AI:</strong> Claude API · <strong>Schedule:</strong> Configurable cron · <strong>Output:</strong> Structured JSON + alerts
+  </div>
+</div>
+<script>
+  try {
+    if (localStorage.getItem('legal-os-theme') === 'dark' ||
+        (!localStorage.getItem('legal-os-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>

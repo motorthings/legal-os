@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employment Legal Agents — Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: #c8daea; --border-bright: #a0bedb;
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --rose: #e11d48; --violet: #7c3aed; --amber: #b45309;
+  }
+  .dark {
+    --bg: #0a1628; --surface: #132240; --surface2: #1a2d52;
+    --border: #1a2d52; --border-bright: #2d4570;
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --rose: #fb7185; --violet: #a78bfa; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 70% 0%, var(--rose)0D, transparent 50%),
+      radial-gradient(ellipse at 30% 50%, var(--violet)08, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; line-height: 1.6; padding: 40px 20px;
+  }
+  .backlink {
+    position: fixed; top: 12px; left: 16px; z-index: 101;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface);
+  }
+  .backlink:hover { color: var(--text); border-color: var(--border-bright); }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); text-align: center; margin-bottom: 36px;
+  }
+  .flow { display: flex; flex-direction: column; gap: 16px; }
+  .step {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 16px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-content h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .step-content p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .s1 .step-num { background: var(--primary-dim); color: var(--primary); }
+  .s2 .step-num { background: var(--metric-dim); color: var(--metric); }
+  .s3 .step-num { background: var(--secondary-dim); color: var(--secondary); }
+  .s4 .step-num { background: var(--violet)12; color: var(--violet); }
+  .s5 .step-num { background: var(--amber)12; color: var(--amber); }
+  .dims {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-top: 32px;
+  }
+  .dim {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .dim .icon { font-size: 24px; margin-bottom: 6px; }
+  .dim h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .dim p { font-size: 12px; color: var(--text-dim); }
+  .arrow {
+    display: flex; justify-content: center;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--text-muted); padding: 4px 0;
+  }
+  .output-bar {
+    margin-top: 28px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+  }
+  .output-bar strong { color: var(--text); }
+</style>
+</head>
+<body>
+<a class="backlink" href="https://legal.sickofancy.ai/guides">← Legal AI OS</a>
+<div class="container">
+  <h1>Employment Legal Agents</h1>
+  <h2>Worker classification · FLSA compliance · handbook audit</h2>
+
+  <div class="flow">
+    <div class="step s1">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Policy Ingestion</h3>
+        <p>Paste an employee handbook excerpt, contractor classification scenario, or policy clause. The system parses jurisdictional context and identifies relevant legal frameworks.</p>
+      </div>
+    </div>
+    <div class="arrow">↓ classified by jurisdiction & legal framework ↓</div>
+    <div class="step s2">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Classification Analysis</h3>
+        <p>Two-axis risk scoring: contractor misclassification risk (IRS 20-factor, ABC test, economic realities) and exemption classification risk (FLSA duties test, salary basis). Each axis returns a 0–100 score with reasoning.</p>
+      </div>
+    </div>
+    <div class="arrow">↓ risk scores → compliance dimensions ↓</div>
+    <div class="step s3">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Compliance Audit</h3>
+        <p>Multi-dimensional review across wage & hour, leave policies, discrimination, reasonable accommodation, and recordkeeping. Each dimension scored 0–100 with risk level (low/medium/high) and narrative reasoning.</p>
+      </div>
+    </div>
+    <div class="arrow">↓ compliance scores → recommendations ↓</div>
+    <div class="step s4">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Recommendation Engine</h3>
+        <p>Prioritized action items based on risk severity — including policy revision flags, reclassification urgency, and jurisdiction-specific remediation steps. Every recommendation traceable to its source dimension.</p>
+      </div>
+    </div>
+    <div class="arrow">↓ audit trail ↓</div>
+    <div class="step s5">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Governance Artifacts</h3>
+        <p>Full audit trail captured: prompt, model version, scores, chain of reasoning, and any human overrides. Auditor-ready output with immutable timestamps.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dims">
+    <div class="dim">
+      <div class="icon">📋</div>
+      <h4>Wage & Hour</h4>
+      <p>Overtime, minimum wage, tip credits, off-the-clock claims</p>
+    </div>
+    <div class="dim">
+      <div class="icon">🏥</div>
+      <h4>Leave Policies</h4>
+      <p>FMLA, ADA, state paid leave, return-to-work accommodations</p>
+    </div>
+    <div class="dim">
+      <div class="icon">⚖️</div>
+      <h4>Discrimination</h4>
+      <p>Title VII, ADEA, state anti-discrimination statutes</p>
+    </div>
+    <div class="dim">
+      <div class="icon">♿</div>
+      <h4>Accommodation</h4>
+      <p>Interactive process, undue hardship, reasonable accommodation</p>
+    </div>
+    <div class="dim">
+      <div class="icon">📁</div>
+      <h4>Recordkeeping</h4>
+      <p>FLSA recordkeeping, I-9 compliance, personnel file requirements</p>
+    </div>
+    <div class="dim">
+      <div class="icon">🏛️</div>
+      <h4>Jurisdiction</h4>
+      <p>Multi-state compliance mapping, CA/WA/NY/IL-specific rules</p>
+    </div>
+  </div>
+
+  <div class="output-bar">
+    <strong>Model:</strong> Claude API · <strong>Deploy:</strong> Vercel + Fly.io · <strong>Audit:</strong> Supabase · <strong>Embed:</strong> Voyage AI
+  </div>
+</div>
+<script>
+  try {
+    if (localStorage.getItem('legal-os-theme') === 'dark' ||
+        (!localStorage.getItem('legal-os-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>

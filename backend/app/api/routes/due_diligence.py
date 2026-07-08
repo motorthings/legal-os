@@ -166,6 +166,23 @@ async def create_project(project: DDProjectCreate, user: User = Depends(get_curr
     return project_row
 
 
+@router.get("/projects")
+async def list_projects(user: User = Depends(get_current_user)):
+    """List all DD projects for the user's client, optionally filtered by matter."""
+    if not user.client_id:
+        raise HTTPException(status_code=400, detail="User has no client association")
+
+    supabase = get_supabase()
+    result = (
+        supabase.table("dd_projects")
+        .select("*")
+        .eq("client_id", str(user.client_id))
+        .order("created_at", desc=True)
+        .execute()
+    )
+    return result.data or []
+
+
 @router.get("/projects/{project_id}")
 async def get_project(project_id: UUID):
     """Get a project with its target standards and document list."""

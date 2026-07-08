@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, DragEvent } from "react";
+import { useAuth } from "@/lib/auth";
 
 interface FileUploadProps {
   projectId: string;
@@ -8,6 +9,7 @@ interface FileUploadProps {
 }
 
 export default function FileUpload({ projectId, onUploadComplete }: FileUploadProps) {
+  const { session } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +39,7 @@ export default function FileUpload({ projectId, onUploadComplete }: FileUploadPr
     setError("");
 
     try {
-      const token = getAccessToken();
+      const token = session?.access_token;
       const formData = new FormData();
       formData.append("project_id", projectId);
       files.forEach((f) => formData.append("files", f));
@@ -146,14 +148,4 @@ export default function FileUpload({ projectId, onUploadComplete }: FileUploadPr
       )}
     </div>
   );
-}
-
-function getAccessToken(): string | null {
-  try {
-    const stored = localStorage.getItem("sb-rkiaocarugdbcgtonfuq-auth-token");
-    if (stored) {
-      return JSON.parse(stored).access_token || null;
-    }
-  } catch {}
-  return null;
 }

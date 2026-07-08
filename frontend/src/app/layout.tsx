@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Link from "next/link";
+import Sidebar from "@/components/Sidebar";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemeInit from "@/components/ThemeInit";
-import NavAuth from "@/components/NavAuth";
 import { AuthProvider } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Legal AI OS",
   description:
-    "A governed platform for building, deploying, and measuring AI across the legal enterprise. Eight functions. One governance layer.",
+    "A governed platform for building, deploying, and measuring AI across the legal enterprise. Seven functions. One governance layer.",
 };
 
 export default function RootLayout({
@@ -33,49 +32,21 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen pb-12">
+      <body className="min-h-screen">
         <AuthProvider>
-        <nav className="nav-blur sticky top-0 z-50 px-4 sm:px-8">
-          <div className="max-w-6xl mx-auto py-3 flex items-center justify-between">
-            <Link
-              href="/"
-              className="font-mono text-xs font-semibold tracking-wider text-[var(--primary)] no-underline"
-            >
-              LEGAL AI OS
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/due-diligence"
-                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
-              >
-                Due Diligence
-              </Link>
-              <Link
-                href="/km"
-                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
-              >
-                KM
-              </Link>
-              <Link
-                href="/regulatory"
-                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
-              >
-                Regulatory
-              </Link>
-              <Link
-                href="/reporting"
-                className="font-mono text-xs text-[var(--text-dim)] hover:text-[var(--secondary)] no-underline transition-colors"
-              >
-                Reports
-              </Link>
-              <NavAuth />
-              <ThemeToggle />
-            </div>
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1 min-w-0 overflow-y-auto relative">
+              <div className="fixed top-4 right-4 z-50">
+                <ThemeToggle />
+              </div>
+              <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-8 pb-12">
+                {children}
+              </div>
+            </main>
           </div>
-        </nav>
-        <ThemeInit />
-        <main className="max-w-6xl mx-auto px-4 sm:px-8 pt-8">{children}</main>
         </AuthProvider>
+        <ThemeInit />
       </body>
     </html>
   );

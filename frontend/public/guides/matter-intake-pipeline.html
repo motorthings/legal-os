@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Technical deep dive — two-stage AI pipeline for legal matter intake: router classifies practice area and urgency, evaluator scores across five weighted dimensions, programmatic scoring never trusts the LLM.">
+<title>Matter Intake Evaluation — Pipeline Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: rgba(0,0,0,0.06); --border-bright: rgba(0,0,0,0.12);
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --amber: #b45309; --amber-dim: rgba(180,83,9,0.08);
+    --violet: #7c3aed; --violet-dim: rgba(124,58,237,0.08);
+    --emerald: #059669; --emerald-dim: rgba(5,150,105,0.08);
+    --rose: #e11d48; --rose-dim: rgba(225,29,72,0.08);
+    --slate: #475569; --slate-dim: rgba(71,85,105,0.08);
+
+    /* Flowchart colors */
+    --flow-input: #475569; --flow-input-dim: rgba(71,85,105,0.08);
+    --flow-router: #7c3aed; --flow-router-dim: rgba(124,58,237,0.08);
+    --flow-eval: #4a90c4; --flow-eval-dim: rgba(74,144,196,0.08);
+    --flow-score: #0f766e; --flow-score-dim: rgba(15,118,110,0.08);
+    --flow-output: #059669; --flow-output-dim: rgba(5,150,105,0.08);
+  }
+  html.dark {
+    --bg: #0a1628; --surface: #0f1f3d; --surface2: #132844;
+    --border: rgba(255,255,255,0.06); --border-bright: rgba(255,255,255,0.12);
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+    --violet: #a78bfa; --violet-dim: rgba(167,139,250,0.12);
+    --emerald: #34d399; --emerald-dim: rgba(52,211,153,0.1);
+    --rose: #fb7185; --rose-dim: rgba(251,113,133,0.12);
+    --slate: #94a3b8; --slate-dim: rgba(148,163,184,0.12);
+    --flow-input: #94a3b8; --flow-input-dim: rgba(148,163,184,0.12);
+    --flow-router: #a78bfa; --flow-router-dim: rgba(167,139,250,0.12);
+    --flow-eval: #6cace4; --flow-eval-dim: rgba(108,172,228,0.12);
+    --flow-score: #2dd4bf; --flow-score-dim: rgba(45,212,191,0.08);
+    --flow-output: #34d399; --flow-output-dim: rgba(52,211,153,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 80% 0%, var(--primary-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 60%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    font-size: 15px; line-height: 1.7; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 32px; padding: 0 32px;
+  }
+  .nav-inner {
+    max-width: 1000px; margin: 0 auto; padding: 12px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    color: var(--primary); text-decoration: none;
+  }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--text-dim); transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
+  .backlink{position:fixed;top:12px;left:16px;z-index:101;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);transition:color .15s,border-color .15s}
+  .backlink:hover{color:var(--text);border-color:var(--border-bright)}
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 24px 80px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .section { animation: fadeUp 0.5s ease both; margin-bottom: 40px; }
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.10s; }
+  .section:nth-child(3) { animation-delay: 0.15s; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  .hero { text-align: center; margin-bottom: 48px; padding: 32px 0 0; }
+  .hero h1 {
+    font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+    color: var(--text); line-height: 1.15;
+  }
+  .hero p { font-size: 17px; color: var(--text-dim); max-width: 650px; margin: 0 auto; }
+  .hero .stack-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .hero .stack-pill {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    padding: 4px 10px; border-radius: 5px;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+  }
+
+  .section-title {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px;
+  }
+
+  /* Pipeline */
+  .pipeline {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 32px 24px;
+  }
+  .flow-row {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+  .flow-node {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    min-width: 200px; flex-shrink: 0;
+  }
+  .flow-box {
+    border-radius: 12px; padding: 18px 24px; text-align: center;
+    font-weight: 500; font-size: 14px; line-height: 1.5; max-width: 520px; width: 100%;
+  }
+  .flow-box--input { background: var(--flow-input-dim); border: 2px solid var(--flow-input); }
+  .flow-box--router { background: var(--flow-router-dim); border: 2px solid var(--flow-router); }
+  .flow-box--eval { background: var(--flow-eval-dim); border: 2px solid var(--flow-eval); }
+  .flow-box--score { background: var(--flow-score-dim); border: 2px solid var(--flow-score); }
+  .flow-box--output { background: var(--flow-output-dim); border: 2px solid var(--flow-output); }
+  .flow-tag {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 8px; border-radius: 4px;
+  }
+  .flow-tag--input { color: var(--flow-input); background: var(--flow-input-dim); }
+  .flow-tag--router { color: var(--flow-router); background: var(--flow-router-dim); }
+  .flow-tag--eval { color: var(--flow-eval); background: var(--flow-eval-dim); }
+  .flow-tag--score { color: var(--flow-score); background: var(--flow-score-dim); }
+  .flow-tag--output { color: var(--flow-output); background: var(--flow-output-dim); }
+  .flow-arrow {
+    padding: 4px 0; font-size: 20px; color: var(--border-bright);
+    font-family: var(--font-mono);
+  }
+  .flow-detail {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+    margin-top: 6px; text-align: center;
+  }
+  .flow-box-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .flow-box-desc { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+  /* Dimension cards */
+  .dim-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  }
+  .dim-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .dim-card:nth-child(1) { border-top: 3px solid var(--violet); }
+  .dim-card:nth-child(2) { border-top: 3px solid var(--amber); }
+  .dim-card:nth-child(3) { border-top: 3px solid var(--rose); }
+  .dim-card:nth-child(4) { border-top: 3px solid var(--secondary); }
+  .dim-card:nth-child(5) { border-top: 3px solid var(--metric); }
+  .dim-weight {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .dim-card:nth-child(1) .dim-weight { color: var(--violet); }
+  .dim-card:nth-child(2) .dim-weight { color: var(--amber); }
+  .dim-card:nth-child(3) .dim-weight { color: var(--rose); }
+  .dim-card:nth-child(4) .dim-weight { color: var(--secondary); }
+  .dim-card:nth-child(5) .dim-weight { color: var(--metric); }
+  .dim-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .dim-desc { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+  /* Scoring formula */
+  .formula-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; text-align: center;
+  }
+  .formula {
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-dim);
+    line-height: 2;
+  }
+  .formula strong { color: var(--text); }
+  .thresholds {
+    display: flex; gap: 12px; justify-content: center; margin-top: 14px;
+    font-size: 13px;
+  }
+  .threshold {
+    padding: 4px 12px; border-radius: 6px;
+    font-family: var(--font-mono); font-weight: 600; font-size: 11px;
+  }
+  .threshold--low { background: var(--emerald-dim); color: var(--emerald); }
+  .threshold--med { background: var(--amber-dim); color: var(--amber); }
+  .threshold--high { background: var(--rose-dim); color: var(--rose); }
+
+  /* Tech grid */
+  .tech-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .tech-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px;
+  }
+  .tech-label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .tech-value { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .tech-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* Audit trail section */
+  .audit-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .audit-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px;
+  }
+  .audit-card h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .audit-card p { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+  .footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center; font-size: 12px; color: var(--text-dim);
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .dim-grid, .tech-grid, .audit-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .flow-box { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Matter Intake — Pipeline Deep Dive</h1>
+    <p>Two-stage AI pipeline. Router classifies. Evaluator scores across five dimensions. Programmatic scoring never trusts the LLM directly. Every decision auditable.</p>
+    <div class="stack-pills">
+      <span class="stack-pill">FastAPI</span>
+      <span class="stack-pill">Pydantic</span>
+      <span class="stack-pill">Claude / DeepSeek</span>
+      <span class="stack-pill">Next.js 16</span>
+      <span class="stack-pill">Vercel + Fly.io</span>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="section">
+    <div class="section-title" style="color: var(--secondary);">Pipeline — Two Stages, Five Dimensions</div>
+    <div class="pipeline">
+      <div class="flow-row">
+
+        <div class="flow-node">
+          <div class="flow-box flow-box--input">
+            <div class="flow-box-title">Matter Summary</div>
+            <div class="flow-box-desc">Unstructured text describing a potential new client engagement. Could be an email, intake form, or partner dictation. No required format.</div>
+          </div>
+          <div class="flow-tag flow-tag--input">Input</div>
+        </div>
+
+        <div class="flow-arrow">&darr;</div>
+
+        <div class="flow-node">
+          <div class="flow-box flow-box--router">
+            <div class="flow-box-title">Stage 1 — Router</div>
+            <div class="flow-box-desc">Classifies practice area, matter type, jurisdiction, and urgency. Extracts key signals and confidence score. Low temperature — focused classification, not creative reasoning.</div>
+          </div>
+          <div class="flow-tag flow-tag--router">Classification</div>
+          <div class="flow-detail">Output: practice_area, confidence, matter_type, jurisdiction, urgency_indicators</div>
+        </div>
+
+        <div class="flow-arrow">&darr;</div>
+
+        <div class="flow-node">
+          <div class="flow-box flow-box--eval">
+            <div class="flow-box-title">Stage 2 — Evaluator</div>
+            <div class="flow-box-desc">Scores across 5 dimensions with detailed reasoning. Enriched prompt includes router classification for context. Higher temperature — this stage needs nuance.</div>
+          </div>
+          <div class="flow-tag flow-tag--eval">Deep Evaluation</div>
+          <div class="flow-detail">Output: practice_area (refined), urgency_risk, conflict_check, staffing, data_integrity</div>
+        </div>
+
+        <div class="flow-arrow">&darr;</div>
+
+        <div class="flow-node">
+          <div class="flow-box flow-box--score">
+            <div class="flow-box-title">Programmatic Scoring</div>
+            <div class="flow-box-desc">Weighted calculation across all 5 dimensions. Applies deterministic weights and rules — never trusts LLM-generated scores directly. Conflict type gates score levels.</div>
+          </div>
+          <div class="flow-tag flow-tag--score">Deterministic</div>
+          <div class="flow-detail">overall_score = &Sigma;(dimension.score &times; dimension.weight)</div>
+        </div>
+
+        <div class="flow-arrow">&darr;</div>
+
+        <div class="flow-node">
+          <div class="flow-box flow-box--output">
+            <div class="flow-box-title">Structured Response</div>
+            <div class="flow-box-desc">Risk badge (high / medium / low), 5 dimension score cards with reasoning, conflict flag, staffing recommendation, data integrity issues. Processing time and model info included.</div>
+          </div>
+          <div class="flow-tag flow-tag--output">API Response</div>
+          <div class="flow-detail">POST /api/evaluate &rarr; EvaluateResponse (Pydantic model)</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Five Dimensions -->
+  <div class="section">
+    <div class="section-title" style="color: var(--violet);">Evaluation Dimensions</div>
+    <div class="dim-grid">
+      <div class="dim-card">
+        <div class="dim-weight">25% &mdash; Classification</div>
+        <div class="dim-name">Practice Area Classification Accuracy</div>
+        <div class="dim-desc">Is the matter correctly classified? Does it span multiple practice areas? Router confidence + evaluator re-confirmation. Cross-practice elements flagged for partner review.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">25% &mdash; Risk</div>
+        <div class="dim-name">Urgency &amp; Risk Assessment</div>
+        <div class="dim-desc">Deadlines, regulatory exposure, financial stakes, reputational risk. Scored as inverted risk — lower risk = higher score. Urgency classified: immediate / short-term / routine.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">20% &mdash; Conflicts</div>
+        <div class="dim-name">Conflict Check Completeness</div>
+        <div class="dim-desc">Adverse parties identified. Business conflicts flagged. Prior representations checked. Direct adverse = highest score (conflict found). None identified = baseline.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">15% &mdash; Staffing</div>
+        <div class="dim-name">Staffing Recommendation Quality</div>
+        <div class="dim-desc">Role recommendation + hour estimate. Partner oversight assessed. Specialty requirements identified. Scored on completeness — has role + hours = higher score.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-weight">15% &mdash; Integrity</div>
+        <div class="dim-name">Client/Matter Data Integrity</div>
+        <div class="dim-desc">What's missing from the intake? How clear is the summary? Completeness and clarity scored 0&ndash;100. Issues surfaced explicitly so intake can be improved before the engagement letter.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scoring Formula -->
+  <div class="section">
+    <div class="section-title" style="color: var(--metric);">Scoring — Deterministic, Never Trusts the LLM</div>
+    <div class="formula-box">
+      <div class="formula">
+        <strong>overall_score</strong> = (PA_classification &times; <strong>0.25</strong>) + (urgency_risk &times; <strong>0.25</strong>) + (conflict_check &times; <strong>0.20</strong>) + (staffing &times; <strong>0.15</strong>) + (data_integrity &times; <strong>0.15</strong>)
+      </div>
+      <div class="thresholds">
+        <span class="threshold threshold--low">&ge;70 = Low Risk</span>
+        <span class="threshold threshold--med">40&ndash;69 = Medium Risk</span>
+        <span class="threshold threshold--high">&lt;40 = High Risk</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-dim); margin-top: 14px;">The LLM returns dimension scores and reasoning. The programmatic layer re-computes the weighted score and applies threshold rules. If the LLM hallucinates a score, the deterministic layer catches it. Conflict type gates score levels — a direct adverse conflict caps the overall score regardless of other dimensions.</p>
+    </div>
+  </div>
+
+  <!-- Audit Trail -->
+  <div class="section">
+    <div class="section-title" style="color: var(--emerald);">Audit Trail — Every Decision, Attributable</div>
+    <div class="audit-grid">
+      <div class="audit-card" style="border-left: 3px solid var(--violet);">
+        <h4>Full Prompt Capture</h4>
+        <p>Every evaluation stores the complete prompt sent to the LLM, including the router classification context, the rubric version, and the model configuration. If the rubric changes, you can trace which evaluations used which version.</p>
+      </div>
+      <div class="audit-card" style="border-left: 3px solid var(--secondary);">
+        <h4>Response + Reasoning Chain</h4>
+        <p>The full LLM response is stored — not just the scores, but the reasoning behind each dimension. If a partner questions a conflict flag, the system shows exactly why the evaluator flagged it.</p>
+      </div>
+      <div class="audit-card" style="border-left: 3px solid var(--metric);">
+        <h4>Deterministic Score Replay</h4>
+        <p>The programmatic scoring layer is deterministic. Given the same dimension scores, it produces the same overall score and risk level. The scoring formula is versioned and stored alongside each evaluation.</p>
+      </div>
+      <div class="audit-card" style="border-left: 3px solid var(--emerald);">
+        <h4>Structured JSONL Logging</h4>
+        <p>All evaluation events are logged as structured JSONL — machine-readable, queryable, and exportable. No parsing. No black-box "the system said so." Every field is typed and documented.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Architecture -->
+  <div class="section">
+    <div class="section-title" style="color: var(--slate);">Technical Architecture</div>
+    <div class="tech-grid">
+      <div class="tech-card" style="border-left: 3px solid var(--violet);">
+        <div class="tech-label" style="color: var(--violet);">Backend</div>
+        <div class="tech-value">FastAPI + Pydantic</div>
+        <div class="tech-desc">Single POST /api/evaluate endpoint. Two-stage async pipeline. Provider auto-detection from API key prefix. Structured JSONL logging with configurable log levels.</div>
+      </div>
+      <div class="tech-card" style="border-left: 3px solid var(--secondary);">
+        <div class="tech-label" style="color: var(--secondary);">LLM Provider</div>
+        <div class="tech-value">Auto-detect: Anthropic or OpenAI-compatible</div>
+        <div class="tech-desc">sk-ant- prefix &rarr; Anthropic (Claude). sk- prefix &rarr; OpenAI-compatible (DeepSeek by default). Separate model + temperature per stage. Override with LLM_BASE_URL and LLM_MODEL env vars.</div>
+      </div>
+      <div class="tech-card" style="border-left: 3px solid var(--metric);">
+        <div class="tech-label" style="color: var(--metric);">Frontend</div>
+        <div class="tech-value">Next.js 16 — Single Page</div>
+        <div class="tech-desc">State machine: empty &rarr; loading &rarr; success / error. Textarea input, risk badge, 5 score cards with progress bars, conflict + staffing panels. No auth. No routing. Demo-scoped.</div>
+      </div>
+      <div class="tech-card" style="border-left: 3px solid var(--emerald);">
+        <div class="tech-label" style="color: var(--emerald);">Deploy</div>
+        <div class="tech-value">Vercel (frontend) + Fly.io (backend)</div>
+        <div class="tech-desc">Single-command deploy for both. Stateless — no database, no auth. Wide-open CORS for demo. Production version would add Supabase for audit trail persistence and RLS for practice group scoping.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Matter Intake — Pipeline Deep Dive
+    &nbsp;&middot;&nbsp;
+    <a href="matter-intake-overview.html">Executive Overview &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    <a href="legal-ai-os-ashurst-perkins-coie.html">Legal AI OS &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    
+    <br>
+    <span style="font-size:11px;opacity:0.7;">&copy; 2025-2026 Charlie Fuller</span>
+  </div>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const iconLight = toggle.querySelector('.icon-light');
+  const iconDark = toggle.querySelector('.icon-dark');
+  function setTheme(d) {
+    document.documentElement.classList.toggle('dark', d);
+    iconLight.style.display = d ? 'none' : '';
+    iconDark.style.display = d ? '' : 'none';
+    try { localStorage.setItem('diagram-theme', d ? 'dark' : 'light'); } catch(e) {}
+  }
+  toggle.addEventListener('click', () => setTheme(!document.documentElement.classList.contains('dark')));
+  try { if (localStorage.getItem('diagram-theme') === 'dark') setTheme(true); } catch(e) {}
+</script>
+</body>
+</html>
