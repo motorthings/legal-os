@@ -2,64 +2,75 @@
 
 Concrete build plans for the four roadmap functions. Each plan identifies what existing infrastructure to reuse, what new infrastructure is needed, the minimum viable version, and estimated effort.
 
-## Shared Architecture
+## Shared Backend — Status: IN PROGRESS
 
-All four functions follow the same pattern established by the built functions:
+The unified backend at `backend/` consolidates the two existing codebases (matter-intake SQLite, contract-review Supabase) into a single FastAPI + Celery + Supabase/PostgreSQL stack.
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| Core schema (PostgreSQL) | Done | `backend/migrations/001_core_schema.sql` |
+| DD schema | Done | `backend/migrations/002_due_diligence.sql` |
+| Pydantic models | Done | `backend/app/models/` |
+| LLM provider abstraction | Done | `backend/app/llm.py` |
+| Audit trail service | Done | `backend/app/services/audit.py` |
+| Metrics service | Done | `backend/app/services/metrics.py` |
+| FastAPI app | Done | `backend/app/main.py` |
+| Celery app | Done | `backend/app/workers/celery_app.py` |
+| DD API routes | Done | `backend/app/api/routes/due_diligence.py` |
+| DD Celery tasks | Done | `backend/app/workers/tasks/due_diligence.py` |
+| Dockerfile + fly.toml | Done | `backend/` |
+| Schema validation tests | Done | `backend/tests/test_schema.py` |
+| Supabase DB setup | **Pending** | Needs new Supabase project |
+| Fly.io deploy | **Pending** | `fly launch` after DB setup |
+| Vercel frontend | **Pending** | After API is live |
+
+## Architecture Pattern
+
+All functions follow the same pattern:
 
 ```
 Input → Router (classify) → Evaluator (reason) → Programmatic Scoring (judge) → Audit Trail (capture)
+                                                                                    ↓
+                                                                              Metrics (telemetry)
 ```
-
-Reusable infrastructure across all four:
-
-| Component | Source | What It Provides |
-|-----------|--------|------------------|
-| Two-stage LLM pipeline | `matter-intake/backend/evaluator.py` | Router + Evaluator + programmatic scoring pattern |
-| Pydantic models | `matter-intake/backend/models.py` | Strict response validation, dimension scoring |
-| API structure | `matter-intake/backend/api/routes.py` | CRUD endpoints, audit trail endpoint, search/filter/pagination |
-| Audit trail | `matter-intake/backend/database.py` | Full prompt I/O capture, rubric snapshots, score replay |
-| Provider abstraction | `matter-intake/backend/evaluator.py::_llm_call` | Unified Anthropic/OpenAI-compatible interface |
-| Prompt architecture | `matter-intake/backend/prompts/` | Flat-file prompt loading, router + evaluator pattern |
-| Celery task queue | `contract-review/backend/celery_app.py` | 3 queues (default/urgent/batch), rate limiting, retry with backoff |
-| Contract processing | `contract-review/backend/contract_processor.py` | Full pipeline: fetch → download → extract → router → analyze → score → store |
-| Legal standards CRUD | `contract-review/backend/api/routes/legal_standards.py` | Configurable standards with categories, severity, acceptable values |
-| RAG pipeline | `contract-review/backend/document_processor.py` | Chunking (800/200), Voyage AI embeddings, pgvector search, Redis cache |
-| Performance telemetry | `contract-review/backend/contract_processor.py::PerformanceTimer` | Per-stage timing with metadata |
-| Instruction versioning | `contract-review/backend/instruction_versioning.py` | Semver instruction tracking, standards version tracking |
 
 ---
 
-## 1. Due Diligence Accelerator
+## 1. Due Diligence Accelerator — IN PROGRESS
 
 **What it does:** Ingests hundreds of documents for a deal, classifies each, compares every clause against deal-specific target standards, surfaces only deviations. Groups identical clauses. Ranks deviations by severity and materiality.
 
-**Existing code to reuse:**
-- `contract_processor.py` — the full contract analysis pipeline (download → extract → router → analyze → score)
-- `celery_app.py` — batch task queue with rate limiting, exactly what bulk processing needs
-- `legal_standards.py` — the standards CRUD already supports configurable per-category acceptable values and severity
-- `calculate_risk_score` — programmatic scoring with red/yellow flag weights
-- `document_processor.py` — RAG pipeline for finding similar clauses across the deal corpus
+### Done
 
-**New infrastructure to build:**
+| Component | Location |
+|-----------|----------|
+| Core schema (PostgreSQL) | `backend/migrations/001_core_schema.sql` |
+| DD schema (dd_projects, dd_target_standards, dd_documents, dd_deviations) | `backend/migrations/002_due_diligence.sql` |
+| Pydantic models | `backend/app/models/due_diligence.py` |
+| API routes (CRUD + governance contract) | `backend/app/api/routes/due_diligence.py` |
+| Celery task (extract → analyze → score → store) | `backend/app/workers/tasks/due_diligence.py` |
+| LLM provider abstraction (Anthropic, Azure, Bedrock) | `backend/app/llm.py` |
+| Audit trail + metrics services | `backend/app/services/` |
+| Schema validation tests | `backend/tests/test_schema.py` |
+
+### Pending
 
 | Component | Description | Effort |
 |-----------|-------------|--------|
-| `dd_projects` table | Groups documents into a deal: `deal_id`, `deal_name`, `client_id`, `target_standards_id`, `status`, `created_at` | S |
-| `dd_documents` table | Individual documents in a deal: `document_id`, `deal_id`, `status`, `deviation_count`, `review_status` | S |
-| `dd_deviations` table | Detected deviations: `document_id`, `clause_type`, `target_standard`, `current_text`, `deviation_severity`, `reviewer_notes` | S |
-| Target standards per deal | Extend the legal standards system to support deal-specific standard sets — a deal gets its own copy of standards with deal-specific acceptable values | M |
-| Delta aggregation endpoint | `POST /api/due-diligence/{deal_id}/analyze` — triggers batch analysis, `GET /api/due-diligence/{deal_id}/report` — returns consolidated deviation report | M |
-| Clause grouping | Identifies identical clauses across documents (via embedding similarity + text hash) so the reviewer only sees each unique deviation once | M |
-| Bulk upload UI | Drag-and-drop N documents, define target standards, trigger batch analysis, view consolidated report with severity filtering | L |
+| Supabase DB | Create new Supabase project, apply migrations, seed data | S |
+| Redis (Upstash) | Provision Redis for Celery broker | S |
+| Fly.io deploy | `fly launch` + set env vars | S |
+| Clause grouping | Embedding similarity + text hash to group identical clauses — already has `clause_group_key` column + pgvector index | M |
+| Programmatic scoring rules | Server-side severity enforcement beyond the basic rules in the task | M |
+| Bulk upload UI | Drag-and-drop N documents, define target standards, trigger batch analysis, view consolidated report | L |
+| Vercel frontend | `legal-os.vercel.app` — React/Next.js frontend for DD function | L |
 
 **MVP scope:**
 - Upload N documents into a deal
-- Run the existing contract analysis pipeline against each one (reuse `process_contract_task` in batch mode)
+- Run the contract analysis pipeline against each one (Celery batch)
 - Compare each clause against deal-specific target standards
 - Generate a consolidated deviation report showing only flagged clauses, grouped by clause type
 - Severity ranking: Critical → High → Medium → Info
-
-**Estimated total effort:** Medium (2-3 weeks for MVP)
 
 ---
 

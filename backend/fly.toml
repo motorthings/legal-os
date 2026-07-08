@@ -1,0 +1,36 @@
+# Fly.io configuration — Legal OS backend
+app = "legal-os-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  APP_ENV = "production"
+  LOG_LEVEL = "INFO"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1GB"
+
+# Redis for Celery — separate Fly app or Upstash
+# Set REDIS_URL env var after provisioning
+
+# Supabase — connection details in env vars
+# SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY
+# DATABASE_URL for asyncpg direct connection
+# ANTHROPIC_API_KEY for LLM

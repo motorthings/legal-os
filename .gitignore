@@ -10,3 +10,18 @@ __pycache__/
 .cache/
 dist/
 build/
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+venv/
+.venv/
+# Supabase local
+supabase/.temp/
+
+# Stray files
+backend/package.json
+backend/package-lock.json
+.claude/
+legal-os-SUMMARY.md
