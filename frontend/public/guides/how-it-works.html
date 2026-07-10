@@ -117,6 +117,7 @@
   .badge-front { background: var(--primary-dim); color: var(--primary); }
   .badge-eval { background: var(--metric-dim); color: var(--metric); }
   .badge-intel { background: var(--secondary-dim); color: var(--secondary); }
+  .badge-ops { background: var(--metric-dim); color: var(--metric); }
 
   .fn-grid {
     display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
@@ -139,6 +140,7 @@
   .fn-front { border-left: 3px solid var(--primary); }
   .fn-eval  { border-left: 3px solid var(--metric); }
   .fn-intel { border-left: 3px solid var(--secondary); }
+  .fn-ops   { border-left: 3px solid var(--metric); }
 
   .data-flow {
     display: flex; align-items: center; justify-content: center;
@@ -166,7 +168,7 @@
 <body>
 <div class="container">
   <h1>Legal AI Operating System</h1>
-  <h2>How the seven functions work together</h2>
+  <h2>How the eight functions work together — with operations layer tracking everything</h2>
 
   <div class="governance-bar">
     <div class="gov-pillar"><span class="dot"></span> Auditability</div>
@@ -265,6 +267,50 @@
     <p class="layer-desc">
       Intelligence layer connects all outputs. KM indexes every document across the platform
       with citations. Value reporting synthesizes time saved, risk mitigated, and governance artifacts per client.
+    </p>
+  </div>
+
+  <div class="data-flow">
+    <div class="data-flow-label">time saved</div>
+    <div class="data-flow-line"></div>
+    <div class="data-flow-label">adoption data</div>
+    <div class="data-flow-line"></div>
+    <div class="data-flow-label">quality metrics</div>
+  </div>
+
+  <!-- Operations -->
+  <div class="layer">
+    <div class="layer-title">
+      <span class="badge badge-ops">Operations</span>
+      Program Operations &amp; Tracking
+    </div>
+    <div class="fn-grid">
+      <div class="fn-card fn-ops">
+        <div class="icon"></div>
+        <div class="label">Portfolio View</div>
+        <div class="name">Dashboard</div>
+      </div>
+      <div class="fn-card fn-ops">
+        <div class="icon"></div>
+        <div class="label">ROI Tracking</div>
+        <div class="name">Cost &amp; Quality</div>
+      </div>
+      <div class="fn-card fn-ops">
+        <div class="icon"></div>
+        <div class="label">Pipeline</div>
+        <div class="name">POC Tracker</div>
+      </div>
+      <div class="fn-card fn-ops">
+        <div class="icon"></div>
+        <div class="label">Training</div>
+        <div class="name">Enablement Kit</div>
+      </div>
+    </div>
+    <p class="layer-desc">
+      Operations layer aggregates telemetry from every function invocation. Dashboard shows
+      hours saved, cost avoided (time &times; blended rate), net ROI, and adoption rates per practice group.
+      POC pipeline tracks AI projects from discovery through graduation. Enablement kit provides
+      workshop content, prompt guides, and client conversation materials.
     </p>
   </div>
 
