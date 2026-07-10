@@ -185,7 +185,7 @@ export default function DashboardPage() {
       <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
         Return on Innovation by Function
       </h3>
-      <div className="card overflow-hidden mb-6">
+      <div className="card mb-6" style={{ overflow: 'visible' }}>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[var(--border)]">
@@ -193,11 +193,11 @@ export default function DashboardPage() {
               <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">Invocations</th>
               <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">Hours Saved</th>
               <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">Cost Avoided</th>
-              <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">
+              <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)] overflow-visible">
                 <span className="group relative inline-flex items-center gap-1 cursor-help">
                   AI Cost
                   <Info className="w-3 h-3" />
-                  <span className="absolute bottom-full right-0 mb-2 w-64 p-3 rounded-lg text-xs font-normal text-left leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
+                  <span className="absolute top-full right-0 mt-2 w-64 p-3 rounded-lg text-xs font-normal text-left leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
                     style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', color: 'var(--text)' }}>
                     <span className="block font-semibold mb-1" style={{ color: 'var(--primary)' }}>Per-invocation pipeline cost</span>
                     Each invocation runs 3–6 LLM calls:<br/>
