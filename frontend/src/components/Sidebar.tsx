@@ -7,7 +7,7 @@ import {
   FileText, LogOut, Scale, Search, Shield,
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
-  LayoutDashboard, Beaker,
+  LayoutDashboard, Beaker, GraduationCap,
 } from 'lucide-react';
 
 interface NavItem {
@@ -29,6 +29,7 @@ const FUNCTIONS: NavItem[] = [
 const OPERATIONS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/poc-pipeline', label: 'POC Pipeline', icon: Beaker },
+  { href: '/guides/enablement-kit', label: 'Enablement Kit', icon: GraduationCap },
 ];
 
 export default function Sidebar() {
