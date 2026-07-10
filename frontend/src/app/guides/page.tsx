@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, Search, Shield, Target, BarChart3, Globe, Briefcase, BookOpen, FileCheck, ChevronRight } from 'lucide-react';
+import { FileText, Search, Shield, Target, BarChart3, Globe, Briefcase, BookOpen, FileCheck, ChevronRight, GraduationCap } from 'lucide-react';
 
 interface Guide {
   title: string;
@@ -89,6 +89,13 @@ const GUIDES: Guide[] = [
     desc: 'Quarterly per-client reports — time saved per function, risk metrics, governance artifacts, and YoY trends.',
     icon: FileCheck,
     category: 'Reporting',
+  },
+  {
+    title: 'Enablement Kit',
+    slug: 'enablement-kit',
+    desc: 'AI literacy workshop, prompt engineering guide, adoption playbook, lawyer FAQ, client conversation pack, and RFP templates.',
+    icon: GraduationCap,
+    category: 'Operations',
   },
 ];
 
