@@ -110,4 +110,22 @@ except Exception:
     print("[WARN] KM routes failed to load", file=sys.stderr, flush=True)
     traceback.print_exc(file=sys.stderr)
 
+try:
+    print("[legal-os] Loading ROI routes...", file=sys.stderr, flush=True)
+    from app.api.routes import roi
+    app.include_router(roi.router, prefix="/api/roi", tags=["ROI Framework"])
+    print("[legal-os] ROI routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] ROI routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading POC Pipeline routes...", file=sys.stderr, flush=True)
+    from app.api.routes import poc_pipeline
+    app.include_router(poc_pipeline.router, prefix="/api/poc-pipeline", tags=["POC Pipeline"])
+    print("[legal-os] POC Pipeline routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] POC Pipeline routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
 print("[legal-os] Ready", file=sys.stderr, flush=True)

@@ -7,6 +7,7 @@ import {
   FileText, LogOut, Scale, Search, Shield,
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
+  LayoutDashboard, Beaker,
 } from 'lucide-react';
 
 interface NavItem {
@@ -23,6 +24,11 @@ const FUNCTIONS: NavItem[] = [
   { href: '/regulatory', label: 'Regulatory', icon: Shield },
   { href: '/km', label: 'KM Intelligence', icon: BarChart3 },
   { href: '/reporting', label: 'Value Reporting', icon: Scale3D },
+];
+
+const OPERATIONS: NavItem[] = [
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/poc-pipeline', label: 'POC Pipeline', icon: Beaker },
 ];
 
 export default function Sidebar() {
@@ -112,6 +118,33 @@ export default function Sidebar() {
             >
               <Icon className="w-4 h-4" />
               {fn.label}
+            </Link>
+          );
+        })}
+
+        {/* Section header */}
+        <div className="pt-4 pb-1 px-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            Operations
+          </span>
+        </div>
+
+        {OPERATIONS.map((op) => {
+          const Icon = op.icon;
+          const active = isActive(op.href);
+          return (
+            <Link
+              key={op.href}
+              href={op.href}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors no-underline ${
+                active
+                  ? 'text-white'
+                  : 'text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--text)]'
+              }`}
+              style={active ? { backgroundColor: 'var(--primary)' } : undefined}
+            >
+              <Icon className="w-4 h-4" />
+              {op.label}
             </Link>
           );
         })}

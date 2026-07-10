@@ -134,8 +134,8 @@
   }
   .ab-decision { background: var(--primary-dim); color: var(--primary); }
   .ab-score { background: var(--metric-dim); color: var(--metric); }
-  .ab-audit { background: var(--violet)12; color: var(--violet); }
-  .ab-override { background: var(--amber)12; color: var(--amber); }
+  .ab-audit { background: var(--violet-dim); color: var(--violet); }
+  .ab-override { background: var(--amber-dim); color: var(--amber); }
   .artifact-date { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-left: auto; }
 
   .output-bar {
@@ -148,7 +148,7 @@
 </style>
 </head>
 <body>
-<a class="backlink" href="https://legal.sickofancy.ai/guides">← Legal AI OS</a>
+
 <div class="container">
   <h1>Client Value Reporting</h1>
   <h2>Time saved · risk mitigated · governance artifacts · YoY trends</h2>
@@ -184,14 +184,14 @@
       <span class="sbase">45h →</span>
       <span class="sai">12h</span>
       <span class="ssaved" style="color:#22c55e">33h (73%)</span>
-      <span class="strend">▲</span>
+      <span class="strend"></span>
     </div>
     <div class="savings-row">
       <span class="sfn">Contract Review</span>
       <span class="sbase">80h →</span>
       <span class="sai">24h</span>
       <span class="ssaved" style="color:#22c55e">56h (70%)</span>
-      <span class="strend">▲</span>
+      <span class="strend"></span>
     </div>
     <div class="savings-row">
       <span class="sfn">Employment Agents</span>
@@ -205,14 +205,14 @@
       <span class="sbase">120h →</span>
       <span class="sai">42h</span>
       <span class="ssaved" style="color:#22c55e">78h (65%)</span>
-      <span class="strend">▲</span>
+      <span class="strend"></span>
     </div>
     <div class="savings-row">
       <span class="sfn">Regulatory Monitor</span>
       <span class="sbase">25h →</span>
       <span class="sai">8h</span>
       <span class="ssaved" style="color:#22c55e">17h (68%)</span>
-      <span class="strend">▲</span>
+      <span class="strend"></span>
     </div>
     <div class="savings-row">
       <span class="sfn">KM Intelligence</span>
@@ -226,7 +226,7 @@
       <span class="sbase">20h →</span>
       <span class="sai">4h</span>
       <span class="ssaved" style="color:#22c55e">16h (80%)</span>
-      <span class="strend">▲</span>
+      <span class="strend"></span>
     </div>
   </div>
 
@@ -289,13 +289,6 @@
     <strong>Report cadence:</strong> Quarterly auto-generated · <strong>Export:</strong> PDF + CSV · <strong>Benchmarks:</strong> YoY comparison · <strong>Source:</strong> Immutable audit trail
   </div>
 </div>
-<script>
-  try {
-    if (localStorage.getItem('legal-os-theme') === 'dark' ||
-        (!localStorage.getItem('legal-os-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-  } catch(e) {}
-</script>
+
 </body>
 </html>

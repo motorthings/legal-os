@@ -117,11 +117,33 @@ async def get_current_user(
 ) -> User:
     """FastAPI dependency: validate JWT and return User.
 
-    Attach to any route that needs authentication:
-        @router.get("/protected")
-        async def protected(user: User = Depends(get_current_user)):
-            ...
+    In DEMO_MODE, returns the first user in the database without auth.
+    Set DEMO_MODE=true in .env for local development and demos.
     """
+    # Demo mode — skip JWT validation, return first user in DB
+    demo_mode = os.environ.get("DEMO_MODE", "") or getattr(settings, "demo_mode", "")
+    if demo_mode.lower() in ("true", "1", "yes"):
+        try:
+            from app.database import get_supabase
+            result = (
+                get_supabase()
+                .table("user_profiles")
+                .select("id, email, role, client_id")
+                .limit(1)
+                .execute()
+            )
+            if result.data:
+                profile = result.data[0]
+                return User(
+                    id=UUID(profile["id"]),
+                    email=profile.get("email"),
+                    role=profile.get("role", "attorney"),
+                    client_id=UUID(profile["client_id"]) if profile.get("client_id") else None,
+                )
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail="DEMO_MODE enabled but no users in database")
+
     if credentials is None:
         # Check for token in cookie (browser clients)
         token = request.cookies.get("sb-access-token") or request.cookies.get("supabase-auth-token")

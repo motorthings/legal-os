@@ -69,8 +69,8 @@
   .s1 .step-num { background: var(--primary-dim); color: var(--primary); }
   .s2 .step-num { background: var(--metric-dim); color: var(--metric); }
   .s3 .step-num { background: var(--secondary-dim); color: var(--secondary); }
-  .s4 .step-num { background: var(--violet)12; color: var(--violet); }
-  .s5 .step-num { background: var(--amber)12; color: var(--amber); }
+  .s4 .step-num { background: var(--violet-dim); color: var(--violet); }
+  .s5 .step-num { background: var(--amber-dim); color: var(--amber); }
   .dims {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px; margin-top: 32px;
@@ -97,7 +97,7 @@
 </style>
 </head>
 <body>
-<a class="backlink" href="https://legal.sickofancy.ai/guides">← Legal AI OS</a>
+
 <div class="container">
   <h1>Employment Legal Agents</h1>
   <h2>Worker classification · FLSA compliance · handbook audit</h2>
@@ -146,32 +146,32 @@
 
   <div class="dims">
     <div class="dim">
-      <div class="icon">📋</div>
+      <div class="icon"></div>
       <h4>Wage & Hour</h4>
       <p>Overtime, minimum wage, tip credits, off-the-clock claims</p>
     </div>
     <div class="dim">
-      <div class="icon">🏥</div>
+      <div class="icon"></div>
       <h4>Leave Policies</h4>
       <p>FMLA, ADA, state paid leave, return-to-work accommodations</p>
     </div>
     <div class="dim">
-      <div class="icon">⚖️</div>
+      <div class="icon"></div>
       <h4>Discrimination</h4>
       <p>Title VII, ADEA, state anti-discrimination statutes</p>
     </div>
     <div class="dim">
-      <div class="icon">♿</div>
+      <div class="icon"></div>
       <h4>Accommodation</h4>
       <p>Interactive process, undue hardship, reasonable accommodation</p>
     </div>
     <div class="dim">
-      <div class="icon">📁</div>
+      <div class="icon"></div>
       <h4>Recordkeeping</h4>
       <p>FLSA recordkeeping, I-9 compliance, personnel file requirements</p>
     </div>
     <div class="dim">
-      <div class="icon">🏛️</div>
+      <div class="icon"></div>
       <h4>Jurisdiction</h4>
       <p>Multi-state compliance mapping, CA/WA/NY/IL-specific rules</p>
     </div>
@@ -181,13 +181,6 @@
     <strong>Model:</strong> Claude API · <strong>Deploy:</strong> Vercel + Fly.io · <strong>Audit:</strong> Supabase · <strong>Embed:</strong> Voyage AI
   </div>
 </div>
-<script>
-  try {
-    if (localStorage.getItem('legal-os-theme') === 'dark' ||
-        (!localStorage.getItem('legal-os-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-  } catch(e) {}
-</script>
+
 </body>
 </html>

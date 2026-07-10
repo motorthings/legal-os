@@ -103,7 +103,7 @@ class Settings(BaseSettings):
         "https://*.vercel.app",
     ]
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "allow"}
 
 
 settings = Settings()
