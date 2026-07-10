@@ -190,9 +190,30 @@ export default function DashboardPage() {
           <thead>
             <tr className="border-b border-[var(--border)]">
               <th className="text-left p-4 text-xs font-medium text-[var(--text-dim)]">Function</th>
-              <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">Invocations</th>
+              <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)] overflow-visible">
+                <span className="group relative inline-flex items-center gap-1 cursor-help">
+                  Invocations
+                  <Info className="w-3 h-3" />
+                  <span className="absolute top-full right-0 mt-2 w-56 p-3 rounded-lg text-xs font-normal text-left leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', color: 'var(--text)' }}>
+                    <span className="block font-semibold mb-1" style={{ color: 'var(--primary)' }}>Total AI invocations</span>
+                    Number of times this function was called in the selected period. Each invocation = one end-to-end pipeline run (multiple LLM calls).
+                  </span>
+                </span>
+              </th>
               <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">Hours Saved</th>
-              <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)]">Cost Avoided</th>
+              <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)] overflow-visible">
+                <span className="group relative inline-flex items-center gap-1 cursor-help">
+                  Cost Avoided
+                  <Info className="w-3 h-3" />
+                  <span className="absolute top-full right-0 mt-2 w-60 p-3 rounded-lg text-xs font-normal text-left leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', color: 'var(--text)' }}>
+                    <span className="block font-semibold mb-1" style={{ color: 'var(--primary)' }}>Human cost avoided</span>
+                    Hours saved × blended hourly rate. This is the attorney time the firm would have billed at standard rates, now recovered through AI efficiency.
+                    <span className="block mt-1 text-[var(--text-muted)]">Rate: $350/hr blended (configurable per practice group)</span>
+                  </span>
+                </span>
+              </th>
               <th className="text-right p-4 text-xs font-medium text-[var(--text-dim)] overflow-visible">
                 <span className="group relative inline-flex items-center gap-1 cursor-help">
                   AI Cost
