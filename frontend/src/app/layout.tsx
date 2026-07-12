@@ -3,7 +3,9 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemeInit from "@/components/ThemeInit";
+import HelpPanel from "@/components/HelpPanel";
 import { AuthProvider } from "@/lib/auth";
+import { HelpChatProvider } from "@/contexts/HelpChatContext";
 
 export const metadata: Metadata = {
   title: "Legal AI OS",
@@ -34,17 +36,20 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
         <AuthProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 min-w-0 overflow-y-auto relative">
-              <div className="fixed top-4 right-4 z-50">
-                <ThemeToggle />
-              </div>
-              <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-8 pb-12">
-                {children}
-              </div>
-            </main>
-          </div>
+          <HelpChatProvider>
+            <div className="flex min-h-screen">
+              <Sidebar />
+              <main className="flex-1 min-w-0 overflow-y-auto relative">
+                <div className="fixed top-4 right-4 z-50">
+                  <ThemeToggle />
+                </div>
+                <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-8 pb-12">
+                  {children}
+                </div>
+              </main>
+            </div>
+            <HelpPanel />
+          </HelpChatProvider>
         </AuthProvider>
         <ThemeInit />
       </body>

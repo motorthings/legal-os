@@ -137,4 +137,22 @@ except Exception:
     print("[WARN] Maturity Assessment routes failed to load", file=sys.stderr, flush=True)
     traceback.print_exc(file=sys.stderr)
 
+try:
+    print("[legal-os] Loading Harvey Monitor routes...", file=sys.stderr, flush=True)
+    from app.api.routes import harvey_monitor
+    app.include_router(harvey_monitor.router, prefix="/api/harvey-monitor", tags=["Harvey Agent Monitoring"])
+    print("[legal-os] Harvey Monitor routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Harvey Monitor routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading Help Chat routes...", file=sys.stderr, flush=True)
+    from app.api.routes import help_chat
+    app.include_router(help_chat.router)
+    print("[legal-os] Help Chat routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Help Chat routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
 print("[legal-os] Ready", file=sys.stderr, flush=True)
