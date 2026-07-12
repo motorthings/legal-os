@@ -8,6 +8,7 @@ import {
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
   LayoutDashboard, Beaker, GraduationCap,
+  TrendingUp,
 } from 'lucide-react';
 
 interface NavItem {
@@ -24,6 +25,7 @@ const FUNCTIONS: NavItem[] = [
   { href: '/regulatory', label: 'Regulatory', icon: Shield },
   { href: '/km', label: 'KM Intelligence', icon: BarChart3 },
   { href: '/reporting', label: 'Value Reporting', icon: Scale3D },
+  { href: '/maturity', label: 'AI Maturity', icon: TrendingUp },
 ];
 
 const OPERATIONS: NavItem[] = [

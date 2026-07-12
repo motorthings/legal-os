@@ -128,4 +128,13 @@ except Exception:
     print("[WARN] POC Pipeline routes failed to load", file=sys.stderr, flush=True)
     traceback.print_exc(file=sys.stderr)
 
+try:
+    print("[legal-os] Loading Maturity Assessment routes...", file=sys.stderr, flush=True)
+    from app.api.routes import maturity
+    app.include_router(maturity.router, prefix="/api/maturity", tags=["AI Maturity Assessment"])
+    print("[legal-os] Maturity Assessment routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Maturity Assessment routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
 print("[legal-os] Ready", file=sys.stderr, flush=True)
