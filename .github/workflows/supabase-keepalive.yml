@@ -1,0 +1,35 @@
+name: Supabase Keepalive
+
+# Prevents the free-tier Supabase project (ref: rkiaocarugdbcgtonfuq)
+# from being paused after 7 days of inactivity.
+#
+# Free-tier projects pause when they receive no API activity. This workflow
+# fires an authenticated read against the Supabase REST API every 2 weeks,
+# which counts as API activity and resets the idle timer.
+#
+# Uses the ANON key (low-privilege, safe in CI) — NOT the service-role key.
+# Anon key only exposes what RLS allows (e.g. the read-only `functions` table),
+# which is all a keepalive needs.
+
+on:
+  schedule:
+    - cron: "13 4 1,15 * *"   # 04:13 UTC on the 1st & 15th of each month (~every 2 weeks)
+  workflow_dispatch: {}        # allow manual trigger from the Actions tab
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          code=$(curl -s -o /tmp/supabase_resp.json -w "%{http_code}" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/functions?select=id&limit=1")
+          echo "Supabase keepalive ping → HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::Supabase keepalive failed (HTTP $code). Project may be paused or the anon key may have rotated."
+            cat /tmp/supabase_resp.json
+            exit 1
+          fi
+          echo "Project is active — idle timer reset."
