@@ -33,6 +33,9 @@ EXPECTED_TABLES = [
     "dd_target_standards",
     "dd_documents",
     "dd_deviations",
+    # Legal research
+    "legal_research_queries",
+    "legal_research_results",
 ]
 
 EXPECTED_ENUMS = [
@@ -61,6 +64,8 @@ RLS_ENABLED_TABLES = [
     "dd_target_standards",
     "dd_documents",
     "dd_deviations",
+    "legal_research_queries",
+    "legal_research_results",
 ]
 
 EXPECTED_INDEXES = [
@@ -85,12 +90,21 @@ EXPECTED_INDEXES = [
     "idx_dd_dev_group",
     "idx_dd_dev_document",
     "idx_dd_doc_embedding",
+    "idx_research_queries_client",
+    "idx_research_queries_matter",
+    "idx_research_queries_function",
+    "idx_research_queries_type",
+    "idx_research_queries_created",
+    "idx_research_results_query",
+    "idx_research_results_case",
+    "idx_research_results_citation",
 ]
 
 EXPECTED_VIEWS = [
     "metrics_monthly_rollup",
     "client_summary",
     "dd_project_report",
+    "matter_research_summary",
 ]
 
 
@@ -169,16 +183,16 @@ class TestCoreSchema:
             assert len(rows) == 0, "audit_trail has DELETE policy — should be immutable"
 
     async def test_seed_functions_exist(self, db_pool):
-        """All 8 functions should be seeded in the functions table."""
+        """All 9 functions should be seeded in the functions table."""
         async with db_pool.acquire() as conn:
             row = await conn.fetchrow("SELECT count(*) FROM functions")
-            assert row[0] == 8, f"Expected 8 seeded functions, got {row[0]}"
+            assert row[0] == 9, f"Expected 9 seeded functions, got {row[0]}"
 
     async def test_seed_baselines_exist(self, db_pool):
-        """Time-saved baselines should be seeded for 6 functions."""
+        """Time-saved baselines should be seeded for 7 functions."""
         async with db_pool.acquire() as conn:
             row = await conn.fetchrow("SELECT count(*) FROM time_saved_baselines WHERE client_id IS NULL")
-            assert row[0] == 6, f"Expected 6 global baselines, got {row[0]}"
+            assert row[0] == 7, f"Expected 7 global baselines, got {row[0]}"
 
 
 @pytest.mark.integration
@@ -200,3 +214,32 @@ class TestDueDiligenceSchema:
                 "SELECT EXISTS (SELECT FROM information_schema.views WHERE table_schema = 'public' AND table_name = 'dd_project_report')"
             )
             assert row[0], "dd_project_report view does not exist"
+
+
+@pytest.mark.integration
+class TestLegalResearchSchema:
+    """Validates the legal research schema (migration 003)."""
+
+    async def test_research_tables_exist(self, db_pool):
+        async with db_pool.acquire() as conn:
+            for table in ["legal_research_queries", "legal_research_results"]:
+                row = await conn.fetchrow(
+                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1)",
+                    table,
+                )
+                assert row[0], f"Table '{table}' does not exist"
+
+    async def test_research_function_registered(self, db_pool):
+        async with db_pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT status FROM functions WHERE slug = 'legal-research'"
+            )
+            assert row is not None, "legal-research function not registered"
+            assert row[0] == "built", f"Expected status 'built', got {row[0]}"
+
+    async def test_matter_research_summary_view(self, db_pool):
+        async with db_pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT EXISTS (SELECT FROM information_schema.views WHERE table_schema = 'public' AND table_name = 'matter_research_summary')"
+            )
+            assert row[0], "matter_research_summary view does not exist"

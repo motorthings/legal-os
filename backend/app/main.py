@@ -128,4 +128,13 @@ except Exception:
     print("[WARN] POC Pipeline routes failed to load", file=sys.stderr, flush=True)
     traceback.print_exc(file=sys.stderr)
 
+try:
+    print("[legal-os] Loading Legal Research routes...", file=sys.stderr, flush=True)
+    from app.api.routes import legal_research
+    app.include_router(legal_research.router, prefix="/api/legal-research", tags=["Legal Research"])
+    print("[legal-os] Legal Research routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Legal Research routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
 print("[legal-os] Ready", file=sys.stderr, flush=True)

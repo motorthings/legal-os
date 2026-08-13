@@ -94,6 +94,14 @@ class Settings(BaseSettings):
     mandatory_review_risk_level: str = "high"    # force human review for this risk
 
     # ------------------------------------------------------------------
+    # Descrybe Legal Research API
+    # ------------------------------------------------------------------
+    descrybe_api_key: Optional[str] = None
+    descrybe_base_url: str = "https://api.descrybe.ai"
+    descrybe_timeout_seconds: int = 60
+    descrybe_cache_ttl_seconds: int = 86400    # 24h for public-law results
+
+    # ------------------------------------------------------------------
     # CORS
     # ------------------------------------------------------------------
     cors_origins: list[str] = [
