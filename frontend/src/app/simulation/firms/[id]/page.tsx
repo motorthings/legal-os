@@ -39,6 +39,8 @@ export default function FirmPage() {
       <h1>{firmName}</h1>
       {!loaded ? <p>Loading…</p> : (
         <>
+          <h2>Intake</h2>
+          <IntakeForm firmId={firmId} existing={config} />
           <RunSection firmId={firmId} hasConfig={!!config} />
           <details className="card p-4 mb-4">
             <summary className="cursor-pointer select-none font-semibold text-[var(--text)]">Runs</summary>
@@ -46,8 +48,6 @@ export default function FirmPage() {
               <RunHistory firmId={firmId} />
             </div>
           </details>
-          <h2>Intake</h2>
-          <IntakeForm firmId={firmId} existing={config} />
         </>
       )}
     </main>

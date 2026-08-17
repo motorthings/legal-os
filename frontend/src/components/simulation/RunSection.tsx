@@ -43,15 +43,21 @@ export function RunSection({ firmId, hasConfig }: { firmId: string; hasConfig: b
   }
 
   return (
-    <section style={{ border: '1px solid #eee', padding: '1rem', margin: '1.5rem 0' }}>
-      <h3>Run the simulation</h3>
-      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-        <label>Seeds <input type="number" min={1} max={100} value={seeds} onChange={(e) => setSeeds(e.target.valueAsNumber || 1)} /></label>
-        <label>Budget $ <input type="number" placeholder="none" value={budget} onChange={(e) => setBudget(e.target.value)} /></label>
+    <section className="card p-4 mb-4">
+      <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Run the simulation</h3>
+      <div className="flex flex-wrap items-center gap-4">
+        <label className="flex items-center gap-1.5">
+          <span className="text-[13px] font-semibold text-[var(--text)]">Seeds</span>
+          <input type="number" min={1} max={100} className="w-20 px-2 py-1 text-[13px] rounded-md" value={seeds} onChange={(e) => setSeeds(e.target.valueAsNumber || 1)} />
+        </label>
+        <label className="flex items-center gap-1.5">
+          <span className="text-[13px] font-semibold text-[var(--text)]">Budget $</span>
+          <input type="number" placeholder="none" className="w-20 px-2 py-1 text-[13px] rounded-md" value={budget} onChange={(e) => setBudget(e.target.value)} />
+        </label>
         <button onClick={onRun} disabled={busy || !hasConfig} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">{busy ? 'Launching…' : 'Run baseline'}</button>
       </div>
-      {error && <p style={{ color: 'crimson' }}>{error}</p>}
-      {!hasConfig && <p style={{ color: '#888' }}>Save the intake config first to enable runs.</p>}
+      {error && <p className="text-sm text-[var(--rose)] mt-2">{error}</p>}
+      {!hasConfig && <p className="text-[12px] text-[var(--text-muted)] mt-2">Save the intake config first to enable runs.</p>}
     </section>
   );
 }

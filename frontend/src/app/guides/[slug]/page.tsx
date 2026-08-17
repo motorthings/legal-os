@@ -2,7 +2,7 @@ import { GuidePageClient } from "./client";
 
 // Diagrams are canonical in the motorthings/diagrams portfolio and iframed from there;
 // user-facing guides stay local to the app.
-const DIAGRAMS_BASE = "https://motorthings.github.io/diagrams/legal";
+const DIAGRAMS_BASE = "/api/guides/legal";
 
 const SLUG_TO_TARGET: Record<string, string> = {
   // Diagrams — external (iframe the diagrams repo page)
@@ -30,7 +30,7 @@ export async function generateStaticParams() {
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const target = SLUG_TO_TARGET[slug];
-  const external = target?.startsWith("http") ?? false;
+  const external = (target?.startsWith("http") || target?.startsWith("/api/")) ?? false;
   return (
     <GuidePageClient
       slug={slug}

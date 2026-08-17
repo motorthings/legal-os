@@ -5,11 +5,13 @@ report. Writes go through the service-role pool (bypasses RLS); endpoint reads a
 ungated (auth is deferred).
 """
 import asyncio
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+from app.config import settings
 from app.services.simulation.db import DB
 from app.services.simulation.events import EventBus, sse, sse_comment
 from app.services.simulation import runner
@@ -64,6 +66,27 @@ async def optimize(run_id: str):
 @router.get("/runs")
 async def list_runs(firm_id: str | None = None):
     return await db.list_runs(firm_id)
+
+
+@router.delete("/runs/{run_id}")
+async def delete_run(run_id: str):
+    if not await db.delete_run(run_id):
+        raise HTTPException(404, "run not found")
+    return {"deleted": run_id}
+
+
+_RAW_FILES = {"metrics.csv", "decisions.jsonl", "trace.jsonl", "state.json"}
+
+
+@router.get("/runs/{run_id}/files/{filename}")
+async def download_file(run_id: str, filename: str):
+    """Serve a run's raw data file for download."""
+    if filename not in _RAW_FILES:
+        raise HTTPException(404, "unknown file")
+    path = Path(settings.work_dir) / run_id / "primary" / filename
+    if not path.is_file():
+        raise HTTPException(404, "file not available")
+    return FileResponse(path, filename=filename)
 
 
 @router.get("/runs/{run_id}")

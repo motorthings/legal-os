@@ -172,7 +172,17 @@ export default function RunProgress({ runId }: Props) {
         <div className="mt-6" ref={reportRef}>
           <h2 className="text-xl font-bold mb-3 text-[var(--text)]">Your Report</h2>
           <div className="report-body">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              urlTransform={(url) => {
+                if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
+                  return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
+                }
+                return url;
+              }}
+            >
+              {report}
+            </ReactMarkdown>
           </div>
         </div>
       ) : finished && !report ? (

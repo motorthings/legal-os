@@ -128,6 +128,12 @@ class DB:
             "select id from runs where status = any($1::text[]) order by created_at", statuses)
         return [str(r["id"]) for r in rows]
 
+    async def delete_run(self, run_id: str) -> bool:
+        """Delete a run and its persisted event stream. Returns True if the run existed."""
+        await self._pool.execute("delete from run_events where run_id = $1", run_id)
+        row = await self._pool.fetchrow("delete from runs where id = $1 returning id", run_id)
+        return row is not None
+
     # --- events (SSE replay source of truth) ---
 
     async def append_event(self, run_id: str, seq: int, kind: str, payload: dict) -> None:

@@ -229,7 +229,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
                   <span className="font-mono text-[9px] tracking-wide" style={{ color: TAG_COLOR[f.tag] }}>{f.tag}</span>
                 </span>
                 <span className="text-[11px] text-[var(--text-muted)] leading-snug">{f.question}</span>
-                {fieldControl(f, firm[f.key], (v) => setField(f.key, v))}
+                <div className="mt-auto">{fieldControl(f, firm[f.key], (v) => setField(f.key, v))}</div>
               </label>
             ))}
           </div>
@@ -262,14 +262,14 @@ export default function IntakeForm({ firmId, existing }: Props) {
       <section className="card p-5">
         <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Guardrails</h3>
         <p className="text-[12px] text-[var(--text-muted)] mb-3">Constraints the recommendation must satisfy (leave blank for none).</p>
-        <div className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
           {GUARDRAIL_METRICS.map((m) => (
             <div key={m.key} className="flex items-center gap-2">
               <span className="flex-1 text-[13px] text-[var(--text-dim)]">{m.label}</span>
               <span className="text-[var(--text-muted)]">≥</span>
-              <input type="number" placeholder="min" className="w-20 px-2 py-1 text-[13px] rounded-md" value={guardrails[m.key].min} onChange={(e) => setGuardrail(m.key, 'min', e.target.value)} />
+              <input type="number" placeholder="min" className="w-20 px-2 py-0.5 text-[13px] rounded-md" value={guardrails[m.key].min} onChange={(e) => setGuardrail(m.key, 'min', e.target.value)} />
               <span className="text-[var(--text-muted)]">≤</span>
-              <input type="number" placeholder="max" className="w-20 px-2 py-1 text-[13px] rounded-md" value={guardrails[m.key].max} onChange={(e) => setGuardrail(m.key, 'max', e.target.value)} />
+              <input type="number" placeholder="max" className="w-20 px-2 py-0.5 text-[13px] rounded-md" value={guardrails[m.key].max} onChange={(e) => setGuardrail(m.key, 'max', e.target.value)} />
             </div>
           ))}
         </div>

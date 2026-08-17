@@ -756,10 +756,12 @@ def build_report(run_dir: Path, experiments: dict) -> str:
         "",
         "## Raw data",
         "",
-        f"- `metrics.csv` — every metric, every sprint",
-        f"- `decisions.jsonl` — every agent decision with raw LLM prompt/response",
-        f"- `trace.jsonl` — full event audit trail",
-        f"- `state.json` — complete end-state snapshot",
+        "Download the source files for this run:",
+        "",
+        f"- [metrics.csv](metrics.csv) — every metric, every sprint",
+        f"- [decisions.jsonl](decisions.jsonl) — every agent decision with raw LLM prompt/response",
+        f"- [trace.jsonl](trace.jsonl) — full event audit trail",
+        f"- [state.json](state.json) — complete end-state snapshot",
     ]
     return "\n".join(parts)
 
