@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
-import ThemeToggle from "@/components/ThemeToggle";
+import ThemeToggleSlot from "@/components/ThemeToggleSlot";
 import ThemeInit from "@/components/ThemeInit";
 import { AuthProvider } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Legal AI OS",
   description:
-    "A governed platform for building, deploying, and measuring AI across the legal enterprise. Seven functions. One governance layer.",
+    "A governed platform for building, deploying, and measuring AI across the legal enterprise. Ten functions. One governance layer.",
 };
 
 export default function RootLayout({
@@ -38,7 +38,7 @@ export default function RootLayout({
             <Sidebar />
             <main className="flex-1 min-w-0 overflow-y-auto relative">
               <div className="fixed top-4 right-4 z-50">
-                <ThemeToggle />
+                <ThemeToggleSlot />
               </div>
               <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-8 pb-12">
                 {children}
