@@ -1,6 +1,6 @@
 # Legal AI OS — Development Commands
 
-.PHONY: install dev test worker migrate lint clean
+.PHONY: install dev test worker migrate lint clean deploy deploy-backend deploy-frontend
 
 # Install dependencies
 install:
@@ -26,9 +26,17 @@ migrate:
 lint:
 	cd backend && ruff check app/
 
-# Deploy to Fly.io
+# Deploy backend + frontend, then health-check both
 deploy:
+	@./scripts/deploy.sh
+
+deploy-backend:
 	cd backend && fly deploy
+	@curl -s -o /dev/null -w "  backend health: %{http_code}\n" https://legal-os-api.fly.dev/health
+
+deploy-frontend:
+	cd frontend && vercel --prod --yes
+	@curl -s -o /dev/null -w "  frontend health: %{http_code}\n" https://legal.sickofancy.ai
 
 # Open app
 open:
