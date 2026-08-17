@@ -155,6 +155,9 @@ async def _execute_run(run_id: str, db, bus) -> None:
     completed = len(mc["ppp"])
     primary_dir = primary_dir or (out_dir / "primary")
     if primary_dir.exists() and completed > 0:
+        bus.publish(run_id, "status", {"status": "generating_report",
+                                       "seeds_completed": completed, "total_seeds": row.total_seeds,
+                                       "spend": cumulative})
         report = await reportgen.generate_report(run_id, primary_dir, rc, cfg, mc)
     else:
         report = None

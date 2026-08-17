@@ -17,7 +17,9 @@ export default function RunProgress({ runId }: Props) {
   const [latest, setLatest] = useState<Record<string, number>>({});
   const [report, setReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [log, setLog] = useState<string[]>([]);
   const reportFetched = useRef(false);
+  const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const es = new EventSource(`${SIM_API_BASE}/runs/${runId}/events`);
@@ -34,13 +36,21 @@ export default function RunProgress({ runId }: Props) {
         if (p.seeds_completed !== undefined) setDone(p.seeds_completed);
         if (p.total_seeds !== undefined) setTotal(p.total_seeds);
         if (p.spend !== undefined) setSpend(p.spend);
+        setLog((l) => [...l, `[status] ${p.status} · seeds ${p.seeds_completed ?? 0}/${p.total_seeds ?? 0} · $${(p.spend ?? 0).toFixed(2)}`]);
       } else if (ev.kind === 'sprint') {
         setLatest(p.metrics ?? {});
         setDone((d) => (p.seed_index !== undefined ? p.seed_index + 1 : d));
+        const m = p.metrics ?? {};
+        const ppp = m.ppp != null ? Math.round(m.ppp).toLocaleString() : '—';
+        const margin = m.matter_profit_margin != null ? `${m.matter_profit_margin.toFixed(1)}%` : '—';
+        const real = m.realization_rate != null ? `${m.realization_rate.toFixed(1)}%` : '—';
+        setLog((l) => [...l, `seed ${p.seed} · sprint ${p.sprint} · ppp=${ppp} · margin=${margin} · realization=${real}`]);
       } else if (ev.kind === 'seed') {
         if (p.spend !== undefined) setSpend(p.spend);
+        setLog((l) => [...l, `✓ seed ${p.seed} complete · $${(p.spend ?? 0).toFixed(2)}`]);
       } else if (ev.kind === 'report_ready' && !reportFetched.current) {
         reportFetched.current = true;
+        setLog((l) => [...l, '✓ report ready']);
         fetch(`${SIM_API_BASE}/runs/${runId}/report`)
           .then((r) => (r.ok ? r.text() : Promise.reject()))
           .then(setReport)
@@ -50,6 +60,10 @@ export default function RunProgress({ runId }: Props) {
     es.onerror = () => setError('connection to runner lost — reconnecting');
     return () => es.close();
   }, [runId]);
+
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [log]);
 
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const finished = status === 'complete' || status === 'budget_exhausted';
@@ -73,6 +87,16 @@ export default function RunProgress({ runId }: Props) {
         </div>
       )}
       {error && <p style={{ color: '#b8860b' }}>{error}</p>}
+      {log.length > 0 && (
+        <div className="mt-4 border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="px-3 py-2 border-b border-[var(--border)] font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            Live trace
+          </div>
+          <div ref={logRef} className="p-3 font-mono text-[11px] leading-relaxed text-[var(--text-dim)] bg-[var(--surface2)] overflow-auto max-h-72 whitespace-pre-wrap">
+            {log.join('\n')}
+          </div>
+        </div>
+      )}
       {report ? (
         <pre style={{ whiteSpace: 'pre-wrap', border: '1px solid #eee', padding: '1rem', background: '#fafafa' }}>
           {report}
