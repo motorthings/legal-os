@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 import MetricsCharts from './MetricsCharts';
 
@@ -164,7 +165,7 @@ export default function RunProgress({ runId }: Props) {
         <div className="mt-6" ref={reportRef}>
           <h2 className="text-xl font-bold mb-3 text-[var(--text)]">Your Report</h2>
           <div className="report-body">
-            <ReactMarkdown>{report}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
           </div>
         </div>
       ) : finished && !report ? (
