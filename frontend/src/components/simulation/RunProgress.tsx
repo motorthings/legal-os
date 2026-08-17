@@ -128,9 +128,16 @@ export default function RunProgress({ runId }: Props) {
         )}
         {spend > 0 && <span className="text-[var(--text-dim)]"> · ${spend.toFixed(2)} spent</span>}
       </p>
-      <div style={{ height: 8, background: '#eee', borderRadius: 4 }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: '#4c9aff', borderRadius: 4 }} />
-      </div>
+      {status === 'running' && total > 0 && (
+        <div style={{ height: 8, background: 'var(--border)', borderRadius: 4 }}>
+          <div style={{ height: '100%', width: `${pct}%`, background: 'var(--primary)', borderRadius: 4, transition: 'width 0.3s' }} />
+        </div>
+      )}
+      {(status === 'optimizing' || status === 'generating_report') && (
+        <div style={{ height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+          <div className="animate-pulse" style={{ height: '100%', width: '100%', background: 'var(--primary)', borderRadius: 4 }} />
+        </div>
+      )}
       {Object.keys(latest).length > 0 && (
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>
           {HEADLINE.filter((m) => latest[m.key] !== undefined).map((m) => (
