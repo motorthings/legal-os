@@ -28,3 +28,4 @@ legal-os-SUMMARY.md
 
 # Simulation run artifacts (reportgen writes results/_sens)
 results/
+.vercel
