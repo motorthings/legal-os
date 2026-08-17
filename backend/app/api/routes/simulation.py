@@ -5,7 +5,6 @@ report. Writes go through the service-role pool (bypasses RLS); endpoint reads a
 ungated (auth is deferred).
 """
 import asyncio
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -65,7 +64,7 @@ async def get_run(run_id: str):
         "run_id": row.run_id, "status": row.status, "provider": row.provider,
         "total_seeds": row.total_seeds, "seeds_completed": row.seeds_completed,
         "budget": row.budget, "max_cost": row.max_cost, "spend": row.spend,
-        "report_ref": row.report_ref, "error": row.error,
+        "has_report": row.report is not None, "error": row.error,
     }
 
 
@@ -82,12 +81,9 @@ async def get_report(run_id: str):
     row = await db.fetch_run(run_id)
     if row is None:
         raise HTTPException(404, "run not found")
-    if not row.report_ref:
+    if not row.report:
         raise HTTPException(409, "report not ready")
-    p = Path(row.report_ref)
-    if not p.exists():
-        raise HTTPException(404, "report file missing")
-    return StreamingResponse(iter([p.read_text()]), media_type="text/markdown")
+    return StreamingResponse(iter([row.report]), media_type="text/markdown")
 
 
 @router.get("/runs/{run_id}/events")

@@ -6,7 +6,6 @@ Reuses the engine's build_sim_config + Orchestrator + export_results, and points
 shared report machinery (optimize.set_base_firm) at the run's firm.
 """
 import asyncio
-import json
 import math
 from dataclasses import replace
 from pathlib import Path
@@ -45,23 +44,17 @@ def _seed_finals(run) -> dict:
     return out
 
 
-def _mc_path(run_id: str) -> Path:
-    return workdir(run_id) / "mc_checkpoint.json"
-
-
-def _load_mc(run_id: str, start: int) -> dict:
+async def _load_mc(db, run_id: str, start: int) -> dict:
     """Reload the per-seed finals for seeds already completed on a prior (crashed) launch,
     so a resumed run builds the full MC band from all seeds, not just this session's."""
-    p = _mc_path(run_id)
-    if start > 0 and p.exists():
-        data = json.loads(p.read_text())
-        if len(data.get("ppp", [])) >= start:
-            return {m: list(data.get(m, [])) for m in _COLLECT}
+    data = await db.load_checkpoint(run_id)
+    if start > 0 and data and len(data.get("ppp", [])) >= start:
+        return {m: list(data.get(m, [])) for m in _COLLECT}
     return {m: [] for m in _COLLECT}
 
 
-def _save_mc(run_id: str, mc: dict) -> None:
-    _mc_path(run_id).write_text(json.dumps(mc))
+async def _save_mc(db, run_id: str, mc: dict) -> None:
+    await db.save_checkpoint(run_id, mc)
 
 
 async def execute_run(run_id: str, db, bus) -> None:
@@ -108,7 +101,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
     # RESUME: skip seeds already completed on a prior (crashed) launch, reloading their
     # finals from the on-disk checkpoint so the MC band reflects all seeds.
     start = row.seeds_completed
-    mc = _load_mc(run_id, start)
+    mc = await _load_mc(db, run_id, start)
     cumulative = row.spend
     budget = row.budget
     cap = row.max_cost
@@ -140,7 +133,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
         finals = _seed_finals(run)
         for m in _COLLECT:
             mc[m].append(finals[m])
-        _save_mc(run_id, mc)
+        await _save_mc(db, run_id, mc)
 
         if is_primary:
             orch.export_results(run)          # lays down meta/metrics/state + auto report.md
@@ -162,12 +155,13 @@ async def _execute_run(run_id: str, db, bus) -> None:
     completed = len(mc["ppp"])
     primary_dir = primary_dir or (out_dir / "primary")
     if primary_dir.exists() and completed > 0:
-        report_ref = await reportgen.generate_report(run_id, primary_dir, rc, cfg, mc)
+        report = await reportgen.generate_report(run_id, primary_dir, rc, cfg, mc)
     else:
-        report_ref = None
+        report = None
 
     final_status = "complete" if completed >= row.total_seeds else "budget_exhausted"
-    await db.set_status(run_id, final_status, report_ref=str(report_ref) if report_ref else None)
+    await db.set_status(run_id, final_status, report=report)
     bus.publish(run_id, "status", {"status": final_status, "seeds_completed": completed,
                                    "total_seeds": row.total_seeds, "spend": cumulative})
-    bus.publish(run_id, "report_ready", {"report_ref": report_ref}) if report_ref else None
+    if report:
+        bus.publish(run_id, "report_ready", {"report": True})

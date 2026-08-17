@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cite Check — Descrybe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: #c8daea; --border-bright: #a0bedb;
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --rose: #e11d48; --violet: #7c3aed; --amber: #b45309;
+  }
+  .dark {
+    --bg: #0a1628; --surface: #132240; --surface2: #1a2d52;
+    --border: #1a2d52; --border-bright: #2d4570;
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --rose: #fb7185; --violet: #a78bfa; --amber: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, var(--violet)0A, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; line-height: 1.6; padding: 40px 20px;
+  }
+  .backlink {
+    position: fixed; top: 12px; left: 16px; z-index: 101;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-dim); text-decoration: none;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface);
+  }
+  .backlink:hover { color: var(--text); border-color: var(--border-bright); }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  h2 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); text-align: center; margin-bottom: 36px;
+  }
+  .flow {
+    display: flex; flex-direction: column; gap: 8px; max-width: 720px;
+    margin: 0 auto 28px;
+  }
+  .step {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px;
+  }
+  .step .n {
+    font-family: var(--font-mono); font-weight: 700; font-size: 13px;
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--primary); color: #fff;
+  }
+  .step .fn { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--primary); }
+  .step .desc { font-size: 13px; color: var(--text-dim); }
+  .step .glyph { margin-left: auto; font-size: 18px; flex-shrink: 0; }
+  .g-good { color: #16a34a; }
+  .g-bad { color: #dc2626; }
+  .g-caution { color: #d97706; }
+  .g-unknown { color: #64748b; }
+
+  .report {
+    max-width: 720px; margin: 0 auto 28px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .report h3 {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--primary); color: var(--primary);
+  }
+  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat {
+    flex: 1; min-width: 90px; text-align: center;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px;
+  }
+  .stat .v { font-family: var(--font-mono); font-size: 22px; font-weight: 700; }
+  .stat .l { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+  .line { font-family: var(--font-mono); font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .output-bar {
+    margin-top: 28px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Cite Check</h1>
+  <h2>Validate a brief against the Descrybe Legal Engine before you file it</h2>
+
+  <div class="flow">
+    <div class="step">
+      <span class="n">1</span>
+      <div><div class="fn">extract_case_references</div><div class="desc">Pull every citation out of the brief, resolve each to a canonical case_id, and read good-law treatment.</div></div>
+    </div>
+    <div class="step">
+      <span class="n">2</span>
+      <div><div class="fn">verify_quote</div><div class="desc">Check each quoted passage word-for-word against the opinion.</div></div>
+      <span class="glyph g-good">✓</span>
+    </div>
+    <div class="step">
+      <span class="n">3</span>
+      <div><div class="fn">report</div><div class="desc">Flag every citation: good law, caution, overruled — and every quote: exact match or no match.</div></div>
+      <span class="glyph g-caution">⚠</span>
+    </div>
+    <div class="step">
+      <span class="n">4</span>
+      <div><div class="fn">annotated brief</div><div class="desc">Download a new copy with inline ✓ / ⚠ / ✗ markers and a cite-check appendix.</div></div>
+      <span class="glyph g-good">✓</span>
+    </div>
+  </div>
+
+  <div class="report">
+    <h3>Findings Report</h3>
+    <div class="stat-row">
+      <div class="stat"><div class="v" style="color:var(--text)">2</div><div class="l">References</div></div>
+      <div class="stat"><div class="v" style="color:#16a34a">1</div><div class="l">Good law</div></div>
+      <div class="stat"><div class="v" style="color:#d97706">0</div><div class="l">Caution</div></div>
+      <div class="stat"><div class="v" style="color:#dc2626">0</div><div class="l">Bad law</div></div>
+      <div class="stat"><div class="v" style="color:#16a34a">1</div><div class="l">Quotes verified</div></div>
+    </div>
+    <div class="line"><span class="g-good">✓</span> University of Tex. Southwestern Medical Center v. Nassar — 570 U.S. 338 (good)</div>
+    <div class="line"><span class="g-unknown">?</span> Bostock v. Clayton County — 590 U.S. 644 (unknown)</div>
+    <div class="line" style="border-bottom:none"><span class="g-good">✓</span> “retaliation claims require proof that the desire to retaliate was the but-for cause.” — exact match</div>
+  </div>
+
+  <div class="output-bar">
+    <strong>Engine:</strong> Descrybe Legal Engine · <strong>Live log</strong> names each function as it runs · <strong>Output:</strong> report + annotated brief with a new name
+  </div>
+</div>
+
+</body>
+</html>

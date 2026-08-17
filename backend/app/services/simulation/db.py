@@ -23,7 +23,8 @@ class RunRow:
     max_cost: Optional[float]
     spend: float
     config_snapshot: dict
-    report_ref: Optional[str]
+    report: Optional[str]
+    mc_checkpoint: Optional[dict]
     error: Optional[str]
 
 
@@ -58,7 +59,7 @@ class DB:
     async def fetch_run(self, run_id: str) -> Optional[RunRow]:
         row = await self._pool.fetchrow(
             """select id, status, provider, total_seeds, seeds_completed, budget, max_cost,
-               spend, config_snapshot, report_ref, error
+               spend, config_snapshot, report, mc_checkpoint, error
                from runs where id = $1""", run_id)
         if row is None:
             return None
@@ -67,16 +68,30 @@ class DB:
             total_seeds=row["total_seeds"], seeds_completed=row["seeds_completed"],
             budget=row["budget"], max_cost=row["max_cost"], spend=row["spend"],
             config_snapshot=json.loads(row["config_snapshot"]),
-            report_ref=row["report_ref"], error=row["error"],
+            report=row["report"],
+            mc_checkpoint=json.loads(row["mc_checkpoint"]) if row["mc_checkpoint"] else None,
+            error=row["error"],
         )
 
-    async def set_status(self, run_id: str, status: str, *, report_ref: Optional[str] = None,
+    async def set_status(self, run_id: str, status: str, *, report: Optional[str] = None,
                          error: Optional[str] = None) -> None:
         await self._pool.execute(
-            "update runs set status = $2, report_ref = coalesce($3, report_ref), "
+            "update runs set status = $2, report = coalesce($3, report), "
             "error = $4, updated_at = now() where id = $1",
-            run_id, status, report_ref, error,
+            run_id, status, report, error,
         )
+
+    async def save_checkpoint(self, run_id: str, mc: dict) -> None:
+        """Persist the per-seed finals so a resumed run rebuilds the full MC band."""
+        await self._pool.execute(
+            "update runs set mc_checkpoint = $2, updated_at = now() where id = $1",
+            run_id, json.dumps(mc),
+        )
+
+    async def load_checkpoint(self, run_id: str) -> Optional[dict]:
+        row = await self._pool.fetchrow(
+            "select mc_checkpoint from runs where id = $1", run_id)
+        return json.loads(row["mc_checkpoint"]) if row and row["mc_checkpoint"] else None
 
     async def persist_progress(self, run_id: str, seeds_completed: int, spend: float) -> None:
         """The authoritative resume checkpoint — awaited in the runner loop."""

@@ -87,7 +87,7 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int) -> dict:
     return bands
 
 
-async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict) -> Path:
+async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict) -> str:
     band = _mc_band(mc)
     objective = (rc.get("objective") or {}).get("weights") or {"ppp": 1.0}
     primary = next(iter(objective.keys()))
@@ -112,9 +112,7 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
         "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters)},
     }
 
-    report = build_report(primary_dir, experiments)
-    (primary_dir / "report.md").write_text(report)
-    return primary_dir / "report.md"
+    return build_report(primary_dir, experiments)
 
 
 def _ci(b: dict) -> float:

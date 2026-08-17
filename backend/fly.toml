@@ -27,11 +27,6 @@ primary_region = "iad"
   size = "shared-cpu-1x"
   memory = "1GB"
 
-# Simulation runner artifacts (report.md, metrics.csv, MC checkpoint) — WORK_DIR.
-[[mounts]]
-  source = "sim_runs"
-  destination = "/data/runs"
-
 # Redis for Celery — separate Fly app or Upstash
 # Set REDIS_URL env var after provisioning
 
