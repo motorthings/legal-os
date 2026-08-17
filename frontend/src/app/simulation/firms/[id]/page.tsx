@@ -34,14 +34,18 @@ export default function FirmPage() {
   }, [load]);
 
   return (
-    <main style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1rem' }}>
+    <main style={{ maxWidth: 960, margin: '0 auto', padding: '2rem 1rem' }}>
       <Link href="/simulation" style={{ color: '#888', textDecoration: 'none' }}>← All firms</Link>
       <h1>{firmName}</h1>
       {!loaded ? <p>Loading…</p> : (
         <>
           <RunSection firmId={firmId} hasConfig={!!config} />
-          <h2>Runs</h2>
-          <RunHistory firmId={firmId} />
+          <details className="card p-4 mb-4">
+            <summary className="cursor-pointer select-none font-semibold text-[var(--text)]">Runs</summary>
+            <div className="mt-3">
+              <RunHistory firmId={firmId} />
+            </div>
+          </details>
           <h2>Intake</h2>
           <IntakeForm firmId={firmId} existing={config} />
         </>

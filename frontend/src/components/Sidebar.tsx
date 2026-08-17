@@ -84,10 +84,6 @@ const NAV: Record<Persona, NavGroup[]> = {
   ],
   tour: [
     {
-      label: 'The Tour',
-      items: [{ href: '/guides', label: 'Guides & Diagrams', icon: BookOpen }],
-    },
-    {
       label: 'Everything',
       items: ALL_FUNCTIONS,
     },
@@ -243,18 +239,16 @@ export default function Sidebar() {
           </div>
         ))}
 
-        {persona !== 'tour' && (
-          <div className="pt-2 border-t border-[var(--border)]">
-            <Link
-              href="/guides"
-              className={navLinkClass(isActive('/guides'))}
-              style={isActive('/guides') ? { backgroundColor: 'var(--primary)' } : undefined}
-            >
-              <BookOpen className="w-4 h-4" />
-              Guides & Diagrams
-            </Link>
-          </div>
-        )}
+        <div className="pt-2 border-t border-[var(--border)]">
+          <Link
+            href="/guides"
+            className={navLinkClass(isActive('/guides'))}
+            style={isActive('/guides') ? { backgroundColor: 'var(--primary)' } : undefined}
+          >
+            <BookOpen className="w-4 h-4" />
+            Guides & Diagrams
+          </Link>
+        </div>
       </nav>
 
       {/* Descrybe Engine connection status */}

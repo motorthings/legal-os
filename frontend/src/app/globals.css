@@ -159,6 +159,13 @@ input:focus, textarea:focus, select:focus {
   border-color: var(--secondary);
 }
 
+input[type="range"] {
+  background: transparent;
+  border: none;
+  padding: 0;
+  accent-color: var(--primary);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

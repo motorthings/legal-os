@@ -29,10 +29,33 @@ const GUARDRAIL_METRICS = [
 const ASKABLE = ELASTICITY_DEFS.filter((e) => e.askable);
 const DEFAULT_ELASTICITIES = Object.fromEntries(ASKABLE.map((e) => [e.id, e.base]));
 
+const OBJECTIVE_LABELS: Record<string, string> = {
+  ppp: 'Profit per partner',
+  margin: 'Matter margin',
+  rpl: 'Revenue per lawyer',
+  realization: 'Realization',
+  retention: 'Retention',
+};
+
+const TAG_COLOR: Record<string, string> = {
+  '[SURVEY]': 'var(--secondary)',
+  '[INFERRED]': 'var(--metric)',
+  '[ASSUMPTION]': 'var(--amber)',
+};
+
+const FIRM_SECTIONS: { title: string; fields: (typeof FIRM_FIELDS)[number][] }[] = [
+  { title: 'Structural posture', fields: FIRM_FIELDS.slice(0, 6) },
+  { title: 'Work, comp & clients', fields: FIRM_FIELDS.slice(6, 10) },
+  { title: 'Financials & tech', fields: FIRM_FIELDS.slice(10, 15) },
+  { title: 'Culture', fields: FIRM_FIELDS.slice(15, 18) },
+];
+
+const INPUT_CLS = 'px-2.5 py-1.5 text-[13px] rounded-md';
+
 function fieldControl(f: (typeof FIRM_FIELDS)[number], value: string | number, onChange: (v: string | number) => void) {
   if (f.enum) {
     return (
-      <select value={String(value)} onChange={(e) => onChange(e.target.value)}>
+      <select className={INPUT_CLS} value={String(value)} onChange={(e) => onChange(e.target.value)}>
         {f.enum.map((opt) => (
           <option key={opt} value={opt}>{opt.replace(/_/g, ' ')}</option>
         ))}
@@ -40,9 +63,9 @@ function fieldControl(f: (typeof FIRM_FIELDS)[number], value: string | number, o
     );
   }
   if (f.type === 'int' || f.type === 'float') {
-    return <input type="number" step={f.type === 'int' ? 1 : 'any'} value={Number(value)} onChange={(e) => onChange(e.target.valueAsNumber)} />;
+    return <input className={INPUT_CLS} type="number" step={f.type === 'int' ? 1 : 'any'} value={Number(value)} onChange={(e) => onChange(e.target.valueAsNumber)} />;
   }
-  return <input value={String(value)} onChange={(e) => onChange(e.target.value)} />;
+  return <input className={INPUT_CLS} value={String(value)} onChange={(e) => onChange(e.target.value)} />;
 }
 
 export default function IntakeForm({ firmId, existing }: Props) {
@@ -54,9 +77,10 @@ export default function IntakeForm({ firmId, existing }: Props) {
     ...DEFAULT_ELASTICITIES,
     ...(existing?.elasticities ?? {}),
   });
-  const [weights, setWeights] = useState<Record<string, number>>(
-    existing?.objective.weights ?? { ppp: 1 },
-  );
+  const [weights, setWeights] = useState<Record<string, number>>(() => {
+    const base: Record<string, number> = { ppp: 1, margin: 0, rpl: 0, realization: 0, retention: 0 };
+    return existing?.objective.weights ? { ...base, ...existing.objective.weights } : base;
+  });
   const [guardrails, setGuardrails] = useState<Record<string, { min: string; max: string }>>(() => {
     const init: Record<string, { min: string; max: string }> = {};
     for (const m of GUARDRAIL_METRICS) init[m.key] = { min: '', max: '' };
@@ -76,7 +100,10 @@ export default function IntakeForm({ firmId, existing }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const weightTotal = useMemo(() => Object.values(weights).reduce((a, b) => a + b, 0), [weights]);
+  const weightPct = useMemo(
+    () => Math.round(OBJECTIVE_KEYS.reduce((s, k) => s + (weights[k] ?? 0), 0) * 100),
+    [weights],
+  );
 
   function setField(key: string, v: string | number) {
     setFirm((f) => ({ ...f, [key]: v }));
@@ -86,8 +113,29 @@ export default function IntakeForm({ firmId, existing }: Props) {
     setElasticities((e) => ({ ...e, [id]: v }));
   }
 
-  function setWeight(key: string, v: number) {
-    setWeights((w) => ({ ...w, [key]: v }));
+  // Move one priority slider while keeping the total pinned to 1: the delta is
+  // absorbed (proportionally) by the other sliders, then renormalized.
+  function setWeight(key: string, raw: number) {
+    const target = Math.max(0, Math.min(1, raw));
+    setWeights((prev) => {
+      const current = prev[key] ?? 0;
+      const diff = target - current;
+      if (diff === 0) return prev;
+      const others = OBJECTIVE_KEYS.filter((k) => k !== key);
+      const othersTotal = others.reduce((s, k) => s + (prev[k] ?? 0), 0);
+      const next: Record<string, number> = { ...prev, [key]: target };
+      if (othersTotal > 1e-9) {
+        for (const k of others) {
+          next[k] = Math.max(0, (prev[k] ?? 0) - diff * ((prev[k] ?? 0) / othersTotal));
+        }
+      } else {
+        const share = Math.max(0, -diff) / others.length;
+        for (const k of others) next[k] = share;
+      }
+      const total = OBJECTIVE_KEYS.reduce((s, k) => s + next[k], 0);
+      if (total > 0) for (const k of OBJECTIVE_KEYS) next[k] = next[k] / total;
+      return next;
+    });
   }
 
   function setGuardrail(key: string, field: 'min' | 'max', value: string) {
@@ -153,109 +201,135 @@ export default function IntakeForm({ firmId, existing }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ display: 'grid', gap: '1.5rem', maxWidth: 640 }}>
-      <section>
-        <h3>Identity</h3>
-        <label>Run label
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. mid-market demo" />
-        </label>
-        <label>Firm name
-          <input value={firmName} onChange={(e) => setFirmName(e.target.value)} placeholder="e.g. Aldrich & Vale LLP" />
-        </label>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4 max-w-4xl">
+      {/* Identity */}
+      <section className="card p-5">
+        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Identity</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Run label</span>
+            <input className={INPUT_CLS} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. mid-market demo" />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Firm name</span>
+            <input className={INPUT_CLS} value={firmName} onChange={(e) => setFirmName(e.target.value)} placeholder="e.g. Aldrich & Vale LLP" />
+          </label>
+        </div>
       </section>
 
-      {(() => {
-        const SECTIONS: Array<[number, string]> = [
-          [0, 'Structural posture'],
-          [6, 'Work, comp, clients, people'],
-          [10, 'Financials & tech'],
-          [15, 'Culture'],
-        ];
-        return FIRM_FIELDS.map((f, i) => (
-          <div key={f.key}>
-          {SECTIONS.find(([start]) => start === i) && <h3>{SECTIONS.find(([start]) => start === i)![1]}</h3>}
-          <label>
-            <strong>{f.label}</strong> <span style={{ color: '#999' }}>{f.tag}</span>
-            <div style={{ color: '#666', fontSize: '0.85rem' }}>{f.question}</div>
-            {fieldControl(f, firm[f.key], (v) => setField(f.key, v))}
-          </label>
+      {/* Firm signature */}
+      {FIRM_SECTIONS.map((sec) => (
+        <section key={sec.title} className="card p-5">
+          <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">{sec.title}</h3>
+          <div className="grid gap-x-5 gap-y-3.5 sm:grid-cols-2 lg:grid-cols-3">
+            {sec.fields.map((f) => (
+              <label key={f.key} className="flex flex-col gap-1 min-w-0">
+                <span className="flex items-baseline gap-2">
+                  <span className="text-[13px] font-semibold text-[var(--text)]">{f.label}</span>
+                  <span className="font-mono text-[9px] tracking-wide" style={{ color: TAG_COLOR[f.tag] }}>{f.tag}</span>
+                </span>
+                <span className="text-[11px] text-[var(--text-muted)] leading-snug">{f.question}</span>
+                {fieldControl(f, firm[f.key], (v) => setField(f.key, v))}
+              </label>
+            ))}
           </div>
-        ));
-      })()}
+        </section>
+      ))}
 
-      <section>
-        <h3>Priorities</h3>
-        <div style={{ display: 'grid', gap: '0.4rem' }}>
+      {/* Priorities */}
+      <section className="card p-5">
+        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Priorities</h3>
+        <p className="text-[12px] text-[var(--text-muted)] mb-3">Weight the objectives that matter most — the total always stays at 100%.</p>
+        <div className="flex flex-col gap-2.5">
           {OBJECTIVE_KEYS.map((k) => (
-            <label key={k}>
-              {k}
+            <div key={k} className="flex items-center gap-3">
+              <span className="w-36 shrink-0 text-[13px] text-[var(--text-dim)]">{OBJECTIVE_LABELS[k] ?? k}</span>
               <input
-                type="number" step="0.1" min="0"
+                type="range" min={0} max={1} step={0.01} className="flex-1"
                 value={weights[k] ?? 0}
-                onChange={(e) => setWeight(k, e.target.valueAsNumber || 0)}
+                onChange={(e) => setWeight(k, Number(e.target.value))}
               />
+              <span className="w-11 shrink-0 text-right font-mono text-[12px] text-[var(--text)]">
+                {Math.round((weights[k] ?? 0) * 100)}%
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 text-right font-mono text-[11px] text-[var(--text-muted)]">Total: {weightPct}%</div>
+      </section>
+
+      {/* Guardrails */}
+      <section className="card p-5">
+        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Guardrails</h3>
+        <p className="text-[12px] text-[var(--text-muted)] mb-3">Constraints the recommendation must satisfy (leave blank for none).</p>
+        <div className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+          {GUARDRAIL_METRICS.map((m) => (
+            <div key={m.key} className="flex items-center gap-2">
+              <span className="flex-1 text-[13px] text-[var(--text-dim)]">{m.label}</span>
+              <span className="text-[var(--text-muted)]">≥</span>
+              <input type="number" placeholder="min" className="w-20 px-2 py-1 text-[13px] rounded-md" value={guardrails[m.key].min} onChange={(e) => setGuardrail(m.key, 'min', e.target.value)} />
+              <span className="text-[var(--text-muted)]">≤</span>
+              <input type="number" placeholder="max" className="w-20 px-2 py-1 text-[13px] rounded-md" value={guardrails[m.key].max} onChange={(e) => setGuardrail(m.key, 'max', e.target.value)} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Calibration */}
+      <section className="card p-5">
+        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Calibration</h3>
+        <p className="text-[12px] text-[var(--text-muted)] mb-3">How strongly the levers work at your firm.</p>
+        <div className="flex flex-col gap-3">
+          {ASKABLE.map((e) => (
+            <label key={e.id} className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-[13px] font-semibold text-[var(--text)]">{e.name}</span>
+                <span className="font-mono text-[10px] text-[var(--text-muted)]">[{e.low}–{e.high}]</span>
+              </div>
+              <span className="text-[11px] text-[var(--text-muted)] leading-snug">{e.question}</span>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range" min={e.low} max={e.high} step="any" className="flex-1"
+                  value={elasticities[e.id]}
+                  onChange={(ev) => setElasticity(e.id, Number(ev.target.value))}
+                />
+                <span className="w-14 text-right font-mono text-[12px] text-[var(--text)]">{elasticities[e.id]}</span>
+              </div>
             </label>
           ))}
-          <p>Sum: {weightTotal.toFixed(2)} (normalized to 1 on save)</p>
-        </div>
-        <div>
-          <strong>Guardrails</strong>{' '}
-          <span style={{ color: '#999' }}>— constraints the recommendation must satisfy (leave blank for none)</span>
-          <div style={{ display: 'grid', gap: '0.4rem', marginTop: '0.4rem' }}>
-            {GUARDRAIL_METRICS.map((m) => (
-              <div key={m.key} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <span style={{ flex: 1 }}>{m.label}</span>
-                <span style={{ color: '#999' }}>≥</span>
-                <input type="number" placeholder="min" value={guardrails[m.key].min} onChange={(e) => setGuardrail(m.key, 'min', e.target.value)} style={{ width: '5rem' }} />
-                <span style={{ color: '#999' }}>≤</span>
-                <input type="number" placeholder="max" value={guardrails[m.key].max} onChange={(e) => setGuardrail(m.key, 'max', e.target.value)} style={{ width: '5rem' }} />
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
-      <section>
-        <h3>Calibration — how strongly the levers work at your firm</h3>
-        {ASKABLE.map((e) => (
-          <label key={e.id} style={{ display: 'grid', gap: '0.4rem' }}>
-            <div>
-              <strong>{e.name}</strong>{' '}
-              <span style={{ color: '#999' }}>[{e.low}–{e.high}]</span>
-            </div>
-            <div style={{ color: '#666', fontSize: '0.85rem' }}>{e.question}</div>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <input
-                type="range" min={e.low} max={e.high} step="any" style={{ flex: 1 }}
-                value={elasticities[e.id]}
-                onChange={(ev) => setElasticity(e.id, Number(ev.target.value))}
-              />
-              <span>{elasticities[e.id]}</span>
-            </div>
+      {/* Run scale */}
+      <section className="card p-5">
+        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Run scale</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Sprints</span>
+            <input className={INPUT_CLS} type="number" value={run.sprints} onChange={(e) => setRun({ ...run, sprints: e.target.valueAsNumber })} />
           </label>
-        ))}
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Model</span>
+            <select className={INPUT_CLS} value={run.model} onChange={(e) => setRun({ ...run, model: e.target.value })}>
+              <option value="deepseek-v4-flash">deepseek-v4-flash (iteration)</option>
+              <option value="deepseek-v4-pro">deepseek-v4-pro (client pass)</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Legal tool</span>
+            <select className={INPUT_CLS} value={run.legalTool} onChange={(e) => setRun({ ...run, legalTool: e.target.value })}>
+              {['mock', 'descrybe', 'harvey', 'cocounsel', 'westlaw_ai', 'lexis_ai'].map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </label>
+        </div>
       </section>
 
-      <section>
-        <h3>Run scale</h3>
-        <label>Sprints <input type="number" value={run.sprints} onChange={(e) => setRun({ ...run, sprints: e.target.valueAsNumber })} /></label>
-        <label>Model
-          <select value={run.model} onChange={(e) => setRun({ ...run, model: e.target.value })}>
-            <option value="deepseek-v4-flash">deepseek-v4-flash (iteration)</option>
-            <option value="deepseek-v4-pro">deepseek-v4-pro (client pass)</option>
-          </select>
-        </label>
-        <label>Legal tool
-          <select value={run.legalTool} onChange={(e) => setRun({ ...run, legalTool: e.target.value })}>
-            {['mock', 'descrybe', 'harvey', 'cocounsel', 'westlaw_ai', 'lexis_ai'].map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </label>
-      </section>
-
-      {error && <p style={{ color: 'crimson' }}>{error}</p>}
-      <button type="submit" disabled={busy} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">{busy ? 'Saving…' : 'Save config'}</button>
+      {error && <p className="text-sm text-[var(--rose)]">{error}</p>}
+      <button type="submit" disabled={busy} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed self-start">
+        {busy ? 'Saving…' : 'Save config'}
+      </button>
     </form>
   );
 }
