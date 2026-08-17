@@ -22,6 +22,7 @@ from app.database import get_supabase
 from app.llm import LLMProvider, LLMResponse
 from app.services.audit import AuditTrail
 from app.services.metrics import MetricsCollector
+from app.services.text_normalization import normalize_text
 from app.config import settings
 
 
@@ -140,7 +141,7 @@ If a standard's clause is entirely missing, flag it as critical with clause_text
         response: LLMResponse = _call_llm_sync(
             provider,
             system_prompt=system_prompt,
-            user_message=f"TARGET STANDARDS:\n\n{standards_text}\n\n---\n\nDOCUMENT TEXT:\n\n{text[:120000]}",
+            user_message=f"TARGET STANDARDS:\n\n{standards_text}\n\n---\n\nDOCUMENT TEXT:\n\n{normalize_text(text)[:120000]}",
             temperature=0.1,
             max_tokens=8192,
         )

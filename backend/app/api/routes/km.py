@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.database import get_supabase, get_pool
 from app.auth import get_current_user, User
 from app.config import settings
+from app.services.text_normalization import normalize_text
 
 router = APIRouter()
 
@@ -238,7 +239,9 @@ async def ingest_document(
     source_file = data.get("source_file")
 
     # Generate embedding
-    embedding = await _embed_text(text[:8000])  # Voyage has ~8K token context
+    # normalize_text strips page markers, collapses whitespace, and dedupes
+    # repeated headers so the 8K-char window carries signal, not boilerplate.
+    embedding = await _embed_text(normalize_text(text)[:8000])  # Voyage has ~8K token context
 
     # Chunk count estimate (~800 chars per chunk)
     chunk_count = max(1, len(text) // 800)
