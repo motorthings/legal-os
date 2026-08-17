@@ -117,6 +117,7 @@ export default function RunProgress({ runId }: Props) {
 
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const finished = status === 'complete' || status === 'budget_exhausted';
+  const active = status === 'queued' || status === 'running' || status === 'generating_report' || status === 'optimizing';
 
   async function onOptimize() {
     setOptimizing(true);
@@ -129,17 +130,26 @@ export default function RunProgress({ runId }: Props) {
 
   return (
     <div>
-      <p className="text-[15px]">
+      <p className="text-[15px] flex items-center gap-2">
+        {active && (
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin shrink-0" />
+        )}
         <strong>{STATUS_TEXT[status] ?? status}</strong>
         {status === 'running' && total > 0 && (
           <span className="text-[var(--text-dim)]"> · {done} of {total} scenarios complete</span>
         )}
         {spend > 0 && <span className="text-[var(--text-dim)]"> · ${spend.toFixed(2)} spent</span>}
       </p>
-      {status === 'running' && total > 0 && (
-        <div style={{ height: 8, background: 'var(--border)', borderRadius: 4 }}>
-          <div style={{ height: '100%', width: `${pct}%`, background: 'var(--primary)', borderRadius: 4, transition: 'width 0.3s' }} />
-        </div>
+      {status === 'running' && (
+        total > 0 ? (
+          <div style={{ height: 8, background: 'var(--border)', borderRadius: 4 }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: 'var(--primary)', borderRadius: 4, transition: 'width 0.3s' }} />
+          </div>
+        ) : (
+          <div style={{ height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+            <div className="animate-pulse" style={{ height: '100%', width: '100%', background: 'var(--primary)', borderRadius: 4 }} />
+          </div>
+        )
       )}
       {(status === 'optimizing' || status === 'generating_report') && (
         <div style={{ height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
