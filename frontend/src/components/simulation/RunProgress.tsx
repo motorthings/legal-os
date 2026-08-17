@@ -75,6 +75,8 @@ export default function RunProgress({ runId }: Props) {
         if (p.spend !== undefined) setSpend(p.spend);
         if (p.seed_index !== undefined) setDone(p.seed_index + 1);
         setLog((l) => [...l, `✓ scenario ${(p.seed_index ?? 0) + 1} complete`]);
+      } else if (ev.kind === 'progress') {
+        setLog((l) => [...l, `… ${p.message}`]);
       } else if (ev.kind === 'report_ready' && !reportFetched.current) {
         reportFetched.current = true;
         setLog((l) => [...l, '✓ report ready']);

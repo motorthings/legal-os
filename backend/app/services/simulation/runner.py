@@ -158,7 +158,10 @@ async def _execute_run(run_id: str, db, bus) -> None:
         bus.publish(run_id, "status", {"status": "generating_report",
                                        "seeds_completed": completed, "total_seeds": row.total_seeds,
                                        "spend": cumulative})
-        report = await reportgen.generate_report(run_id, primary_dir, rc, cfg, mc)
+        report = await reportgen.generate_report(
+            run_id, primary_dir, rc, cfg, mc,
+            progress=lambda msg: bus.publish(run_id, "progress", {"message": msg}),
+        )
     else:
         report = None
 

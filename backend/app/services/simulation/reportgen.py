@@ -26,6 +26,12 @@ _GOVERNING = {
     "comp": "adoption_comp_gain",
     "leverage": "utilization_ai_cut",
 }
+LEVER_NOTES = {
+    "pricing": "AFA pricing",
+    "seams": "workflow standardization",
+    "comp": "partner comp incentives",
+    "leverage": "staffing leverage",
+}
 _SENS_SEEDS = 3  # band needs a range, not a CI — keep the sweep cheap
 _SENS_OUT = Path(tempfile.gettempdir()) / "law-firm-sim-sens"  # throwaway artifacts, not repo clutter
 
@@ -64,13 +70,15 @@ def _mc_band(mc: dict) -> dict:
     return out
 
 
-async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int) -> dict:
+async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=None) -> dict:
     base_profile = cfg.elasticities or default_profile()
     bands = {}
     for lever in LEVERS:
         cid = _GOVERNING.get(lever)
         if not cid or cid not in DEFAULT_ELASTICITIES:
             continue
+        if progress:
+            progress(f"testing how {LEVER_NOTES.get(lever, lever)} moves profit — low, base, high")
         coef = DEFAULT_ELASTICITIES[cid]
         deltas = {}
         for where in ("low", "base", "high"):
@@ -87,7 +95,9 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int) -> dict:
     return bands
 
 
-async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict) -> str:
+async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None) -> str:
+    if progress:
+        progress("computing the confidence band across your scenarios")
     band = _mc_band(mc)
     objective = (rc.get("objective") or {}).get("weights") or {"ppp": 1.0}
     primary = next(iter(objective.keys()))
@@ -109,9 +119,11 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
             "ci95": _ci(band["ppp"]),
             "best_combo": [],
         },
-        "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters)},
+        "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters, progress)},
     }
 
+    if progress:
+        progress("writing the report")
     return build_report(primary_dir, experiments)
 
 
