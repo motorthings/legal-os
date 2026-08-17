@@ -46,6 +46,14 @@ const GUIDES: Guide[] = [
     external: true,
   },
   {
+    title: 'NLP Preprocessing',
+    slug: 'nlp-preprocessing',
+    desc: 'How deterministic text normalization and clause-aware segmentation fix contract chunking — better embeddings, cleaner audit trail, no LLM call for structure.',
+    icon: FileText,
+    category: 'System',
+    external: true,
+  },
+  {
     title: 'Matter Intake Overview',
     slug: 'matter-intake-overview',
     desc: 'End-to-end matter intake flow — from initial contact through triage, conflict check, and routing.',

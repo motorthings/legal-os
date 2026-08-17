@@ -11,6 +11,7 @@ const SLUG_TO_TARGET: Record<string, string> = {
   "technical-architecture": `${DIAGRAMS_BASE}/legal-ai-storage-architecture-diagrams.html`,
   "matter-intake-overview": `${DIAGRAMS_BASE}/matter-intake-overview.html`,
   "matter-intake-pipeline": `${DIAGRAMS_BASE}/matter-intake-pipeline.html`,
+  "nlp-preprocessing": `${DIAGRAMS_BASE}/legal-os-nlp-preprocessing.html`,
   // Guides — local to the app
   "how-it-works": "how-it-works.html",
   "contract-review-showcase": "contract-review-showcase.html",
