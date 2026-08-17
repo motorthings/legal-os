@@ -10,6 +10,7 @@ interface Guide {
   desc: string;
   icon: typeof FileText;
   category: string;
+  external?: boolean;
 }
 
 const GUIDES: Guide[] = [
@@ -26,6 +27,7 @@ const GUIDES: Guide[] = [
     desc: 'Five-layer operating model for enterprise legal AI — governance architecture, specialized functions, and the operational layer that connects them.',
     icon: Target,
     category: 'System',
+    external: true,
   },
   {
     title: 'Governance Architecture',
@@ -33,6 +35,7 @@ const GUIDES: Guide[] = [
     desc: 'How the Legal AI OS enforces auditability, explainability, and traceability across every function and decision.',
     icon: Shield,
     category: 'Governance',
+    external: true,
   },
   {
     title: 'Technical Architecture',
@@ -40,6 +43,7 @@ const GUIDES: Guide[] = [
     desc: 'Storage architecture options, deployment topology, and integration patterns for enterprise legal AI.',
     icon: BarChart3,
     category: 'System',
+    external: true,
   },
   {
     title: 'Matter Intake Overview',
@@ -47,6 +51,7 @@ const GUIDES: Guide[] = [
     desc: 'End-to-end matter intake flow — from initial contact through triage, conflict check, and routing.',
     icon: Search,
     category: 'Matter Intake',
+    external: true,
   },
   {
     title: 'Matter Intake Pipeline',
@@ -54,6 +59,7 @@ const GUIDES: Guide[] = [
     desc: 'Detailed pipeline view — classification, urgency scoring, resource matching, and audit trail.',
     icon: Search,
     category: 'Matter Intake',
+    external: true,
   },
   {
     title: 'Contract Review Showcase',
@@ -173,6 +179,9 @@ export default function GuidesPage() {
                           <h3 className="font-semibold text-[15px] text-[var(--text)] group-hover:text-[var(--primary)] transition-colors">
                             {g.title}
                           </h3>
+                          {g.external && (
+                            <span className="ml-auto text-[10px] font-mono text-[var(--text-muted)]">↗ portfolio</span>
+                          )}
                         </div>
                         <p className="text-[13px] text-[var(--text-dim)] leading-relaxed">
                           {g.desc}

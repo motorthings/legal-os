@@ -1,12 +1,18 @@
 import { GuidePageClient } from "./client";
 
-const SLUG_TO_FILE: Record<string, string> = {
+// Diagrams are canonical in the motorthings/diagrams portfolio and iframed from there;
+// user-facing guides stay local to the app.
+const DIAGRAMS_BASE = "https://motorthings.github.io/diagrams/legal";
+
+const SLUG_TO_TARGET: Record<string, string> = {
+  // Diagrams — external (iframe the diagrams repo page)
+  "platform-overview": `${DIAGRAMS_BASE}/legal-ai-os-overview.html`,
+  "governance-architecture": `${DIAGRAMS_BASE}/legal-ai-governance.html`,
+  "technical-architecture": `${DIAGRAMS_BASE}/legal-ai-storage-architecture-diagrams.html`,
+  "matter-intake-overview": `${DIAGRAMS_BASE}/matter-intake-overview.html`,
+  "matter-intake-pipeline": `${DIAGRAMS_BASE}/matter-intake-pipeline.html`,
+  // Guides — local to the app
   "how-it-works": "how-it-works.html",
-  "platform-overview": "legal-ai-os-overview.html",
-  "governance-architecture": "legal-ai-governance.html",
-  "technical-architecture": "legal-ai-technical-architecture.html",
-  "matter-intake-overview": "matter-intake-overview.html",
-  "matter-intake-pipeline": "matter-intake-pipeline.html",
   "contract-review-showcase": "contract-review-showcase.html",
   "employment-overview": "employment-overview.html",
   "regulatory-monitor": "regulatory-monitor.html",
@@ -18,11 +24,18 @@ const SLUG_TO_FILE: Record<string, string> = {
 };
 
 export async function generateStaticParams() {
-  return Object.keys(SLUG_TO_FILE).map((slug) => ({ slug }));
+  return Object.keys(SLUG_TO_TARGET).map((slug) => ({ slug }));
 }
 
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const file = SLUG_TO_FILE[slug];
-  return <GuidePageClient slug={slug} file={file} />;
+  const target = SLUG_TO_TARGET[slug];
+  const external = target?.startsWith("http") ?? false;
+  return (
+    <GuidePageClient
+      slug={slug}
+      file={external ? undefined : target}
+      url={external ? target : undefined}
+    />
+  );
 }

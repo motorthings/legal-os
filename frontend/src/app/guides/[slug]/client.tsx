@@ -34,11 +34,13 @@ function buildThemeCSS(): string {
 `;
 }
 
-export function GuidePageClient({ slug, file }: { slug: string; file: string | undefined }) {
+export function GuidePageClient({ slug, file, url }: { slug: string; file?: string; url?: string }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
+  const external = Boolean(url);
 
   const applyTheme = useCallback(() => {
+    if (external) return; // cross-origin iframe — the diagram carries its own theme
     const doc = iframeRef.current?.contentDocument;
     if (!doc) return;
     let style = doc.getElementById("legal-os-theme-override") as HTMLStyleElement | null;
@@ -48,7 +50,7 @@ export function GuidePageClient({ slug, file }: { slug: string; file: string | u
       doc.head.appendChild(style);
     }
     style.textContent = buildThemeCSS();
-  }, []);
+  }, [external]);
 
   const handleLoad = useCallback(() => {
     applyTheme();
@@ -60,15 +62,16 @@ export function GuidePageClient({ slug, file }: { slug: string; file: string | u
   }, [applyTheme]);
 
   useEffect(() => {
+    if (external) return; // no theme sync for external diagrams
     const observer = new MutationObserver(() => applyTheme());
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class"],
     });
     return () => observer.disconnect();
-  }, [applyTheme]);
+  }, [applyTheme, external]);
 
-  if (!file) {
+  if (!file && !url) {
     return (
       <div>
         <Link href="/guides" className="inline-flex items-center gap-1 text-sm text-[var(--text-dim)] hover:text-[var(--text)] transition-colors mb-6 no-underline">
@@ -92,7 +95,7 @@ export function GuidePageClient({ slug, file }: { slug: string; file: string | u
       {/* Iframe — fills the entire main area */}
       <iframe
         ref={iframeRef}
-        src={`/guides/${file}`}
+        src={url || `/guides/${file}`}
         title={slug}
         onLoad={handleLoad}
         style={{

@@ -9,7 +9,7 @@ import {
   FileText, LogOut, Scale, Search, Shield,
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
-  LayoutDashboard, Beaker, GraduationCap, FileCheck2,
+  LayoutDashboard, FileCheck2,
 } from 'lucide-react';
 
 interface NavItem {
@@ -33,8 +33,6 @@ const FUNCTIONS: NavItem[] = [
 
 const OPERATIONS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/poc-pipeline', label: 'POC Pipeline', icon: Beaker },
-  { href: '/guides/enablement-kit', label: 'Enablement Kit', icon: GraduationCap },
 ];
 
 export default function Sidebar() {
@@ -74,20 +72,6 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-        {/* Home */}
-        <Link
-          href="/"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors no-underline ${
-            isActive('/') && pathname === '/'
-              ? 'text-white'
-              : 'text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--text)]'
-          }`}
-          style={isActive('/') && pathname === '/' ? { backgroundColor: 'var(--primary)' } : undefined}
-        >
-          <Building2 className="w-4 h-4" />
-          Dashboard
-        </Link>
-
         {/* Section header */}
         <div className="pt-4 pb-1 px-3">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
@@ -107,13 +91,6 @@ export default function Sidebar() {
           <BookOpen className="w-4 h-4" />
           Guides & Diagrams
         </Link>
-
-        {/* Section header */}
-        <div className="pt-4 pb-1 px-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Functions
-          </span>
-        </div>
 
         {FUNCTIONS.map((fn) => {
           const Icon = fn.icon;
@@ -152,13 +129,6 @@ export default function Sidebar() {
             </Link>
           );
         })}
-
-        {/* Section header */}
-        <div className="pt-4 pb-1 px-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Operations
-          </span>
-        </div>
 
         {OPERATIONS.map((op) => {
           const Icon = op.icon;

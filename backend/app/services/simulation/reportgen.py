@@ -8,6 +8,7 @@ called (by the runner) so the sensitivity sweep runs the FIRM's numbers.
 """
 import math
 import statistics
+import tempfile
 from pathlib import Path
 
 from app.config import settings
@@ -25,7 +26,8 @@ _GOVERNING = {
     "comp": "adoption_comp_gain",
     "leverage": "utilization_ai_cut",
 }
-_SENS_SEEDS = 6  # cap the band sweep — the report needs a range, not a full CI
+_SENS_SEEDS = 3  # band needs a range, not a CI — keep the sweep cheap
+_SENS_OUT = Path(tempfile.gettempdir()) / "law-firm-sim-sens"  # throwaway artifacts, not repo clutter
 
 
 async def _ppp_async(pulled, seeds, sprints: int, matters: int, profile) -> float:
@@ -39,7 +41,7 @@ async def _ppp_async(pulled, seeds, sprints: int, matters: int, profile) -> floa
     vals = []
     for seed in seeds:
         cfg = SimulationConfig(sprints=sprints, matters_per_sprint=matters,
-                               llm_provider="mock", seed=seed, output_dir="results/_sens",
+                               llm_provider="mock", seed=seed, output_dir=str(_SENS_OUT),
                                run_id="SENS", **overrides)
         o = Orchestrator(cfg)
         o.initialize()
@@ -92,7 +94,7 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
 
     sprints = cfg.sprints
     matters = cfg.matters_per_sprint
-    seeds = [settings.seed_base + i for i in range(6)]
+    seeds = [settings.seed_base + i for i in range(_SENS_SEEDS)]
 
     experiments = {
         "optimize": {
