@@ -436,7 +436,7 @@ def main():
 
 
 def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int = 8,
-                     mc_seeds: int = 20) -> dict:
+                     mc_seeds: int = 20, progress=None) -> dict:
     """Run the adaptive 3-round lever optimization for a firm config and return the
     `experiments` dict (the `optimize` key) the report consumes. Synchronous — the runner
     calls it off the event loop (asyncio.to_thread) because run_trials spins its own loop."""
@@ -452,6 +452,14 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     opt_seeds = list(range(42, 42 + round_seeds))
     mc_list = list(range(100, 100 + mc_seeds))
 
+    total = 4
+    n = [0]
+
+    def step(message: str) -> None:
+        n[0] += 1
+        if progress:
+            progress(message, n[0], total)
+
     def score(pulled, seeds):
         if use_blend:
             return blended_score(pulled, seeds, sprints, matters, weights)
@@ -461,6 +469,7 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
         (20_000, 50_000) if obj_is_dollar else (0.3, 0.5))
 
     # Round 1 — main effects
+    step("round 1 of 3 — testing each lever alone")
     baseline = score(set(), opt_seeds)
     baseline_margin = run_metric(set(), opt_seeds, sprints, matters, "matter_profit_margin")
     effects, margin_effects = {}, {}
@@ -470,6 +479,7 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     ranked = sorted(effects.items(), key=lambda kv: kv[1], reverse=True)
 
     # Round 2 — factorial on top-2 + comp×pricing
+    step("round 2 of 3 — testing lever combinations")
     positives = [lv for lv, d in ranked if d > 0]
     pair = positives[:2] if len(positives) >= 2 else [lv for lv, _ in ranked[:2]]
     top2 = positives[:2]
@@ -481,6 +491,7 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     comp_under_afa = score({"comp", "pricing"}, opt_seeds) - score({"pricing"}, opt_seeds)
 
     # Round 3 — refinement
+    step("round 3 of 3 — refining the best combination")
     best = set(top2)
     if comp_under_afa > 0:
         best.add("comp")
@@ -504,6 +515,7 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
             guardrail_note = "no lever combination satisfies the guardrails — reporting baseline"
 
     # Final Monte Carlo
+    step("final confidence check (Monte Carlo)")
     win_vals = run_trials(best, mc_list, sprints, matters)[obj_key]
     win_mean = statistics.mean(win_vals)
     n = len(win_vals)

@@ -201,8 +201,15 @@ async def optimize_run(run_id: str, db, bus) -> None:
     bus.publish(run_id, "progress", {"message": "running the adaptive lever optimization — three rounds"})
 
     try:
+        loop = asyncio.get_running_loop()
+
+        def progress(msg, done=None, total=None):
+            loop.call_soon_threadsafe(
+                bus.publish, run_id, "progress", {"message": msg, "done": done, "total": total})
+
         opt = (await asyncio.to_thread(
             run_optimization, rc, sprints=cfg.sprints, matters=cfg.matters_per_sprint,
+            progress=progress,
         ))["optimize"]
     except Exception as exc:
         import traceback
