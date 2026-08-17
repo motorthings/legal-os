@@ -28,7 +28,7 @@ echo "=== Deploying backend (Fly) ==="
 wait_healthy "$BACKEND_HEALTH" "backend" || exit 1
 
 echo "=== Deploying frontend (Vercel) ==="
-(cd frontend && vercel --prod --yes) || { echo "✗ frontend deploy failed"; exit 1; }
+vercel --prod --yes || { echo "✗ frontend deploy failed"; exit 1; }
 wait_healthy "$FRONTEND_URL" "frontend" || exit 1
 
 echo "=== Deploy complete — both services healthy ==="

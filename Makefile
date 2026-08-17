@@ -35,7 +35,7 @@ deploy-backend:
 	@curl -s -o /dev/null -w "  backend health: %{http_code}\n" https://legal-os-api.fly.dev/health
 
 deploy-frontend:
-	cd frontend && vercel --prod --yes
+	vercel --prod --yes
 	@curl -s -o /dev/null -w "  frontend health: %{http_code}\n" https://legal.sickofancy.ai
 
 # Open app
