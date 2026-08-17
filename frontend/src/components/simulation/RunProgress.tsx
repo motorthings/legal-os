@@ -49,6 +49,7 @@ export default function RunProgress({ runId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const reportFetched = useRef(false);
+  const maxSeqRef = useRef(0);
   const logRef = useRef<HTMLDivElement>(null);
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +61,10 @@ export default function RunProgress({ runId }: Props) {
         ev = JSON.parse(e.data);
       } catch {
         return; // keep-alive comment
+      }
+      if (ev.seq !== undefined) {
+        if (ev.seq <= maxSeqRef.current) return; // already seen — replay after a reconnect
+        maxSeqRef.current = ev.seq;
       }
       const p = ev.payload ?? {};
       if (ev.kind === 'status') {
