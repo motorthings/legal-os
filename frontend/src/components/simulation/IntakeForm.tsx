@@ -215,7 +215,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
       </section>
 
       {error && <p style={{ color: 'crimson' }}>{error}</p>}
-      <button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save config'}</button>
+      <button type="submit" disabled={busy} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">{busy ? 'Saving…' : 'Save config'}</button>
     </form>
   );
 }
