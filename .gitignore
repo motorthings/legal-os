@@ -25,3 +25,6 @@ backend/package.json
 backend/package-lock.json
 .claude/
 legal-os-SUMMARY.md
+
+# Simulation run artifacts (reportgen writes results/_sens)
+results/

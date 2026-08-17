@@ -36,7 +36,7 @@ export default function RunProgress({ runId }: Props) {
         if (p.spend !== undefined) setSpend(p.spend);
       } else if (ev.kind === 'sprint') {
         setLatest(p.metrics ?? {});
-        setDone(p.seed_index !== undefined ? p.seed_index + 1 : done);
+        setDone((d) => (p.seed_index !== undefined ? p.seed_index + 1 : d));
       } else if (ev.kind === 'seed') {
         if (p.spend !== undefined) setSpend(p.spend);
       } else if (ev.kind === 'report_ready' && !reportFetched.current) {
@@ -49,7 +49,7 @@ export default function RunProgress({ runId }: Props) {
     };
     es.onerror = () => setError('connection to runner lost — reconnecting');
     return () => es.close();
-  }, [runId, done]);
+  }, [runId]);
 
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const finished = status === 'complete' || status === 'budget_exhausted';

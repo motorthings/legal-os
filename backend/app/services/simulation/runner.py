@@ -65,6 +65,24 @@ def _save_mc(run_id: str, mc: dict) -> None:
 
 
 async def execute_run(run_id: str, db, bus) -> None:
+    """Run a firm simulation end-to-end.
+
+    Any exception is caught and recorded on the run row so a crash doesn't orphan the
+    run in `running` (which would re-trigger stale-run recovery and crash-loop on restart).
+    """
+    try:
+        await _execute_run(run_id, db, bus)
+    except Exception as exc:
+        import traceback
+        tb = traceback.format_exc()
+        try:
+            await db.set_status(run_id, "error", error=tb)
+        except Exception:
+            pass  # DB may be down too; stale recovery re-queues the run
+        bus.publish(run_id, "status", {"status": "error", "error": str(exc)})
+
+
+async def _execute_run(run_id: str, db, bus) -> None:
     row = await db.fetch_run(run_id)
     if row is None:
         return

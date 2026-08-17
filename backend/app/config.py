@@ -118,11 +118,8 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     # Law-firm simulation runner
     # ------------------------------------------------------------------
-    sim_provider: str = "mock"                 # default LLM provider for runs
     seed_base: int = 100                       # MC seed offset (matches optimize.py convention)
     work_dir: str = "/data/runs"               # run artifacts (report.md, metrics.csv)
-    llm_concurrency: int = 16
-    openai_api_key: Optional[str] = None       # sim engine reads this for real-LLM runs
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "allow"}
 
