@@ -22,6 +22,12 @@ export async function GET(
   // frame and rewrite internal <a> links to the app's guides page (external links
   // like LinkedIn / Google Fonts are left alone).
   html = html.replace(/<head>/i, '<head><base target="_top">');
+  const header =
+    '<div style="padding:10px 20px;border-bottom:1px solid var(--border,#c8daea);' +
+    'font-family:var(--font-mono, \'Source Code Pro\', monospace);font-size:13px">' +
+    '<a href="/guides" style="color:var(--secondary,#4a90c4);text-decoration:none;font-weight:600">' +
+    '← Back to Guides &amp; Diagrams</a></div>';
+  html = html.replace(/<body[^>]*>/i, (m) => m + header);
   html = html.replace(/<a ([^>]*)href="([^"]*)"([^>]*)>/g, (_m, pre, href, post) => {
     if (href.startsWith('https://') && !href.includes('motorthings.github.io')) {
       return `<a ${pre}href="${href}"${post}>`;

@@ -39,7 +39,7 @@ export default function FirmPage() {
       <h1>{firmName}</h1>
       {!loaded ? <p>Loading…</p> : (
         <>
-          <h2>Intake</h2>
+          <h2 className="text-xl font-bold text-[var(--text)] tracking-tight mb-4">Intake</h2>
           <IntakeForm firmId={firmId} existing={config} />
           <RunSection firmId={firmId} hasConfig={!!config} />
           <details className="card p-4 mb-4">

@@ -44,7 +44,7 @@ export function RunSection({ firmId, hasConfig }: { firmId: string; hasConfig: b
 
   return (
     <section className="card p-4 mb-4">
-      <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Run the simulation</h3>
+      <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-3">Run the simulation</h3>
       <div className="flex flex-wrap items-center gap-4">
         <label className="flex items-center gap-1.5">
           <span className="text-[13px] font-semibold text-[var(--text)]">Seeds</span>

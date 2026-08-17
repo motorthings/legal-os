@@ -201,10 +201,10 @@ export default function IntakeForm({ firmId, existing }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4 max-w-4xl">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4 max-w-4xl mb-8">
       {/* Identity */}
       <section className="card p-5">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Identity</h3>
+        <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-3">Identity</h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1">
             <span className="text-[13px] font-semibold text-[var(--text)]">Run label</span>
@@ -220,7 +220,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
       {/* Firm signature */}
       {FIRM_SECTIONS.map((sec) => (
         <section key={sec.title} className="card p-5">
-          <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">{sec.title}</h3>
+          <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-3">{sec.title}</h3>
           <div className="grid gap-x-5 gap-y-3.5 sm:grid-cols-2 lg:grid-cols-3">
             {sec.fields.map((f) => (
               <label key={f.key} className="flex flex-col gap-1 min-w-0">
@@ -238,7 +238,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
 
       {/* Priorities */}
       <section className="card p-5">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Priorities</h3>
+        <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-1">Priorities</h3>
         <p className="text-[12px] text-[var(--text-muted)] mb-3">Weight the objectives that matter most — the total always stays at 100%.</p>
         <div className="flex flex-col gap-2.5">
           {OBJECTIVE_KEYS.map((k) => (
@@ -260,7 +260,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
 
       {/* Guardrails */}
       <section className="card p-5">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Guardrails</h3>
+        <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-1">Guardrails</h3>
         <p className="text-[12px] text-[var(--text-muted)] mb-3">Constraints the recommendation must satisfy (leave blank for none).</p>
         <div className="flex flex-col gap-2">
           {GUARDRAIL_METRICS.map((m) => (
@@ -277,7 +277,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
 
       {/* Calibration */}
       <section className="card p-5">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Calibration</h3>
+        <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-1">Calibration</h3>
         <p className="text-[12px] text-[var(--text-muted)] mb-3">How strongly the levers work at your firm.</p>
         <div className="flex flex-col gap-3">
           {ASKABLE.map((e) => (
@@ -302,7 +302,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
 
       {/* Run scale */}
       <section className="card p-5">
-        <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Run scale</h3>
+        <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-3">Run scale</h3>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="flex flex-col gap-1">
             <span className="text-[13px] font-semibold text-[var(--text)]">Sprints</span>
