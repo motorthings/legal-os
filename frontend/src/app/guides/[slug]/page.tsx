@@ -13,6 +13,8 @@ const SLUG_TO_FILE: Record<string, string> = {
   "km-intelligence": "km-intelligence.html",
   "value-reporting": "value-reporting.html",
   "enablement-kit": "enablement-kit.html",
+  "legal-research": "legal-research.html",
+  "cite-check": "cite-check.html",
 };
 
 export async function generateStaticParams() {

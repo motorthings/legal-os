@@ -27,6 +27,11 @@ primary_region = "iad"
   size = "shared-cpu-1x"
   memory = "1GB"
 
+# Simulation runner artifacts (report.md, metrics.csv, MC checkpoint) — WORK_DIR.
+[[mounts]]
+  source = "sim_runs"
+  destination = "/data/runs"
+
 # Redis for Celery — separate Fly app or Upstash
 # Set REDIS_URL env var after provisioning
 
@@ -34,3 +39,6 @@ primary_region = "iad"
 # SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY
 # DATABASE_URL for asyncpg direct connection
 # ANTHROPIC_API_KEY for LLM
+
+# Simulation runner secrets (WORK_DIR=/data/runs, SEED_BASE, SIM_PROVIDER)
+# LLM keys are read from env by the sim engine: DEEPSEEK_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, LLM_CONCURRENCY

@@ -94,10 +94,14 @@ class Settings(BaseSettings):
     mandatory_review_risk_level: str = "high"    # force human review for this risk
 
     # ------------------------------------------------------------------
-    # Descrybe Legal Research API
+    # Descrybe Legal Engine (OAuth + MCP — no static API key)
     # ------------------------------------------------------------------
-    descrybe_api_key: Optional[str] = None
-    descrybe_base_url: str = "https://api.descrybe.ai"
+    descrybe_issuer_url: str = "https://api.descrybe.com"
+    descrybe_mcp_url: str = "https://mcp.descrybe.com/mcp"
+    descrybe_oauth_scopes: str = "connect:mcp:read"
+    descrybe_redirect_uri: str = ""             # in-app OAuth callback, e.g. https://legal-os.fly.dev/api/descrybe/callback
+    descrybe_client_name: str = "Legal AI OS"
+    descrybe_token_key: Optional[str] = None    # Fernet key for at-rest token encryption
     descrybe_timeout_seconds: int = 60
     descrybe_cache_ttl_seconds: int = 86400    # 24h for public-law results
 
@@ -110,6 +114,15 @@ class Settings(BaseSettings):
         "https://legal-os.vercel.app",
         "https://*.vercel.app",
     ]
+
+    # ------------------------------------------------------------------
+    # Law-firm simulation runner
+    # ------------------------------------------------------------------
+    sim_provider: str = "mock"                 # default LLM provider for runs
+    seed_base: int = 100                       # MC seed offset (matches optimize.py convention)
+    work_dir: str = "/data/runs"               # run artifacts (report.md, metrics.csv)
+    llm_concurrency: int = 16
+    openai_api_key: Optional[str] = None       # sim engine reads this for real-LLM runs
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "allow"}
 

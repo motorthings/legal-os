@@ -67,6 +67,7 @@ async def get_pool():
             min_size=2,
             max_size=20,
             command_timeout=30,
+            statement_cache_size=0,  # Supabase transaction pooler (pgbouncer) can't do prepared statements
         )
     return _pool
 

@@ -8,14 +8,17 @@ import EmptyState from '@/components/matter-intake/EmptyState';
 import LoadingState from '@/components/matter-intake/LoadingState';
 import ErrorState from '@/components/matter-intake/ErrorState';
 import ResultsDisplay from '@/components/matter-intake/ResultsDisplay';
+import CreateMatter from '@/components/matter-intake/CreateMatter';
 
 export default function MatterIntakePage() {
   const [state, setState] = useState<AppState>({ status: 'empty' });
+  const [summary, setSummary] = useState('');
 
   const handleSubmit = async (summary: string) => {
     setState({ status: 'loading' });
     try {
       const data = await evaluateMatter(summary);
+      setSummary(summary);
       setState({ status: 'success', data });
     } catch (err) {
       setState({
@@ -51,7 +54,12 @@ export default function MatterIntakePage() {
           <ErrorState error={state.error} onRetry={handleReset} />
         )}
         {state.status === 'success' && (
-          <ResultsDisplay data={state.data} onReset={handleReset} />
+          <>
+            <ResultsDisplay data={state.data} onReset={handleReset} />
+            <div className="mt-6">
+              <CreateMatter summary={summary} data={state.data} />
+            </div>
+          </>
         )}
       </div>
     </div>

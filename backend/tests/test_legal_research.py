@@ -85,24 +85,62 @@ class TestNormalizeCaseSearch:
         raw = {
             "results": [
                 {
-                    "case_id": "c123",
-                    "case_name": "Smith v. Jones",
-                    "citation": "123 F.3d 456",
-                    "jurisdiction": "Federal",
-                    "year": 2021,
-                    "summary": "A summary",
-                    "score": 0.95,
+                    "case_id": "c931121",
+                    "title": "University of Tex. Southwestern Medical Center v. Nassar",
+                    "citation": "133 S. Ct. 2517",
+                    "state": "Federal Supreme Court",
+                    "court": "Supreme Court of the United States",
+                    "decision_date": "2013-06-24",
+                    "body": "Retaliation is recognized as a form of discrimination...",
+                    "why_relevant": "Matches the likely issue: Retaliation Claims under Title VII.",
+                    "treatment": {"indicator": "positive", "weight": "binding", "category": "followed"},
+                    "research_value": {"label": "Leading authority", "note": "..."},
+                    "url": "https://descrybe.com/share/case-viewer/c931121/...",
                 }
             ]
         }
         results = client._normalize_case_search(raw)
         assert len(results) == 1
         r = results[0]
-        assert r.case_id == "c123"
-        assert r.title == "Smith v. Jones"
-        assert r.citation == "123 F.3d 456"
-        assert r.decision_year == 2021
-        assert r.relevance_score == 0.95
+        assert r.case_id == "c931121"
+        assert r.title == "University of Tex. Southwestern Medical Center v. Nassar"
+        assert r.citation == "133 S. Ct. 2517"
+        assert r.jurisdiction == "Federal Supreme Court"
+        assert r.decision_year == 2013
+        assert r.treatment == "positive"
+        assert r.is_good_law is True
+        assert r.authority_label == "Leading authority"
+        assert r.source_url.startswith("https://descrybe.com")
+
+    def test_maps_negative_treatment_to_bad_law(self):
+        client = _client_without_init()
+        raw = {
+            "results": [
+                {
+                    "case_id": "c744598",
+                    "title": "Robinson v. City of Pittsburgh",
+                    "decision_date": "1997-07-14",
+                    "treatment": {"indicator": "negative", "category": "overruled"},
+                }
+            ]
+        }
+        results = client._normalize_case_search(raw)
+        assert results[0].treatment == "negative"
+        assert results[0].is_good_law is False
+
+    def test_maps_unknown_treatment_to_none(self):
+        client = _client_without_init()
+        raw = {
+            "results": [
+                {
+                    "case_id": "c4498055",
+                    "title": "Fassbender v. Correct Care Solutions",
+                    "treatment": {"indicator": "unknown"},
+                }
+            ]
+        }
+        results = client._normalize_case_search(raw)
+        assert results[0].is_good_law is None
 
     def test_handles_empty_results(self):
         client = _client_without_init()

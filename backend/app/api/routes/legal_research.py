@@ -2,18 +2,36 @@
 Legal AI OS — Legal Research & Citation Intelligence API
 
 Descrybe-powered research integrated with matters, KM, and governance.
+Access is per-user OAuth; every tool call runs under the connected user's
+Descrybe account.
 """
 
+import json
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse
 
 from app.auth import get_current_user, User
-from app.config import settings
 from app.database import get_supabase
-from app.services.descrybe import DescrybeClient, ResearchResponse, get_descrybe_client
+from app.services.descrybe import DescrybeClient, ResearchResponse
 
 router = APIRouter()
+
+
+def get_descrybe_client(user: User = Depends(get_current_user)) -> DescrybeClient:
+    """Resolve the Descrybe client for the authenticated user's account."""
+    return DescrybeClient(user_id=user.id)
+
+
+def _require_descrybe(user: User) -> None:
+    from app.services.descrybe_oauth import is_connected
+
+    if not is_connected(user.id):
+        raise HTTPException(
+            status_code=503,
+            detail="Descrybe is not connected for this account. Connect Descrybe first.",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -21,12 +39,11 @@ router = APIRouter()
 # ---------------------------------------------------------------------------
 @router.get("/health")
 async def legal_research_health():
-    healthy = bool(settings.descrybe_api_key)
     return {
         "function": "legal-research",
-        "status": "healthy" if healthy else "degraded",
-        "version": "0.1.0",
-        "descrybe_configured": healthy,
+        "status": "healthy",
+        "version": "0.2.0",
+        "auth_model": "per-user-oauth",
         "capabilities": [
             "concept_search",
             "text_search",
@@ -34,6 +51,9 @@ async def legal_research_health():
             "citation_lookup",
             "quote_verification",
             "case_status_check",
+            "citing_case_search",
+            "case_summary",
+            "case_passages",
             "matter_enrichment",
         ],
     }
@@ -56,20 +76,6 @@ async def legal_research_metrics():
         "total_queries": queries.count if hasattr(queries, "count") else 0,
         "cached_queries": cached.count if hasattr(cached, "count") else 0,
         "total_results": results.count if hasattr(results, "count") else 0,
-    }
-
-
-@router.get("/targets")
-async def legal_research_targets():
-    return {
-        "function": "legal-research",
-        "targets": {
-            "query_latency_ms": "< 5000",
-            "cache_hit_rate": "> 0.30",
-            "citation_verification_precision": "> 0.95",
-            "results_per_query": "5-10",
-            "audit_coverage": "1.0",
-        },
     }
 
 
@@ -97,6 +103,7 @@ async def research(
     """
     if not user.client_id:
         raise HTTPException(status_code=400, detail="No client association")
+    _require_descrybe(user)
 
     query_type = data.get("query_type")
     query_text = data.get("query_text")
@@ -106,24 +113,19 @@ async def research(
 
     function_id = client.get_function_id()
 
-    try:
-        return await client.research(
-            query_type=query_type,
-            query_text=query_text,
-            client_id=user.client_id,
-            initiated_by=user.id,
-            matter_id=data.get("matter_id"),
-            function_id=function_id,
-            jurisdiction=data.get("jurisdiction"),
-            practice_area=data.get("practice_area"),
-            extra_filters=data.get("extra_filters", {}),
-            limit=data.get("limit", 10),
-            use_cache=data.get("use_cache", True),
-        )
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Research failed: {str(e)}")
+    return await client.research(
+        query_type=query_type,
+        query_text=query_text,
+        client_id=user.client_id,
+        initiated_by=user.id,
+        matter_id=data.get("matter_id"),
+        function_id=function_id,
+        jurisdiction=data.get("jurisdiction"),
+        practice_area=data.get("practice_area"),
+        extra_filters=data.get("extra_filters", {}),
+        limit=data.get("limit", 10),
+        use_cache=data.get("use_cache", True),
+    )
 
 
 @router.post("/verify-citation")
@@ -133,7 +135,7 @@ async def verify_citation(
     client: DescrybeClient = Depends(get_descrybe_client),
 ):
     """
-    Verify a citation and optional quoted language.
+    Resolve a citation and optional quoted language against Descrybe's corpus.
 
     Body:
         citation: the citation to verify
@@ -143,6 +145,7 @@ async def verify_citation(
     """
     if not user.client_id:
         raise HTTPException(status_code=400, detail="No client association")
+    _require_descrybe(user)
 
     citation = data.get("citation")
     if not citation:
@@ -150,19 +153,122 @@ async def verify_citation(
 
     function_id = client.get_function_id()
 
+    return await client.verify_citation(
+        citation=citation,
+        quote=data.get("quote"),
+        client_id=user.client_id,
+        initiated_by=user.id,
+        matter_id=data.get("matter_id"),
+        function_id=function_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Citation intelligence suite (case-level tools)
+# ---------------------------------------------------------------------------
+@router.get("/cases/{case_id}")
+async def get_case_details(
+    case_id: str,
+    user: User = Depends(get_current_user),
+    client: DescrybeClient = Depends(get_descrybe_client),
+):
+    """Fetch full case details by Descrybe case_id."""
+    _require_descrybe(user)
     try:
-        return await client.verify_citation(
-            citation=citation,
-            quote=data.get("quote"),
-            client_id=user.client_id,
-            initiated_by=user.id,
-            matter_id=data.get("matter_id"),
-            function_id=function_id,
-        )
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+        return await client.get_case_by_id(case_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Citation verification failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Case lookup failed: {str(e)}")
+
+
+@router.get("/cases/{case_id}/summary")
+async def get_case_summary(
+    case_id: str,
+    simplified: bool = False,
+    user: User = Depends(get_current_user),
+    client: DescrybeClient = Depends(get_descrybe_client),
+):
+    """Fetch a case's precomputed summary."""
+    _require_descrybe(user)
+    try:
+        return await client.get_case_summary(case_id, simplified=simplified)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Summary failed: {str(e)}")
+
+
+@router.get("/cases/{case_id}/status")
+async def get_case_status(
+    case_id: str,
+    user: User = Depends(get_current_user),
+    client: DescrybeClient = Depends(get_descrybe_client),
+):
+    """Check a case's treatment / good-law status."""
+    _require_descrybe(user)
+    try:
+        return await client.check_case_status(case_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
+
+
+@router.get("/cases/{case_id}/citing")
+async def get_citing_cases(
+    case_id: str,
+    user: User = Depends(get_current_user),
+    client: DescrybeClient = Depends(get_descrybe_client),
+):
+    """Find later cases that cite this case."""
+    _require_descrybe(user)
+    try:
+        return await client.find_cases_that_cite(case_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Citing-case search failed: {str(e)}")
+
+
+@router.post("/verify-quote")
+async def verify_quote(
+    data: dict,
+    user: User = Depends(get_current_user),
+    client: DescrybeClient = Depends(get_descrybe_client),
+):
+    """Verify a quote word-for-word against a known case.
+
+    Body: {case_id, quote}
+    """
+    _require_descrybe(user)
+    case_id = data.get("case_id")
+    quote = data.get("quote")
+    if not case_id or not quote:
+        raise HTTPException(status_code=400, detail="case_id and quote are required")
+    try:
+        return await client.verify_quote(case_id, quote)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Quote verification failed: {str(e)}")
+
+
+@router.post("/cite-check")
+async def cite_check(
+    data: dict,
+    user: User = Depends(get_current_user),
+):
+    """
+    Validate a brief/filing against Descrybe. Streams a live progress log,
+    then a findings report and an annotated copy of the brief (new name).
+
+    Body: {text, name?}
+    """
+    _require_descrybe(user)
+
+    text = (data.get("text") or "").strip()
+    name = data.get("name")
+    if not text:
+        raise HTTPException(status_code=400, detail="text is required")
+
+    from app.services.cite_check import run_cite_check
+
+    async def event_stream():
+        async for event in run_cite_check(text, name, user.id):
+            yield f"data: {json.dumps(event, default=str)}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
 # ---------------------------------------------------------------------------
@@ -264,6 +370,7 @@ async def enrich_matter_endpoint(
     """Auto-run Descrybe research for a matter based on its jurisdiction and practice area."""
     if not user.client_id:
         raise HTTPException(status_code=400, detail="No client association")
+    _require_descrybe(user)
 
     from app.services.matter_enrichment import enrich_matter
 
@@ -271,22 +378,3 @@ async def enrich_matter_endpoint(
         matter_id=matter_id,
         initiated_by=user.id,
     )
-
-
-# ---------------------------------------------------------------------------
-# Case detail lookup
-# ---------------------------------------------------------------------------
-@router.get("/cases/{case_id}")
-async def get_case_details(
-    case_id: str,
-    user: User = Depends(get_current_user),
-    client: DescrybeClient = Depends(get_descrybe_client),
-):
-    """Fetch full case details by Descrybe case_id."""
-    if not user.client_id:
-        raise HTTPException(status_code=400, detail="No client association")
-
-    try:
-        return await client.get_case_by_id(case_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Case lookup failed: {str(e)}")

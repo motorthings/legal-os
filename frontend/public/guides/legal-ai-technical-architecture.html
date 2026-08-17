@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="../icon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="How the eight Legal AI functions connect to shared infrastructure — LLM gateway, audit trail engine, scoring engine, metrics pipeline, and task queue — with ROI measurement baked into every function invocation.">
+<meta name="description" content="How the nine Legal AI functions connect to shared infrastructure — LLM gateway, audit trail engine, scoring engine, metrics pipeline, and task queue — with ROI measurement baked into every function invocation.">
 <title>Legal AI OS — Technical Architecture</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -279,7 +279,7 @@
   <div class="hero">
     <div class="hero-kicker">Enterprise Legal AI</div>
     <h1>Technical Architecture</h1>
-    <p class="hero-subtitle">Eight functions. Shared infrastructure. Every function invocation captured, scored, and measured — audit trail and ROI metrics baked into the platform, not bolted on after.</p>
+    <p class="hero-subtitle">Nine functions. Shared infrastructure. Every function invocation captured, scored, and measured — audit trail and ROI metrics baked into the platform, not bolted on after.</p>
   </div>
 
   <!-- SECTION 1: SYSTEM TOPOLOGY -->
@@ -301,7 +301,8 @@ flowchart TD
         MI["Matter Intake<br/>Built"]
         CR["Contract Review<br/>Built"]
         EL["Employment Agents<br/>Built"]
-        CL["Cowork Plugin<br/>Configured"]
+        LR["Legal Research<br/>Built"]
+        CC["Cite Check<br/>Built"]
         DD["Due Diligence<br/>Roadmap"]
         RC["Regulatory Monitor<br/>Roadmap"]
         KM["KM &amp; Precedent<br/>Roadmap"]
@@ -335,10 +336,14 @@ flowchart TD
     EL --> AT
     EL --> SE
     EL -.-> MP
-    CL --> GW
-    CL --> AT
-    CL --> SE
-    CL -.-> MP
+    LR --> GW
+    LR --> AT
+    LR --> SE
+    LR -.-> MP
+    CC --> GW
+    CC --> AT
+    CC --> SE
+    CC -.-> MP
     DD --> GW
     DD --> AT
     DD --> SE
@@ -364,7 +369,7 @@ flowchart TD
     CQ -.-> RC
     FY --> VC
 
-    class MI,CR,EL,CL built
+    class MI,CR,EL,LR,CC built
     class DD,RC,KM,CV roadmap
     class GW,AT,SE,MP,RG infra
     class DB,CQ store

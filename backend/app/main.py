@@ -4,6 +4,7 @@ Legal AI OS — FastAPI Application
 Shared backend for all 8 Legal AI functions.
 """
 
+import asyncio
 import sys
 import traceback
 from contextlib import asynccontextmanager
@@ -16,6 +17,16 @@ from app.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Recover any simulation runs left mid-flight by a previous crash. Guarded so a
+    # misconfigured DATABASE_URL doesn't block startup of the rest of the app.
+    try:
+        from app.api.routes.simulation import db, bus
+        from app.services.simulation import runner
+        await db.connect()
+        for stale_id in await db.list_stale_runs():
+            asyncio.create_task(runner.execute_run(stale_id, db, bus))
+    except Exception:
+        pass
     yield
     try:
         from app.database import close_pool
@@ -135,6 +146,33 @@ try:
     print("[legal-os] Legal Research routes loaded", file=sys.stderr, flush=True)
 except Exception:
     print("[WARN] Legal Research routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading Descrybe OAuth routes...", file=sys.stderr, flush=True)
+    from app.api.routes import descrybe_auth
+    app.include_router(descrybe_auth.router, prefix="/api/descrybe", tags=["Descrybe"])
+    print("[legal-os] Descrybe OAuth routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Descrybe OAuth routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading Matters routes...", file=sys.stderr, flush=True)
+    from app.api.routes import matters
+    app.include_router(matters.router, prefix="/api", tags=["Matters"])
+    print("[legal-os] Matters routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Matters routes failed to load", file=sys.stderr, flush=True)
+    traceback.print_exc(file=sys.stderr)
+
+try:
+    print("[legal-os] Loading Simulation routes...", file=sys.stderr, flush=True)
+    from app.api.routes import simulation
+    app.include_router(simulation.router, prefix="/api/simulation", tags=["Simulation"])
+    print("[legal-os] Simulation routes loaded", file=sys.stderr, flush=True)
+except Exception:
+    print("[WARN] Simulation routes failed to load", file=sys.stderr, flush=True)
     traceback.print_exc(file=sys.stderr)
 
 print("[legal-os] Ready", file=sys.stderr, flush=True)

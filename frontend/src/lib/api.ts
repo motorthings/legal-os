@@ -1,4 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_URL =
+  process.env.NEXT_PUBLIC_LEGAL_OS_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:8080";
 
 // Token provider — set by AuthProvider, falls back to localStorage
 let _getToken: (() => string | null) | null = null;
@@ -18,7 +21,7 @@ function getAccessToken(): string | null {
   return null;
 }
 
-async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
+export async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
   const token = getAccessToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",

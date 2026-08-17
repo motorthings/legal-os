@@ -84,6 +84,20 @@ const GUIDES: Guide[] = [
     category: 'KM',
   },
   {
+    title: 'Legal Research',
+    slug: 'legal-research',
+    desc: 'Descrybe-powered case law, statutes, and citation intelligence — good-law treatment, authority ranking, and quote verification.',
+    icon: Search,
+    category: 'Research',
+  },
+  {
+    title: 'Cite Check',
+    slug: 'cite-check',
+    desc: 'Validate a brief against Descrybe before filing — citations confirmed, quotes verified word-for-word, annotated copy with a new name.',
+    icon: FileCheck,
+    category: 'Research',
+  },
+  {
     title: 'Client Value Reporting',
     slug: 'value-reporting',
     desc: 'Quarterly per-client reports — time saved per function, risk metrics, governance artifacts, and YoY trends.',

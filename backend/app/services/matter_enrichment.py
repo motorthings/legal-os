@@ -100,7 +100,7 @@ async def enrich_matter(
 
     # Run enrichment
     try:
-        client = DescrybeClient()
+        client = DescrybeClient(user_id=initiated_by)
         function_id = client.get_function_id()
     except RuntimeError:
         return {"matter_id": str(matter_id), "queries_run": 0, "reason": "descrybe_not_configured"}

@@ -1,25 +1,27 @@
 """
-Legal AI OS — Descrybe Legal Research Service
+Legal AI OS — Descrybe Legal Engine Service
 
-Shared async client for Descrybe's legal research API.
-Every call is cached in Postgres and audited.
+Async wrapper over the ``descrybe-legal-engine`` SDK. Descrybe has no static
+API key: access is per-user OAuth, and every tool call goes to Descrybe's
+Streamable HTTP MCP endpoint (``https://mcp.descrybe.com/mcp``).
 
-NOTE: Endpoint paths below assume a standard Descrybe REST API layout.
-If your account uses different paths, override via DESCRYBE_BASE_URL
-and update the endpoint constants before first use.
+This client resolves the current user's access token from
+``app.services.descrybe_oauth`` (auto-refreshing on expiry) and routes each
+query type to the matching Descrybe tool. Every query is cached in Postgres
+and audited.
 """
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Callable
 from uuid import UUID
 
-import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.config import settings
@@ -28,21 +30,21 @@ from app.services.audit import AuditTrail
 
 
 # ---------------------------------------------------------------------------
-# Endpoint constants — adjust if Descrybe's API uses different paths
+# Descrybe Legal Engine tool names (MCP endpoint)
 # ---------------------------------------------------------------------------
-ENDPOINTS = {
-    "search_cases_by_concept": "/v1/cases/search/concept",
-    "search_case_text": "/v1/cases/search/text",
-    "search_laws_and_rules": "/v1/laws/search",
-    "find_case_from_reference": "/v1/cases/resolve",
-    "get_case_details": "/v1/cases/{case_id}/details",
-    "get_case_summary": "/v1/cases/{case_id}/summary",
-    "get_case_passages": "/v1/cases/{case_id}/passages",
-    "check_case_status": "/v1/cases/{case_id}/status",
-    "find_cases_that_cite": "/v1/cases/{case_id}/citing",
-    "verify_quote": "/v1/quotes/verify",
-    "extract_case_references": "/v1/references/extract",
-}
+TOOL_SEARCH_CONCEPT = "search_cases_by_concept"
+TOOL_SEARCH_TEXT = "search_case_text"
+TOOL_SEARCH_LAWS = "search_laws_and_rules"
+TOOL_RESOLVE = "find_case_from_reference"
+TOOL_CASE_DETAILS = "get_case_details"
+TOOL_CASE_SUMMARY = "get_case_summary"
+TOOL_CASE_PASSAGES = "get_case_passages"
+TOOL_CASE_STATUS = "check_case_status"
+TOOL_CITING = "find_cases_that_cite"
+TOOL_VERIFY_QUOTE = "verify_quote"
+TOOL_EXTRACT_REFS = "extract_case_references"
+TOOL_CASE_PDF = "get_case_pdf"
+TOOL_ANALYZE = "analyze_legal_question"
 
 
 # ---------------------------------------------------------------------------
@@ -58,6 +60,7 @@ class ResearchResult:
     title: str = ""
     citation: str | None = None
     jurisdiction: str | None = None
+    court: str | None = None
     decision_year: int | None = None
     source_url: str | None = None
     snippet: str | None = None
@@ -66,7 +69,10 @@ class ResearchResult:
     passages: list[dict] = field(default_factory=list)
     relevance_score: float | None = None
     treatment: str | None = None
+    treatment_category: str | None = None
     is_good_law: bool | None = None
+    authority_label: str | None = None
+    why_relevant: str | None = None
     raw: dict = field(default_factory=dict)
 
 
@@ -82,41 +88,53 @@ class ResearchResponse:
     processing_time_ms: int = 0
     cost_usd: float = 0.0
     raw_response: dict | None = None
+    error: str | None = None
 
 
+# ---------------------------------------------------------------------------
+# Client
+# ---------------------------------------------------------------------------
 class DescrybeClient:
     """
-    Async Descrybe API client with caching, retries, and audit trail capture.
+    Async Descrybe client backed by the DLE SDK.
 
-    Usage:
-        client = DescrybeClient()
-        response = await client.research(
-            query_type="concept_search",
-            query_text="workplace discrimination retaliation",
-            jurisdiction="US",
-            practice_area="employment",
-            client_id=...,
-            matter_id=...,
-            initiated_by=...,
-        )
+    Construct with either ``user_id`` (resolve token via the OAuth store) or an
+    explicit ``access_token_provider`` callable. Raises a clear error if the
+    user has not connected Descrybe yet.
     """
 
-    def __init__(self):
-        if not settings.descrybe_api_key:
-            raise RuntimeError("DESCRYBE_API_KEY is not configured")
+    def __init__(
+        self,
+        user_id: UUID | None = None,
+        access_token_provider: Callable[[], str | None] | None = None,
+    ):
+        if access_token_provider is None and user_id is not None:
+            from app.services.descrybe_oauth import get_access_token
 
-        self.base_url = settings.descrybe_base_url.rstrip("/")
-        self.timeout = settings.descrybe_timeout_seconds
+            access_token_provider = lambda: get_access_token(user_id)
+
+        self._access_token_provider = access_token_provider
+        self._engine = None
         self.cache_ttl = settings.descrybe_cache_ttl_seconds
         self.audit = AuditTrail()
-        self._headers = {
-            "Authorization": f"Bearer {settings.descrybe_api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+
+    def _get_engine(self):
+        """Lazily build the DLE LegalEngine wrapper."""
+        if self._engine is None:
+            from descrybe_legal_engine import LegalEngine
+            from descrybe_legal_engine.config import DLEConfig
+
+            config = DLEConfig(
+                issuer_url=settings.descrybe_issuer_url.rstrip("/"),
+                mcp_url=settings.descrybe_mcp_url,
+                scopes=tuple(s for s in settings.descrybe_oauth_scopes.split() if s),
+                timeout_seconds=settings.descrybe_timeout_seconds,
+            )
+            self._engine = LegalEngine(self._access_token_provider, config=config)
+        return self._engine
 
     # ------------------------------------------------------------------
-    # Public API
+    # Public research API
     # ------------------------------------------------------------------
     async def research(
         self,
@@ -134,9 +152,9 @@ class DescrybeClient:
         use_cache: bool = True,
     ) -> ResearchResponse:
         """
-        Run a legal research query, with caching and audit trail.
+        Run a Descrybe research query, with caching and audit trail.
 
-        query_type: concept_search | text_search | citation_lookup | law_search
+        query_type: concept_search | text_search | law_search | citation_lookup
         """
         start = time.monotonic()
         filters = extra_filters or {}
@@ -149,7 +167,7 @@ class DescrybeClient:
             event_type="function_invocation",
             event_summary=f"Descrybe {query_type}: {query_text[:120]}",
             initiated_by=initiated_by,
-            model_used="descrybe-api",
+            model_used="descrybe-legal-engine",
             prompt_raw=json.dumps({
                 "query_type": query_type,
                 "query_text": query_text,
@@ -176,7 +194,6 @@ class DescrybeClient:
         query_id = UUID(query_row["id"])
 
         # 2. Check cache
-        cached_results: list[ResearchResult] = []
         if use_cache:
             cached_results = self._check_cache(
                 query_type=query_type,
@@ -199,17 +216,30 @@ class DescrybeClient:
                 )
 
         # 3. Call Descrybe
-        raw_response, results = await self._call_descrybe(
-            query_type=query_type,
-            query_text=query_text,
-            jurisdiction=jurisdiction,
-            practice_area=practice_area,
-            filters=filters,
-            limit=limit,
-        )
+        try:
+            raw_data, results = await self._call_descrybe(
+                query_type=query_type,
+                query_text=query_text,
+                jurisdiction=jurisdiction,
+                practice_area=practice_area,
+                filters=filters,
+                limit=limit,
+            )
+        except Exception as exc:
+            elapsed_ms = int((time.monotonic() - start) * 1000)
+            self._update_query_metadata(query_id, 0, elapsed_ms, 0.0, cached=False)
+            return ResearchResponse(
+                query_id=query_id,
+                query_type=query_type,
+                query_text=query_text,
+                cached=False,
+                results=[],
+                processing_time_ms=elapsed_ms,
+                error=str(exc),
+            )
 
         elapsed_ms = int((time.monotonic() - start) * 1000)
-        cost_usd = raw_response.get("cost_usd", 0.0) if isinstance(raw_response, dict) else 0.0
+        cost_usd = 0.0
 
         # 4. Store results
         self._store_results(query_id, results)
@@ -224,8 +254,8 @@ class DescrybeClient:
                 event_type="evaluator_reasoning",
                 event_summary=f"Descrybe returned {len(results)} results",
                 initiated_by=initiated_by,
-                model_used="descrybe-api",
-                response_raw=json.dumps(raw_response, default=str)[:100000],
+                model_used="descrybe-legal-engine",
+                response_raw=json.dumps(raw_data, default=str)[:100000],
                 processing_time_ms=elapsed_ms,
                 cost_usd=cost_usd,
                 correlation_id=audit_id,
@@ -239,7 +269,7 @@ class DescrybeClient:
             results=results,
             processing_time_ms=elapsed_ms,
             cost_usd=cost_usd,
-            raw_response=raw_response,
+            raw_response=raw_data,
         )
 
     async def verify_citation(
@@ -252,7 +282,7 @@ class DescrybeClient:
         matter_id: UUID | None = None,
         function_id: UUID | None = None,
     ) -> ResearchResponse:
-        """Verify a citation (and optional quote) against Descrybe's corpus."""
+        """Resolve a citation (and optional quote) against Descrybe's corpus."""
         return await self.research(
             query_type="citation_lookup",
             query_text=citation,
@@ -264,35 +294,81 @@ class DescrybeClient:
             limit=5,
         )
 
+    # ------------------------------------------------------------------
+    # Case-level tools (citation intelligence suite)
+    # ------------------------------------------------------------------
+    async def call_case_tool(self, tool_name: str, arguments: dict) -> dict:
+        """Call any Descrybe case-level tool and unwrap the MCP result."""
+        raw = await asyncio.to_thread(self._get_engine().call_tool, tool_name, arguments)
+        return self._unwrap_tool_result(raw)
+
     async def get_case_by_id(self, case_id: str) -> dict:
-        """Fetch full case details by Descrybe case_id."""
-        url = self._url("get_case_details", case_id=case_id)
-        return await self._get(url)
+        return await self.call_case_tool(TOOL_CASE_DETAILS, {"case_id": case_id})
 
-    # ------------------------------------------------------------------
-    # Core HTTP helpers
-    # ------------------------------------------------------------------
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def _post(self, endpoint: str, payload: dict) -> dict:
-        async with httpx.AsyncClient(timeout=self.timeout, headers=self._headers) as client:
-            response = await client.post(self.base_url + endpoint, json=payload)
-            response.raise_for_status()
-            return response.json()
+    async def get_case_summary(self, case_id: str, simplified: bool = False) -> dict:
+        args = {"case_id": case_id}
+        if simplified:
+            args["simplified"] = True
+        return await self.call_case_tool(TOOL_CASE_SUMMARY, args)
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def _get(self, url: str) -> dict:
-        async with httpx.AsyncClient(timeout=self.timeout, headers=self._headers) as client:
-            response = await client.get(url)
-            response.raise_for_status()
-            return response.json()
+    async def get_case_passages(self, case_id: str, focus: str) -> dict:
+        return await self.call_case_tool(TOOL_CASE_PASSAGES, {"case_id": case_id, "focus": focus})
 
-    def _url(self, endpoint_key: str, **path_params) -> str:
-        path = ENDPOINTS[endpoint_key].format(**path_params)
-        return f"{self.base_url}{path}"
+    async def check_case_status(self, case_id: str) -> dict:
+        return await self.call_case_tool(TOOL_CASE_STATUS, {"case_id": case_id})
+
+    async def find_cases_that_cite(self, case_id: str) -> dict:
+        return await self.call_case_tool(TOOL_CITING, {"case_id": case_id})
+
+    async def verify_quote(self, case_id: str, quote: str) -> dict:
+        return await self.call_case_tool(TOOL_VERIFY_QUOTE, {"case_id": case_id, "quote": quote})
+
+    async def extract_references(self, text: str, resolve: bool = False) -> dict:
+        return await self.call_case_tool(TOOL_EXTRACT_REFS, {"text": text, "resolve": resolve})
+
+    async def get_case_pdf(self, case_id: str) -> dict:
+        return await self.call_case_tool(TOOL_CASE_PDF, {"case_id": case_id})
 
     # ------------------------------------------------------------------
     # Descrybe call routing + normalization
     # ------------------------------------------------------------------
+    def _build_tool_call(
+        self,
+        query_type: str,
+        query_text: str,
+        jurisdiction: str | None,
+        practice_area: str | None,
+        filters: dict,
+    ) -> tuple[str, dict]:
+        jur = jurisdiction or "all"
+
+        if query_type == "concept_search":
+            args = {"term": query_text, "jurisdiction": jur}
+            if filters.get("search_focus"):
+                args["search_focus"] = filters["search_focus"]
+            if filters.get("sort"):
+                args["sort"] = filters["sort"]
+            return TOOL_SEARCH_CONCEPT, args
+
+        if query_type == "text_search":
+            return TOOL_SEARCH_TEXT, {"term": query_text, "jurisdiction": jur}
+
+        if query_type == "law_search":
+            args = {"term": query_text, "jurisdiction": jur}
+            if filters.get("doc_type"):
+                args["doc_type"] = filters["doc_type"]
+            return TOOL_SEARCH_LAWS, args
+
+        if query_type == "citation_lookup":
+            args = {"reference": query_text}
+            if jurisdiction:
+                args["jurisdiction"] = jurisdiction
+            if filters.get("quote"):
+                args["context_text"] = filters["quote"]
+            return TOOL_RESOLVE, args
+
+        raise ValueError(f"Unsupported query_type: {query_type}")
+
     async def _call_descrybe(
         self,
         *,
@@ -303,77 +379,118 @@ class DescrybeClient:
         filters: dict,
         limit: int,
     ) -> tuple[dict, list[ResearchResult]]:
-        """Route to the correct Descrybe endpoint and normalize results."""
+        """Route to the correct Descrybe tool and normalize results."""
+        tool_name, arguments = self._build_tool_call(
+            query_type, query_text, jurisdiction, practice_area, filters
+        )
 
-        if query_type == "concept_search":
-            payload = {
-                "term": query_text,
-                "jurisdiction": jurisdiction or "all",
-                "search_focus": filters.get("search_focus", "general"),
-                "sort": filters.get("sort", "authority"),
-            }
-            raw = await self._post(ENDPOINTS["search_cases_by_concept"], payload)
-            results = self._normalize_case_search(raw)
+        raw = await asyncio.to_thread(self._get_engine().call_tool, tool_name, arguments)
+        data = self._unwrap_tool_result(raw)
 
-        elif query_type == "text_search":
-            payload = {
-                "term": query_text,
-                "jurisdiction": jurisdiction or "all",
-            }
-            raw = await self._post(ENDPOINTS["search_case_text"], payload)
-            results = self._normalize_case_search(raw)
-
-        elif query_type == "law_search":
-            payload = {
-                "term": query_text,
-                "jurisdiction": jurisdiction or "all",
-                "doc_type": filters.get("doc_type", "all"),
-            }
-            raw = await self._post(ENDPOINTS["search_laws_and_rules"], payload)
-            results = self._normalize_law_search(raw)
-
-        elif query_type == "citation_lookup":
-            payload = {
-                "reference": query_text,
-                "jurisdiction": jurisdiction or "all",
-                "context_text": filters.get("quote"),
-            }
-            raw = await self._post(ENDPOINTS["find_case_from_reference"], payload)
-            results = self._normalize_case_search(raw)
-
+        if query_type == "law_search":
+            results = self._normalize_law_search(data)
         else:
-            raise ValueError(f"Unsupported query_type: {query_type}")
+            results = self._normalize_case_search(data)
 
-        # Trim to limit
-        return raw, results[:limit]
+        return data, results[:limit]
 
-    def _normalize_case_search(self, raw: dict) -> list[ResearchResult]:
-        """Normalize Descrybe case search results."""
+    @staticmethod
+    def _unwrap_tool_result(raw: Any) -> dict:
+        """
+        Extract the structured tool payload from the SDK's MCP response.
+
+        Descrybe's MCP server returns the real data in
+        ``result.structuredContent.data`` (matching each tool's outputSchema);
+        ``result.content[].text`` is only a human-readable rendering of it.
+        Prefer ``structuredContent``, then fall back to parsing text content.
+        """
+        if not isinstance(raw, dict):
+            return {"results": []}
+
+        result = raw.get("result") if isinstance(raw.get("result"), dict) else None
+
+        if result is not None:
+            structured = result.get("structuredContent")
+            if isinstance(structured, dict):
+                data = structured.get("data")
+                return data if isinstance(data, dict) else structured
+
+            # Fallback: servers that only return a text content block
+            content = result.get("content")
+            if isinstance(content, list):
+                texts = [
+                    c.get("text", "")
+                    for c in content
+                    if isinstance(c, dict) and c.get("type") == "text"
+                ]
+                if texts:
+                    joined = "\n".join(texts).strip()
+                    try:
+                        parsed = json.loads(joined)
+                        if isinstance(parsed, dict):
+                            return parsed
+                    except Exception:
+                        pass
+            if "results" in result or "status" in result:
+                return result
+
+        # Harness-style wrapper passed directly: {"data": {...}}
+        data = raw.get("data")
+        if isinstance(data, dict):
+            return data
+
+        return raw if isinstance(raw, dict) else {"results": []}
+
+    def _normalize_case_search(self, data: dict) -> list[ResearchResult]:
+        """Normalize Descrybe case-search results into ResearchResult."""
         results = []
-        for item in raw.get("results", raw.get("cases", [])):
+        for item in data.get("results", []):
             if not isinstance(item, dict):
                 continue
+
+            treatment = item.get("treatment") or {}
+            indicator = treatment.get("indicator")
+            category = treatment.get("category")
+
+            is_good_law: bool | None = None
+            if indicator == "positive" or category == "followed":
+                is_good_law = True
+            elif indicator == "negative" or category == "overruled":
+                is_good_law = False
+
+            decision_date = item.get("decision_date")
+            year = None
+            if isinstance(decision_date, str) and decision_date[:4].isdigit():
+                year = int(decision_date[:4])
+
+            rv = item.get("research_value") or {}
+
             results.append(ResearchResult(
                 source="descrybe",
                 source_id=item.get("case_id"),
                 case_id=item.get("case_id"),
-                title=item.get("case_name") or item.get("title") or "Unknown",
+                title=item.get("title") or "Unknown",
                 citation=item.get("citation"),
-                jurisdiction=item.get("jurisdiction"),
-                decision_year=item.get("year"),
+                jurisdiction=item.get("state") or item.get("court"),
+                court=item.get("court"),
+                decision_year=year,
                 source_url=item.get("url"),
-                snippet=item.get("summary") or item.get("snippet"),
-                summary=item.get("summary"),
+                snippet=item.get("body"),
+                summary=item.get("why_relevant"),
                 relevance_score=item.get("score"),
-                treatment=item.get("treatment"),
+                treatment=indicator,
+                treatment_category=category,
+                is_good_law=is_good_law,
+                authority_label=rv.get("label"),
+                why_relevant=item.get("why_relevant"),
                 raw=item,
             ))
         return results
 
-    def _normalize_law_search(self, raw: dict) -> list[ResearchResult]:
+    def _normalize_law_search(self, data: dict) -> list[ResearchResult]:
         """Normalize Descrybe laws/rules search results."""
         results = []
-        for item in raw.get("results", []):
+        for item in data.get("results", []):
             if not isinstance(item, dict):
                 continue
             results.append(ResearchResult(
@@ -400,7 +517,6 @@ class DescrybeClient:
         practice_area: str | None,
         filters: dict,
     ) -> str:
-        """Deterministic cache key for a query."""
         payload = {
             "query_type": query_type,
             "query_text": query_text.strip().lower(),
@@ -418,7 +534,6 @@ class DescrybeClient:
         practice_area: str | None,
         filters: dict,
     ) -> list[ResearchResult]:
-        """Return cached results if a recent identical query exists."""
         cache_key = self._cache_key(query_type, query_text, jurisdiction, practice_area, filters)
         cutoff = (datetime.now(timezone.utc).timestamp() - self.cache_ttl) * 1000
 
@@ -429,7 +544,7 @@ class DescrybeClient:
                 .select("id")
                 .eq("query_type", query_type)
                 .eq("query_text", query_text.strip().lower())
-                .eq("cached", False)  # only use real API results as cache source
+                .eq("cached", False)
                 .gte("created_at", datetime.fromtimestamp(cutoff / 1000, tz=timezone.utc).isoformat())
                 .order("created_at", desc=True)
                 .limit(1)
@@ -510,7 +625,6 @@ class DescrybeClient:
         get_supabase().table("legal_research_results").insert(rows).execute()
 
     def _attach_cached_results(self, query_id: UUID, results: list[ResearchResult]) -> None:
-        """Copy cached results to the new query record."""
         self._store_results(query_id, results)
         get_supabase().table("legal_research_queries").update({
             "results_count": len(results),
@@ -533,6 +647,9 @@ class DescrybeClient:
         }).eq("id", str(query_id)).execute()
 
     def _row_to_result(self, row: dict) -> ResearchResult:
+        raw = row.get("raw") or {}
+        rv = raw.get("research_value") or {}
+        treatment = raw.get("treatment") or {}
         return ResearchResult(
             source=row.get("source", "descrybe"),
             source_id=row.get("source_id"),
@@ -540,6 +657,7 @@ class DescrybeClient:
             title=row.get("title", ""),
             citation=row.get("citation"),
             jurisdiction=row.get("jurisdiction"),
+            court=row.get("court") or raw.get("court"),
             decision_year=row.get("decision_year"),
             source_url=row.get("source_url"),
             snippet=row.get("snippet"),
@@ -547,13 +665,16 @@ class DescrybeClient:
             full_text=row.get("full_text"),
             passages=row.get("passages") or [],
             relevance_score=row.get("relevance_score"),
-            treatment=row.get("treatment"),
+            treatment=row.get("treatment") or treatment.get("indicator"),
+            treatment_category=treatment.get("category"),
             is_good_law=row.get("is_good_law"),
-            raw=row.get("raw") or {},
+            authority_label=rv.get("label"),
+            why_relevant=raw.get("why_relevant"),
+            raw=raw,
         )
 
     # ------------------------------------------------------------------
-    # Convenience sync helpers for background tasks / Celery
+    # Function registry
     # ------------------------------------------------------------------
     def get_function_id(self) -> UUID | None:
         """Resolve the legal-research function UUID from the registry."""
@@ -573,8 +694,8 @@ class DescrybeClient:
 
 
 # ---------------------------------------------------------------------------
-# Module-level helper
+# Module-level helper (no-auth factory — for tests / internal use only)
 # ---------------------------------------------------------------------------
 def get_descrybe_client() -> DescrybeClient:
-    """Factory for the Descrybe client."""
+    """Factory for the Descrybe client (no user token — callers must inject one)."""
     return DescrybeClient()

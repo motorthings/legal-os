@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
+import { getDescrybeStatus } from '@/lib/legal-research-api';
 import {
   FileText, LogOut, Scale, Search, Shield,
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
-  LayoutDashboard, Beaker, GraduationCap,
+  LayoutDashboard, Beaker, GraduationCap, FileCheck2,
 } from 'lucide-react';
 
 interface NavItem {
@@ -18,12 +20,15 @@ interface NavItem {
 
 const FUNCTIONS: NavItem[] = [
   { href: '/matter-intake', label: 'Matter Intake', icon: Search },
+  { href: '/legal-research', label: 'Legal Research', icon: Gavel },
+  { href: '/cite-check', label: 'Cite Check', icon: FileCheck2 },
   { href: '/contract-review', label: 'Contract Review', icon: FileText },
   { href: '/employment', label: 'Employment', icon: Briefcase },
   { href: '/due-diligence', label: 'Due Diligence', icon: Target },
   { href: '/regulatory', label: 'Regulatory', icon: Shield },
   { href: '/km', label: 'KM Intelligence', icon: BarChart3 },
   { href: '/reporting', label: 'Value Reporting', icon: Scale3D },
+  { href: '/simulation', label: 'Firm Simulation', icon: Building2 },
 ];
 
 const OPERATIONS: NavItem[] = [
@@ -35,6 +40,13 @@ const OPERATIONS: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, loading, signOut } = useAuth();
+  const [descrybeConnected, setDescrybeConnected] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    getDescrybeStatus()
+      .then((s) => setDescrybeConnected(s.connected))
+      .catch(() => setDescrybeConnected(false));
+  }, []);
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
@@ -119,6 +131,24 @@ export default function Sidebar() {
             >
               <Icon className="w-4 h-4" />
               {fn.label}
+              {fn.href === '/legal-research' && (
+                <span
+                  className={`ml-auto w-2 h-2 rounded-full flex-shrink-0 ${
+                    descrybeConnected === null
+                      ? 'bg-[var(--text-muted)]/30'
+                      : descrybeConnected
+                      ? 'bg-emerald-500'
+                      : 'bg-amber-500/70'
+                  }`}
+                  title={
+                    descrybeConnected === null
+                      ? 'Checking Descrybe…'
+                      : descrybeConnected
+                      ? 'Descrybe connected'
+                      : 'Descrybe not connected'
+                  }
+                />
+              )}
             </Link>
           );
         })}
@@ -150,6 +180,43 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Descrybe Engine connection status */}
+      <div className="px-4 pb-3">
+        <div
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border ${
+            descrybeConnected
+              ? 'border-emerald-500/30 bg-emerald-500/5'
+              : descrybeConnected === false
+              ? 'border-amber-500/30 bg-amber-500/5'
+              : 'border-[var(--border)] bg-[var(--surface2)]'
+          }`}
+        >
+          <span
+            className={`w-2 h-2 rounded-full flex-shrink-0 ${
+              descrybeConnected === null
+                ? 'bg-[var(--text-muted)]/40'
+                : descrybeConnected
+                ? 'bg-emerald-500'
+                : 'bg-amber-500'
+            }`}
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-[var(--text)] leading-tight">Descrybe Engine</p>
+            <p
+              className={`text-[10px] font-mono leading-tight ${
+                descrybeConnected
+                  ? 'text-emerald-500'
+                  : descrybeConnected === false
+                  ? 'text-amber-500'
+                  : 'text-[var(--text-muted)]'
+              }`}
+            >
+              {descrybeConnected === null ? 'Checking…' : descrybeConnected ? 'Connected' : 'Not connected'}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* User section */}
       <div className="p-4 border-t border-[var(--border)]">

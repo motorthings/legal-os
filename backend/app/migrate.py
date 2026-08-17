@@ -1,39 +1,39 @@
 """
 Legal AI OS — Migration Runner
 
-Applies SQL migration files from backend/migrations/ against Supabase PostgreSQL.
-Idempotent — each migration runs once, tracked in a _migrations table.
+Applies SQL migration files against Supabase via the Supabase CLI's Management
+API (``supabase db query --linked``). Idempotent — each migration runs once,
+tracked in the ``_migrations`` table.
+
+Run from the repo root: ``cd backend && python -m app.migrate``
+Requires the Supabase CLI to be installed and linked to the project.
 """
 
 from __future__ import annotations
 
 import os
+import subprocess
 from pathlib import Path
 
 from app.database import get_supabase
 
 
 def run_migrations(migrations_dir: str | None = None):
-    """Apply all unapplied SQL migration files in order."""
     if migrations_dir is None:
         migrations_dir = str(Path(__file__).parent.parent / "migrations")
 
+    # Repo root (where supabase/ is linked)
+    repo_root = str(Path(__file__).parent.parent.parent)
+
     supabase = get_supabase()
 
-    # Ensure tracking table exists
     try:
-        supabase.table("_migrations").select("filename").limit(1).execute()
+        applied_result = supabase.table("_migrations").select("filename").execute()
+        applied = {r["filename"] for r in (applied_result.data or [])}
     except Exception:
-        # Create the tracking table via raw SQL
-        supabase.rpc("create_migrations_table", {}).execute()
-        # Fallback: try direct SQL
-        pass
+        print("  ! Could not read _migrations — run the bootstrap first.")
+        applied = set()
 
-    # Get already applied migrations
-    applied_result = supabase.table("_migrations").select("filename").execute()
-    applied = {r["filename"] for r in (applied_result.data or [])}
-
-    # Find and sort migration files
     migration_files = sorted(
         f for f in os.listdir(migrations_dir)
         if f.endswith(".sql") and not f.startswith("_")
@@ -45,22 +45,19 @@ def run_migrations(migrations_dir: str | None = None):
             continue
 
         filepath = os.path.join(migrations_dir, filename)
-        with open(filepath) as f:
-            sql = f.read()
-
         print(f"  → Applying {filename}...")
-        try:
-            # Execute via Supabase SQL API
-            result = supabase.rpc("exec_sql", {"query": sql}).execute()
-            # Track as applied
-            supabase.table("_migrations").insert({
-                "filename": filename,
-                "applied_at": "now()",
-            }).execute()
-            print(f"  ✓ {filename} applied successfully")
-        except Exception as e:
-            print(f"  ✗ {filename} FAILED: {e}")
-            raise
+        result = subprocess.run(
+            ["supabase", "db", "query", "--linked", "-f", filepath],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(f"  ✗ {filename} FAILED: {result.stderr or result.stdout}")
+            raise SystemExit(1)
+
+        supabase.table("_migrations").insert({"filename": filename}).execute()
+        print(f"  ✓ {filename} applied")
 
 
 if __name__ == "__main__":
