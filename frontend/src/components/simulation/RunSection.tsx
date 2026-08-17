@@ -51,7 +51,7 @@ export function RunSection({ firmId, hasConfig }: { firmId: string; hasConfig: b
           <input type="number" min={1} max={100} className="w-20 px-2 py-1 text-[13px] rounded-md" value={seeds} onChange={(e) => setSeeds(e.target.valueAsNumber || 1)} />
         </label>
         <label className="flex items-center gap-1.5">
-          <span className="text-[13px] font-semibold text-[var(--text)]">Budget $</span>
+          <span className="text-[13px] font-semibold text-[var(--text)] whitespace-nowrap">Budget $</span>
           <input type="number" placeholder="none" className="w-20 px-2 py-1 text-[13px] rounded-md" value={budget} onChange={(e) => setBudget(e.target.value)} />
         </label>
         <button onClick={onRun} disabled={busy || !hasConfig} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">{busy ? 'Launching…' : 'Run baseline'}</button>
