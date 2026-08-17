@@ -169,7 +169,8 @@ async def _execute_run(run_id: str, db, bus) -> None:
                                        "spend": cumulative})
         report = await reportgen.generate_report(
             run_id, primary_dir, rc, cfg, mc,
-            progress=lambda msg: bus.publish(run_id, "progress", {"message": msg}),
+            progress=lambda msg, done=None, total=None: bus.publish(
+                run_id, "progress", {"message": msg, "done": done, "total": total}),
         )
     else:
         report = None
@@ -213,7 +214,8 @@ async def optimize_run(run_id: str, db, bus) -> None:
     bus.publish(run_id, "progress", {"message": "regenerating the report with the recommendation"})
     report = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
-        progress=lambda msg: bus.publish(run_id, "progress", {"message": msg}),
+        progress=lambda msg, done=None, total=None: bus.publish(
+            run_id, "progress", {"message": msg, "done": done, "total": total}),
         optimize_result=opt,
     )
     await db.set_status(run_id, "complete", report=report)

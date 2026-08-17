@@ -97,8 +97,17 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
 
 async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None,
                           optimize_result: dict | None = None) -> str:
-    if progress:
-        progress("computing the confidence band across your scenarios")
+    # Determinate progress: confidence band (1) + per-lever sensitivity (N) + write (1).
+    n_sens = len([l for l in LEVERS if _GOVERNING.get(l) and _GOVERNING.get(l) in DEFAULT_ELASTICITIES])
+    total = n_sens + 2
+    n = [0]
+
+    def step(message: str) -> None:
+        n[0] += 1
+        if progress:
+            progress(message, n[0], total)
+
+    step("computing the confidence band across your scenarios")
     band = _mc_band(mc)
     objective = (rc.get("objective") or {}).get("weights") or {"ppp": 1.0}
     primary = next(iter(objective.keys()))
@@ -121,11 +130,10 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
     }
     experiments = {
         "optimize": optimize,
-        "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters, progress)},
+        "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters, step)},
     }
 
-    if progress:
-        progress("writing the report")
+    step("writing the report")
     return build_report(primary_dir, experiments)
 
 

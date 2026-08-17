@@ -49,6 +49,8 @@ export default function RunProgress({ runId }: Props) {
   const [spend, setSpend] = useState(0);
   const [latest, setLatest] = useState<Record<string, number>>({});
   const [report, setReport] = useState<string | null>(null);
+  const [reportDone, setReportDone] = useState(0);
+  const [reportTotal, setReportTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const [reconnecting, setReconnecting] = useState(false);
@@ -87,6 +89,10 @@ export default function RunProgress({ runId }: Props) {
         setLog((l) => [...l, `✓ scenario ${(p.seed_index ?? 0) + 1} complete`]);
       } else if (ev.kind === 'progress') {
         setLog((l) => [...l, `… ${p.message}`]);
+        if (typeof p.done === 'number' && typeof p.total === 'number') {
+          setReportDone(p.done);
+          setReportTotal(p.total);
+        }
       } else if (ev.kind === 'report_ready' && !reportFetched.current) {
         reportFetched.current = true;
         setLog((l) => [...l, '✓ report ready']);
@@ -116,6 +122,8 @@ export default function RunProgress({ runId }: Props) {
     setOptimizing(true);
     setReport(null);
     reportFetched.current = false;
+    setReportDone(0);
+    setReportTotal(0);
     await fetch(`${SIM_API_BASE}/runs/${runId}/optimize`, { method: 'POST' });
   }
 
@@ -135,7 +143,14 @@ export default function RunProgress({ runId }: Props) {
       )}
       {(status === 'optimizing' || status === 'generating_report') && (
         <div style={{ height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
-          <div className="animate-pulse" style={{ height: '100%', width: '100%', background: 'var(--primary)', borderRadius: 4 }} />
+          <div
+            className={reportTotal > 0 ? undefined : 'animate-pulse'}
+            style={{
+              height: '100%',
+              width: reportTotal > 0 ? `${Math.round((reportDone / reportTotal) * 100)}%` : '100%',
+              background: 'var(--primary)', borderRadius: 4, transition: 'width 0.3s',
+            }}
+          />
         </div>
       )}
       {Object.keys(latest).length > 0 && (
