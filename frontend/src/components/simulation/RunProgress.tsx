@@ -23,6 +23,21 @@ const STATUS_TEXT: Record<string, string> = {
   error: 'Failed',
 };
 
+function describeSprint(p: any): string {
+  const m = p.metrics ?? {};
+  const ai = m.ai_assisted_matter_pct;
+  const rework = m.redline_rework_rate;
+  const ppp = m.ppp;
+  const margin = m.matter_profit_margin;
+  const scenario = (p.seed_index ?? 0) + 1;
+  const parts: string[] = [];
+  if (ai != null) parts.push(`AI drafting ${Math.round(ai)}% of matters`);
+  if (rework != null) parts.push(`partners rewriting ${Math.round(rework)}% of drafts`);
+  if (ppp != null) parts.push(`profit per partner $${(ppp / 1e6).toFixed(2)}M`);
+  if (margin != null) parts.push(`margin ${margin.toFixed(1)}%`);
+  return `scenario ${scenario} · month ${p.sprint}: ${parts.join(' · ') || 'working…'}`;
+}
+
 export default function RunProgress({ runId }: Props) {
   const [status, setStatus] = useState('queued');
   const [done, setDone] = useState(0);
@@ -50,18 +65,14 @@ export default function RunProgress({ runId }: Props) {
         if (p.seeds_completed !== undefined) setDone(p.seeds_completed);
         if (p.total_seeds !== undefined) setTotal(p.total_seeds);
         if (p.spend !== undefined) setSpend(p.spend);
-        setLog((l) => [...l, `[status] ${p.status} · seeds ${p.seeds_completed ?? 0}/${p.total_seeds ?? 0} · $${(p.spend ?? 0).toFixed(2)}`]);
+        setLog((l) => [...l, `→ ${STATUS_TEXT[p.status] ?? p.status}${p.total_seeds ? ` (${p.total_seeds} scenarios)` : ''}`]);
       } else if (ev.kind === 'sprint') {
         setLatest(p.metrics ?? {});
-        const m = p.metrics ?? {};
-        const ppp = m.ppp != null ? Math.round(m.ppp).toLocaleString() : '—';
-        const margin = m.matter_profit_margin != null ? `${m.matter_profit_margin.toFixed(1)}%` : '—';
-        const real = m.realization_rate != null ? `${m.realization_rate.toFixed(1)}%` : '—';
-        setLog((l) => [...l, `seed ${p.seed} · sprint ${p.sprint} · ppp=${ppp} · margin=${margin} · realization=${real}`]);
+        setLog((l) => [...l, describeSprint(p)]);
       } else if (ev.kind === 'seed') {
         if (p.spend !== undefined) setSpend(p.spend);
         if (p.seed_index !== undefined) setDone(p.seed_index + 1);
-        setLog((l) => [...l, `✓ scenario ${p.seed_index + 1} complete · $${(p.spend ?? 0).toFixed(2)}`]);
+        setLog((l) => [...l, `✓ scenario ${(p.seed_index ?? 0) + 1} complete`]);
       } else if (ev.kind === 'report_ready' && !reportFetched.current) {
         reportFetched.current = true;
         setLog((l) => [...l, '✓ report ready']);
