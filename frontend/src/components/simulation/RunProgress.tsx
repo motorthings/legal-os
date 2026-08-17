@@ -7,7 +7,21 @@ interface Props {
   runId: string;
 }
 
-const HEADLINE = ['ppp', 'matter_profit_margin', 'realization_rate', 'associate_attrition'];
+const HEADLINE: { key: string; label: string; fmt: (v: number) => string }[] = [
+  { key: 'ppp', label: 'Profit per partner', fmt: (v) => `$${(v / 1_000_000).toFixed(2)}M` },
+  { key: 'matter_profit_margin', label: 'Matter margin', fmt: (v) => `${v.toFixed(1)}%` },
+  { key: 'realization_rate', label: 'Realization rate', fmt: (v) => `${v.toFixed(1)}%` },
+  { key: 'associate_attrition', label: 'Associate attrition', fmt: (v) => `${v.toFixed(1)}%` },
+];
+
+const STATUS_TEXT: Record<string, string> = {
+  queued: 'Queued',
+  running: 'Running the simulation…',
+  generating_report: 'Generating your report…',
+  complete: 'Complete',
+  budget_exhausted: 'Budget hit — showing what completed',
+  error: 'Failed',
+};
 
 export default function RunProgress({ runId }: Props) {
   const [status, setStatus] = useState('queued');
@@ -39,7 +53,6 @@ export default function RunProgress({ runId }: Props) {
         setLog((l) => [...l, `[status] ${p.status} · seeds ${p.seeds_completed ?? 0}/${p.total_seeds ?? 0} · $${(p.spend ?? 0).toFixed(2)}`]);
       } else if (ev.kind === 'sprint') {
         setLatest(p.metrics ?? {});
-        setDone((d) => (p.seed_index !== undefined ? p.seed_index + 1 : d));
         const m = p.metrics ?? {};
         const ppp = m.ppp != null ? Math.round(m.ppp).toLocaleString() : '—';
         const margin = m.matter_profit_margin != null ? `${m.matter_profit_margin.toFixed(1)}%` : '—';
@@ -47,7 +60,8 @@ export default function RunProgress({ runId }: Props) {
         setLog((l) => [...l, `seed ${p.seed} · sprint ${p.sprint} · ppp=${ppp} · margin=${margin} · realization=${real}`]);
       } else if (ev.kind === 'seed') {
         if (p.spend !== undefined) setSpend(p.spend);
-        setLog((l) => [...l, `✓ seed ${p.seed} complete · $${(p.spend ?? 0).toFixed(2)}`]);
+        if (p.seed_index !== undefined) setDone(p.seed_index + 1);
+        setLog((l) => [...l, `✓ scenario ${p.seed_index + 1} complete · $${(p.spend ?? 0).toFixed(2)}`]);
       } else if (ev.kind === 'report_ready' && !reportFetched.current) {
         reportFetched.current = true;
         setLog((l) => [...l, '✓ report ready']);
@@ -70,18 +84,22 @@ export default function RunProgress({ runId }: Props) {
 
   return (
     <div>
-      <p>
-        Status: <strong>{status}</strong> · seeds {done}/{total} ({pct}%) · spend ${spend.toFixed(2)}
+      <p className="text-[15px]">
+        <strong>{STATUS_TEXT[status] ?? status}</strong>
+        {status === 'running' && total > 0 && (
+          <span className="text-[var(--text-dim)]"> · {done} of {total} scenarios complete</span>
+        )}
+        {spend > 0 && <span className="text-[var(--text-dim)]"> · ${spend.toFixed(2)} spent</span>}
       </p>
       <div style={{ height: 8, background: '#eee', borderRadius: 4 }}>
         <div style={{ height: '100%', width: `${pct}%`, background: '#4c9aff', borderRadius: 4 }} />
       </div>
       {Object.keys(latest).length > 0 && (
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', margin: '1rem 0' }}>
-          {HEADLINE.filter((k) => latest[k] !== undefined).map((k) => (
-            <div key={k}>
-              <div style={{ color: '#888', fontSize: '0.8rem' }}>{k}</div>
-              <strong>{Number(latest[k]).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>
+        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>
+          {HEADLINE.filter((m) => latest[m.key] !== undefined).map((m) => (
+            <div key={m.key}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{m.label}</div>
+              <strong style={{ fontSize: '1.15rem' }}>{m.fmt(latest[m.key])}</strong>
             </div>
           ))}
         </div>

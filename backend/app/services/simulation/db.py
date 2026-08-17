@@ -64,7 +64,7 @@ class DB:
         if row is None:
             return None
         return RunRow(
-            run_id=row["id"], status=row["status"], provider=row["provider"],
+            run_id=str(row["id"]), status=row["status"], provider=row["provider"],
             total_seeds=row["total_seeds"], seeds_completed=row["seeds_completed"],
             budget=row["budget"], max_cost=row["max_cost"], spend=row["spend"],
             config_snapshot=json.loads(row["config_snapshot"]),
@@ -115,7 +115,7 @@ class DB:
     async def list_stale_runs(self, statuses: tuple = ("queued", "running")) -> list[str]:
         rows = await self._pool.fetch(
             "select id from runs where status = any($1::text[]) order by created_at", statuses)
-        return [r["id"] for r in rows]
+        return [str(r["id"]) for r in rows]
 
     # --- events (SSE replay source of truth) ---
 
