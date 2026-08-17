@@ -87,6 +87,14 @@ async def get_config(run_id: str):
     return row.config_snapshot
 
 
+@router.get("/runs/{run_id}/metrics")
+async def get_metrics(run_id: str):
+    metrics = await db.load_metrics(run_id)
+    if not metrics:
+        raise HTTPException(404, "metrics not available")
+    return metrics
+
+
 @router.get("/runs/{run_id}/report")
 async def get_report(run_id: str):
     row = await db.fetch_run(run_id)

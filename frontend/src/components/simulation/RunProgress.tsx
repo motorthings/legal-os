@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { SIM_API_BASE } from '@/lib/simulation-api';
+import MetricsCharts from './MetricsCharts';
 
 interface Props {
   runId: string;
@@ -139,6 +140,7 @@ export default function RunProgress({ runId }: Props) {
           ))}
         </div>
       )}
+      <MetricsCharts runId={runId} />
       {reconnecting && (
         <p style={{ color: 'var(--amber)', fontSize: '0.8rem' }}>Reconnecting…</p>
       )}

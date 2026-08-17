@@ -93,6 +93,17 @@ class DB:
             "select mc_checkpoint from runs where id = $1", run_id)
         return json.loads(row["mc_checkpoint"]) if row and row["mc_checkpoint"] else None
 
+    async def save_metrics(self, run_id: str, metrics: dict) -> None:
+        """Persist the primary seed's per-sprint trajectories for the frontend charts."""
+        await self._pool.execute(
+            "update runs set metrics = $2, updated_at = now() where id = $1",
+            run_id, json.dumps(metrics),
+        )
+
+    async def load_metrics(self, run_id: str) -> Optional[dict]:
+        row = await self._pool.fetchrow("select metrics from runs where id = $1", run_id)
+        return json.loads(row["metrics"]) if row and row["metrics"] else None
+
     async def persist_progress(self, run_id: str, seeds_completed: int, spend: float) -> None:
         """The authoritative resume checkpoint — awaited in the runner loop."""
         await self._pool.execute(

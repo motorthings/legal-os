@@ -44,6 +44,14 @@ def _seed_finals(run) -> dict:
     return out
 
 
+def _trajectories(run) -> dict:
+    """The primary seed's per-sprint metric values (sprint 1 at index 0), for the charts."""
+    out = {}
+    for m, h in run.company.metric_history.items():
+        out[m] = [round(v.value, 3) for v in h.values]
+    return out
+
+
 async def _load_mc(db, run_id: str, start: int) -> dict:
     """Reload the per-seed finals for seeds already completed on a prior (crashed) launch,
     so a resumed run builds the full MC band from all seeds, not just this session's."""
@@ -138,6 +146,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
         if is_primary:
             orch.export_results(run)          # lays down meta/metrics/state + auto report.md
             primary_dir = out_dir / "primary"
+            await db.save_metrics(run_id, _trajectories(run))
 
         # Authoritative resume checkpoint (awaited) — the source of truth after a crash.
         await db.persist_progress(run_id, seeds_completed=i + 1, spend=cumulative)
