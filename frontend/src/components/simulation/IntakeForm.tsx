@@ -19,6 +19,13 @@ interface Props {
 }
 
 const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, model: 'deepseek-v4-flash', legalTool: 'mock' };
+const GUARDRAIL_METRICS = [
+  { key: 'ppp', label: 'Profit per partner' },
+  { key: 'matter_profit_margin', label: 'Matter margin' },
+  { key: 'rpl', label: 'Revenue per lawyer' },
+  { key: 'realization_rate', label: 'Realization' },
+  { key: 'associate_attrition', label: 'Associate attrition' },
+];
 const ASKABLE = ELASTICITY_DEFS.filter((e) => e.askable);
 const DEFAULT_ELASTICITIES = Object.fromEntries(ASKABLE.map((e) => [e.id, e.base]));
 
@@ -50,9 +57,19 @@ export default function IntakeForm({ firmId, existing }: Props) {
   const [weights, setWeights] = useState<Record<string, number>>(
     existing?.objective.weights ?? { ppp: 1 },
   );
-  const [guardrailsText, setGuardrailsText] = useState(
-    (existing?.objective.guardrails ?? []).join(', '),
-  );
+  const [guardrails, setGuardrails] = useState<Record<string, { min: string; max: string }>>(() => {
+    const init: Record<string, { min: string; max: string }> = {};
+    for (const m of GUARDRAIL_METRICS) init[m.key] = { min: '', max: '' };
+    for (const spec of existing?.objective.guardrails ?? []) {
+      const match = spec.match(/^(\w+)(<=|>=)(.+)$/);
+      if (match) {
+        const [, key, op, val] = match;
+        if (op === '>=') init[key].min = val;
+        else init[key].max = val;
+      }
+    }
+    return init;
+  });
   const [run, setRun] = useState({ ...DEFAULT_RUN, ...(existing?.run ?? {}) });
   const [name, setName] = useState(existing?.name ?? '');
   const [firmName, setFirmName] = useState(existing?.firm_name ?? '');
@@ -73,15 +90,22 @@ export default function IntakeForm({ firmId, existing }: Props) {
     setWeights((w) => ({ ...w, [key]: v }));
   }
 
+  function setGuardrail(key: string, field: 'min' | 'max', value: string) {
+    setGuardrails((g) => ({ ...g, [key]: { ...g[key], [field]: value } }));
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setBusy(true);
 
-    const guardrails = guardrailsText
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const guardrailSpecs = GUARDRAIL_METRICS.flatMap((m) => {
+      const { min, max } = guardrails[m.key];
+      const specs: string[] = [];
+      if (min !== '') specs.push(`${m.key}>=${min}`);
+      if (max !== '') specs.push(`${m.key}<=${max}`);
+      return specs;
+    });
 
     const intake: IntakeValues = {
       name: name || 'Unnamed firm',
@@ -89,7 +113,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
       firm,
       levers: { compLeverStrength: 0.3, codifySeams: false, decisionLatencySprints: 2 },
       elasticities,
-      objective: { weights, guardrails },
+      objective: { weights, guardrails: guardrailSpecs },
       run,
     };
 
@@ -174,24 +198,40 @@ export default function IntakeForm({ firmId, existing }: Props) {
           ))}
           <p>Sum: {weightTotal.toFixed(2)} (normalized to 1 on save)</p>
         </div>
-        <label>
-          Guardrails (comma-separated, e.g. <code>associate_attrition&lt;=25, realization_rate&gt;=70</code>)
-          <input value={guardrailsText} onChange={(e) => setGuardrailsText(e.target.value)} />
-        </label>
+        <div>
+          <strong>Guardrails</strong>{' '}
+          <span style={{ color: '#999' }}>— constraints the recommendation must satisfy (leave blank for none)</span>
+          <div style={{ display: 'grid', gap: '0.4rem', marginTop: '0.4rem' }}>
+            {GUARDRAIL_METRICS.map((m) => (
+              <div key={m.key} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <span style={{ flex: 1 }}>{m.label}</span>
+                <span style={{ color: '#999' }}>≥</span>
+                <input type="number" placeholder="min" value={guardrails[m.key].min} onChange={(e) => setGuardrail(m.key, 'min', e.target.value)} style={{ width: '5rem' }} />
+                <span style={{ color: '#999' }}>≤</span>
+                <input type="number" placeholder="max" value={guardrails[m.key].max} onChange={(e) => setGuardrail(m.key, 'max', e.target.value)} style={{ width: '5rem' }} />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section>
         <h3>Calibration — how strongly the levers work at your firm</h3>
         {ASKABLE.map((e) => (
-          <label key={e.id}>
-            <strong>{e.name}</strong> <span style={{ color: '#999' }}>[{e.low}–{e.high}]</span>
+          <label key={e.id} style={{ display: 'grid', gap: '0.4rem' }}>
+            <div>
+              <strong>{e.name}</strong>{' '}
+              <span style={{ color: '#999' }}>[{e.low}–{e.high}]</span>
+            </div>
             <div style={{ color: '#666', fontSize: '0.85rem' }}>{e.question}</div>
-            <input
-              type="range" min={e.low} max={e.high} step="any"
-              value={elasticities[e.id]}
-              onChange={(ev) => setElasticity(e.id, Number(ev.target.value))}
-            />
-            <span>{elasticities[e.id]}</span>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <input
+                type="range" min={e.low} max={e.high} step="any" style={{ flex: 1 }}
+                value={elasticities[e.id]}
+                onChange={(ev) => setElasticity(e.id, Number(ev.target.value))}
+              />
+              <span>{elasticities[e.id]}</span>
+            </div>
           </label>
         ))}
       </section>
