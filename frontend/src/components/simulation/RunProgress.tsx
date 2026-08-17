@@ -48,6 +48,7 @@ export default function RunProgress({ runId }: Props) {
   const [report, setReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<string[]>([]);
+  const [reconnecting, setReconnecting] = useState(false);
   const reportFetched = useRef(false);
   const maxSeqRef = useRef(0);
   const logRef = useRef<HTMLDivElement>(null);
@@ -91,7 +92,8 @@ export default function RunProgress({ runId }: Props) {
           .catch(() => setError('report unavailable'));
       }
     };
-    es.onerror = () => setError('connection to runner lost — reconnecting');
+    es.onerror = () => setReconnecting(true);
+    es.onopen = () => setReconnecting(false);
     return () => es.close();
   }, [runId]);
 
@@ -127,6 +129,9 @@ export default function RunProgress({ runId }: Props) {
             </div>
           ))}
         </div>
+      )}
+      {reconnecting && (
+        <p style={{ color: 'var(--amber)', fontSize: '0.8rem' }}>Reconnecting…</p>
       )}
       {error && <p style={{ color: '#b8860b' }}>{error}</p>}
       {log.length > 0 && (
