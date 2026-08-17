@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 
 interface Props {
@@ -49,6 +50,7 @@ export default function RunProgress({ runId }: Props) {
   const [log, setLog] = useState<string[]>([]);
   const reportFetched = useRef(false);
   const logRef = useRef<HTMLDivElement>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const es = new EventSource(`${SIM_API_BASE}/runs/${runId}/events`);
@@ -90,6 +92,10 @@ export default function RunProgress({ runId }: Props) {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [log]);
 
+  useEffect(() => {
+    if (report && reportRef.current) reportRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [report]);
+
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const finished = status === 'complete' || status === 'budget_exhausted';
 
@@ -127,13 +133,16 @@ export default function RunProgress({ runId }: Props) {
         </div>
       )}
       {report ? (
-        <pre style={{ whiteSpace: 'pre-wrap', border: '1px solid #eee', padding: '1rem', background: '#fafafa' }}>
-          {report}
-        </pre>
+        <div className="mt-6" ref={reportRef}>
+          <h2 className="text-xl font-bold mb-3 text-[var(--text)]">Your Report</h2>
+          <div className="report-body">
+            <ReactMarkdown>{report}</ReactMarkdown>
+          </div>
+        </div>
       ) : finished && !report ? (
-        <p style={{ color: '#888' }}>No report (run did not complete a primary seed).</p>
+        <p style={{ color: 'var(--text-muted)' }}>No report (run did not complete a primary seed).</p>
       ) : (
-        <p style={{ color: '#888' }}>Running…</p>
+        <p style={{ color: 'var(--text-muted)' }}>Generating report…</p>
       )}
     </div>
   );
