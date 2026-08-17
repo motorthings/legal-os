@@ -95,7 +95,8 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
     return bands
 
 
-async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None) -> str:
+async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None,
+                          optimize_result: dict | None = None) -> str:
     if progress:
         progress("computing the confidence band across your scenarios")
     band = _mc_band(mc)
@@ -106,19 +107,20 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
     matters = cfg.matters_per_sprint
     seeds = [settings.seed_base + i for i in range(_SENS_SEEDS)]
 
+    optimize = optimize_result or {
+        "objective": primary,
+        "objective_label": primary,
+        "weights": objective,
+        "guardrails": (rc.get("objective") or {}).get("guardrails") or [],
+        "baseline_ppp": band["ppp"]["mean"],
+        "best_objective": band[primary if primary in band else "ppp"]["mean"],
+        "best_delta_objective": 0.0,
+        "spread": band["ppp"]["stdev"],
+        "ci95": _ci(band["ppp"]),
+        "best_combo": [],
+    }
     experiments = {
-        "optimize": {
-            "objective": primary,
-            "objective_label": primary,
-            "weights": objective,
-            "guardrails": (rc.get("objective") or {}).get("guardrails") or [],
-            "baseline_ppp": band["ppp"]["mean"],
-            "best_objective": band[primary if primary in band else "ppp"]["mean"],
-            "best_delta_objective": 0.0,
-            "spread": band["ppp"]["stdev"],
-            "ci95": _ci(band["ppp"]),
-            "best_combo": [],
-        },
+        "optimize": optimize,
         "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters, progress)},
     }
 

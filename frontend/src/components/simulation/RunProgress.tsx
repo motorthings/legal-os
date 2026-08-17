@@ -19,6 +19,7 @@ const STATUS_TEXT: Record<string, string> = {
   queued: 'Queued',
   running: 'Running the simulation…',
   generating_report: 'Generating your report…',
+  optimizing: 'Running the optimization…',
   complete: 'Complete',
   budget_exhausted: 'Budget hit — showing what completed',
   error: 'Failed',
@@ -49,6 +50,7 @@ export default function RunProgress({ runId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const [reconnecting, setReconnecting] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
   const reportFetched = useRef(false);
   const maxSeqRef = useRef(0);
   const logRef = useRef<HTMLDivElement>(null);
@@ -108,6 +110,13 @@ export default function RunProgress({ runId }: Props) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const finished = status === 'complete' || status === 'budget_exhausted';
 
+  async function onOptimize() {
+    setOptimizing(true);
+    setReport(null);
+    reportFetched.current = false;
+    await fetch(`${SIM_API_BASE}/runs/${runId}/optimize`, { method: 'POST' });
+  }
+
   return (
     <div>
       <p className="text-[15px]">
@@ -143,6 +152,11 @@ export default function RunProgress({ runId }: Props) {
             {log.join('\n')}
           </div>
         </div>
+      )}
+      {finished && report && !optimizing && (
+        <button onClick={onOptimize} className="btn-primary border-none cursor-pointer mt-6">
+          Find the best lever combination
+        </button>
       )}
       {report ? (
         <div className="mt-6" ref={reportRef}>

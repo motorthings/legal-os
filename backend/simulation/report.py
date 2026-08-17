@@ -722,7 +722,7 @@ def build_report(run_dir: Path, experiments: dict) -> str:
     # baseline would inject exactly the bias the baseline is meant to avoid (and the
     # experiments.json is a shared file that can be stale from an earlier optimize run).
     levers = meta.get("levers_pulled") or {}
-    is_baseline = not any(levers.values())
+    is_baseline = not any(levers.values()) and not (experiments.get("optimize") or {}).get("best_combo")
     if is_baseline:
         summary = render_baseline_narrative(meta, metrics)
         experiments_block = ""

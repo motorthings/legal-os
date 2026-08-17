@@ -435,5 +435,119 @@ def main():
     print(bar)
 
 
+def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int = 8,
+                     mc_seeds: int = 20) -> dict:
+    """Run the adaptive 3-round lever optimization for a firm config and return the
+    `experiments` dict (the `optimize` key) the report consumes. Synchronous — the runner
+    calls it off the event loop (asyncio.to_thread) because run_trials spins its own loop."""
+    from .run_config import build_firm, build_elasticities, build_objective
+    set_base_firm(build_firm(rc.get("firm") or {}), build_elasticities(rc))
+    cfg_objective = build_objective(rc)
+    weights = cfg_objective["weights"]
+    guardrails = cfg_objective["guardrails"]
+    use_blend = len(weights) > 1
+    primary = max(weights, key=weights.get)
+    obj_key, obj_dir, obj_label, obj_is_dollar = OBJECTIVES[primary]
+
+    opt_seeds = list(range(42, 42 + round_seeds))
+    mc_list = list(range(100, 100 + mc_seeds))
+
+    def score(pulled, seeds):
+        if use_blend:
+            return blended_score(pulled, seeds, sprints, matters, weights)
+        return obj_dir * run_metric(pulled, seeds, sprints, matters, obj_key)
+
+    KEEP_THRESH, SYN_THRESH = (0.01, 0.02) if use_blend else (
+        (20_000, 50_000) if obj_is_dollar else (0.3, 0.5))
+
+    # Round 1 — main effects
+    baseline = score(set(), opt_seeds)
+    baseline_margin = run_metric(set(), opt_seeds, sprints, matters, "matter_profit_margin")
+    effects, margin_effects = {}, {}
+    for lever in LEVERS:
+        effects[lever] = score({lever}, opt_seeds) - baseline
+        margin_effects[lever] = run_metric({lever}, opt_seeds, sprints, matters, "matter_profit_margin") - baseline_margin
+    ranked = sorted(effects.items(), key=lambda kv: kv[1], reverse=True)
+
+    # Round 2 — factorial on top-2 + comp×pricing
+    positives = [lv for lv, d in ranked if d > 0]
+    pair = positives[:2] if len(positives) >= 2 else [lv for lv, _ in ranked[:2]]
+    top2 = positives[:2]
+    a, b = pair[0], pair[1]
+    alone = {x: effects[x] for x in (a, b)}
+    both = score({a, b}, opt_seeds) - baseline
+    additive = alone[a] + alone[b]
+    synergy = both - additive
+    comp_under_afa = score({"comp", "pricing"}, opt_seeds) - score({"pricing"}, opt_seeds)
+
+    # Round 3 — refinement
+    best = set(top2)
+    if comp_under_afa > 0:
+        best.add("comp")
+    best_score = score(best, opt_seeds)
+    for lever in [l for l in LEVERS if l not in best]:
+        if score(best | {lever}, opt_seeds) - best_score > KEEP_THRESH:
+            best.add(lever)
+
+    # Guardrails
+    guardrail_note = None
+    if guardrails and not guardrails_ok(best, opt_seeds, sprints, matters, guardrails):
+        from itertools import combinations
+        combos = [set(c) for r in range(len(LEVERS) + 1) for c in combinations(LEVERS, r)]
+        feasible = [c for c in combos if guardrails_ok(c, opt_seeds, sprints, matters, guardrails)]
+        if feasible:
+            prev = ", ".join(sorted(best)) or "none"
+            best = max(feasible, key=lambda c: score(c, opt_seeds))
+            guardrail_note = f"adaptive winner ({prev}) violated a guardrail; best FEASIBLE combo is {', '.join(sorted(best)) or 'none'}"
+        else:
+            best = set()
+            guardrail_note = "no lever combination satisfies the guardrails — reporting baseline"
+
+    # Final Monte Carlo
+    win_vals = run_trials(best, mc_list, sprints, matters)[obj_key]
+    win_mean = statistics.mean(win_vals)
+    n = len(win_vals)
+    spread = statistics.pstdev(win_vals)
+    ci95 = 1.96 * statistics.stdev(win_vals) / math.sqrt(n) if n > 1 else 0.0
+    base_mc = run_metric(set(), mc_list, sprints, matters, obj_key)
+    improvement = obj_dir * (win_mean - base_mc)
+    ppp_win = run_metric(best, mc_list, sprints, matters, "ppp")
+
+    ppp_base_opt = run_metric(set(), opt_seeds, sprints, matters, "ppp")
+    ppp_effects = {lv: run_metric({lv}, opt_seeds, sprints, matters, "ppp") - ppp_base_opt for lv in LEVERS}
+    ppp_base_mc = run_metric(set(), mc_list, sprints, matters, "ppp")
+
+    movers = ", ".join(sorted(best)) or "(no lever reliably helps this objective)"
+    story = f"[objective: {obj_label}] Pull {movers} (reliable movers). " + (
+        "Then comp — it only helps AFTER AFA (under hourly it costs you)." if comp_under_afa > 0
+        else "Skip comp — it doesn't help even under AFA.")
+
+    return {
+        "optimize": {
+            "objective": primary,
+            "objective_label": obj_label,
+            "weights": weights,
+            "guardrails": [f"{m}{op}{v:g}" for m, op, v in guardrails],
+            "guardrail_note": guardrail_note,
+            "baseline_ppp": ppp_base_opt,
+            "baseline_objective": obj_dir * baseline,
+            "main_effects": {lv: {"delta_ppp": ppp_effects[lv], "delta_objective": effects[lv],
+                                  "delta_margin": margin_effects[lv]} for lv in LEVERS},
+            "interactions": {
+                f"{a}x{b}": {"both": both, "additive": additive, "synergy": synergy},
+                "comp_x_pricing": {"delta": comp_under_afa},
+            },
+            "best_combo": sorted(best),
+            "best_objective": win_mean,
+            "best_delta_objective": improvement,
+            "best_ppp": ppp_win,
+            "best_delta": ppp_win - ppp_base_mc,
+            "spread": spread,
+            "ci95": ci95,
+            "story": story,
+        }
+    }
+
+
 if __name__ == "__main__":
     main()

@@ -13,7 +13,7 @@ from pathlib import Path
 from app.config import settings
 from simulation.run_config import build_sim_config
 from simulation.src.orchestrator import Orchestrator
-from simulation.optimize import set_base_firm, _COLLECT
+from simulation.optimize import set_base_firm, _COLLECT, run_optimization
 
 from . import reportgen
 
@@ -171,3 +171,43 @@ async def _execute_run(run_id: str, db, bus) -> None:
                                    "total_seeds": row.total_seeds, "spend": cumulative})
     if report:
         bus.publish(run_id, "report_ready", {"report": True})
+
+
+async def optimize_run(run_id: str, db, bus) -> None:
+    """Run the adaptive lever optimizer on a completed baseline run and regenerate the
+    report with the recommendation. Kept separate from execute_run so the baseline stays fast."""
+    row = await db.fetch_run(run_id)
+    if row is None:
+        return
+
+    rc = row.config_snapshot
+    out_dir = workdir(run_id)
+    cfg = build_sim_config(rc, provider=row.provider, output_dir=str(out_dir))
+    primary_dir = out_dir / "primary"
+    mc = await _load_mc(db, run_id, row.seeds_completed)
+
+    bus.publish(run_id, "status", {"status": "optimizing", "total_seeds": row.total_seeds,
+                                   "seeds_completed": row.seeds_completed, "spend": row.spend})
+    bus.publish(run_id, "progress", {"message": "running the adaptive lever optimization — three rounds"})
+
+    try:
+        opt = (await asyncio.to_thread(
+            run_optimization, rc, sprints=cfg.sprints, matters=cfg.matters_per_sprint,
+        ))["optimize"]
+    except Exception as exc:
+        import traceback
+        tb = traceback.format_exc()
+        await db.set_status(run_id, "error", error=tb)
+        bus.publish(run_id, "status", {"status": "error", "error": str(exc)})
+        return
+
+    bus.publish(run_id, "progress", {"message": "regenerating the report with the recommendation"})
+    report = await reportgen.generate_report(
+        run_id, primary_dir, rc, cfg, mc,
+        progress=lambda msg: bus.publish(run_id, "progress", {"message": msg}),
+        optimize_result=opt,
+    )
+    await db.set_status(run_id, "complete", report=report)
+    bus.publish(run_id, "status", {"status": "complete", "seeds_completed": row.seeds_completed,
+                                   "total_seeds": row.total_seeds, "spend": row.spend})
+    bus.publish(run_id, "report_ready", {"report": True})

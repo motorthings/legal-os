@@ -50,6 +50,17 @@ async def create_run(req: RunRequest) -> RunOut:
     return RunOut(run_id=run_id, events_url=f"/runs/{run_id}/events")
 
 
+@router.post("/runs/{run_id}/optimize", status_code=202)
+async def optimize(run_id: str):
+    row = await db.fetch_run(run_id)
+    if row is None:
+        raise HTTPException(404, "run not found")
+    if row.status not in ("complete", "budget_exhausted"):
+        raise HTTPException(409, "run must be complete before optimizing")
+    asyncio.create_task(runner.optimize_run(run_id, db, bus))
+    return {"run_id": run_id, "status": "optimizing"}
+
+
 @router.get("/runs")
 async def list_runs(firm_id: str | None = None):
     return await db.list_runs(firm_id)
