@@ -48,7 +48,7 @@ export function RunSection({ firmId, hasConfig }: { firmId: string; hasConfig: b
       <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
         <label>Seeds <input type="number" min={1} max={100} value={seeds} onChange={(e) => setSeeds(e.target.valueAsNumber || 1)} /></label>
         <label>Budget $ <input type="number" placeholder="none" value={budget} onChange={(e) => setBudget(e.target.value)} /></label>
-        <button onClick={onRun} disabled={busy || !hasConfig} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">{busy ? 'Launching…' : 'Run'}</button>
+        <button onClick={onRun} disabled={busy || !hasConfig} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">{busy ? 'Launching…' : 'Run baseline'}</button>
       </div>
       {error && <p style={{ color: 'crimson' }}>{error}</p>}
       {!hasConfig && <p style={{ color: '#888' }}>Save the intake config first to enable runs.</p>}

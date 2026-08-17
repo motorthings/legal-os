@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import type { FirmConfigJson } from '@/lib/simulation-contract';
 import IntakeForm from '@/components/simulation/IntakeForm';
 import { RunSection } from '@/components/simulation/RunSection';
+import RunHistory from '@/components/simulation/RunHistory';
 
 export default function FirmPage() {
   const params = useParams<{ id: string }>();
@@ -39,6 +40,8 @@ export default function FirmPage() {
       {!loaded ? <p>Loading…</p> : (
         <>
           <RunSection firmId={firmId} hasConfig={!!config} />
+          <h2>Runs</h2>
+          <RunHistory firmId={firmId} />
           <h2>Intake</h2>
           <IntakeForm firmId={firmId} existing={config} />
         </>
