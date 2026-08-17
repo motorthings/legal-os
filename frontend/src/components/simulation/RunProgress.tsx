@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { ChevronRight } from 'lucide-react';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 import MetricsCharts from './MetricsCharts';
 
@@ -188,27 +189,32 @@ export default function RunProgress({ runId }: Props) {
           </div>
         </div>
       )}
-      {finished && report && !optimizing && (
-        <button onClick={onOptimize} className="btn-primary border-none cursor-pointer mt-6">
-          Find the best lever combination
-        </button>
-      )}
       {report ? (
         <div className="mt-6" ref={reportRef}>
-          <h2 className="text-xl font-bold mb-3 text-[var(--text)]">Your Report</h2>
-          <div className="report-body">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              urlTransform={(url) => {
-                if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
-                  return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
-                }
-                return url;
-              }}
-            >
-              {report}
-            </ReactMarkdown>
-          </div>
+          <details open className="group">
+            <summary className="flex items-center gap-2 cursor-pointer select-none text-xl font-bold text-[var(--text)] list-none [&::-webkit-details-marker]:hidden">
+              Your Report
+              <ChevronRight className="w-4 h-4 text-[var(--text-dim)] transition-transform group-open:rotate-90 shrink-0" />
+            </summary>
+            <div className="report-body mt-3">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                urlTransform={(url) => {
+                  if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
+                    return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
+                  }
+                  return url;
+                }}
+              >
+                {report}
+              </ReactMarkdown>
+            </div>
+          </details>
+          {finished && !optimizing && (
+            <button onClick={onOptimize} className="btn-primary border-none cursor-pointer mt-6">
+              Find the best lever combination
+            </button>
+          )}
         </div>
       ) : finished && !report ? (
         <p style={{ color: 'var(--text-muted)' }}>No report (run did not complete a primary seed).</p>
