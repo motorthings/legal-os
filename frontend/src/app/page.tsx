@@ -42,6 +42,22 @@ const FUNCTIONS = [
     enabled: true,
   },
   {
+    slug: "legal-research",
+    name: "Legal Research",
+    desc: "Descrybe-powered case law, statutes, and citation intelligence — good-law treatment, authority ranking, and quote verification.",
+    status: "built",
+    href: "/legal-research",
+    enabled: true,
+  },
+  {
+    slug: "cite-check",
+    name: "Cite Check",
+    desc: "Validate a brief against Descrybe before filing — citations confirmed, quotes verified word-for-word.",
+    status: "built",
+    href: "/cite-check",
+    enabled: true,
+  },
+  {
     slug: "km-intelligence",
     name: "KM & Precedent Intelligence",
     desc: "Semantic search across all firm documents with citations.",
@@ -57,6 +73,14 @@ const FUNCTIONS = [
     href: "/reporting",
     enabled: true,
   },
+  {
+    slug: "firm-simulation",
+    name: "Firm Simulation",
+    desc: "Monte-Carlo digital twin of your firm's economics — model where value leaks and which levers move profit.",
+    status: "built",
+    href: "/simulation",
+    enabled: true,
+  },
 ];
 
 export default function Home() {
@@ -68,7 +92,7 @@ export default function Home() {
           Legal AI Operating System
         </h1>
         <p className="font-mono text-sm text-[var(--text-dim)] max-w-xl">
-          Seven functions. One governance layer. Every decision auditable,
+          Ten functions. One governance layer. Every decision auditable,
           explainable, and traceable &mdash; by design.
         </p>
       </header>
@@ -89,7 +113,7 @@ export default function Home() {
 
       {/* Functions grid */}
       <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4">
-        Seven Functions
+        Ten Functions
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {FUNCTIONS.map((fn) => (
@@ -112,6 +136,23 @@ export default function Home() {
               {fn.desc}
             </p>
           </Link>
+        ))}
+      </div>
+
+      {/* Knowledge Foundation */}
+      <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--text-dim)] mb-4 mt-10">
+        Knowledge Foundation
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {[
+          { name: "Embeddings", desc: "Voyage AI (voyage-3-large, 1024-dim) with pgvector cosine search for semantic retrieval." },
+          { name: "Knowledge Base & RAG", desc: "Chunked document ingestion, embedding generation, and similarity retrieval across the firm's corpus." },
+          { name: "NLP & Text Pipeline", desc: "Normalization and chunking that prepare documents and queries for retrieval." },
+        ].map((k) => (
+          <div key={k.name} className="card p-5">
+            <h3 className="font-semibold text-[15px] mb-1">{k.name}</h3>
+            <p className="text-[13px] text-[var(--text-dim)] leading-relaxed">{k.desc}</p>
+          </div>
         ))}
       </div>
     </div>
