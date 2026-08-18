@@ -89,6 +89,9 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
         lo, hi = min(deltas.values()), max(deltas.values())
         bands[lever] = {
             "coefficient": cid, "coefficient_name": coef.name, "source": coef.source,
+            # The intake question that pins this coefficient down. The report surfaces it
+            # for the widest band, so "calibrate the model" becomes one answerable question.
+            "calibration_question": coef.calibration_question,
             "low": deltas["low"], "base": deltas["base"], "high": deltas["high"],
             "band_low": lo, "band_high": hi,
         }
@@ -129,6 +132,14 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
         "best_combo": [],
     }
     experiments = {
+        # How much simulation stands behind this report — the report quotes these so the
+        # reader can size the work rather than take the numbers on faith. Each sensitivity
+        # lever costs 3 coefficient points x 2 runs (baseline + lever) x _SENS_SEEDS seeds.
+        "run": {
+            "baseline_scenarios": band["ppp"]["count"],
+            "sensitivity_seeds": _SENS_SEEDS,
+            "sensitivity_sims": n_sens * 3 * 2 * _SENS_SEEDS,
+        },
         "optimize": optimize,
         "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters, step)},
     }

@@ -140,6 +140,7 @@ def set_base_firm(firm_signature=None, elasticities=None):
     global _BASE_FIRM, _BASE_ELASTICITIES
     _BASE_FIRM, _BASE_ELASTICITIES = firm_signature, elasticities
     _TRIAL_CACHE.clear()
+    reset_sims_run()
 
 
 def build_overrides(pulled: set) -> dict:
@@ -161,6 +162,18 @@ def build_overrides(pulled: set) -> dict:
 
 _TRIAL_CACHE: dict = {}
 
+# How many simulations the search actually executed (cache hits excluded). The report
+# quotes this to show the reader the size of the search behind the recommendation.
+_SIMS_RUN = [0]
+
+
+def sims_run() -> int:
+    return _SIMS_RUN[0]
+
+
+def reset_sims_run() -> None:
+    _SIMS_RUN[0] = 0
+
 # Metrics collected on every trial, so switching --objective never needs a re-run
 # (all objectives read from the same cached simulation).
 _COLLECT = ("ppp", "matter_profit_margin", "rpl", "realization_rate", "associate_attrition")
@@ -174,6 +187,7 @@ def run_trials(pulled: set, seeds, sprints, matters):
         return _TRIAL_CACHE[key]
     overrides = build_overrides(pulled)
     out = {m: [] for m in _COLLECT}
+    _SIMS_RUN[0] += len(seeds)
     for seed in seeds:
         cfg = SimulationConfig(sprints=sprints, matters_per_sprint=matters,
                                llm_provider="mock", seed=seed, output_dir="results/_opt",
@@ -452,13 +466,15 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     opt_seeds = list(range(42, 42 + round_seeds))
     mc_list = list(range(100, 100 + mc_seeds))
 
-    total = 4
-    n = [0]
+    def make_stage(total: int):
+        n = [0]
 
-    def step(message: str) -> None:
-        n[0] += 1
-        if progress:
-            progress(message, n[0], total)
+        def step(message: str) -> None:
+            n[0] += 1
+            if progress:
+                progress(message, n[0], total)
+
+        return step
 
     def score(pulled, seeds):
         if use_blend:
@@ -468,35 +484,42 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     KEEP_THRESH, SYN_THRESH = (0.01, 0.02) if use_blend else (
         (20_000, 50_000) if obj_is_dollar else (0.3, 0.5))
 
-    # Round 1 — main effects
-    step("round 1 of 3 — testing each lever alone")
+    # Round 1 — main effects (baseline + one score per lever)
+    r1 = make_stage(1 + len(LEVERS))
+    r1("Round 1 of 3 — baseline")
     baseline = score(set(), opt_seeds)
     baseline_margin = run_metric(set(), opt_seeds, sprints, matters, "matter_profit_margin")
     effects, margin_effects = {}, {}
-    for lever in LEVERS:
+    for i, lever in enumerate(LEVERS):
+        r1(f"Round 1 of 3 — {lever} ({i + 1} of {len(LEVERS)})")
         effects[lever] = score({lever}, opt_seeds) - baseline
         margin_effects[lever] = run_metric({lever}, opt_seeds, sprints, matters, "matter_profit_margin") - baseline_margin
     ranked = sorted(effects.items(), key=lambda kv: kv[1], reverse=True)
 
     # Round 2 — factorial on top-2 + comp×pricing
-    step("round 2 of 3 — testing lever combinations")
+    r2 = make_stage(2)
     positives = [lv for lv, d in ranked if d > 0]
     pair = positives[:2] if len(positives) >= 2 else [lv for lv, _ in ranked[:2]]
     top2 = positives[:2]
     a, b = pair[0], pair[1]
     alone = {x: effects[x] for x in (a, b)}
+    r2(f"Round 2 of 3 — {a} + {b} together")
     both = score({a, b}, opt_seeds) - baseline
     additive = alone[a] + alone[b]
     synergy = both - additive
+    r2("Round 2 of 3 — comp under AFA pricing")
     comp_under_afa = score({"comp", "pricing"}, opt_seeds) - score({"pricing"}, opt_seeds)
 
     # Round 3 — refinement
-    step("round 3 of 3 — refining the best combination")
     best = set(top2)
     if comp_under_afa > 0:
         best.add("comp")
+    remaining = [l for l in LEVERS if l not in best]
+    r3 = make_stage(1 + len(remaining))
+    r3("Round 3 of 3 — score current best")
     best_score = score(best, opt_seeds)
-    for lever in [l for l in LEVERS if l not in best]:
+    for lever in remaining:
+        r3(f"Round 3 of 3 — try adding {lever}")
         if score(best | {lever}, opt_seeds) - best_score > KEEP_THRESH:
             best.add(lever)
 
@@ -515,12 +538,14 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
             guardrail_note = "no lever combination satisfies the guardrails — reporting baseline"
 
     # Final Monte Carlo
-    step("final confidence check (Monte Carlo)")
+    r4 = make_stage(2)
+    r4("Final check — Monte Carlo over the winner")
     win_vals = run_trials(best, mc_list, sprints, matters)[obj_key]
     win_mean = statistics.mean(win_vals)
     n = len(win_vals)
     spread = statistics.pstdev(win_vals)
     ci95 = 1.96 * statistics.stdev(win_vals) / math.sqrt(n) if n > 1 else 0.0
+    r4("Final check — metrics")
     base_mc = run_metric(set(), mc_list, sprints, matters, obj_key)
     improvement = obj_dir * (win_mean - base_mc)
     ppp_win = run_metric(best, mc_list, sprints, matters, "ppp")
@@ -541,6 +566,11 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
             "weights": weights,
             "guardrails": [f"{m}{op}{v:g}" for m, op, v in guardrails],
             "guardrail_note": guardrail_note,
+            # Search scale — what the report quotes to show the size of the work behind
+            # the recommendation.
+            "round_seeds": round_seeds,
+            "mc_seeds": mc_seeds,
+            "sims_run": sims_run(),
             "baseline_ppp": ppp_base_opt,
             "baseline_objective": obj_dir * baseline,
             "main_effects": {lv: {"delta_ppp": ppp_effects[lv], "delta_objective": effects[lv],
