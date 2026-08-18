@@ -105,6 +105,16 @@ function getPersonaSnapshot(): Persona {
   return isPersona(stored) ? stored : 'attorney';
 }
 
+// getServerSnapshot must return what the SERVER rendered — React calls it on the client
+// during hydration too, not only during SSR. Passing getPersonaSnapshot here read
+// localStorage at hydration time and returned the stored persona while the server HTML
+// said 'attorney', which is a text mismatch (React #418) on every page, since Sidebar is
+// in the root layout. A constant keeps hydration identical; useSyncExternalStore then
+// re-reads the client snapshot immediately after and re-renders with the stored persona.
+function getPersonaServerSnapshot(): Persona {
+  return 'attorney';
+}
+
 function subscribeToPersona(callback: () => void) {
   window.addEventListener('storage', callback);
   window.addEventListener(PERSONA_EVENT, callback);
@@ -125,7 +135,7 @@ export default function Sidebar() {
   const persona = useSyncExternalStore(
     subscribeToPersona,
     getPersonaSnapshot,
-    getPersonaSnapshot
+    getPersonaServerSnapshot
   );
   const [descrybeConnected, setDescrybeConnected] = useState<boolean | null>(null);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChevronRight } from 'lucide-react';
@@ -62,6 +62,41 @@ export default function RunProgress({ runId }: Props) {
   const logRef = useRef<HTMLDivElement>(null);
   const reportRef = useRef<HTMLDivElement>(null);
 
+  const loadReport = useCallback(() => {
+    if (reportFetched.current) return;
+    reportFetched.current = true;
+    fetch(`${SIM_API_BASE}/runs/${runId}/report`)
+      .then((r) => (r.ok ? r.text() : Promise.reject()))
+      .then(setReport)
+      .catch(() => {
+        reportFetched.current = false; // let a later report_ready retry
+        setError('report unavailable');
+      });
+  }, [runId]);
+
+  // Reconcile against the run's actual state on mount. The report used to be reachable
+  // ONLY through a live `report_ready` event, so any missed event — a torn-down
+  // EventSource, a remount after a hydration error, or simply opening a run that had
+  // already finished — left the page waiting forever on something that had already
+  // happened. Asking the server what is true is what a manual refresh was doing by hand.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${SIM_API_BASE}/runs/${runId}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((run) => {
+        if (cancelled) return;
+        setStatus(run.status);
+        if (run.total_seeds !== undefined) setTotal(run.total_seeds);
+        if (run.seeds_completed !== undefined) setDone(run.seeds_completed);
+        if (run.spend !== undefined) setSpend(run.spend);
+        if (run.has_report) loadReport();
+      })
+      .catch(() => {}); // SSE replay is the fallback
+    return () => {
+      cancelled = true;
+    };
+  }, [runId, loadReport]);
+
   useEffect(() => {
     const es = new EventSource(`${SIM_API_BASE}/runs/${runId}/events`);
     es.onmessage = (e) => {
@@ -96,19 +131,15 @@ export default function RunProgress({ runId }: Props) {
           setReportDone(p.done);
           setReportTotal(p.total);
         }
-      } else if (ev.kind === 'report_ready' && !reportFetched.current) {
-        reportFetched.current = true;
+      } else if (ev.kind === 'report_ready') {
         setLog((l) => [...l, '✓ report ready']);
-        fetch(`${SIM_API_BASE}/runs/${runId}/report`)
-          .then((r) => (r.ok ? r.text() : Promise.reject()))
-          .then(setReport)
-          .catch(() => setError('report unavailable'));
+        loadReport();
       }
     };
     es.onerror = () => setReconnecting(true);
     es.onopen = () => setReconnecting(false);
     return () => es.close();
-  }, [runId]);
+  }, [runId, loadReport]);
 
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
