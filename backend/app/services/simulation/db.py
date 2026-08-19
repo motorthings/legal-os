@@ -134,6 +134,49 @@ class DB:
         row = await self._pool.fetchrow("delete from runs where id = $1 returning id", run_id)
         return row is not None
 
+    # --- reports (one row per stage: baseline / lever_optimization / scenario_simulation) ---
+
+    async def insert_report(self, run_id: str, stage: str, title: str, *,
+                            report_markdown: str, lever_set: Optional[list] = None,
+                            payload: Optional[dict] = None) -> str:
+        """Save a stage's report. Never overwrites — each call is a new saved report, so a
+        scenario simulation can be re-run against the same lever set again and again."""
+        row = await self._pool.fetchrow(
+            """insert into sim_reports (run_id, stage, title, lever_set, payload, report_markdown)
+               values ($1, $2, $3, $4, $5, $6) returning id""",
+            run_id, stage, title, json.dumps(lever_set or []),
+            json.dumps(payload) if payload is not None else None, report_markdown,
+        )
+        return str(row["id"])
+
+    async def list_reports(self, run_id: str) -> list[dict]:
+        """All saved reports for a run, newest first."""
+        rows = await self._pool.fetch(
+            """select id, stage, title, lever_set, report_markdown, created_at
+               from sim_reports where run_id = $1 order by created_at desc""", run_id)
+        return [{
+            "id": str(r["id"]), "stage": r["stage"], "title": r["title"],
+            "lever_set": json.loads(r["lever_set"]) if r["lever_set"] else [],
+            "report_markdown": r["report_markdown"],
+            "created_at": r["created_at"].isoformat(),
+        } for r in rows]
+
+    async def latest_report(self, run_id: str, stage: str) -> Optional[dict]:
+        """The most recent report for a run at a given stage, with its stored payload."""
+        r = await self._pool.fetchrow(
+            """select id, stage, title, lever_set, payload, report_markdown, created_at
+               from sim_reports where run_id = $1 and stage = $2
+               order by created_at desc limit 1""", run_id, stage)
+        if r is None:
+            return None
+        return {
+            "id": str(r["id"]), "stage": r["stage"], "title": r["title"],
+            "lever_set": json.loads(r["lever_set"]) if r["lever_set"] else [],
+            "payload": json.loads(r["payload"]) if r["payload"] else None,
+            "report_markdown": r["report_markdown"],
+            "created_at": r["created_at"].isoformat(),
+        }
+
     # --- events (SSE replay source of truth) ---
 
     async def append_event(self, run_id: str, seq: int, kind: str, payload: dict) -> None:

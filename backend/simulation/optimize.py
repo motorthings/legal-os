@@ -591,5 +591,53 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     }
 
 
+def run_scenario_mc(rc: dict, combo, *, sprints: int, matters: int,
+                    mc_seeds: int = 20, progress=None) -> dict:
+    """Re-run ONLY the final Monte Carlo for a determined lever set — no search rounds.
+
+    This is the "Scenario Simulation" stage: the lever set is already fixed (by a prior
+    lever optimization), and this measures it across `mc_seeds` fresh scenarios to refresh
+    the confidence band. Returns the subset of the `optimize` dict that the band-dependent
+    parts of the report read; callers overlay it onto the optimization's stored dict so the
+    narrative stays intact and only the numbers move. Synchronous, like run_optimization."""
+    from .run_config import build_firm, build_elasticities, build_objective
+    set_base_firm(build_firm(rc.get("firm") or {}), build_elasticities(rc))
+    weights = build_objective(rc)["weights"]
+    primary = max(weights, key=weights.get)
+    obj_key, obj_dir, obj_label, _ = OBJECTIVES[primary]
+
+    combo = set(combo)
+    mc_list = list(range(100, 100 + mc_seeds))
+
+    def step(msg, i, n):
+        if progress:
+            progress(msg, i, n)
+
+    step("Monte Carlo over the lever set", 1, 2)
+    win_vals = run_trials(combo, mc_list, sprints, matters)[obj_key]
+    win_mean = statistics.mean(win_vals)
+    n = len(win_vals)
+    spread = statistics.pstdev(win_vals)
+    ci95 = 1.96 * statistics.stdev(win_vals) / math.sqrt(n) if n > 1 else 0.0
+
+    step("baseline comparison", 2, 2)
+    base_mc = run_metric(set(), mc_list, sprints, matters, obj_key)
+    improvement = obj_dir * (win_mean - base_mc)
+    ppp_win = run_metric(combo, mc_list, sprints, matters, "ppp")
+    ppp_base_mc = run_metric(set(), mc_list, sprints, matters, "ppp")
+
+    return {
+        "best_combo": sorted(combo),
+        "best_objective": win_mean,
+        "best_delta_objective": improvement,
+        "best_ppp": ppp_win,
+        "best_delta": ppp_win - ppp_base_mc,
+        "spread": spread,
+        "ci95": ci95,
+        "mc_seeds": mc_seeds,
+        "sims_run": sims_run(),
+    }
+
+
 if __name__ == "__main__":
     main()

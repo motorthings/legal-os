@@ -63,6 +63,27 @@ async def optimize(run_id: str):
     return {"run_id": run_id, "status": "optimizing"}
 
 
+@router.post("/runs/{run_id}/scenario", status_code=202)
+async def scenario(run_id: str):
+    """Stage 3 — run the Monte Carlo against the optimizer's determined lever set. Repeatable:
+    each call saves a new scenario_simulation report."""
+    row = await db.fetch_run(run_id)
+    if row is None:
+        raise HTTPException(404, "run not found")
+    prior = await db.latest_report(run_id, "lever_optimization")
+    if prior is None:
+        raise HTTPException(409, "run the lever optimization first")
+    asyncio.create_task(runner.scenario_run(run_id, db, bus))
+    return {"run_id": run_id, "status": "optimizing"}
+
+
+@router.get("/runs/{run_id}/reports")
+async def list_reports(run_id: str):
+    """Every saved report for a run — baseline, lever optimization, and scenario simulations —
+    newest first, each with its stage, title, and markdown."""
+    return await db.list_reports(run_id)
+
+
 @router.get("/runs")
 async def list_runs(firm_id: str | None = None):
     return await db.list_runs(firm_id)

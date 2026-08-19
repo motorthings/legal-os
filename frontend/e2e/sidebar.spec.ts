@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Sidebar Navigation", () => {
-  test("renders sidebar with Operations section", async ({ page }) => {
+  test("renders sidebar with the default (attorney) persona groups", async ({ page }) => {
     await page.goto("/dashboard");
     await page.waitForTimeout(2000);
 
@@ -9,30 +9,24 @@ test.describe("Sidebar Navigation", () => {
     const sidebar = page.locator("aside");
     await expect(sidebar).toBeVisible();
 
-    // Operations section
-    const operations = sidebar.getByText("Operations");
-    await expect(operations).toBeVisible();
+    // Default persona is "attorney": groups are Practice and Tools.
+    await expect(sidebar.getByText("Practice", { exact: true })).toBeVisible();
+    await expect(sidebar.getByText("Tools", { exact: true })).toBeVisible();
 
-    // Dashboard link in Operations section and POC Pipeline link
-    const dashboardLink = sidebar.getByRole("link", { name: "Dashboard" }).last();
-    await expect(dashboardLink).toBeVisible();
-
-    const pocLink = sidebar.getByRole("link", { name: "POC Pipeline" });
-    await expect(pocLink).toBeVisible();
+    // A known link in each group.
+    await expect(sidebar.getByRole("link", { name: "Employment" })).toBeVisible();
+    await expect(sidebar.getByRole("link", { name: "Legal Research" })).toBeVisible();
   });
 
-  test("navigates from dashboard to POC pipeline", async ({ page }) => {
+  test("navigates from the sidebar to a function page", async ({ page }) => {
     await page.goto("/dashboard");
     await page.waitForTimeout(2000);
 
-    // Click POC Pipeline in sidebar
-    const pocLink = page.locator("aside").getByRole("link", { name: "POC Pipeline" });
-    await pocLink.click();
-    await page.waitForTimeout(2000);
+    // Click Contract Review in the sidebar (Tools group, default persona).
+    const link = page.locator("aside").getByRole("link", { name: "Contract Review" });
+    await link.click();
+    await page.waitForURL("**/contract-review", { timeout: 10_000 });
 
-    // Should be on POC pipeline page
-    const body = page.locator("body");
-    const text = await body.innerText();
-    expect(text).toContain("POC Pipeline");
+    expect(page.url()).toContain("/contract-review");
   });
 });
