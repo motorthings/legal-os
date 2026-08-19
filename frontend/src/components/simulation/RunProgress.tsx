@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, HelpCircle, Download } from 'lucide-react';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 import MetricsCharts from './MetricsCharts';
+import HowItWorks from './HowItWorks';
 
 interface Props {
   runId: string;
@@ -74,6 +75,25 @@ export default function RunProgress({ runId }: Props) {
   const [reconnecting, setReconnecting] = useState(false);
   const [optimizing, setOptimizing] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
+  const [howOpen, setHowOpen] = useState(false);
+  const [printId, setPrintId] = useState<string | null>(null);
+  const np = printId ? 'no-print' : '';
+
+  // Save-as-PDF for a single report. We isolate that card + the charts with print CSS,
+  // force it open, let React paint, then open the browser's print dialog. The user picks
+  // "Save as PDF" — no library, and the SVG charts render crisply.
+  const printReport = useCallback((id: string) => {
+    setPrintId(id);
+    document.body.classList.add('printing');
+    const cleanup = () => {
+      document.body.classList.remove('printing');
+      setPrintId(null);
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    // Let the forced-open state and no-print classes paint before the dialog opens.
+    setTimeout(() => window.print(), 250);
+  }, []);
   const maxSeqRef = useRef(0);
   const logRef = useRef<HTMLDivElement>(null);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -195,7 +215,8 @@ export default function RunProgress({ runId }: Props) {
   }
 
   return (
-    <div>
+    <div className="print-root">
+      <div className={np}>
       <p className="text-[15px] flex items-center gap-2">
         {active && (
           <span className="inline-block w-3 h-3 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin shrink-0" />
@@ -244,7 +265,9 @@ export default function RunProgress({ runId }: Props) {
           ))}
         </div>
       )}
+      </div>
       <MetricsCharts runId={runId} />
+      <div className={np}>
       {reconnecting && (
         <p style={{ color: 'var(--amber)', fontSize: '0.8rem' }}>Reconnecting…</p>
       )}
@@ -259,17 +282,28 @@ export default function RunProgress({ runId }: Props) {
           </div>
         </div>
       )}
+      </div>
       {reports.length > 0 ? (
         <div className="mt-6" ref={reportRef}>
-          <h2 className="text-xl font-bold text-[var(--text)] mb-3">Reports</h2>
+          <div className={`flex items-center justify-between mb-3 ${np}`}>
+            <h2 className="text-xl font-bold text-[var(--text)]">Reports</h2>
+            <button
+              onClick={() => setHowOpen(true)}
+              className="flex items-center gap-1.5 text-[13px] text-[var(--text-dim)] hover:text-[var(--text)] cursor-pointer"
+            >
+              <HelpCircle className="w-4 h-4" />
+              How this works
+            </button>
+          </div>
           <div className="space-y-3">
             {reports.map((r, i) => {
               const meta = STAGE_META[r.stage];
               return (
                 <details
                   key={r.id}
-                  open={i === 0}
-                  className="group border border-[var(--border)] rounded-lg overflow-hidden"
+                  data-report-card
+                  open={printId ? printId === r.id : i === 0}
+                  className={`group border border-[var(--border)] rounded-lg overflow-hidden ${printId && printId !== r.id ? 'no-print' : ''}`}
                 >
                   <summary className="flex items-center gap-3 cursor-pointer select-none px-4 py-3 bg-[var(--surface2)] list-none [&::-webkit-details-marker]:hidden">
                     <span
@@ -296,6 +330,31 @@ export default function RunProgress({ runId }: Props) {
                     >
                       {r.report_markdown}
                     </ReactMarkdown>
+                    <div className="no-print mt-6 pt-4 border-t border-[var(--border)] flex flex-wrap items-center gap-4 text-[13px]">
+                      <button
+                        onClick={() => printReport(r.id)}
+                        className="flex items-center gap-1.5 text-[var(--primary)] hover:underline cursor-pointer"
+                      >
+                        <Download className="w-4 h-4" />
+                        Download report (PDF)
+                      </button>
+                      <span className="text-[var(--text-muted)]">·</span>
+                      <button
+                        onClick={() => setHowOpen(true)}
+                        className="flex items-center gap-1.5 text-[var(--text-dim)] hover:text-[var(--text)] cursor-pointer"
+                      >
+                        <HelpCircle className="w-4 h-4" />
+                        How this works
+                      </button>
+                      <a
+                        href="/how-the-simulation-works.html"
+                        download="How-the-Simulation-Works.html"
+                        className="flex items-center gap-1.5 text-[var(--text-dim)] hover:text-[var(--text)] no-underline"
+                      >
+                        <Download className="w-4 h-4" />
+                        Explainer one-pager
+                      </a>
+                    </div>
                   </div>
                 </details>
               );
@@ -303,7 +362,7 @@ export default function RunProgress({ runId }: Props) {
           </div>
 
           {finished && !optimizing && (
-            <div className="flex flex-wrap gap-3 mt-6">
+            <div className="no-print flex flex-wrap gap-3 mt-6">
               {hasBaseline && (
                 <button onClick={onOptimize} className="btn-primary border-none cursor-pointer">
                   {optimization ? 'Re-run the lever optimization' : 'Find the best lever combination'}
@@ -326,6 +385,7 @@ export default function RunProgress({ runId }: Props) {
       ) : (
         <p style={{ color: 'var(--text-muted)' }}>Generating report…</p>
       )}
+      {howOpen && <HowItWorks onClose={() => setHowOpen(false)} />}
     </div>
   );
 }

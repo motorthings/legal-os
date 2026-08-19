@@ -126,6 +126,23 @@ body {
 .report-body th { text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600; }
 .report-body td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
 
+/* Print / Save-as-PDF: isolate one report + its charts, drop all app chrome.
+   Native Cmd+P uses these rules; the "Download PDF" button just opens that dialog.
+   When printing, body gets .printing and the run view is marked .print-root; the
+   chosen report card stays, everything else in the app is hidden. */
+@media print {
+  /* Hide app chrome and everything tagged .no-print; the target report + charts remain
+     in normal flow so long reports paginate correctly. */
+  body.printing .no-print,
+  body.printing aside,
+  body.printing .theme-toggle-slot { display: none !important; }
+  body.printing details[data-report-card] { border: none !important; }
+  body.printing details[data-report-card] > summary { display: none !important; }
+  body.printing .report-body { color: #000 !important; }
+  body.printing .recharts-wrapper { break-inside: avoid; }
+  @page { margin: 16mm; }
+}
+
 .badge {
   font-family: var(--font-mono);
   font-size: 10px;

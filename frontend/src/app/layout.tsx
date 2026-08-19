@@ -37,7 +37,7 @@ export default function RootLayout({
           <div className="flex min-h-screen">
             <Sidebar />
             <main className="flex-1 min-w-0 overflow-y-auto relative">
-              <div className="fixed top-4 right-4 z-50">
+              <div className="theme-toggle-slot fixed top-4 right-4 z-50">
                 <ThemeToggleSlot />
               </div>
               <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-8 pb-12">

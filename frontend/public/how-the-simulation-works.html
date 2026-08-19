@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="How the firm simulation works, in three plain-English steps: build your firm and let it run to find the baseline, test every change alone and together to find the plan, then run the winning plan across fresh scenarios to see if it holds. A comparison engine, not a forecast.">
+<title>How the Simulation Works — Firm Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'Fraunces', Georgia, serif;
+    --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+    --bg: #eef4f9; --surface: #ffffff; --surface2: #f5f8fc;
+    --border: rgba(0,0,0,0.06); --border-bright: rgba(0,0,0,0.12);
+    --text: #0a1628; --text-dim: #3d5a7a; --text-muted: #7a9ab8;
+    --primary: #e8621a; --primary-dim: rgba(232,98,26,0.08);
+    --secondary: #4a90c4; --secondary-dim: rgba(74,144,196,0.08);
+    --metric: #0f766e; --metric-dim: rgba(15,118,110,0.06);
+    --amber: #b45309; --amber-dim: rgba(180,83,9,0.08);
+    --violet: #7c3aed; --violet-dim: rgba(124,58,237,0.08);
+    --emerald: #059669; --emerald-dim: rgba(5,150,105,0.08);
+    --rose: #e11d48; --rose-dim: rgba(225,29,72,0.08);
+    --slate: #475569; --slate-dim: rgba(71,85,105,0.08);
+  }
+  html.dark {
+    --bg: #0a1628; --surface: #0f1f3d; --surface2: #132844;
+    --border: rgba(255,255,255,0.06); --border-bright: rgba(255,255,255,0.12);
+    --text: #e8edf5; --text-dim: #9bb0d4; --text-muted: #5e7aa3;
+    --primary: #f37021; --primary-dim: rgba(243,112,33,0.12);
+    --secondary: #6cace4; --secondary-dim: rgba(108,172,228,0.12);
+    --metric: #2dd4bf; --metric-dim: rgba(45,212,191,0.08);
+    --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+    --violet: #a78bfa; --violet-dim: rgba(167,139,250,0.12);
+    --emerald: #34d399; --emerald-dim: rgba(52,211,153,0.1);
+    --rose: #fb7185; --rose-dim: rgba(251,113,133,0.12);
+    --slate: #94a3b8; --slate-dim: rgba(148,163,184,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 80% 0%, var(--primary-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 60%, var(--secondary-dim) 0%, transparent 40%);
+    color: var(--text); font-family: var(--font-body);
+    font-size: 15px; line-height: 1.7; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 32px; padding: 0 32px;
+  }
+  .nav-inner {
+    max-width: 920px; margin: 0 auto; padding: 12px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    color: var(--primary); text-decoration: none;
+  }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--text-dim); transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
+  .backlink{position:fixed;top:12px;left:16px;z-index:101;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);text-decoration:none;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);transition:color .15s,border-color .15s}
+  .backlink:hover{color:var(--text);border-color:var(--border-bright)}
+  .container { max-width: 920px; margin: 0 auto; padding: 0 24px 80px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .stage { animation: fadeUp 0.5s ease both; }
+  .stage:nth-child(1) { animation-delay: 0.05s; }
+  .stage:nth-child(2) { animation-delay: 0.10s; }
+  .stage:nth-child(3) { animation-delay: 0.15s; }
+  .stage:nth-child(4) { animation-delay: 0.20s; }
+  .stage:nth-child(5) { animation-delay: 0.25s; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+
+  .hero { text-align: center; margin-bottom: 48px; padding: 32px 0 0; }
+  .hero h1 {
+    font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+    color: var(--primary); line-height: 1.15;
+  }
+  .hero .outcome-line {
+    font-size: 18px; color: var(--text-dim); max-width: 640px; margin: 0 auto;
+    font-style: italic; line-height: 1.5;
+  }
+
+  .stage { margin-bottom: 40px; }
+  .stage-head { margin-bottom: 16px; }
+  .stage-num {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .stage-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .stage-why { font-size: 15px; color: var(--text-dim); line-height: 1.75; max-width: 760px; }
+  .stage-why + .stage-why { margin-top: 12px; }
+  .stage-why strong { color: var(--text); }
+
+  .step-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px; margin-top: 16px;
+    border-left: 4px solid var(--primary);
+  }
+  .stage:nth-of-type(2) .step-card { border-left-color: var(--slate); }
+  .stage:nth-of-type(3) .step-card { border-left-color: var(--secondary); }
+  .stage:nth-of-type(4) .step-card { border-left-color: var(--emerald); }
+
+  .produces {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--metric);
+    margin-top: 18px; display: inline-block;
+    background: var(--metric-dim); padding: 4px 10px; border-radius: 6px;
+  }
+
+  .callout {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--amber); border-radius: 0 10px 10px 0;
+    padding: 18px 22px; margin-top: 20px; font-size: 14px; color: var(--text-dim);
+    line-height: 1.75;
+  }
+  .callout strong { color: var(--text); }
+  .callout + .callout { margin-top: 12px; }
+
+  .footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center; font-size: 12px; color: var(--text-dim);
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="backlink">&larr; Index</a>
+
+<div class="nav">
+  <div class="nav-inner">
+    <span class="nav-brand">Charlie Fuller — Visual Explainers</span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <span class="icon-light">&#9788;</span>
+      <span class="icon-dark" style="display:none">&#9790;</span>
+    </button>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>How the Simulation Works</h1>
+    <p class="outcome-line">You don't have to trust a black box. Here is the whole method, in three steps.</p>
+  </div>
+
+  <!-- Step 1: Baseline -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">Step 1 &middot; The Baseline</div>
+      <div class="stage-title">We build your firm, then let it run.</div>
+    </div>
+    <div class="step-card">
+      <p class="stage-why">We don't start from a formula. We stand up a working model of your firm — the partners, the associates, the AI tools already in the building — and let them work real matters, quarter after quarter, for several years.</p>
+      <p class="stage-why">Every quarter, drafts get written and reviewed, hand-offs succeed or fail, clients pay early or late, people stay or leave. The profit that falls out of all that motion is your baseline. Nobody typed it in. It's what your firm produces when it runs exactly as it does today.</p>
+      <p class="stage-why">That's why the baseline should look familiar. If it doesn't, the model is wrong, and the report tells you where to check.</p>
+      <span class="produces">Produces &rarr; the baseline</span>
+    </div>
+  </div>
+
+  <!-- Step 2: Optimization -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">Step 2 &middot; The Recommendation</div>
+      <div class="stage-title">We test every change &mdash; alone, then together.</div>
+    </div>
+    <div class="step-card">
+      <p class="stage-why">There are five moves on the table: how you bill, how work is handed off, how you pay for AI adoption, how fast you act on results, and how flat the pyramid is.</p>
+      <p class="stage-why">We try each one on its own, then in combinations, rerunning the entire firm each time. A change that only looks good on paper falls apart here, because it has to survive the same rework and write-offs as everything else.</p>
+      <p class="stage-why">We keep the combination that lifts profit the most &mdash; and we note the <strong>order</strong>, because some moves only pay off after another one clears the way.</p>
+      <span class="produces">Produces &rarr; the recommendation</span>
+    </div>
+  </div>
+
+  <!-- Step 3: Scenario Simulation -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">Step 3 &middot; The Stress Test</div>
+      <div class="stage-title">We run the winning plan again and again to see if it holds.</div>
+    </div>
+    <div class="step-card">
+      <p class="stage-why">One good result can be luck. So we take the recommended plan and run it across dozens of fresh scenarios &mdash; the same firm, but different rolls of the dice on which matters land, which hand-offs break, and who walks out the door.</p>
+      <p class="stage-why">If the plan comes out ahead in nearly all of them, it's real, and we say so. If it only wins on average, we tell you to trust the direction but treat the dollar figure as provisional.</p>
+      <p class="stage-why">That's the difference between a forecast and a stress test. <strong>This is the stress test.</strong></p>
+      <span class="produces">Produces &rarr; the confirmed result</span>
+    </div>
+  </div>
+
+  <!-- What to trust -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">What to trust</div>
+      <div class="stage-title">Direction and order are solid. Check the dollars against your ledger.</div>
+    </div>
+    <div class="callout">
+      <strong>The direction and the order are solid.</strong> They come from running your firm thousands of times, not from an opinion. The dollar amounts are calibrated to a firm like yours, not pulled from your ledger &mdash; so check them against your own numbers before you quote them. Every figure in the report traces back to the record at the end of it.
+    </div>
+    <div class="callout">
+      <strong>This is a comparison engine, not a prediction of next year's P&amp;L.</strong> It doesn't tell you what <em>will</em> happen. It tells you which road ends up ahead, and why.
+    </div>
+  </div>
+
+  <div class="footer">
+    How the Simulation Works &mdash; Firm Simulation
+    &nbsp;&middot;&nbsp;
+    <a href="law-firm-sim.html">Firm Simulation Overview &rarr;</a>
+    &nbsp;&middot;&nbsp;
+    <a href="../index.html">All Diagrams &rarr;</a>
+    <br>
+    <span style="font-size:11px;opacity:0.7;">&copy; 2025-2026 Charlie Fuller &nbsp;&middot;&nbsp; <a href="https://linkedin.com/in/charlie-fuller-colorado/" target="_blank" rel="noopener">LinkedIn</a></span>
+  </div>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const iconLight = toggle.querySelector('.icon-light');
+  const iconDark = toggle.querySelector('.icon-dark');
+  function setTheme(d) {
+    document.documentElement.classList.toggle('dark', d);
+    iconLight.style.display = d ? 'none' : '';
+    iconDark.style.display = d ? '' : 'none';
+    try { localStorage.setItem('diagram-theme', d ? 'dark' : 'light'); } catch(e) {}
+  }
+  toggle.addEventListener('click', () => setTheme(!document.documentElement.classList.contains('dark')));
+  try { if (localStorage.getItem('diagram-theme') === 'dark') setTheme(true); } catch(e) {}
+</script>
+</body>
+</html>

@@ -70,6 +70,14 @@ const GUIDES: Guide[] = [
     external: true,
   },
   {
+    title: 'How the Simulation Works',
+    slug: 'simulation-how-it-works',
+    desc: 'The firm simulation in three plain-English steps — build your firm to find the baseline, test every change to find the plan, then stress-test the plan across fresh scenarios. A comparison engine, not a forecast.',
+    icon: Target,
+    category: 'Firm Simulation',
+    external: true,
+  },
+  {
     title: 'Contract Review Showcase',
     slug: 'contract-review-showcase',
     desc: 'Structured risk analysis with clause-level flagging, playbook-driven review, and HITL workflow.',
