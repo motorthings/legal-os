@@ -176,6 +176,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
             run_id, primary_dir, rc, cfg, mc,
             progress=lambda msg, done=None, total=None: bus.publish(
                 run_id, "progress", {"message": msg, "done": done, "total": total}),
+            stage="baseline",
         )
     else:
         report = None
@@ -235,6 +236,7 @@ async def optimize_run(run_id: str, db, bus) -> None:
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
         optimize_result=opt,
+        stage="lever_optimization",
     )
     combo = opt.get("best_combo") or []
     await db.set_status(run_id, "complete", report=report)
@@ -287,7 +289,10 @@ async def scenario_run(run_id: str, db, bus) -> None:
         bus.publish(run_id, "status", {"status": "error", "error": str(exc)})
         return
 
-    # Reuse the optimization's narrative; only the band-dependent numbers move.
+    # Reuse the optimization's narrative; only the band-dependent numbers move. Keep the
+    # optimization's estimate as `prior` so the summary can say whether the re-run held up.
+    prior = {"best_delta": base_opt.get("best_delta"),
+             "best_delta_objective": base_opt.get("best_delta_objective")}
     opt = {**base_opt, **overlay}
     bus.publish(run_id, "progress", {"message": "writing the scenario report"})
     report = await reportgen.generate_report(
@@ -295,6 +300,8 @@ async def scenario_run(run_id: str, db, bus) -> None:
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
         optimize_result=opt,
+        stage="scenario_simulation",
+        prior=prior,
     )
     mc_seeds = overlay.get("mc_seeds")
     title = f"Scenario Simulation · {_combo_label(combo)}" + (

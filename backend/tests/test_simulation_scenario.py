@@ -40,6 +40,44 @@ def test_scenario_mc_is_deterministic():
     assert a == b
 
 
+def test_baseline_summary_establishes_no_recommendation(tmp_path):
+    """The baseline's At-a-glance says where you land and makes no recommendation."""
+    report = build_report(_write_run(tmp_path),
+                          {"run": RUN_BLOCK, "sensitivity": SENSITIVITY, "stage": "baseline"})
+    assert "## At a glance — Baseline" in report
+    assert "no recommendation" in report.lower()
+
+
+def test_optimization_summary_confirms_and_denies_levers(tmp_path):
+    """The lever search's At-a-glance gives a per-lever confirmed/denied verdict."""
+    report = build_report(_write_run(tmp_path),
+                          {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY,
+                           "stage": "lever_optimization"})
+    assert "## At a glance — Lever Optimization" in report
+    assert "Recommendation: pull comp, pricing, seams" in report
+    assert "Pricing confirmed" in report          # positive lever
+    # Comp is negative alone but flips positive after pricing — the sequencing verdict.
+    assert "Comp — it depends on sequence" in report
+
+
+def test_scenario_summary_gives_a_hold_up_verdict(tmp_path):
+    """The scenario's At-a-glance says whether the lever set held up, and compares to prior."""
+    overlay = {"best_ppp": 2_900_000, "best_delta": 500_000, "spread": 42_000, "ci95": 19_000,
+               "mc_seeds": 40}
+    opt = {**OPTIMIZE, **overlay}
+    report = build_report(_write_run(tmp_path),
+                          {"run": RUN_BLOCK, "optimize": opt, "sensitivity": SENSITIVITY,
+                           "stage": "scenario_simulation",
+                           "prior": {"best_delta": 380_000}})
+    assert "## At a glance — Scenario Simulation" in report
+    assert "Verdict:" in report
+    assert "40 fresh scenarios" in report
+    # delta 500k exceeds band 19k → confirmed.
+    assert "Confirmed" in report
+    # Compares against the optimization's prior estimate.
+    assert "optimization estimated" in report
+
+
 def test_overlay_keeps_narrative_moves_the_band(tmp_path):
     """A scenario report reuses the optimization's story but shows the refreshed numbers."""
     overlay = {

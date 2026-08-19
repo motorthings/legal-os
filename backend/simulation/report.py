@@ -334,6 +334,180 @@ INPUT_DRIVES = {
 
 
 # ---------------------------------------------------------------------------------
+# At a glance — the stage's verdict, up top, before the reader reads anything else.
+# Each simulation stage produces a different kind of finding, so each gets its own
+# summary: the baseline ESTABLISHES a starting line, the lever search CONFIRMS or DENIES
+# each lever, and a scenario simulation VALIDATES whether a chosen lever set holds up.
+# ---------------------------------------------------------------------------------
+
+def _stage_of(exp: dict, searched: bool) -> str:
+    """The stage this report is for. Explicit `stage` wins; otherwise infer from whether a
+    lever search ran, so older callers that don't set it still get a sensible summary."""
+    return (exp or {}).get("stage") or ("lever_optimization" if searched else "baseline")
+
+
+def render_stage_summary(meta: dict, metrics: dict, exp: dict, searched: bool) -> str:
+    stage = _stage_of(exp, searched)
+    if stage == "scenario_simulation":
+        return _summary_scenario(meta, metrics, exp)
+    if stage == "lever_optimization":
+        return _summary_optimization(meta, metrics, exp)
+    return _summary_baseline(meta, metrics, exp)
+
+
+def _summary_baseline(meta: dict, metrics: dict, exp: dict) -> str:
+    """What the baseline establishes — no recommendation, just the starting line and the
+    single biggest leak, so the reader knows what the next stage is measured against."""
+    sprints = meta.get("sprints", "?")
+    ppp_first, ppp_last = _series_ends(metrics, "ppp")
+    L = ["## At a glance — Baseline", "",
+         "This stage changes nothing. It sets the starting line the later stages measure "
+         "against, and makes **no recommendation.**", ""]
+    if ppp_last is not None:
+        L.append(f"- **Where you land.** Left as-is, profit per partner goes "
+                 f"{fmt(ppp_first, '$')} → **{fmt(ppp_last, '$')}**"
+                 f"{_pct_change(ppp_first, ppp_last)} over {_scale_phrase(sprints)}.")
+    # The single biggest leak, named — the thing the levers will have to fix.
+    redline = _last(metrics, "redline_rework_rate")
+    real_rate = _last(metrics, "realization_rate")
+    if redline is not None:
+        L.append(f"- **The biggest leak.** Partners substantially rewrite {fmt(redline, '%')} "
+                 "of drafts — the value sits in the redline, not the draft.")
+    elif real_rate is not None:
+        L.append(f"- **The biggest leak.** The firm collects only {fmt(real_rate, '%')} of "
+                 "what it bills.")
+    L += ["", "> Next: **Lever Optimization** tests which changes move this number.", "", "---", ""]
+    return "\n".join(L)
+
+
+def _classify_levers(opt: dict) -> dict:
+    """Group the five levers by what the search found: confirmed helpers, denied (negative
+    alone), and negligible. Comp is called out separately because its sign flips with pricing."""
+    effects = opt.get("main_effects") or {}
+    combo = set(opt.get("best_combo") or [])
+    out = {"confirmed": [], "denied": [], "negligible": []}
+    for lv in _LEVER_ORDER:
+        fx = effects.get(lv)
+        if not fx:
+            continue
+        val, unit = _effect(fx, opt)
+        if val is None or _is_zero(val, unit):
+            out["negligible"].append((lv, val, unit))
+        elif val > 0:
+            out["confirmed"].append((lv, val, unit))
+        else:
+            out["denied"].append((lv, val, unit))
+    return out
+
+
+def _summary_optimization(meta: dict, metrics: dict, exp: dict) -> str:
+    """The confirm/deny verdict for the lever search — the recommendation, its confidence,
+    and a one-line judgement on every lever."""
+    opt = (exp or {}).get("optimize") or {}
+    combo = opt.get("best_combo") or []
+    obj = opt.get("objective", "ppp")
+    obj_label = opt.get("objective_label", "PPP")
+    unit = _obj_unit(opt)
+    interactions = opt.get("interactions") or {}
+    pair, inter = _interaction_pair(interactions)
+    comp_delta = (interactions.get("comp_x_pricing") or {}).get("delta")
+
+    L = ["## At a glance — Lever Optimization", ""]
+
+    if combo:
+        delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
+        band = opt.get("ci95", opt.get("spread"))
+        holds = (delta is not None and band is not None and abs(delta) > abs(band))
+        verdict = ("**Holds up** — the band does not reach zero." if holds
+                   else "**Provisional** — the band is wide enough to touch zero.")
+        L += [f"**Recommendation: pull {', '.join(combo)} — together.** {obj_label} "
+              f"{_fmt_delta(delta, '$' if obj == 'ppp' else unit)} against changing nothing"
+              + (f", give or take {fmt(band, '$' if obj == 'ppp' else (unit if unit != 'blend' else ''))} across scenarios" if band else "")
+              + f". {verdict}", ""]
+    else:
+        L += ["**No lever combination reliably beats standing still for this firm.** "
+              "The search ran; nothing cleared the bar.", ""]
+
+    groups = _classify_levers(opt)
+    L.append("**Lever by lever — what the search confirmed and denied:**")
+    L.append("")
+    for lv, val, u in groups["confirmed"]:
+        picked = " — **in the recommendation**" if lv in combo else " — but not picked (others carried it)"
+        L.append(f"- ✓ **{lv.capitalize()} confirmed.** {_fmt_delta(val, u)} on its own{picked}.")
+    for lv, val, u in groups["denied"]:
+        # Comp is the special case: negative alone, positive after pricing.
+        if lv == "comp" and comp_delta is not None and comp_delta > 0:
+            L.append(f"- ⚠ **Comp — it depends on sequence.** {_fmt_delta(val, u)} alone (it "
+                     f"costs money while you bill hourly), but {_fmt_delta(comp_delta, unit)} "
+                     "after the pricing change. "
+                     + ("Pull it last." if 'comp' in combo else "Still not worth it here."))
+        else:
+            dropped = "" if lv in combo else " Left out."
+            L.append(f"- ✗ **{lv.capitalize()} denied.** {_fmt_delta(val, u)} on its own — it "
+                     f"costs money.{dropped}")
+    for lv, val, u in groups["negligible"]:
+        L.append(f"- — **{lv.capitalize()} negligible.** No measurable effect. Left out.")
+
+    if pair and inter and _material(inter.get("synergy"), inter.get("both")):
+        syn = inter.get("synergy")
+        word = "compound each other" if syn > 0 else "work against each other"
+        L += ["", f"**Interaction confirmed:** {' and '.join(pair)} {word} — "
+              f"{_fmt_delta(syn, unit)} beyond simply adding their separate effects."]
+    elif pair and inter:
+        L += ["", f"**No material interaction** between {' and '.join(pair)} — they stack about "
+              "as you'd expect, so you can sequence them for convenience."]
+
+    L += ["", "> Next: **Scenario Simulation** re-runs this lever set across fresh scenarios to "
+          "confirm it holds.", "", "---", ""]
+    return "\n".join(L)
+
+
+def _summary_scenario(meta: dict, metrics: dict, exp: dict) -> str:
+    """The validation verdict — did the determined lever set hold up when the dice were
+    re-rolled? This is the finding a scenario simulation exists to produce."""
+    opt = (exp or {}).get("optimize") or {}
+    combo = opt.get("best_combo") or []
+    obj = opt.get("objective", "ppp")
+    obj_label = opt.get("objective_label", "PPP")
+    unit = _obj_unit(opt)
+    mc_seeds = opt.get("mc_seeds")
+    delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
+    band = opt.get("ci95", opt.get("spread"))
+    du = "$" if obj == "ppp" else unit
+    bu = "$" if obj == "ppp" else (unit if unit != "blend" else "")
+
+    holds = (delta is not None and band is not None and abs(delta) > abs(band))
+    label = "✓ Confirmed" if holds else "△ Provisional"
+
+    L = ["## At a glance — Scenario Simulation", "",
+         f"Re-ran **{', '.join(combo) or 'no levers'}** across "
+         f"**{mc_seeds} fresh scenarios**" + (" " if mc_seeds else "")
+         + "to test whether the recommended lever set holds when the dice are re-rolled.", "",
+         f"**Verdict: {label}.** {obj_label} {_fmt_delta(delta, du)} against changing nothing"
+         + (f", give or take {fmt(band, bu)}" if band else "")
+         + ". "
+         + ("The band does not reach zero — this is a real effect, not a lucky draw."
+            if holds else
+            "The band is wide enough to touch zero — trust the direction, treat the size as "
+            "provisional. More scenarios would narrow it.")]
+
+    prior = (exp or {}).get("prior") or {}
+    prior_delta = prior.get("best_delta") if obj == "ppp" else prior.get("best_delta_objective")
+    if prior_delta is not None and delta is not None:
+        moved = delta - prior_delta
+        if _is_zero(moved, du):
+            L += ["", f"It lands where the optimization estimated ({_fmt_delta(prior_delta, du)}) "
+                  "— the recommendation is stable."]
+        else:
+            direction = "higher" if moved > 0 else "lower"
+            L += ["", f"The optimization estimated {_fmt_delta(prior_delta, du)}; this re-run "
+                  f"lands {_fmt_delta(moved, du)} {direction}, at {_fmt_delta(delta, du)}."]
+
+    L += ["", "---", ""]
+    return "\n".join(L)
+
+
+# ---------------------------------------------------------------------------------
 # What this is
 # ---------------------------------------------------------------------------------
 
@@ -1212,6 +1386,7 @@ def build_report(run_dir: Path, experiments: dict) -> str:
     appendices = _lettered_appendices(experiments, metrics, meta, searched)
     blocks = [
         f"# Firm Simulation — {firm}\n\n**Run:** {run_dir.name}\n",
+        render_stage_summary(meta, metrics, experiments, searched),
         render_what_this_is(meta, experiments),
         render_readback(meta, experiments, metrics),
         render_what_we_ran(meta, experiments),

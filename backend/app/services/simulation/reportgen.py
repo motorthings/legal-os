@@ -99,7 +99,8 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
 
 
 async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None,
-                          optimize_result: dict | None = None) -> str:
+                          optimize_result: dict | None = None, stage: str | None = None,
+                          prior: dict | None = None) -> str:
     # Determinate progress: confidence band (1) + per-lever sensitivity (N) + write (1).
     n_sens = len([l for l in LEVERS if _GOVERNING.get(l) and _GOVERNING.get(l) in DEFAULT_ELASTICITIES])
     total = n_sens + 2
@@ -132,6 +133,10 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
         "best_combo": [],
     }
     experiments = {
+        # Which stage this report is for, so the "At a glance" summary knows whether it's
+        # establishing a baseline, confirming levers, or validating a chosen set.
+        "stage": stage or ("lever_optimization" if optimize.get("best_combo") else "baseline"),
+        "prior": prior,
         # How much simulation stands behind this report — the report quotes these so the
         # reader can size the work rather than take the numbers on faith. Each sensitivity
         # lever costs 3 coefficient points x 2 runs (baseline + lever) x _SENS_SEEDS seeds.
