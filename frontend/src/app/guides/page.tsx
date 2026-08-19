@@ -78,6 +78,14 @@ const GUIDES: Guide[] = [
     external: true,
   },
   {
+    title: 'Firm Simulation Overview',
+    slug: 'law-firm-sim',
+    desc: 'What the firm simulation is and why it exists — your firm, run forward on AI across many scenarios, so you can see which changes actually pay off before you bet the partnership on a guess.',
+    icon: Target,
+    category: 'Firm Simulation',
+    external: true,
+  },
+  {
     title: 'Contract Review Showcase',
     slug: 'contract-review-showcase',
     desc: 'Structured risk analysis with clause-level flagging, playbook-driven review, and HITL workflow.',
