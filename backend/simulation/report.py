@@ -443,10 +443,17 @@ def _summary_optimization(meta: dict, metrics: dict, exp: dict) -> str:
                      f"costs money while you bill hourly), but {_fmt_delta(comp_delta, unit)} "
                      "after the pricing change. "
                      + ("Pull it last." if 'comp' in combo else "Still not worth it here."))
+        elif lv in combo:
+            # Negative on its own, yet the search kept it on top of the leaders — the
+            # "bad alone, good in context" case. Calling it plainly "denied" would read as a
+            # contradiction next to its place in the recommendation.
+            L.append(f"- ◐ **{lv.capitalize()} — negative alone, kept in the mix.** "
+                     f"{_fmt_delta(val, u)} on its own, but it earns its place stacked on top of "
+                     "the others. Treat it as an adjustment, and drop it first if it costs "
+                     "anything to implement.")
         else:
-            dropped = "" if lv in combo else " Left out."
             L.append(f"- ✗ **{lv.capitalize()} denied.** {_fmt_delta(val, u)} on its own — it "
-                     f"costs money.{dropped}")
+                     "costs money. Left out.")
     for lv, val, u in groups["negligible"]:
         L.append(f"- — **{lv.capitalize()} negligible.** No measurable effect. Left out.")
 

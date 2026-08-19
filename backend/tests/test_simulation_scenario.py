@@ -60,6 +60,21 @@ def test_optimization_summary_confirms_and_denies_levers(tmp_path):
     assert "Comp — it depends on sequence" in report
 
 
+def test_negative_alone_but_kept_lever_is_not_called_denied(tmp_path):
+    """A lever that scores negative on its own but is kept in the recommendation must not
+    read as a flat 'denied' — that contradicts its place in the plan."""
+    opt = {**OPTIMIZE,
+           "best_combo": ["latency", "pricing", "seams"],
+           "main_effects": {**OPTIMIZE["main_effects"],
+                            "latency": {"delta_ppp": -30_000, "delta_margin": -0.5}}}
+    report = build_report(_write_run(tmp_path),
+                          {"run": RUN_BLOCK, "optimize": opt, "sensitivity": SENSITIVITY,
+                           "stage": "lever_optimization"})
+    summary = report.split("## What this is")[0]
+    assert "Latency denied" not in summary
+    assert "negative alone, kept in the mix" in summary
+
+
 def test_scenario_summary_gives_a_hold_up_verdict(tmp_path):
     """The scenario's At-a-glance says whether the lever set held up, and compares to prior."""
     overlay = {"best_ppp": 2_900_000, "best_delta": 500_000, "spread": 42_000, "ci95": 19_000,
