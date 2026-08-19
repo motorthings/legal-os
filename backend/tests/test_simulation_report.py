@@ -178,7 +178,7 @@ def test_trajectories_are_attributed_to_phase_one(searched_report):
     sitting under a recommendation from a different set of simulations."""
     assert "none of Phase 2 appears in the trajectory charts" in searched_report
     trajectories = searched_report.split("Quarter-by-quarter trajectories")[1]
-    assert "Phase 1 only" in trajectories
+    assert "baseline only" in trajectories
 
 
 def test_baseline_run_omits_the_recommendation(baseline_report):
@@ -315,6 +315,28 @@ def test_appendix_lettering_has_no_gaps(baseline_report, searched_report):
         letters = [h.split("Appendix ")[1][0] for h in _headings(report)
                    if "Appendix " in h]
         assert letters == list("ABCDEFGH"[:len(letters)])
+
+
+def test_no_variable_names_or_math_notation_reach_the_reader(searched_report):
+    """A managing partner reads this, not an engineer. No database field names, no Greek,
+    no evidence tags — the machinery stays behind plain language."""
+    forbidden = [
+        "pricing_posture", "leverage_ratio", "origination_concentration",
+        "practice_mix_transactional", "partner_power_mix", "tech_maturity",
+        "partner_ai_usage", "attrition_intensity", "baseline_ppp",
+        "Δ PPP", "Δ margin", "coefficient", "[SURVEY]", "[INFERRED]", "[ASSUMPTION]",
+        "| field | value |", "1σ", "95% CI",
+    ]
+    for token in forbidden:
+        assert token not in searched_report, f"leaked to the reader: {token!r}"
+
+
+def test_firm_appendix_reads_in_plain_language(searched_report):
+    """Appendix D is the firm on the record — human labels and plain values, not raw dials."""
+    section = searched_report.split("Your firm, on the record")[1]
+    assert "How you bill:" in section
+    assert "billing by the hour" in section          # humanized, not "hourly"
+    assert "Associates per partner:" in section
 
 
 def test_headings_are_separated_from_their_prose(searched_report):

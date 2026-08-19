@@ -91,7 +91,9 @@ def fmt(v, unit=""):
         return "—"
     if unit == "$":
         return f"${v:,.0f}"
-    return f"{v:,.1f}{unit}"
+    # Word units ("days") read as prose and need a space; symbol units ("%", "/10") don't.
+    sep = " " if unit and unit[0].isalpha() else ""
+    return f"{v:,.1f}{sep}{unit}"
 
 
 def _is_zero(v, unit="") -> bool:
@@ -855,7 +857,7 @@ def render_what_we_ran(meta: dict, exp: dict) -> str:
     if bands:
         sens_sims = run.get("sensitivity_sims")
         L += ["### Phase 3 — how much the answer depends on our assumptions", "",
-              ("Each lever's effect is governed by a coefficient — how much codifying a seam "
+              ("Each lever's effect rests on an assumption — how much codifying a seam "
                "actually cuts rework, how much of a saved hour survives as margin. Those are "
                "estimates, so each one was swept across its plausible low-to-high range and the "
                "lever re-run at every point"
@@ -1235,28 +1237,54 @@ def render_next_move(meta: dict, metrics: dict, exp: dict, num: int) -> str:
 # Appendices
 # ---------------------------------------------------------------------------------
 
+# Plain, firm-facing names for the five changes — used in the appendix tables so a partner
+# never has to decode a variable name. Short noun phrases so they read cleanly in a combo.
+_LEVER_NAME = {
+    "pricing":  "Flat-fee pricing",
+    "seams":    "Codified hand-offs",
+    "comp":     "AI-adoption pay",
+    "leverage": "Flatter pyramid",
+    "latency":  "Faster action",
+}
+
+
+def _lever_name(lever: str) -> str:
+    return _LEVER_NAME.get(lever, lever.capitalize())
+
+
+# Where each assumption's number comes from, in plain terms — no SURVEY/INFERRED tags.
+_SOURCE_WORDS = {
+    "SURVEY":     "published benchmark",
+    "INFERRED":   "follows from your own numbers",
+    "ASSUMPTION": "our estimate — worth confirming",
+}
+
+
 def render_sensitivity(exp: dict, letter: str = "A") -> str:
-    """The fork deltas as honest RANGES, with each coefficient's evidentiary source — so the
-    number reads as 'X to Y depending on how strongly this holds at your firm', not a false-
-    precise point. Rendered when sensitivity.py has run."""
+    """The change-by-change effect as honest RANGES, each tied to the assumption behind it and
+    where that assumption comes from — so the number reads as 'X to Y depending on how strongly
+    this holds at your firm', not false precision. Rendered when the sensitivity sweep has run."""
     s = (exp or {}).get("sensitivity")
     if not s or not s.get("bands"):
         return ""
-    lines = [f"## Appendix {letter} — How much each answer depends on our assumptions", "",
-             "Each lever's effect on profit per partner, swept across the plausible range of "
-             "the coefficient that governs it. The width of a band is honest uncertainty: how "
-             "much that lever moves the number depends on how strongly the relationship holds "
-             "at your firm. The widest band is the one worth calibrating first.", "",
-             "| lever | PPP effect (range) | governed by | evidence |",
+    lines = [f"## Appendix {letter} — What the answer depends on", "",
+             "Every number in this report rests on a few assumptions about how your firm "
+             "behaves — how much of a saved hour becomes profit, what a partner's rewrite costs "
+             "a matter. Those aren't certainties, so each was tested across its plausible range "
+             "and the change re-run at every point. The wider the range below, the more the "
+             "answer hangs on that one assumption — and the first one worth checking against "
+             "your own experience.", "",
+             "| Change | Effect on profit per partner | The assumption behind it | Where it comes from |",
              "|---|---|---|---|"]
     order = sorted(s["bands"].items(), key=lambda kv: kv[1].get("band_high", 0), reverse=True)
     for lever, b in order:
         rng = f"{fmt(b.get('band_low'), '$')} to {fmt(b.get('band_high'), '$')}"
-        src = (b.get("source") or "").split("]")[0].strip("[") or "modeled"
-        lines.append(f"| {lever} | {rng} | {b.get('coefficient_name','—')} | {src} |")
+        tag = (b.get("source") or "").split("]")[0].strip("[").strip().upper()
+        where = _SOURCE_WORDS.get(tag, "modeled")
+        lines.append(f"| {_lever_name(lever)} | {rng} | {b.get('coefficient_name','—')} | {where} |")
     lines += ["",
-              "Evidence tags: **SURVEY** = published benchmark, **INFERRED** = structural identity, "
-              "**ASSUMPTION** = judgment (widest bands, calibrate first).", ""]
+              "The widest range is the one to pin down first: answer it from your own numbers, "
+              "re-run, and the figure tightens.", ""]
     return "\n".join(lines)
 
 
@@ -1267,41 +1295,41 @@ def render_experiments(exp: dict, metrics: dict, letter: str = "B") -> str:
         return ""
     obj = opt.get("objective", "ppp")
     obj_label = opt.get("objective_label", "PPP")
-    lines = [f"## Appendix {letter} — Lever-by-lever results", "",
-             "Every lever's measured effect, pulled on its own against the baseline. This is "
-             "Round 1 of the search — the ranking that aimed everything after it.", ""]
+    lines = [f"## Appendix {letter} — The changes, measured", "",
+             "Each change, run on its own against standing still, ranked by effect. This is the "
+             "first round of the search — the ranking that pointed everything after it.", ""]
     if obj != "ppp":
-        lines += [f"_The search ranked by **{obj_label}**; PPP is shown alongside for reference._", ""]
+        lines += [f"_The search ranked by **{obj_label}**; profit per partner is shown alongside "
+                  "for reference._", ""]
     if "baseline_ppp" in opt:
-        lines += [f"Search baseline (no levers, PPP): **{fmt(opt['baseline_ppp'], '$')}**", ""]
-    lines += ["| lever | Δ PPP | Δ margin |", "|---|---|---|"]
+        lines += [f"Starting point, no changes: **{fmt(opt['baseline_ppp'], '$')}** profit per "
+                  "partner.", ""]
+    lines += ["| Change | Profit per partner | Matter margin |", "|---|---|---|"]
     for lever, fx in sorted(opt["main_effects"].items(),
                             key=lambda kv: kv[1].get("delta_ppp", 0), reverse=True):
-        lines.append(f"| {lever} | {_fmt_delta(fx.get('delta_ppp'), '$')} "
+        lines.append(f"| {_lever_name(lever)} | {_fmt_delta(fx.get('delta_ppp'), '$')} "
                      f"| {_fmt_delta(fx.get('delta_margin'), '%')} |")
     lines.append("")
 
     interactions = opt.get("interactions") or {}
     if interactions:
-        lines += ["**Interactions (Round 2)**", ""]
+        lines += ["**When two changes are combined**", ""]
         for name, i in interactions.items():
-            label = " × ".join(_levers_in(name) or [name])
+            label = " + ".join(_lever_name(l) for l in (_levers_in(name) or [name]))
             if "synergy" in i:
                 lines.append(f"- {label}: together {_fmt_delta(i.get('both'), '$')} versus "
-                             f"{_fmt_delta(i.get('additive'), '$')} if simply added — "
-                             f"interaction {_fmt_delta(i.get('synergy'), '$')}")
+                             f"{_fmt_delta(i.get('additive'), '$')} if their effects simply "
+                             f"added — the combination itself adds {_fmt_delta(i.get('synergy'), '$')}")
             elif "delta" in i:
                 lines.append(f"- {label}: {_fmt_delta(i.get('delta'), '$')}")
         lines.append("")
 
     if opt.get("best_combo"):
         band = opt.get("ci95", opt.get("spread"))
-        band_label = "95% CI" if "ci95" in opt else "1σ"
-        lines += [f"**Winner:** {', '.join(opt['best_combo'])} → PPP "
-                  f"{fmt(opt.get('best_ppp'), '$')} "
-                  f"({_fmt_delta(opt.get('best_delta'), '$')}, {band_label} ±{fmt(band, '$')})", ""]
-    if opt.get("story"):
-        lines += ["_" + opt["story"] + "_", ""]
+        names = " + ".join(_lever_name(l) for l in opt["best_combo"])
+        lines += [f"**Best combination:** {names} → {fmt(opt.get('best_ppp'), '$')} profit per "
+                  f"partner ({_fmt_delta(opt.get('best_delta'), '$')} against standing still, "
+                  f"give or take {fmt(band, '$')} across scenarios).", ""]
     return "\n".join(lines)
 
 
@@ -1314,12 +1342,12 @@ def render_metric_table(metrics: dict, letter: str = "C", searched: bool = False
     if not sprints:
         return ""
     by_group = metrics_by_group()
-    caption = ("**Phase 1 only — your firm with no levers pulled, primary scenario.** The lever "
-               "search behind the recommendation ran as separate simulations and does not appear "
-               "here." if searched else
-               "**Your firm with no levers pulled, primary scenario.**")
+    caption = ("**The baseline only — your firm with nothing changed, one scenario.** The search "
+               "behind the recommendation ran as separate simulations and does not appear here."
+               if searched else
+               "**Your firm with nothing changed, one scenario.**")
     lines = [f"## Appendix {letter} — Quarter-by-quarter trajectories", "", caption, ""]
-    header = "| metric | " + " | ".join(f"Q{s}" for s in sprints) + " |"
+    header = "| Measure | " + " | ".join(f"Q{s}" for s in sprints) + " |"
     sep = "|" + "---|" * (len(sprints) + 1)
     for gid, glabel in GROUPS:
         rows = []
@@ -1335,18 +1363,96 @@ def render_metric_table(metrics: dict, letter: str = "C", searched: bool = False
     return "\n".join(lines)
 
 
+# Plain labels + human-readable section titles for the firm's profile — so this reads as
+# "your firm on the record", not a database dump.
+_FIRM_SECTION_TITLE = {
+    "Structural posture": "How the firm is built",
+    "Tier 1 — what the market sees": "What the market sees",
+    "Tier 2 — what the books show": "What the books show",
+    "Culture (observable proxies)": "Culture",
+}
+_FIRM_FIELD_LABEL = {
+    "pricing_posture": "How you bill",
+    "leverage_ratio": "Associates per partner",
+    "origination_concentration": "The book of business",
+    "practice_mix_transactional": "Practice mix",
+    "client_concentration": "Client concentration",
+    "partner_power_mix": "Partner governance",
+    "tacit_work_share": "Work that needs a person's judgment",
+    "comp_model": "How partners are paid",
+    "client_afa_pressure": "Client pressure on fees",
+    "partner_retirement_horizon": "Partner retirement horizon",
+    "baseline_ppp": "Profit per partner",
+    "baseline_rpl": "Revenue per lawyer",
+    "baseline_realization": "Realization",
+    "baseline_margin": "Matter margin",
+    "tech_maturity": "Knowledge infrastructure",
+    "partner_ai_usage": "How much partners use AI today",
+    "attrition_intensity": "Associate churn",
+    "escalation_design": "Catching exceptions early",
+}
+_COMP_SAID = {
+    "lockstep": "lockstep (seniority-based)",
+    "modified": "modified lockstep",
+    "eat_what_you_kill": "eat-what-you-kill (origination-based)",
+}
+# 0–1 dials rendered as the plain phrase that matches, mirroring Section 1's language.
+_FIRM_BANDS = {
+    "origination_concentration": (0.33, 0.66, "widely distributed across partners",
+                                  "moderately concentrated", "dominated by one or two rainmakers"),
+    "practice_mix_transactional": (0.33, 0.66, "mostly litigation",
+                                   "a balanced litigation / transactional mix", "mostly transactional"),
+    "client_concentration": (0.33, 0.66, "many clients, no single whale", "some concentration",
+                             "heavy reliance on one or two whale clients"),
+    "partner_power_mix": (0.33, 0.66, "cooperative", "balanced", "strong rainmaker veto"),
+    "tacit_work_share": (0.33, 0.66, "mostly codifiable", "an even split of routine and judgment work",
+                         "mostly dependent on a person's judgment"),
+    "client_afa_pressure": (0.33, 0.66, "light", "moderate", "heavy pressure for alternative fees"),
+    "tech_maturity": (0.33, 0.66, "little in place", "some in place", "mature and well-codified"),
+    "partner_ai_usage": (0.33, 0.66, "barely touching it", "occasional", "already routine"),
+    "attrition_intensity": (0.15, 0.25, "a stable bench", "normal churn", "heavy churn"),
+    "escalation_design": (0.33, 0.66, "exceptions often slip through to write-offs",
+                          "exceptions caught inconsistently", "exceptions usually caught early"),
+}
+
+
+def _firm_value(key, v) -> str:
+    """One firm input, in the language a partner would use — never a raw number on a 0–1 dial."""
+    if key == "pricing_posture":
+        return _PRICING_SAID.get(v, str(v))
+    if key == "comp_model":
+        return _COMP_SAID.get(v, str(v))
+    if key == "leverage_ratio":
+        return f"about {v:g} to 1"
+    if key == "partner_retirement_horizon":
+        return f"about {v:g} years out"
+    if key in ("baseline_ppp", "baseline_rpl"):
+        return fmt(v, "$")
+    if key in ("baseline_realization", "baseline_margin"):
+        return fmt(v, "%")
+    if key in _FIRM_BANDS:
+        lo, hi, a, b, c = _FIRM_BANDS[key]
+        return _band(v, lo, hi, a, b, c)
+    return str(v)
+
+
 def render_firm(meta: dict, letter: str = "D") -> str:
-    """The exact configuration, for reproducibility. Section 1 says what these mean; this is
-    the record you'd need to re-run the identical simulation."""
+    """Your firm, on the record — the same inputs from Section 1, in plain language, so anyone
+    can see exactly what was simulated and confirm it matches the firm they know."""
     sig = meta.get("firm_signature") or {}
     culture = sig.get("culture") or {}
     sig = {k: v for k, v in sig.items() if k != "culture"}
-    lines = [f"## Appendix {letter} — The exact configuration", "",
-             "The raw inputs behind Section 1, as the engine received them. Reproduce this run "
-             "by feeding these values back with the same seed.", "",
-             f"**{meta.get('firm_name', 'Aldrich & Vale LLP')}** · {meta.get('sprints', '?')} quarters · "
-             f"{meta.get('matters_per_sprint', '?')} matters/quarter · seed {meta.get('seed', '?')} · "
-             f"agents: {meta.get('provider', 'mock')}", ""]
+    provider = meta.get("provider", "mock")
+    agents = ("real AI agents" if provider not in ("mock", None)
+              else "a deterministic stand-in (same answer every time)")
+    lines = [f"## Appendix {letter} — Your firm, on the record", "",
+             "The same firm from Section 1, set down in full and in plain terms. If a line here "
+             "doesn't match the firm you know, that input is the one to change — the answer moves "
+             "with it. This is also the record that makes the run reproducible: the same inputs "
+             "give the same result, every time.", "",
+             f"**{meta.get('firm_name', 'Aldrich & Vale LLP')}** · "
+             f"{_scale_phrase(meta.get('sprints', '?'))} · "
+             f"{meta.get('matters_per_sprint', '?')} matters a quarter · decisions by {agents}", ""]
     for section, keys in FIRM_SECTIONS:
         rows = []
         for k in keys:
@@ -1356,9 +1462,9 @@ def render_firm(meta: dict, letter: str = "D") -> str:
                 rows.append((k, culture[k]))
         if not rows:
             continue
-        lines += [f"**{section}**", "", "| field | value |", "|---|---|"]
+        lines += [f"**{_FIRM_SECTION_TITLE.get(section, section)}**", ""]
         for k, v in rows:
-            lines.append(f"| {k} | {v} |")
+            lines.append(f"- **{_FIRM_FIELD_LABEL.get(k, k)}:** {_firm_value(k, v)}.")
         lines.append("")
     return "\n".join(lines)
 
@@ -1424,28 +1530,30 @@ def _lettered_appendices(experiments: dict, metrics: dict, meta: dict, searched:
     return out
 
 
-_CAVEATS = """## Appendix {letter} — Assumptions & caveats
+_CAVEATS = """## Appendix {letter} — What to trust, and what to check
 
-Every coefficient in this model carries its evidentiary status:
+This is a comparison engine, not a forecast of your P&L. It runs your firm down several
+roads and shows which one ends up further ahead, and why.
 
-- **[SURVEY]** — anchored to a public benchmark (AmLaw 100 averages, NALP turnover).
-- **[INFERRED]** — derived from structural mechanics (e.g. margin from realization × leverage).
-- **[ASSUMPTION]** — a judgment call, flagged for calibration against the firm's actuals.
+- **Trust the direction and the order.** Which changes help, how they depend on each other,
+  and the sequence to make them in — that is what the model is built to get right.
+- **Check the dollar amounts before you quote them.** The magnitudes are calibrated to a
+  firm like yours, not to your ledger. Put your own numbers through the intake and the same
+  engine re-runs every figure against them.
 
-The honest caveat, once more: the **shape** of the answer — which levers move the number,
-how they interact, and in what order to pull them — is defensible. The **dollar magnitudes**
-are archetype-calibrated, not your firm's actuals. Run the intake questions against real firm
-data before quoting the headline number to a partnership.
+Nothing here is asserted. Every figure traces back to the record in the next appendix, so
+any number can be followed to the decision that produced it.
 """
 
-_RAW_DATA = """## Appendix {letter} — Raw data
+_RAW_DATA = """## Appendix {letter} — The complete record
 
-Every figure in this report traces back to these files:
+Every number in this report can be traced back and audited. Nothing is summarized away —
+the full run is here, decision by decision, quarter by quarter:
 
-- [metrics.csv](metrics.csv) — every metric, every quarter
-- [decisions.jsonl](decisions.jsonl) — every agent decision with raw prompt/response
-- [trace.jsonl](trace.jsonl) — full event audit trail
-- [state.json](state.json) — complete end-state snapshot
+- [Every measure, every quarter](metrics.csv)
+- [Every decision, with the reasoning behind it](decisions.jsonl)
+- [The full sequence of events](trace.jsonl)
+- [The firm's end state](state.json)
 """
 
 
