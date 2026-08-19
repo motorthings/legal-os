@@ -132,6 +132,41 @@
   .callout strong { color: var(--text); }
   .callout + .callout { margin-top: 12px; }
 
+  .section-rule {
+    margin: 56px 0 40px; border: none; border-top: 1px solid var(--border-bright);
+  }
+  .section-lead {
+    font-size: 14px; color: var(--text-dim); max-width: 760px; margin: 0 0 8px;
+  }
+  .mech-lever {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px; margin-top: 14px;
+  }
+  .mech-lever h4 {
+    font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 2px;
+  }
+  .mech-lever .knob {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+    margin-bottom: 12px; display: block;
+  }
+  .mech-row { display: grid; grid-template-columns: 92px 1fr; gap: 10px 14px; }
+  .mech-row dt {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber);
+    padding-top: 3px;
+  }
+  .mech-row dt.measured { color: var(--metric); }
+  .mech-row dd { font-size: 14px; color: var(--text-dim); line-height: 1.65; }
+  .mech-row dd strong { color: var(--text); }
+  .mech-row code {
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--surface2); padding: 1px 5px; border-radius: 4px; color: var(--text);
+  }
+  @media (max-width: 768px) {
+    .mech-row { grid-template-columns: 1fr; gap: 2px 0; }
+    .mech-row dt { padding-top: 8px; }
+  }
+
   .footer {
     margin-top: 48px; padding-top: 20px;
     border-top: 1px solid var(--border);
@@ -217,6 +252,125 @@
     </div>
     <div class="callout">
       <strong>This is a comparison engine, not a prediction of next year's P&amp;L.</strong> It doesn't tell you what <em>will</em> happen. It tells you which road ends up ahead, and why.
+    </div>
+  </div>
+
+  <hr class="section-rule">
+
+  <!-- UNDER THE HOOD -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">Under the hood</div>
+      <div class="stage-title">How each part is actually simulated</div>
+      <p class="stage-why">The summary above is the shape. Here is the machine. Nothing below is a metaphor &mdash; it's what the engine does, quarter by quarter. Read it if you want to know exactly where a number comes from before you stake a decision on it.</p>
+    </div>
+  </div>
+
+  <!-- The workflow / seams -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The unit of work</div>
+      <div class="stage-title">Every matter is a chain of hand-offs. The seams are where value leaks.</div>
+    </div>
+    <div class="step-card">
+      <p class="stage-why">Each matter runs through a fixed litigation workflow &mdash; intake, conflicts, engagement letter, staffing, research, document review, drafting, the senior-associate review, the <strong>partner review</strong>, filing, billing, collection, closure. Every step is a hand-off from one role to the next, and every hand-off carries two numbers set by your firm's structure:</p>
+      <dl class="mech-row" style="margin-top:14px">
+        <dt class="measured">Seam risk</dt>
+        <dd>How likely meaning breaks at that hand-off. The partner review is the highest in the firm (<code>0.8</code>); filing and collection are near zero &mdash; they run on standardized rails.</dd>
+        <dt class="measured">Seam tacitness</dt>
+        <dd>How much of the judgment there is irreducibly human. <code>0</code> = a checklist a tool can codify (legal research, engagement letters). <code>1</code> = pure partner judgment (settlement authority, the final read). AI is strong where tacitness is low and fails where it's high.</dd>
+      </dl>
+      <p class="stage-why" style="margin-top:14px">This is why the firm leaks value at the top of the chain, not the bottom. The cheap steps are safe. The expensive judgment is where a confident-looking AI draft is most likely to be wrong.</p>
+    </div>
+  </div>
+
+  <!-- How a hand-off breaks + is counted -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The three quality signals</div>
+      <div class="stage-title">How a broken hand-off is modeled, and how it's counted.</div>
+    </div>
+    <div class="mech-lever">
+      <h4>Hand-off failure</h4>
+      <dl class="mech-row">
+        <dt>Modeled</dt>
+        <dd>When AI processes a step it can handle, it either succeeds or <strong>loses meaning at the hand-off</strong>. Whether it fails is fixed by the state, not a coin flip &mdash; the same matter, step, and quarter always resolve the same way &mdash; checked against that step's error rate. Volume spikes push failures up; a hand-off whose context has been <strong>codified</strong> fails about 30% less often.</dd>
+        <dt class="measured">Counted</dt>
+        <dd><strong>Hand-off failure rate</strong> = broken hand-offs &divide; all hand-offs that quarter. Measured against every transfer, not "matters with any problem" &mdash; over a 15-step matter that would saturate at 100% and tell you nothing.</dd>
+      </dl>
+    </div>
+    <div class="mech-lever">
+      <h4>Redline rework</h4>
+      <dl class="mech-row">
+        <dt>Modeled</dt>
+        <dd>Measured only at the <strong>partner review</strong> &mdash; the seam where the firm's real value lives. Counts the drafts the partner had to genuinely rewrite (the hand-off garbled the meaning, or the partner overrode the AI), not the normal routing of sending work back.</dd>
+        <dt class="measured">Counted</dt>
+        <dd><strong>Redline rework rate</strong> = rewritten drafts &divide; partner reviews. This is the law-specific tell: AI automates the 80% of drafting that was never the value; the redline is the 20% that is. Fast drafting with a flat redline rate is the signature of automating the wrong thing.</dd>
+      </dl>
+    </div>
+    <div class="mech-lever">
+      <h4>Exception rate</h4>
+      <dl class="mech-row">
+        <dt>Modeled</dt>
+        <dd>Any decision that needed a partner to step in beyond the designed process &mdash; the tail becoming supervision and rescue.</dd>
+        <dt class="measured">Counted</dt>
+        <dd><strong>Exception rate</strong> = escalated decisions &divide; all decisions. A firm with a genuine, designed escalation path resolves some of these before they cost money.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- The five levers, mechanically -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The five moves</div>
+      <div class="stage-title">What each lever actually changes in the engine.</div>
+      <p class="section-lead">Each move flips a specific setting, which changes specific behavior, which lands on the money through three channels: collections, profitability, and billable hours.</p>
+    </div>
+
+    <div class="mech-lever">
+      <h4>1 &middot; Move to flat fees</h4>
+      <span class="knob">flips pricing from hourly &rarr; fixed-fee</span>
+      <p class="stage-why">Under fixed fees, every hour AI saves is margin you <strong>keep</strong> &mdash; profitability rises with AI use. Under the hour, the same speed <strong>bills less</strong>, so AI adoption quietly drags margin down. And staying hourly while your clients push for alternative fees leaks collections outright. Transactional work, already effectively fixed-fee, softens the hourly penalty.</p>
+    </div>
+
+    <div class="mech-lever">
+      <h4>2 &middot; Pay for AI adoption</h4>
+      <span class="knob">raises the comp incentive 0.3 &rarr; 0.9</span>
+      <p class="stage-why">Sets the <strong>ceiling</strong> on how far adoption can climb &mdash; from wherever your partners already are, up toward ~95%. How hard the money bites depends on your comp model (lockstep firms move together and respond harder; eat-what-you-kill firms resist) and on whether a few rainmakers own the book and can simply ignore a firm-wide push.</p>
+    </div>
+
+    <div class="mech-lever">
+      <h4>3 &middot; Act on results faster</h4>
+      <span class="knob">shortens the observe-to-act lag 5 &rarr; 1 quarters</span>
+      <p class="stage-why">Doesn't change how high adoption can go &mdash; changes how fast you <strong>get there</strong>. A short lag means the firm reaches its adoption ceiling early, so the benefit compounds over more of the run instead of arriving too late to matter.</p>
+    </div>
+
+    <div class="mech-lever">
+      <h4>4 &middot; Codify the hand-offs</h4>
+      <span class="knob">turns on seam codification</span>
+      <p class="stage-why">Every few quarters the firm permanently fixes its <strong>single worst remaining hand-off</strong> &mdash; builds the precedent library, standardizes the transfer &mdash; and that seam stops leaking (its failure rate drops for the rest of the run). Fewer broken hand-offs means less redline and fewer exceptions. It costs a little margin each quarter to fund the knowledge-management work.</p>
+    </div>
+
+    <div class="mech-lever">
+      <h4>5 &middot; Flatten the pyramid</h4>
+      <span class="knob">lowers associates-per-partner</span>
+      <p class="stage-why">AI compresses billable hours, and a steep pyramid has more junior hours to compress &mdash; so the steeper the pyramid, the harder AI cuts utilization and the more billable time is lost per partner. Flattening reduces that exposure. This is the one lever that reaches profit through hours rather than rates.</p>
+    </div>
+
+    <div class="callout" style="border-left-color: var(--metric)">
+      <strong>Where the numbers come from.</strong> Each of these effects has an explicit strength &mdash; how much a codified seam cuts rework, how much of a saved AI hour flat-fee pricing lets you keep, how far comp moves adoption. Every one is a named, sourced number with a plausible <em>range</em>, not a hidden constant. You can reset any of them from your own experience, and the range is exactly what produces the "give or take" band in the report. Nothing is a black box on purpose.
+    </div>
+  </div>
+
+  <!-- The human loop -->
+  <div class="stage">
+    <div class="stage-head">
+      <div class="stage-num">The human loop</div>
+      <div class="stage-title">People aren't a constant. They respond, and it feeds back.</div>
+    </div>
+    <div class="step-card">
+      <p class="stage-why">Between quarters, the engine runs the human dynamics. Associates who lose faith in how AI is being rolled out leave faster &mdash; and one departure raises the odds of the next in the same group, so churn cascades. Meanwhile trust in AI spreads through the firm's actual influence network, where a skeptical (or convinced) knowledge-management partner moves everyone around them.</p>
+      <p class="stage-why">This is why the same plan can hold in one scenario and wobble in another: the people react, and their reaction changes next quarter's adoption and quality. It's also why the stress test in Step 3 matters &mdash; it's the only way to see whether a plan survives the human response, not just the spreadsheet.</p>
     </div>
   </div>
 
