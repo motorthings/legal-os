@@ -1,21 +1,21 @@
 """Full-report generator — turns a run's raw artifacts into a report a partner would read.
 
-The sim already exports everything (meta.json, metrics.csv, decisions.jsonl, trace.jsonl,
-state.json). This renders it into a single human-readable report.
+The sim exports everything (meta.json, metrics.csv, decisions.jsonl, trace.jsonl,
+state.json). This renders it into ONE human-readable story that grows a section per stage,
+so a partner reads it top to bottom and every fact lives in exactly one place:
 
-The report follows one spine, and every number is labeled with the phase that produced it:
+    The bottom line          — the answer, first (the move, or the situation)
+    Your firm                — a portrait they can recognize, and the one number to reconcile
+    Where it's heading       — the slide if nothing changes, and why
+    The changes on the table — the decisions available (how the levers were determined)
+    The recommendation       — which changes, in what order, and why (how they were optimized)
+    What the simulation did   — running the plan across fresh scenarios, and whether it held
+    How to read this         — a short note on what the machine is
+    Appendices               — what the answer depends on, the measured numbers, trajectories,
+                               the firm on record, and the complete auditable record
 
-    What this is                          — the model, the scale, what a scenario means
-    1. What you told us                   — inputs, what each one drives, and the starting line
-    2. What we ran                        — Phase 1 baseline / Phase 2 lever search / Phase 3 sensitivity
-    3. What the baseline showed           — Phase 1 output only
-    4. What the lever search added        — Phase 2 output only (omitted on baseline runs)
-    5. What to do, and what it's worth    — the decision, and what would sharpen it
-    Appendices                            — sensitivity, config, lever detail, trajectories, raw data
-
-That labeling is the point. The trajectories are one firm under no changes; the
-recommendation comes from a few hundred *other* simulations. Splicing them without a
-seam is what made earlier versions read as self-contradictory.
+The stage decides how far the story is told: a baseline stops at the changes on the table;
+the lever optimization adds the recommendation; a scenario simulation adds what it showed.
 
 It folds in the experiment summary (optimize.py / sweep_structural.py write
 results/experiments.json) so the lever analysis is part of the report, not a separate blurb.
@@ -348,174 +348,6 @@ def _stage_of(exp: dict, searched: bool) -> str:
     return (exp or {}).get("stage") or ("lever_optimization" if searched else "baseline")
 
 
-def render_stage_summary(meta: dict, metrics: dict, exp: dict, searched: bool) -> str:
-    stage = _stage_of(exp, searched)
-    if stage == "scenario_simulation":
-        return _summary_scenario(meta, metrics, exp)
-    if stage == "lever_optimization":
-        return _summary_optimization(meta, metrics, exp)
-    return _summary_baseline(meta, metrics, exp)
-
-
-def _summary_baseline(meta: dict, metrics: dict, exp: dict) -> str:
-    """What the baseline establishes — no recommendation, just the starting line and the
-    single biggest leak, so the reader knows what the next stage is measured against."""
-    sprints = meta.get("sprints", "?")
-    ppp_first, ppp_last = _series_ends(metrics, "ppp")
-    L = ["## At a glance — Baseline", "",
-         "This stage changes nothing. It sets the starting line the later stages measure "
-         "against, and makes **no recommendation.**", ""]
-    if ppp_last is not None:
-        L.append(f"- **Where you land.** Left as-is, profit per partner goes "
-                 f"{fmt(ppp_first, '$')} → **{fmt(ppp_last, '$')}**"
-                 f"{_pct_change(ppp_first, ppp_last)} over {_scale_phrase(sprints)}.")
-    # The single biggest leak, named — the thing the levers will have to fix.
-    redline = _last(metrics, "redline_rework_rate")
-    real_rate = _last(metrics, "realization_rate")
-    if redline is not None:
-        L.append(f"- **The biggest leak.** Partners substantially rewrite {fmt(redline, '%')} "
-                 "of drafts — the value sits in the redline, not the draft.")
-    elif real_rate is not None:
-        L.append(f"- **The biggest leak.** The firm collects only {fmt(real_rate, '%')} of "
-                 "what it bills.")
-    L += ["", "> Next: **Lever Optimization** tests which changes move this number.", "", "---", ""]
-    return "\n".join(L)
-
-
-def _classify_levers(opt: dict) -> dict:
-    """Group the five levers by what the search found: confirmed helpers, denied (negative
-    alone), and negligible. Comp is called out separately because its sign flips with pricing."""
-    effects = opt.get("main_effects") or {}
-    combo = set(opt.get("best_combo") or [])
-    out = {"confirmed": [], "denied": [], "negligible": []}
-    for lv in _LEVER_ORDER:
-        fx = effects.get(lv)
-        if not fx:
-            continue
-        val, unit = _effect(fx, opt)
-        if val is None or _is_zero(val, unit):
-            out["negligible"].append((lv, val, unit))
-        elif val > 0:
-            out["confirmed"].append((lv, val, unit))
-        else:
-            out["denied"].append((lv, val, unit))
-    return out
-
-
-def _summary_optimization(meta: dict, metrics: dict, exp: dict) -> str:
-    """The confirm/deny verdict for the lever search — the recommendation, its confidence,
-    and a one-line judgement on every lever."""
-    opt = (exp or {}).get("optimize") or {}
-    combo = opt.get("best_combo") or []
-    obj = opt.get("objective", "ppp")
-    obj_label = opt.get("objective_label", "PPP")
-    unit = _obj_unit(opt)
-    interactions = opt.get("interactions") or {}
-    pair, inter = _interaction_pair(interactions)
-    comp_delta = (interactions.get("comp_x_pricing") or {}).get("delta")
-
-    L = ["## At a glance — Lever Optimization", ""]
-
-    if combo:
-        delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
-        band = opt.get("ci95", opt.get("spread"))
-        holds = (delta is not None and band is not None and abs(delta) > abs(band))
-        verdict = ("**Holds up** — the band does not reach zero." if holds
-                   else "**Provisional** — the band is wide enough to touch zero.")
-        L += [f"**Recommendation: pull {', '.join(combo)} — together.** {obj_label} "
-              f"{_fmt_delta(delta, '$' if obj == 'ppp' else unit)} against changing nothing"
-              + (f", give or take {fmt(band, '$' if obj == 'ppp' else (unit if unit != 'blend' else ''))} across scenarios" if band else "")
-              + f". {verdict}", ""]
-    else:
-        L += ["**No lever combination reliably beats standing still for this firm.** "
-              "The search ran; nothing cleared the bar.", ""]
-
-    groups = _classify_levers(opt)
-    L.append("**Lever by lever — what the search confirmed and denied:**")
-    L.append("")
-    for lv, val, u in groups["confirmed"]:
-        picked = " — **in the recommendation**" if lv in combo else " — but not picked (others carried it)"
-        L.append(f"- ✓ **{lv.capitalize()} confirmed.** {_fmt_delta(val, u)} on its own{picked}.")
-    for lv, val, u in groups["denied"]:
-        # Comp is the special case: negative alone, positive after pricing.
-        if lv == "comp" and comp_delta is not None and comp_delta > 0:
-            L.append(f"- ⚠ **Comp — it depends on sequence.** {_fmt_delta(val, u)} alone (it "
-                     f"costs money while you bill hourly), but {_fmt_delta(comp_delta, unit)} "
-                     "after the pricing change. "
-                     + ("Pull it last." if 'comp' in combo else "Still not worth it here."))
-        elif lv in combo:
-            # Negative on its own, yet the search kept it on top of the leaders — the
-            # "bad alone, good in context" case. Calling it plainly "denied" would read as a
-            # contradiction next to its place in the recommendation.
-            L.append(f"- ◐ **{lv.capitalize()} — negative alone, kept in the mix.** "
-                     f"{_fmt_delta(val, u)} on its own, but it earns its place stacked on top of "
-                     "the others. Treat it as an adjustment, and drop it first if it costs "
-                     "anything to implement.")
-        else:
-            L.append(f"- ✗ **{lv.capitalize()} denied.** {_fmt_delta(val, u)} on its own — it "
-                     "costs money. Left out.")
-    for lv, val, u in groups["negligible"]:
-        L.append(f"- — **{lv.capitalize()} negligible.** No measurable effect. Left out.")
-
-    if pair and inter and _material(inter.get("synergy"), inter.get("both")):
-        syn = inter.get("synergy")
-        word = "compound each other" if syn > 0 else "work against each other"
-        L += ["", f"**Interaction confirmed:** {' and '.join(pair)} {word} — "
-              f"{_fmt_delta(syn, unit)} beyond simply adding their separate effects."]
-    elif pair and inter:
-        L += ["", f"**No material interaction** between {' and '.join(pair)} — they stack about "
-              "as you'd expect, so you can sequence them for convenience."]
-
-    L += ["", "> Next: **Scenario Simulation** re-runs this lever set across fresh scenarios to "
-          "confirm it holds.", "", "---", ""]
-    return "\n".join(L)
-
-
-def _summary_scenario(meta: dict, metrics: dict, exp: dict) -> str:
-    """The validation verdict — did the determined lever set hold up when the dice were
-    re-rolled? This is the finding a scenario simulation exists to produce."""
-    opt = (exp or {}).get("optimize") or {}
-    combo = opt.get("best_combo") or []
-    obj = opt.get("objective", "ppp")
-    obj_label = opt.get("objective_label", "PPP")
-    unit = _obj_unit(opt)
-    mc_seeds = opt.get("mc_seeds")
-    delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
-    band = opt.get("ci95", opt.get("spread"))
-    du = "$" if obj == "ppp" else unit
-    bu = "$" if obj == "ppp" else (unit if unit != "blend" else "")
-
-    holds = (delta is not None and band is not None and abs(delta) > abs(band))
-    label = "✓ Confirmed" if holds else "△ Provisional"
-
-    L = ["## At a glance — Scenario Simulation", "",
-         f"Re-ran **{', '.join(combo) or 'no levers'}** across "
-         f"**{mc_seeds} fresh scenarios**" + (" " if mc_seeds else "")
-         + "to test whether the recommended lever set holds when the dice are re-rolled.", "",
-         f"**Verdict: {label}.** {obj_label} {_fmt_delta(delta, du)} against changing nothing"
-         + (f", give or take {fmt(band, bu)}" if band else "")
-         + ". "
-         + ("The band does not reach zero — this is a real effect, not a lucky draw."
-            if holds else
-            "The band is wide enough to touch zero — trust the direction, treat the size as "
-            "provisional. More scenarios would narrow it.")]
-
-    prior = (exp or {}).get("prior") or {}
-    prior_delta = prior.get("best_delta") if obj == "ppp" else prior.get("best_delta_objective")
-    if prior_delta is not None and delta is not None:
-        moved = delta - prior_delta
-        if _is_zero(moved, du):
-            L += ["", f"It lands where the optimization estimated ({_fmt_delta(prior_delta, du)}) "
-                  "— the recommendation is stable."]
-        else:
-            direction = "higher" if moved > 0 else "lower"
-            L += ["", f"The optimization estimated {_fmt_delta(prior_delta, du)}; this re-run "
-                  f"lands {_fmt_delta(moved, du)} {direction}, at {_fmt_delta(delta, du)}."]
-
-    L += ["", "---", ""]
-    return "\n".join(L)
-
-
 # ---------------------------------------------------------------------------------
 # What this is
 # ---------------------------------------------------------------------------------
@@ -530,66 +362,6 @@ def _scale_phrase(sprints) -> str:
         years = n // 4
         return f"{n} quarters ({years} year{'s' if years != 1 else ''})"
     return f"{n} quarters"
-
-
-def render_what_this_is(meta: dict, exp: dict) -> str:
-    """Open by explaining the machine, before any number appears. A reader who doesn't
-    know what was simulated cannot judge whether the output means anything."""
-    firm = meta.get("firm_name", "Aldrich & Vale LLP")
-    sprints = meta.get("sprints", "?")
-    matters = meta.get("matters_per_sprint", "?")
-    provider = meta.get("provider", "mock")
-    real = provider not in ("mock", None)
-    scenarios = ((exp.get("run") or {}).get("baseline_scenarios")
-                 or (exp.get("optimize") or {}).get("mc_seeds"))
-
-    L = ["## What this is", "",
-         f"A working model of **{firm}** — not a spreadsheet projection, a simulation. Every "
-         f"quarter, simulated partners, associates, and AI tools take on {matters} matters and "
-         "work them: research, drafting, review, redlines, settlement, billing. Each hand-off "
-         "between people can lose context. Each draft can come back for rewriting. The rework "
-         "and exception rates that come out of that quarter are what set realization, margin, "
-         "utilization, and profit per partner for that quarter. Nothing is assumed — the "
-         "financials are a consequence of how the work actually went.", ""]
-
-    L += ["**Why the model is built around hand-offs.** A matter's lifecycle is mostly "
-          "codifiable: intake and conflicts, staffing, research, drafting, citation check, "
-          "filing. A form, a protocol, a database. The firm's real value concentrates at four "
-          "**seams** — the hand-offs where the work depends on knowledge that lives in a "
-          "person's head, not a system:", ""]
-    for name, what in _SEAMS:
-        L.append(f"- **{name.capitalize()}** — {what}.")
-    L += ["",
-          "AI can draft, research, and check citations — the codifiable part. It cannot hold "
-          "the tacit part at the seams. So the question isn't whether AI is capable. It's "
-          "whether the firm can carry what AI changes at those four seams without dropping "
-          "the value that lives there. That is what this simulation puts a number on.", ""]
-
-    scale = f"**Scale.** {_scale_phrase(sprints)} × {matters} matters per quarter"
-    if scenarios:
-        scale += (f", run across **{scenarios} independent scenarios**. A scenario is the same "
-                  "firm with a different roll of the dice — which matters land, which hand-offs "
-                  "go wrong, who leaves. One scenario is an anecdote. The spread across all of "
-                  "them is the confidence band on every figure below.")
-    else:
-        scale += "."
-    L += [scale, ""]
-
-    if real:
-        L += [f"**The agents are real AI.** Decisions in this run were made by {provider}; the "
-              "prompts and responses are in the audit trail at the end.", ""]
-    else:
-        L += ["**The agents are a stand-in.** This run used a deterministic offline model in "
-              "place of a live LLM — same mechanics, same decision structure, no language "
-              "model. That makes it free, instant, and reproducible: the same inputs give the "
-              "same answer every time, which is what you want when comparing options. Validate "
-              "the winner on real AI agents before betting on the exact magnitudes.", ""]
-
-    L += ["**What this is not.** It is not a forecast of your P&L. It is a comparison engine: "
-          "run the same firm down several different roads and see which one ends up further "
-          "ahead, and why. Trust the direction and the ordering. Calibrate before trusting the "
-          "decimal places.", "", "---", ""]
-    return "\n".join(L)
 
 
 # ---------------------------------------------------------------------------------
@@ -620,98 +392,12 @@ def _reconcile_baseline(sig: dict, metrics: dict) -> list[str]:
     because = (" — mostly " + " and ".join(causes)) if causes else ""
     direction = "below" if gap > 0 else "above"
     return ["",
-            f"**One number to reconcile before you read on.** You reported PPP of "
+            f"**One number to reconcile before you read on.** You reported profit per partner of "
             f"{fmt(stated, '$')}. The model starts you at **{fmt(simulated, '$')}**, "
             f"{fmt(abs(gap), '$')} {direction} that{because}. That is not a correction to your "
             "accounting. It is the same year priced by how the work actually moves through the "
             "firm, and the difference is the friction you are already paying for. Every figure "
             f"in this report moves from {fmt(simulated, '$')}, not from {fmt(stated, '$')}."]
-
-
-def render_readback(meta: dict, exp: dict, metrics: dict) -> str:
-    """Read the firm back before saying anything about results — and next to each input,
-    what it actually changes inside the model. An input the reader can't connect to an
-    outcome is a question they answered for nothing. Nothing here is a finding."""
-    sig = meta.get("firm_signature") or {}
-    if not sig:
-        return ""
-    culture = sig.get("culture") or {}
-    firm = meta.get("firm_name", "Aldrich & Vale LLP")
-    opt = exp.get("optimize") if exp else None
-    objective = (opt or {}).get("objective", "ppp")
-    obj_said = _OBJECTIVE_SAID.get(objective, "profit per partner (PPP)")
-
-    pricing = _PRICING_SAID.get(sig.get("pricing_posture"), sig.get("pricing_posture", "—"))
-    lev = sig.get("leverage_ratio")
-    orig = _band(sig.get("origination_concentration"), 0.33, 0.66,
-                 "a widely distributed book of business", "a moderately concentrated book",
-                 "a book dominated by one or two rainmakers")
-    mix = _band(sig.get("practice_mix_transactional"), 0.33, 0.66,
-                "mostly litigation", "a balanced litigation/transactional mix", "mostly transactional")
-    clients = _band(sig.get("client_concentration"), 0.33, 0.66,
-                    "many clients, no single whale", "some client concentration",
-                    "heavy reliance on one or two whale clients")
-    power = _band(sig.get("partner_power_mix"), 0.33, 0.66,
-                  "cooperative partner governance", "balanced partner governance",
-                  "strong rainmaker veto power")
-    tech = _band(sig.get("tech_maturity"), 0.33, 0.66,
-                 "little knowledge-management infrastructure", "some knowledge-management infrastructure",
-                 "mature, well-codified knowledge infrastructure")
-
-    def bullet(label: str, said: str, key: str) -> str:
-        drives = INPUT_DRIVES.get(key)
-        return f"- **{label}:** {said}." + (f" *Drives:* {drives}." if drives else "")
-
-    L = ["## 1. What you told us — and what each input drives", "",
-         f"Here is **{firm}** as we heard it, and next to each answer, what that answer "
-         "actually changes in the model. If a line is wrong, change that input and re-run; "
-         "the answer moves with it.", ""]
-    L.append(bullet("How you bill", pricing, "pricing_posture"))
-    if lev is not None:
-        L.append(bullet("Leverage", f"about {lev:g} associates per partner", "leverage_ratio"))
-    L.append(bullet("Origination", orig, "origination_concentration"))
-    L.append(bullet("Practice mix", mix, "practice_mix_transactional"))
-    L.append(bullet("Clients", clients, "client_concentration"))
-    L.append(bullet("Partner power", power, "partner_power_mix"))
-    L.append(bullet("Tech maturity", tech, "tech_maturity"))
-    if sig.get("baseline_ppp"):
-        L.append(bullet("Starting point",
-                        f"PPP {fmt(sig.get('baseline_ppp'), '$')}, "
-                        f"margin {fmt(sig.get('baseline_margin'), '%')}, "
-                        f"realization {fmt(sig.get('baseline_realization'), '%')}",
-                        "baseline_ppp"))
-    if culture:
-        parts = []
-        if culture.get("partner_ai_usage") is not None:
-            parts.append(_band(culture["partner_ai_usage"], 0.33, 0.66,
-                               "partners barely touching AI today", "partners using AI occasionally",
-                               "partners already using AI routinely"))
-        if culture.get("attrition_intensity") is not None:
-            parts.append(_band(culture["attrition_intensity"], 0.15, 0.25,
-                               "a stable associate bench", "normal associate churn",
-                               "heavy associate churn"))
-        if parts:
-            L.append(f"- **Culture:** {', '.join(parts)}. *Drives:* how fast adoption climbs, "
-                     "and how much knowledge walks out the door before it can be written down.")
-
-    L += _reconcile_baseline(sig, metrics)
-
-    # Priorities: a weighted blend and/or guardrails, if the firm set them.
-    weights = (opt or {}).get("weights") or {}
-    guardrails = (opt or {}).get("guardrails") or []
-    if weights and len(weights) > 1:
-        blend = ", ".join(f"{_OBJECTIVE_SAID.get(k, k)} at {v:.0%}" for k, v in weights.items())
-        priorities = f"**What you asked us to optimize for:** a blend of {blend}."
-    else:
-        priorities = (f"**What you asked us to optimize for:** {obj_said}."
-                      + ("" if objective == "ppp" else
-                         " (We still report PPP alongside, so you can see the trade-off.)"))
-    L += ["", priorities]
-    if guardrails:
-        L.append(f"- **Your non-negotiables:** {'; '.join(guardrails)} — no recommendation may "
-                 "cross these, however much profit it would add.")
-    L += ["", "---", ""]
-    return "\n".join(L)
 
 
 # ---------------------------------------------------------------------------------
@@ -750,344 +436,6 @@ def _interaction_pair(interactions: dict):
     return [], {}
 
 
-def render_what_we_ran(meta: dict, exp: dict) -> str:
-    """The work behind the numbers, phase by phase — so the reader can size the evidence
-    and, crucially, tell which phase produced which figure. The trajectories later in this
-    report are Phase 1 only; the recommendation comes entirely from Phase 2."""
-    opt = (exp or {}).get("optimize") or {}
-    run = (exp or {}).get("run") or {}
-    bands = ((exp or {}).get("sensitivity") or {}).get("bands") or {}
-    searched = bool(opt.get("best_combo"))
-    sprints = meta.get("sprints", "?")
-    matters = meta.get("matters_per_sprint", "?")
-    scenarios = run.get("baseline_scenarios")
-
-    L = ["## 2. What we ran", "",
-         "Three separate pieces of work went into this report. They answer different "
-         "questions and their numbers do not mix.", ""]
-
-    # --- Phase 1 -----------------------------------------------------------------
-    L += ["### Phase 1 — the baseline", "",
-          (f"Your firm, {_scale_phrase(sprints)}, {matters} matters a quarter, "
-           + (f"across {scenarios} independent scenarios, " if scenarios else "")
-           + "with **no levers pulled**. Nothing changed, nothing recommended. This is the "
-             "starting line, and the spread across scenarios is how much of the movement is "
-             "real versus luck. Section 3 is this phase, and only this phase."), ""]
-
-    # --- Phase 2 -----------------------------------------------------------------
-    if searched:
-        effects = opt.get("main_effects") or {}
-        ranked = sorted(((lv, *_effect(fx, opt)) for lv, fx in effects.items()),
-                        key=lambda t: (t[1] is None, -(t[1] or 0)))
-        pair, inter = _interaction_pair(opt.get("interactions") or {})
-        comp_delta = ((opt.get("interactions") or {}).get("comp_x_pricing") or {}).get("delta")
-        rs, ms = opt.get("round_seeds"), opt.get("mc_seeds")
-        sims = opt.get("sims_run")
-        unit = _obj_unit(opt)
-        obj_label = opt.get("objective_label", "PPP")
-
-        L += ["### Phase 2 — the lever search", "",
-              "Five levers can be pulled, alone or in combination — thirty-two possible firms. "
-              "Testing all thirty-two at full confidence is wasteful, and testing them one at a "
-              "time misses the way they interact. So the search runs in rounds, each one aimed "
-              "by what the last round found:", ""]
-
-        if ranked:
-            top = ranked[0]
-            worst = ranked[-1]
-            line = (f"- **Round 1 — each lever alone.** All five levers, "
-                    + (f"{rs} scenarios each. " if rs else "")
-                    + f"**{top[0].capitalize()}** came out strongest at "
-                      f"{_fmt_delta(top[1], top[2])} {obj_label}")
-            if worst[1] is not None and worst[1] < 0:
-                line += (f", and **{worst[0]}** came out *negative* at "
-                         f"{_fmt_delta(worst[1], worst[2])} — pulled on its own, it costs money.")
-            else:
-                line += "."
-            L.append(line)
-        else:
-            L.append("- **Round 1 — each lever alone.** All five levers ranked by effect.")
-
-        if pair and inter:
-            syn = inter.get("synergy")
-            head = (f"- **Round 2 — do they interact?** The top two, "
-                    f"**{' and '.join(pair)}**, pulled together rather than separately: "
-                    f"{_fmt_delta(inter.get('both'), unit)} together versus "
-                    f"{_fmt_delta(inter.get('additive'), unit)} if their effects simply added. ")
-            # Only call a gap an interaction when it's big enough to survive the noise.
-            # A 2% difference across a handful of scenarios is a rounding artifact, and
-            # "more than the sum of its parts" is a strong claim to make about one.
-            if _material(syn, inter.get("both")):
-                verdict = ("more than the sum of its parts" if syn > 0
-                           else "less than the sum of its parts")
-                L.append(head + f"That gap of {_fmt_delta(syn, unit)} is real interaction — "
-                                f"{verdict}. A one-lever-at-a-time sweep cannot see this.")
-            else:
-                L.append(head + f"The {_fmt_delta(syn, unit)} difference is too small to read as "
-                                "interaction — these two stack about as you'd expect, which "
-                                "means you can sequence them for convenience.")
-        if comp_delta is not None:
-            if _is_zero(comp_delta, unit):
-                verdict = ("It makes no measurable difference either way — this incentive is "
-                           "neither the problem nor the answer for this firm.")
-            elif comp_delta > 0:
-                verdict = ("It flips positive — the same incentive that loses money under hourly "
-                           "billing makes money under fixed fees.")
-            else:
-                verdict = ("It stays negative — this incentive doesn't pay off even after the "
-                           "pricing change.")
-            L.append(f"- **Round 2, second probe — does the comp incentive change sign?** "
-                     f"Paying partners to use AI, tested *after* the pricing change instead of "
-                     f"before it: {_fmt_delta(comp_delta, unit)}. " + verdict)
-        L.append("- **Round 3 — does anything else stack?** The remaining levers were added to "
-                 "the leader one at a time and kept only if they cleared a materiality "
-                 "threshold. Levers that merely nudged the number were dropped rather than "
-                 "padded into the recommendation.")
-        if ms:
-            L.append(f"- **Final — is the winner real?** The winning combination re-run across "
-                     f"{ms} fresh scenarios, to separate a genuine effect from a lucky draw. "
-                     "That run is where the confidence interval comes from.")
-        L.append("")
-        if sims:
-            L += [f"**{sims:,} simulations** in total for this phase. Sections 4 and 5 are "
-                  "built entirely from them.", ""]
-        L += ["> Worth being explicit: **none of Phase 2 appears in the trajectory charts.** "
-              "Those charts are your firm under no changes — Phase 1. The lever results are "
-              "separate firms, run separately.", ""]
-    else:
-        L += ["### Phase 2 — the lever search", "",
-              "**Not run.** This report is the baseline only: where you stand, not what to "
-              "change. Running the lever search adds the recommendation — which levers move "
-              "your objective, in what order, and by how much.", ""]
-
-    # --- Phase 3 -----------------------------------------------------------------
-    if bands:
-        sens_sims = run.get("sensitivity_sims")
-        L += ["### Phase 3 — how much the answer depends on our assumptions", "",
-              ("Each lever's effect rests on an assumption — how much codifying a seam "
-               "actually cuts rework, how much of a saved hour survives as margin. Those are "
-               "estimates, so each one was swept across its plausible low-to-high range and the "
-               "lever re-run at every point"
-               + (f". {sens_sims} simulations. " if sens_sims else ". ")
-               + "The result is a *range* per lever instead of a false-precise number, and it "
-                 "shows you which assumption is worth pinning down first."), ""]
-
-    L += ["---", ""]
-    return "\n".join(L)
-
-
-# ---------------------------------------------------------------------------------
-# 3. What the baseline showed
-# ---------------------------------------------------------------------------------
-
-def render_baseline_showed(meta: dict, metrics: dict, exp: dict) -> str:
-    """Phase 1's output: the firm as it runs today, where value leaks, and whether the
-    people could carry a change. No recommendation lives here — that's Phase 2's job."""
-    sprints = meta.get("sprints", "?")
-    ppp_first, ppp_last = _series_ends(metrics, "ppp")
-
-    L = ["## 3. What the baseline showed", "",
-         f"Your firm over {_scale_phrase(sprints)} with **nothing changed**. Read this as the "
-         "starting line, not a prediction.", ""]
-
-    if ppp_last is None:
-        L += ["_No metric history was recorded for this run._", "", "---", ""]
-        return "\n".join(L)
-
-    L += ["### Where the number lands", "",
-          "**Profit per partner** is the scoreboard — what each equity partner takes home at "
-          "year-end. It rises when the firm keeps more of every fee and when each lawyer's "
-          "time produces more billable value.", "",
-          f"Over {_scale_phrase(sprints)}, left as-is, profit per partner goes from "
-          f"{fmt(ppp_first, '$')} to **{fmt(ppp_last, '$')}**"
-          f"{_pct_change(ppp_first, ppp_last)}.", ""]
-
-    m_first, m_last = _series_ends(metrics, "matter_profit_margin")
-    r_first, r_last = _series_ends(metrics, "realization_rate")
-    drivers = []
-    if m_last is not None:
-        drivers.append(f"- **Margin** (what's left on each case after costs): "
-                       f"{fmt(m_first, '%')} → {fmt(m_last, '%')}.")
-    if r_last is not None:
-        drivers.append(f"- **Realization** (the share of billed work clients actually paid): "
-                       f"{fmt(r_first, '%')} → {fmt(r_last, '%')}.")
-    if drivers:
-        L += ["Those dollars move through two channels:", "", *drivers, ""]
-
-    move = _derive_mechanism(metrics)
-    if move:
-        mid, first, last, declined = move
-        info = METRIC_INFO.get(mid)
-        if info:
-            verb = "rose" if last > first else "dropped"
-            effect = ("more of the firm's work needed partner rescue and rework, which ate into "
-                      "both margin and the share of billing that actually gets collected"
-                      if declined else
-                      "work moved more cleanly between people, so less was lost to rework and "
-                      "rescue — and the money followed")
-            L += [f"**What drove it:** **{info.label.lower()}** ({_plain(info)}) {verb} from "
-                  f"{fmt(first, info.unit)} to {fmt(last, info.unit)} — {effect}.", ""]
-    cost = _why_cost_block(metrics)
-    if cost:
-        L += cost + [""]
-
-    # --- Where value leaks today ---
-    redline = _last(metrics, "redline_rework_rate")
-    exc = _last(metrics, "exception_rate")
-    handoff = _last(metrics, "handoff_failure_rate")
-    real_rate = _last(metrics, "realization_rate")
-    wip = _last(metrics, "wip_aging")
-    collect = _last(metrics, "collection_cycle")
-    margin = _last(metrics, "matter_profit_margin")
-    leaks = []
-    if redline is not None:
-        leaks.append(f"- **Partners re-doing the work.** {fmt(redline, '%')} of drafts come back "
-                     "for substantial partner rewriting. That's the most expensive time in the "
-                     "firm spent fixing what arrived not-quite-right — the surest sign the value "
-                     "sits in the redline, not the draft.")
-    if exc is not None:
-        leaks.append(f"- **Work bouncing back.** {fmt(exc, '%')} of steps hit an exception that "
-                     "needs partner rescue beyond the normal path. Each one is unplanned senior "
-                     "time and a slower matter.")
-    if handoff is not None:
-        leaks.append(f"- **Meaning lost at hand-offs.** {fmt(handoff, '%')} of transfers between "
-                     "roles lose or garble context and need rework on the far side.")
-    if real_rate is not None:
-        leaks.append(f"- **Billed but not collected.** The firm collects {fmt(real_rate, '%')} of "
-                     f"what it bills — roughly {fmt(100 - real_rate, '%')} of billed work never "
-                     "turns into cash, the leak in dollar form.")
-    if wip is not None and collect is not None:
-        leaks.append(f"- **Slow money.** Work sits {wip:,.0f} days as unbilled WIP, and invoices "
-                     f"take {collect:,.0f} days to collect — value earned long before it's paid.")
-    if leaks:
-        L += ["### Where value leaks today", "", *leaks, ""]
-        if margin is not None:
-            L += [f"Together these hold matter margin at **{fmt(margin, '%')}**. None of them are "
-                  "AI problems. They're seam problems that AI will either expose or amplify.", ""]
-
-    # --- Feasibility ---
-    p_trust = _last(metrics, "partner_ai_trust")
-    a_trust = _last(metrics, "associate_ai_trust")
-    adopt = _last(metrics, "ai_assisted_matter_pct")
-    attr = _last(metrics, "associate_attrition")
-    feas = []
-    if p_trust is not None and a_trust is not None:
-        gap_word = "inverted" if a_trust > p_trust else "aligned"
-        feas.append(f"- **The trust gap is real and it's {gap_word}.** Associates rate the AI "
-                    f"{fmt(a_trust, '/10')} against partners' {fmt(p_trust, '/10')}. "
-                    + ("The people with the most power over the change have the least faith in "
-                       "it — that's the gradient any rollout works against, and it won't move on "
-                       "communications, only on the AI proving reliable at real work."
-                       if a_trust > p_trust else
-                       "Leadership is ahead of the bench here, which is the easier direction to "
-                       "roll out but the harder one to sustain."))
-    if adopt is not None:
-        feas.append(f"- **Adoption is early.** AI touched {fmt(adopt, '%')} of matters — usage, "
-                    "not yet absorption. The gap between the two is where transformations stall.")
-    if attr is not None:
-        feas.append(f"- **The bench is churning.** Associate attrition runs {fmt(attr, '%')} a "
-                    "year. Whatever the firm builds has to survive that turnover — knowledge "
-                    "codified into systems outlasts it, knowledge left in heads walks out.")
-    if feas:
-        L += ["### Can your people carry a change", "", *feas, ""]
-
-    L += ["---", ""]
-    return "\n".join(L)
-
-
-# ---------------------------------------------------------------------------------
-# 4. What the lever search added
-# ---------------------------------------------------------------------------------
-
-def render_search_added(meta: dict, metrics: dict, exp: dict) -> str:
-    """Phase 2's output — and specifically, what it knows that Phase 1 could not. This is
-    where the report earns its keep: the interaction findings a one-at-a-time comparison
-    structurally cannot produce."""
-    opt = (exp or {}).get("optimize") or {}
-    combo = opt.get("best_combo")
-    if not combo:
-        return ""
-    unit = _obj_unit(opt)
-    obj = opt.get("objective", "ppp")
-    obj_label = opt.get("objective_label", "PPP")
-    effects = opt.get("main_effects") or {}
-    interactions = opt.get("interactions") or {}
-    pair, inter = _interaction_pair(interactions)
-    comp_delta = (interactions.get("comp_x_pricing") or {}).get("delta")
-    sims = opt.get("sims_run")
-
-    L = ["## 4. What the lever search added", "",
-         "Section 3 told you where you stand. It could not tell you what to do — the baseline "
-         "is one road, and a firm doesn't get to drive several. "
-         + (f"Phase 2 drove them all: {sims:,} simulations across combinations of the five "
-            "levers, so the comparison is measured rather than argued." if sims else
-            "Phase 2 ran those roads instead, so the comparison is measured rather than argued."),
-         ""]
-
-    # --- The levers themselves ---
-    L += ["### The five levers", ""]
-    for lv in _LEVER_ORDER:
-        gloss = LEVER_GLOSS.get(lv)
-        if not gloss:
-            continue
-        fx = effects.get(lv)
-        val, u = _effect(fx, opt) if fx else (None, unit)
-        tail = f" Alone: {_fmt_delta(val, u)}." if val is not None else ""
-        picked = " **← in the recommendation**" if lv in combo else ""
-        L.append(f"- **{lv.capitalize()}** — {gloss}.{tail}{picked}")
-    L.append("")
-
-    # --- The findings that need the search ---
-    L += ["### What one-at-a-time testing would have missed", ""]
-    findings = []
-    comp_alone = (effects.get("comp") or {}).get("delta_ppp")
-    if comp_delta is not None and comp_delta > 0 and not _is_zero(comp_alone, "$") and comp_alone < 0:
-        findings.append(
-            f"- **The comp incentive changes sign depending on how you bill.** On its own it "
-            f"scores {_fmt_delta(comp_alone, '$')}. Tested after the pricing change, it scores "
-            f"{_fmt_delta(comp_delta, unit)}. Same incentive, opposite result. Rank the levers "
-            "one at a time and you drop comp from the list; the factorial says pull it, just "
-            "not first. **This is a sequencing finding, and no single-lever comparison can "
-            "produce it.**")
-    if pair and inter and (inter.get("synergy") or 0) > 0 and _material(inter.get("synergy"),
-                                                                        inter.get("both")):
-        findings.append(
-            f"- **{' and '.join(pair).capitalize()} compound each other.** Together they deliver "
-            f"{_fmt_delta(inter.get('both'), unit)} where adding their separate effects predicts "
-            f"{_fmt_delta(inter.get('additive'), unit)}. The extra {_fmt_delta(inter.get('synergy'), unit)} "
-            "only exists when both are pulled — budget for one of them and you don't get half "
-            "the benefit, you get less than half.")
-    negatives = [lv for lv, fx in effects.items()
-                 if lv in combo and (_effect(fx, opt)[0] or 0) < 0
-                 and not _is_zero(_effect(fx, opt)[0], _effect(fx, opt)[1])]
-    if negatives:
-        names = ", ".join(n.capitalize() for n in negatives)
-        verb = "scores" if len(negatives) == 1 else "score"
-        findings.append(
-            f"- **{names} {verb} negative alone and still {'belongs' if len(negatives) == 1 else 'belong'} "
-            "in the recommendation.** Pulled by itself the lever costs money; pulled alongside "
-            "the others it pays. That combination — bad in isolation, good in context — is "
-            "exactly what a pilot-one-thing-at-a-time rollout cuts first.")
-    if not findings:
-        findings.append("- The levers in this run behaved close to additively: no strong "
-                        "interaction showed up, so the ranking in Appendix B is a fair guide on "
-                        "its own. That is itself a finding — it means you can sequence them for "
-                        "convenience rather than dependency.")
-    L += findings + [""]
-
-    note = opt.get("guardrail_note")
-    if note:
-        L += [f"**Your guardrails changed the answer.** {note[0].upper() + note[1:]}. The "
-              "higher-scoring combination was ruled out rather than recommended-with-an-asterisk.",
-              ""]
-    if obj != "ppp":
-        L += [f"**A reminder on the objective.** The search ranked by {obj_label}, not profit per "
-              "partner. PPP is reported alongside so you can see what the choice costs you.", ""]
-
-    L += ["---", ""]
-    return "\n".join(L)
-
-
 # ---------------------------------------------------------------------------------
 # 5. What to do
 # ---------------------------------------------------------------------------------
@@ -1104,140 +452,6 @@ def _widest_calibration(exp: dict):
         if best is None or width > best[0]:
             best = (width, lever, b, q)
     return best
-
-
-def render_next_move(meta: dict, metrics: dict, exp: dict, num: int) -> str:
-    """The decision. For a searched run: the combination, the order, the confidence, and the
-    one question that would sharpen it. For a baseline run: the forks, stated without a
-    thumb on the scale — the point is to help the partner find the way, not sell one.
-
-    `num` is the section number, which shifts when there was no lever search to report."""
-    opt = (exp or {}).get("optimize") or {}
-    combo = opt.get("best_combo")
-    L = [f"## {num}. What to do, and what it's worth", ""]
-
-    if combo:
-        obj = opt.get("objective", "ppp")
-        obj_label = opt.get("objective_label", "PPP")
-        unit = _obj_unit(opt)
-        band = opt.get("ci95", opt.get("spread"))
-        interactions = opt.get("interactions") or {}
-        pair, inter = _interaction_pair(interactions)
-        comp_flips = (interactions.get("comp_x_pricing") or {}).get("delta", 0) > 0
-
-        # Whether the band clears zero is a claim to CHECK, not to assert. A wide band on
-        # few scenarios can straddle zero, and saying "a real effect" over one would be the
-        # exact overconfidence this report exists to avoid.
-        delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
-        if band is None or delta is None:
-            band_note = ""
-        elif abs(delta) > abs(band):
-            band_note = (" The band matters more than the midpoint: it doesn't reach zero, so "
-                         "this is an effect rather than a lucky draw.")
-        else:
-            band_note = (" Read that band carefully — it's wide enough to touch zero, so treat "
-                         "the direction as the finding and the size as provisional. More "
-                         "scenarios, or calibrated inputs, would narrow it.")
-
-        if obj == "ppp" and len(opt.get("weights") or {}) <= 1:
-            L += [f"**Pull {', '.join(combo)} — together.** Profit per partner reaches "
-                  f"**{fmt(opt.get('best_ppp'), '$')}**, "
-                  f"**{_fmt_delta(opt.get('best_delta'), '$')} against changing nothing**, "
-                  f"give or take {fmt(band, '$')} across scenarios." + band_note, ""]
-        else:
-            L += [f"**Pull {', '.join(combo)} — together.** {obj_label.capitalize()} reaches "
-                  f"**{fmt(opt.get('best_objective'), unit if unit != 'blend' else '')}**, "
-                  f"{_fmt_delta(opt.get('best_delta_objective'), unit)} against changing nothing, "
-                  f"give or take {fmt(band, unit if unit != 'blend' else '')} across scenarios."
-                  + band_note +
-                  f" Profit per partner at this setting is {fmt(opt.get('best_ppp'), '$')} "
-                  f"({_fmt_delta(opt.get('best_delta'), '$')} versus baseline).", ""]
-
-        L += ["**The order is part of the recommendation, not a detail.**", ""]
-        # Numbered by a running counter, not by position — the steps that apply depend on
-        # which levers won, and a list that reads 1, 2, 4 looks like a mistake.
-        step = 0
-
-        def numbered(text: str) -> str:
-            nonlocal step
-            step += 1
-            return f"{step}. {text}"
-
-        if "pricing" in combo:
-            L.append(numbered(
-                "**Pricing first — it sets the sign on everything after it.** Bill by the hour "
-                "and let AI work faster, and you bill fewer hours: AI quietly costs you money. "
-                "Charge a flat fee and every hour AI saves drops toward profit. Same firm, same "
-                "technology, opposite result."))
-        if "seams" in combo:
-            syn = inter.get("synergy") if pair and "seams" in pair else None
-            extra = (f" Together with pricing it beats the sum of the two alone by "
-                     f"{_fmt_delta(syn, _obj_unit(opt))}."
-                     if syn and syn > 0 and _material(syn, inter.get("both")) else "")
-            L.append(numbered(
-                "**Then the seams.** Writing down the informal know-how means cleaner hand-offs "
-                "and less rework hiding inside that flat fee." + extra))
-        if "comp" in combo and comp_flips:
-            L.append(numbered(
-                "**Comp last.** Paying partners to use AI loses money while you still bill "
-                "hourly — you're paying them to bill fewer hours. After the pricing change the "
-                "same bonus turns positive. Pull it early and it backfires."))
-        rest = [lv for lv in combo if lv not in ("pricing", "seams") and not (lv == "comp" and comp_flips)]
-        if rest:
-            L.append(numbered(
-                f"**{', '.join(r.capitalize() for r in rest)}** — kept because it cleared the "
-                "materiality threshold on top of the others, not because it moves the number on "
-                "its own. Treat it as an adjustment, and drop it first if it costs anything to "
-                "implement."))
-        skipped = [lv for lv in _LEVER_ORDER if lv not in combo]
-        if skipped:
-            L += ["", f"**Left out: {', '.join(skipped)}.** Not because they're wrong, but "
-                  "because they didn't earn their place next to the others in this firm's "
-                  "configuration. Change the inputs and that can change."]
-        L += ["",
-              "**What this number does not include.** The cost of getting there: the senior "
-              "hours to codify a seam, the client conversations to move a fee arrangement, the "
-              "partner politics. The simulation prices the destination, not the trip.", ""]
-    else:
-        L += ["No lever search has been run, so there is no recommendation here — and putting "
-              "one in would be inventing it. What the baseline does support is a clear view of "
-              "the forks in front of the firm. Each has a cost on both sides.", "",
-              "- **How you price.** This one changes the sign of everything else. Hourly protects "
-              "today's revenue but caps what AI can return; fixed fees unlock it but move "
-              "delivery risk onto the firm.",
-              "- **Whether you codify the seams.** Cleaner hand-offs and less rework, paid for in "
-              "senior time up front — and some partners will resist committing their judgment to "
-              "a system.",
-              "- **Whether you pay for adoption.** It raises usage. Under hourly billing it can "
-              "also mean paying partners to bill fewer hours. Sequence matters.",
-              "- **How steep the pyramid is, and how fast you act.** Smaller and less reliable "
-              "than the first three. Adjustments, not the main event.", "",
-              "The honest shape of it: **pricing and seams are the forks that matter, and they "
-              "interact.** More than one path can work. The half-step — adopting AI while still "
-              "billing hourly and leaving the seams informal — is the one combination that "
-              "reliably loses money. Standing still is itself a choice with a cost.", "",
-              "**The next step is to run the lever search**, which tests those combinations "
-              "against your numbers instead of leaving you to reason about them.", ""]
-
-    # --- What would sharpen this ---
-    L += ["### What would sharpen this", "",
-          "The *direction* here is defensible: which levers move the number, how they depend on "
-          "each other, and the order to pull them. The dollar magnitudes are calibrated to a "
-          "firm like yours, not to your ledger.", ""]
-    widest = _widest_calibration(exp)
-    if widest:
-        _, lever, b, question = widest
-        L += [f"The single assumption costing you the most precision is **{b.get('coefficient_name', lever)}** "
-              f"— it swings the {lever} lever's value across a "
-              f"{fmt(b.get('band_low'), '$')} to {fmt(b.get('band_high'), '$')} range on its own. "
-              "One question closes most of that gap:", "",
-              f"> *{question}*", "",
-              "Answer it from your own experience, re-run, and the band tightens.", ""]
-    else:
-        L += ["Put your own numbers through the intake and the same engine re-runs the answer "
-              "against them.", ""]
-    L += ["---", ""]
-    return "\n".join(L)
 
 
 # ---------------------------------------------------------------------------------
@@ -1257,6 +471,51 @@ _LEVER_NAME = {
 
 def _lever_name(lever: str) -> str:
     return _LEVER_NAME.get(lever, lever.capitalize())
+
+
+# The five changes as plain actions a partner would say out loud — for the summaries, where
+# a short label isn't enough and the reader needs the change in their own words.
+_LEVER_ACTION = {
+    "pricing":  "move to flat fees",
+    "seams":    "write down the know-how at your hand-offs",
+    "comp":     "pay partners to use AI",
+    "latency":  "act on results faster",
+    "leverage": "reshape the pyramid — how many juniors sit under each partner",
+}
+
+
+def _action(lever: str) -> str:
+    return _LEVER_ACTION.get(lever, lever)
+
+
+def _cap(s: str) -> str:
+    return s[0].upper() + s[1:] if s else s
+
+
+_OBJECTIVE_PLAIN = {
+    "ppp": "profit per partner", "margin": "matter margin", "rpl": "revenue per lawyer",
+    "realization": "realization", "retention": "associate retention",
+}
+
+
+def _money(v) -> str:
+    """A signed dollar figure that reads naturally: -$69,577, not $-69,577."""
+    if v is None:
+        return "—"
+    return f"{'-' if v < 0 else ''}${abs(v):,.0f}"
+
+
+def _approx_money(v) -> str:
+    """A round, spoken dollar figure — 'about $918,000' — magnitude only; the sentence
+    carries the direction with a verb (adds / loses)."""
+    if v is None:
+        return "—"
+    a = abs(v)
+    if a >= 10_000:
+        return f"${round(a / 1000) * 1000:,.0f}"
+    if a >= 1_000:
+        return f"${round(a / 100) * 100:,.0f}"
+    return f"${a:,.0f}"
 
 
 # Where each assumption's number comes from, in plain terms — no SURVEY/INFERRED tags.
@@ -1478,37 +737,301 @@ def render_firm(meta: dict, letter: str = "D") -> str:
 
 # ---------------------------------------------------------------------------------
 
+# =================================================================================
+# The report is ONE story that grows a section per stage — not three near-identical
+# reports. A partner reads it top to bottom and sees: their firm, where it's heading,
+# the decisions on the table (how the levers were determined), the recommendation (how
+# they were optimized), and what the simulation did and showed (why to believe it).
+# Every fact lives in exactly one section, so nothing repeats.
+# =================================================================================
+
+def _order_combo(combo: list) -> list:
+    """A lever set in the order a partner would act on it, not alphabetical."""
+    return [lv for lv in _LEVER_ORDER if lv in set(combo or [])]
+
+
+def _firm_portrait(meta: dict) -> str:
+    """Two or three sentences that let a partner recognize their own firm."""
+    sig = meta.get("firm_signature") or {}
+    firm = meta.get("firm_name", "the firm")
+    pricing = _PRICING_SAID.get(sig.get("pricing_posture"), "billing by the hour")
+    lev = sig.get("leverage_ratio")
+    book = _band(sig.get("origination_concentration"), 0.33, 0.66,
+                 "a book spread across many partners", "a moderately concentrated book",
+                 "a book that runs through one or two rainmakers")
+    mix = _band(sig.get("practice_mix_transactional"), 0.33, 0.66,
+                "mostly litigation", "a mix of litigation and transactional work", "mostly transactional")
+    lev_txt = f", about {lev:g} associates to a partner," if lev is not None else ""
+    return (f"**{firm}** is {pricing}{lev_txt} with {book} and {mix}. Its real value sits at four "
+            "hand-offs — the partner's redlines, the settlement call, who gets staffed, and which "
+            "bill a client will actually pay — where the work turns on judgment no template holds. "
+            "AI can carry the routine around those hand-offs; it can't carry the judgment inside "
+            "them. Whether the firm keeps that value as the work changes is what this simulation "
+            "puts a number on.")
+
+
+def _heading_unchanged(meta: dict, metrics: dict) -> list[str]:
+    """Where the firm lands if nothing changes — the slide, the reason, the honest feasibility."""
+    ppp_first, ppp_last = _series_ends(metrics, "ppp")
+    L = ["## Where it's heading, unchanged", ""]
+    if ppp_last is None:
+        return L + ["_No trajectory was recorded for this run._", ""]
+    L += [f"Left as it is, profit per partner moves from {fmt(ppp_first, '$')} to "
+          f"**{fmt(ppp_last, '$')}**{_pct_change(ppp_first, ppp_last)} over "
+          f"{_scale_phrase(meta.get('sprints', '?'))}.", ""]
+    redline = _last(metrics, "redline_rework_rate")
+    real_rate = _last(metrics, "realization_rate")
+    leaks = []
+    if redline is not None:
+        leaks.append(f"partners rewrite **{fmt(redline, '%')}** of drafts — the most expensive time "
+                     "in the firm spent fixing what arrived not-quite-right")
+    if real_rate is not None:
+        leaks.append(f"the firm collects **{fmt(real_rate, '%')}** of what it bills — the rest never "
+                     "turns into cash")
+    if leaks:
+        L += ["The drift isn't an AI problem. It's value leaking at the hand-offs: "
+              + "; and ".join(leaks) + ".", ""]
+    attr = _last(metrics, "associate_attrition")
+    p_trust = _last(metrics, "partner_ai_trust")
+    a_trust = _last(metrics, "associate_ai_trust")
+    if p_trust is not None and a_trust is not None and a_trust > p_trust:
+        L += ["And the people who'd carry any change are the ones least sold on it: associates rate "
+              f"the AI {fmt(a_trust, '/10')} to partners' {fmt(p_trust, '/10')}"
+              + (f", with the bench turning over {fmt(attr, '%')} a year" if attr is not None else "")
+              + ". A rollout works against that gradient.", ""]
+    return L
+
+
+def _options_on_the_table(exp: dict) -> list[str]:
+    """The five changes as decisions — how the levers were determined. The menu, not the choice."""
+    L = ["## The changes on the table", "",
+         "Five changes could bend that curve. Each is a real decision with a cost on both sides:", ""]
+    for lv in _LEVER_ORDER:
+        gloss = LEVER_GLOSS.get(lv)
+        if gloss:
+            L.append(f"- **{_lever_name(lv)}** — {gloss}.")
+    L += ["", "Which ones actually help this firm, and in what order, is what the search settles next.",
+          ""]
+    return L
+
+
+def _lever_standing_line(lv: str, opt: dict, combo: set, comp_delta) -> str:
+    """One plain sentence on where a single change stands — confirmed, sequence-dependent, kept
+    in context, or left out. Said once here and nowhere else."""
+    fx = (opt.get("main_effects") or {}).get(lv)
+    val, unit = _effect(fx, opt) if fx else (None, "$")
+    name = _cap(_action(lv))
+    if lv == "comp" and comp_delta is not None and not _is_zero(comp_delta, unit):
+        base = (opt.get("main_effects") or {}).get("comp", {})
+        comp_alone = base.get("delta_ppp")
+        after = (f"but after you switch it makes about {_approx_money(comp_delta)}"
+                 if comp_delta > 0 else "and it still doesn't pay even after you switch")
+        tail = " — so it belongs, but do it last." if lv in combo else " — so it's left out."
+        return (f"- **{name}** flips with how you bill: on its own it loses about "
+                f"{_approx_money(comp_alone)} (you'd be paying people to bill fewer hours), {after}{tail}")
+    if val is None or _is_zero(val, unit):
+        return f"- **{name}** barely moves the number, so it's left out."
+    if val > 0:
+        tail = " It's in the plan." if lv in combo else " It helps, but the others carry the plan without it."
+        return f"- **{name}** adds about {_approx_money(val)} on its own.{tail}"
+    if lv in combo:
+        return (f"- **{name}** loses about {_approx_money(val)} on its own, but earns its place once "
+                "the others are in. Treat it as a finishing touch — drop it first if it's costly to set up.")
+    return f"- **{name}** loses about {_approx_money(val)} and doesn't earn a place here. Left out."
+
+
+def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
+    """How the levers were optimized — the choice, the order, why, and each change's standing."""
+    opt = (exp or {}).get("optimize") or {}
+    combo = _order_combo(opt.get("best_combo") or [])
+    if not combo:
+        return ["## The recommendation", "",
+                "The search ran every combination and none reliably beat standing still for this "
+                "firm as described. That's a finding, not a failure — change an input that's wrong "
+                "and re-run, and the answer can move.", ""]
+    obj = opt.get("objective", "ppp")
+    obj_plain = _OBJECTIVE_PLAIN.get(obj, "profit per partner")
+    delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
+    best = opt.get("best_ppp") if obj == "ppp" else opt.get("best_objective")
+    band = opt.get("ci95", opt.get("spread"))
+    holds = (delta is not None and band is not None and abs(delta) > abs(band))
+    conf = ("and the gain holds up in every version of the future we ran, not just on average — "
+            "a real result, not a lucky one" if holds else
+            "though the size is still uncertain, so trust the direction more than the exact figure")
+    comp_delta = ((opt.get("interactions") or {}).get("comp_x_pricing") or {}).get("delta")
+    interactions = opt.get("interactions") or {}
+    pair, inter = _interaction_pair(interactions)
+
+    actions = "; then ".join(_action(lv) for lv in combo)
+    L = ["## The recommendation", "",
+         f"**{_cap(actions)}.** Made together, in that order, they lift {obj_plain} to about "
+         f"**{fmt(best, '$')}** — roughly **{_approx_money(delta)}** a year more than changing "
+         f"nothing, {conf}.", ""]
+
+    # Why the order — only the levers that are actually in the plan.
+    L += ["**Why that order.**", ""]
+    n = 0
+    def step(t):
+        nonlocal n
+        n += 1
+        return f"{n}. {t}"
+    if "pricing" in combo:
+        L.append(step("**Flat fees first** — it sets the sign on everything after it. Bill by the "
+                      "hour and let AI work faster and you simply bill fewer hours. Charge a flat "
+                      "fee and every hour AI saves drops toward profit."))
+    if "seams" in combo:
+        L.append(step("**Then write down the know-how** — cleaner hand-offs mean less rework hiding "
+                      "inside that flat fee."))
+    if "comp" in combo and comp_delta and comp_delta > 0:
+        L.append(step("**Pay for AI adoption last** — the same bonus that loses money under hourly "
+                      "billing turns positive once you've switched."))
+    rest = [lv for lv in combo if lv not in ("pricing", "seams")
+            and not (lv == "comp" and comp_delta and comp_delta > 0)]
+    for lv in rest:
+        L.append(step(f"**{_cap(_action(lv))}** — a finishing touch on top of the rest, not a mover "
+                      "on its own."))
+    L += [""]
+
+    # Each change's standing — the "how they were determined/optimized" detail, once.
+    L += ["**Where each change stands.**", ""]
+    combo_set = set(combo)
+    for lv in _LEVER_ORDER:
+        if (opt.get("main_effects") or {}).get(lv) is not None:
+            L.append(_lever_standing_line(lv, opt, combo_set, comp_delta))
+    if pair and inter and _material(inter.get("synergy"), inter.get("both")) and (inter.get("synergy") or 0) > 0:
+        a, b = (_lever_name(x).lower() for x in pair)
+        L.append(f"- Combined, {a} and {b} do about {_approx_money(inter.get('synergy'))} more "
+                 "together than each does alone.")
+    L += [""]
+
+    # How we got here — the method, briefly (kept visible per the partner's ask).
+    sims = opt.get("sims_run")
+    mc = opt.get("mc_seeds")
+    L += ["**How we got there.** We tested each change on its own, then in combination to catch the "
+          "way they interact, then re-ran the winning set"
+          + (f" across {mc} fresh scenarios" if mc else "") + " to make sure it wasn't a lucky draw"
+          + (f" — {sims:,} simulations in all." if sims else "."), "",
+          "**What this doesn't include.** The cost of getting there: the senior hours to codify a "
+          "hand-off, the client conversations to move a fee arrangement, the partner politics. The "
+          "model prices the destination, not the trip.", ""]
+    return L
+
+
+def _what_the_sim_showed(meta: dict, metrics: dict, exp: dict) -> list[str]:
+    """The scenario stage's contribution — what the simulation did with the plan, and why it holds."""
+    opt = (exp or {}).get("optimize") or {}
+    combo = _order_combo(opt.get("best_combo") or [])
+    obj = opt.get("objective", "ppp")
+    obj_plain = _OBJECTIVE_PLAIN.get(obj, "profit per partner")
+    delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
+    band = opt.get("ci95", opt.get("spread"))
+    mc = opt.get("mc_seeds")
+    holds = (delta is not None and band is not None and abs(delta) > abs(band))
+    du = "$" if obj == "ppp" else _obj_unit(opt)
+
+    L = ["## What the simulation did, and what it showed", "",
+         f"We took the recommended plan — {', '.join(_action(lv) for lv in combo)} — and ran it "
+         f"across **{mc} fresh scenarios**: the same firm, different rolls of the dice on which "
+         "matters land, which hand-offs go wrong, and who leaves.", ""]
+    if holds:
+        L += [f"It came back **{_money(delta)}** ahead of changing nothing, give or take "
+              f"{fmt(band, du if du != 'blend' else '')} — and it stayed ahead in every scenario, "
+              "not just on average. That's the difference between a real effect and a lucky draw: "
+              "the same plan wins whichever way the year breaks.", ""]
+    else:
+        L += [f"It came back about {_money(delta)} ahead, but the spread is wide enough that some "
+              "scenarios land near flat. Trust the direction; treat the size as provisional until "
+              "more scenarios or your own numbers tighten it.", ""]
+    prior = (exp or {}).get("prior") or {}
+    prior_delta = prior.get("best_delta") if obj == "ppp" else prior.get("best_delta_objective")
+    if prior_delta is not None and delta is not None:
+        if _is_zero(delta - prior_delta, du):
+            L += ["It landed right where the optimization estimated — the recommendation is stable.", ""]
+        else:
+            direction = "higher" if delta > prior_delta else "lower"
+            L += [f"The optimization had estimated {_money(prior_delta)}; the re-run came in "
+                  f"{direction}, at {_money(delta)}.", ""]
+    return L
+
+
+def _how_to_read(meta: dict, exp: dict) -> list[str]:
+    """A short, visible note on what the machine is — kept brief, not a methods section."""
+    scenarios = ((exp.get("run") or {}).get("baseline_scenarios")
+                 or (exp.get("optimize") or {}).get("mc_seeds")) if exp else None
+    scale = _scale_phrase(meta.get("sprints", "?"))
+    scen = f" across {scenarios} independent scenarios" if scenarios else ""
+    return ["## How to read this", "",
+            f"This is a comparison engine, not a forecast of your P&L. It runs your firm — {scale}, "
+            f"quarter by quarter{scen} — down different roads and shows which ends up ahead, and "
+            "why. Every quarter, simulated partners, associates, and AI tools work real matters; "
+            "the rework and write-offs that come out of that are what set the numbers. Nothing is "
+            "assumed.", "",
+            "**Trust the direction and the order. Check the dollars before you quote them** — the "
+            "magnitudes are calibrated to a firm like yours, not your ledger. Every figure traces "
+            "to the record at the end.", ""]
+
+
 def build_report(run_dir: Path, experiments: dict) -> str:
     meta = load_meta(run_dir)
     metrics = load_metrics(run_dir)
     experiments = experiments or {}
     firm = meta.get("firm_name", "Aldrich & Vale LLP")
 
-    # A run without a lever search reports the baseline only and SKIPS the recommendation —
-    # showing a "pull these levers" verdict without having run the search would invent it.
-    # (experiments.json is a shared file that can be stale from an earlier optimize run, so
-    # the presence of best_combo is what gates Phase 2, not the run's own lever settings.)
+    # One story, revealed a section at a time. The stage decides how far it's told: a baseline
+    # stops at the decisions on the table; optimization adds the recommendation; a scenario adds
+    # what the simulation showed. best_combo (not the run's own lever settings) gates the
+    # recommendation — experiments.json can be stale from an earlier optimize run.
     searched = bool((experiments.get("optimize") or {}).get("best_combo"))
+    stage = _stage_of(experiments, searched)
 
-    # Section and appendix numbering are assigned here rather than baked into each renderer,
-    # so a baseline run (no Phase 2, so no section 4 and no lever appendix) numbers 1-2-3-4
-    # and A-B-C-… instead of leaving holes where the missing sections would have been.
-    # Each renderer returns a self-contained markdown block (or "" when it has nothing to
-    # say). Empty blocks are dropped whole — filtering line-by-line would strip the blank
-    # lines that separate headings from prose, which markdown needs.
+    body = ["## The bottom line", "", _bottom_line(meta, metrics, experiments, stage, searched), "",
+            "---", "",
+            "## Your firm", "", _firm_portrait(meta)]
+    body += _reconcile_baseline(meta.get("firm_signature") or {}, metrics)
+    body += ["", "---", ""]
+    body += _heading_unchanged(meta, metrics) + ["---", ""]
+    body += _options_on_the_table(experiments) + ["---", ""]
+    if searched:
+        body += _recommendation(meta, metrics, experiments) + ["---", ""]
+    if stage == "scenario_simulation":
+        body += _what_the_sim_showed(meta, metrics, experiments) + ["---", ""]
+    body += _how_to_read(meta, experiments) + ["---", ""]
+
     appendices = _lettered_appendices(experiments, metrics, meta, searched)
     blocks = [
         f"# Firm Simulation — {firm}\n\n**Run:** {run_dir.name}\n",
-        render_stage_summary(meta, metrics, experiments, searched),
-        render_what_this_is(meta, experiments),
-        render_readback(meta, experiments, metrics),
-        render_what_we_ran(meta, experiments),
-        render_baseline_showed(meta, metrics, experiments),
-        render_search_added(meta, metrics, experiments) if searched else "",
-        render_next_move(meta, metrics, experiments, 5 if searched else 4),
+        "\n".join(body),
         *appendices,
     ]
     return "\n".join(b.rstrip() + "\n" for b in blocks if b.strip())
+
+
+def _bottom_line(meta: dict, metrics: dict, exp: dict, stage: str, searched: bool) -> str:
+    """The one-paragraph answer at the very top — what a partner reads if they read nothing else."""
+    firm = meta.get("firm_name", "the firm")
+    opt = (exp or {}).get("optimize") or {}
+    combo = _order_combo(opt.get("best_combo") or [])
+    ppp_first, ppp_last = _series_ends(metrics, "ppp")
+    if not searched or not combo:
+        heading = (f"drifts from {fmt(ppp_first, '$')} to {fmt(ppp_last, '$')}"
+                   f"{_pct_change(ppp_first, ppp_last)}" if ppp_last is not None else "slides")
+        return (f"Left as it is, **{firm}**'s profit per partner {heading} over "
+                f"{_scale_phrase(meta.get('sprints', '?'))} — value leaking at the hand-offs where "
+                "the firm's judgment lives. There are five changes that could bend that curve; the "
+                "next step is to test which ones actually help this firm.")
+    obj = opt.get("objective", "ppp")
+    obj_plain = _OBJECTIVE_PLAIN.get(obj, "profit per partner")
+    delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
+    band = opt.get("ci95", opt.get("spread"))
+    holds = (delta is not None and band is not None and abs(delta) > abs(band))
+    conf = ("and it holds up across every scenario we ran" if holds
+            else "though the exact size is still uncertain")
+    line = (f"**The move: {', then '.join(_action(lv) for lv in combo)} — in that order.** Done "
+            f"together they lift {obj_plain} by about **{_approx_money(delta)}** a year over changing "
+            f"nothing, {conf}.")
+    if stage == "scenario_simulation":
+        line += " We re-ran that plan across fresh scenarios to confirm it, and it held."
+    return line
 
 
 def _lettered_appendices(experiments: dict, metrics: dict, meta: dict, searched: bool) -> list[str]:

@@ -118,231 +118,127 @@ def baseline_report(tmp_path):
 
 @pytest.fixture
 def searched_report(tmp_path):
-    """A run whose lever search completed — all three phases."""
+    """The optimization stage — adds the recommendation, not yet the scenario confirmation."""
     return build_report(_write_run(tmp_path),
-                        {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY})
+                        {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY,
+                         "stage": "lever_optimization"})
 
 
-# --- what the reader must be able to find -----------------------------------------
-
-def test_opens_by_explaining_the_model(baseline_report):
-    """Before any number, the report says what was simulated and at what scale."""
-    assert "## What this is" in baseline_report
-    assert "4 quarters" in baseline_report                 # scale, in quarters not sprints
-    assert "10 matters per quarter" in baseline_report
-    assert "20 independent scenarios" in baseline_report
-    assert "not a forecast" in baseline_report.lower()
-    # A mock run must say so — a reader who thinks real AI made these calls is misled.
-    assert "stand-in" in baseline_report
-
-
-def test_every_input_says_what_it_drives(baseline_report):
-    """An input the reader can't connect to an outcome is a question answered for nothing."""
-    section = baseline_report.split("## 1.")[1].split("## 2.")[0]
-    # One "Drives:" clause per input bullet, not a token few.
-    assert section.count("*Drives:*") >= 7
-    assert "the sign on every hour AI saves" in section     # pricing_posture
-    assert "who can veto the change" in section             # origination_concentration
-
-
-def test_reconciles_stated_and_simulated_baseline(searched_report):
-    """The stated PPP and the model's starting PPP differ for a real reason. Unexplained,
-    the pair reads as an arithmetic error."""
-    assert "One number to reconcile" in searched_report
-    assert "$3,000,000" in searched_report                  # what the firm reported
-    assert "$2,560,000" in searched_report                  # where the model starts
-    assert "$440,000" in searched_report                    # the gap, stated explicitly
-    assert "rewriting 80.0% of drafts" in searched_report   # and attributed to a cause
-
-
-def test_reconciliation_suppressed_when_baselines_agree(tmp_path):
-    """No gap, no paragraph. Explaining a difference that isn't there invents a problem."""
-    run_dir = _write_run(tmp_path, stated_ppp=2_560_000)
-    report = build_report(run_dir, {"run": RUN_BLOCK})
-    assert "One number to reconcile" not in report
-
-
-def test_phases_are_named_and_counted(searched_report):
-    """The reader can size the evidence behind the recommendation."""
-    section = searched_report.split("## 2.")[1].split("## 3.")[0]
-    assert "Phase 1 — the baseline" in section
-    assert "Phase 2 — the lever search" in section
-    assert "Phase 3" in section
-    assert "196 simulations" in section                     # the search's real size
-    assert "8 scenarios each" in section                    # round seeds
-    assert "20 fresh scenarios" in section                  # the confirming Monte Carlo
-
-
-def test_trajectories_are_attributed_to_phase_one(searched_report):
-    """The single most confusing thing in the old report: charts from the baseline run
-    sitting under a recommendation from a different set of simulations."""
-    assert "none of Phase 2 appears in the trajectory charts" in searched_report
-    trajectories = searched_report.split("Quarter-by-quarter trajectories")[1]
-    assert "baseline only" in trajectories
-
-
-def test_baseline_run_omits_the_recommendation(baseline_report):
-    """No search, no verdict. Inventing one is worse than not having it."""
-    assert "## 4. What the lever search added" not in baseline_report
-    assert "Lever-by-lever results" not in baseline_report
-    assert "**Not run.**" in baseline_report
-    assert "The next step is to run the lever search" in baseline_report
-
-
-def test_searched_run_reports_the_interaction_findings(searched_report):
-    """The findings a one-lever-at-a-time comparison structurally cannot produce — this is
-    what the search is for."""
-    section = searched_report.split("## 4.")[1].split("## 5.")[0]
-    assert "changes sign depending on how you bill" in section
-    assert "-$40,000" in section and "+$45,000" in section   # both sides of the flip
-    assert "compound each other" in section
-    assert "+$60,000" in section                             # the synergy, quantified
-
-
-def test_recommendation_states_order_and_confidence(searched_report):
-    section = searched_report.split("## 5.")[1]
-    assert "Pull comp, pricing, seams" in section
-    assert "+$380,000" in section
-    assert "$28,000" in section                              # the CI half-width
-    assert "The order is part of the recommendation" in section
-    assert "does not include" in section                     # implementation cost caveat
-
-
-def test_surfaces_the_calibration_question_that_would_sharpen_it(searched_report):
-    """'Calibrate the model' is not actionable. One answerable question is."""
-    assert "AFA margin conversion" in searched_report
-    assert "On flat-fee matters, when AI cuts the hours, how much do you keep?" in searched_report
-
-
-# --- claims the report must not overstate -------------------------------------------
-#
-# Each of these was a real bug, found by running the report against live optimizer output
-# rather than a hand-written fixture. A noisy few-seed search produces exact zeros, trivial
-# interactions, and bands wider than the effect — and the prose asserted findings anyway.
-
-def _searched(tmp_path, **optimize_overrides) -> str:
-    opt = {**OPTIMIZE, **optimize_overrides}
+@pytest.fixture
+def scenario_report(tmp_path):
+    """The final stage — the full story, including what the simulation showed."""
     return build_report(_write_run(tmp_path),
-                        {"run": RUN_BLOCK, "optimize": opt, "sensitivity": SENSITIVITY})
+                        {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY,
+                         "stage": "scenario_simulation", "prior": {"best_delta": 380_000}})
 
 
-def test_a_zero_effect_is_not_reported_as_a_sign(tmp_path):
-    """'+$0' reads as a gain that rounded away. The lever did nothing; say that."""
-    report = _searched(tmp_path, interactions={
-        "pricingxseams": {"both": 360_000, "additive": 300_000, "synergy": 60_000},
-        "comp_x_pricing": {"delta": 0.0},
-    })
-    assert "+$0" not in report
-    assert "no measurable difference" in report
-    assert "It stays negative" not in report      # zero is not negative
+
+# --- the report is one story a partner can read top to bottom -----------------------
+
+def test_bottom_line_leads_with_the_answer(searched_report, baseline_report):
+    """A partner who reads only the first paragraph should get the decision (searched) or
+    the situation (baseline)."""
+    assert "## The bottom line" in searched_report
+    assert "The move:" in searched_report and "in that order" in searched_report
+    # Baseline has no recommendation to lead with — it points at the decision instead.
+    assert "The move:" not in baseline_report
+    assert "five changes" in baseline_report.lower()
 
 
-def test_a_trivial_interaction_is_not_called_an_interaction(tmp_path):
-    """A 2% gap across a handful of scenarios is a rounding artifact. Calling it 'more than
-    the sum of its parts' is the overclaim this report exists to avoid."""
-    report = _searched(tmp_path, interactions={
-        "pricingxseams": {"both": 576_000, "additive": 565_000, "synergy": 11_000},
-        "comp_x_pricing": {"delta": 45_000},
-    })
-    assert "too small to read as interaction" in report
-    assert "compound each other" not in report
-    assert "you get less than half" not in report
+def test_your_firm_is_recognizable_and_reconciled(searched_report):
+    """The 'Your firm' section names the firm's traits and reconciles stated vs simulated PPP."""
+    section = searched_report.split("## Your firm")[1].split("## Where")[0]
+    assert "billing by the hour" in section
+    assert "One number to reconcile" in section
+    assert "$440,000" in section                          # the gap, stated plainly
 
 
-def test_a_band_wider_than_the_effect_is_flagged_not_asserted(tmp_path):
-    """Whether the confidence band clears zero is a fact to check, not a line to print."""
-    wide = _searched(tmp_path, best_delta=100_000, ci95=170_000)
-    assert "wide enough to touch zero" in wide
-    assert "rather than a lucky draw" not in wide
-
-    narrow = _searched(tmp_path, best_delta=568_000, ci95=28_000)
-    assert "doesn't reach zero" in narrow
-    assert "wide enough to touch zero" not in narrow
+def test_heading_unchanged_shows_the_slide(searched_report):
+    section = searched_report.split("## Where it's heading")[1].split("## The changes")[0]
+    assert "profit per partner moves from" in section
+    assert "%)" in section                                # the percentage move
 
 
-def test_sequencing_steps_are_numbered_contiguously(tmp_path):
-    """Which steps apply depends on which levers won. A list reading 1, 2, 4 looks broken."""
-    report = _searched(tmp_path, best_combo=["latency", "pricing", "seams"])
-    section = report.split("The order is part of the recommendation")[1]
-    steps = [int(ln.split(".")[0]) for ln in section.splitlines()
-             if ln[:1].isdigit() and ". " in ln[:4]]
-    assert steps == list(range(1, len(steps) + 1))
-    assert len(steps) >= 3
+def test_changes_on_the_table_lists_five_plain_options(searched_report):
+    section = searched_report.split("## The changes on the table")[1].split("## The recommendation")[0]
+    for name in ("Flat-fee pricing", "Codified hand-offs", "AI-adoption pay", "Faster action", "Flatter pyramid"):
+        assert name in section
 
 
-# --- what must never reach the reader ----------------------------------------------
-
-@pytest.mark.parametrize("ident", ["pricingxseams", "comp_x_pricing", "margin_ai_afa_gain",
-                                   "margin_redline_penalty", "delta_ppp", "best_combo"])
-def test_internal_identifiers_stay_out_of_the_prose(searched_report, ident):
-    """Appendix D is the raw config record and is allowed to show field names; nothing
-    before it should."""
-    prose = searched_report.split("— The exact configuration")[0]
-    assert ident not in prose
-
-
-def test_no_apology_for_missing_data(tmp_path):
-    """A section with nothing to say says nothing. The old graceful-miss string shipped to
-    the reader as a bare confusing sentence."""
-    run_dir = tmp_path / "run_empty"
-    run_dir.mkdir()
-    (run_dir / "meta.json").write_text(json.dumps({"firm_name": "Empty LLP", "sprints": 4,
-                                                   "matters_per_sprint": 10}))
-    report = build_report(run_dir, {"optimize": OPTIMIZE})
-    assert "Insufficient data" not in report
-    assert "_No metric history was recorded" in report      # the honest version instead
+def test_recommendation_gives_order_standing_and_method(searched_report):
+    section = searched_report.split("## The recommendation")[1].split("## What the simulation")[0]
+    assert "Why that order." in section
+    assert "Flat fees first" in section
+    # comp's sign flip, stated once, in plain terms
+    assert "flips with how you bill" in section
+    assert "How we got there." in section
+    assert "What this doesn't include." in section
 
 
-# --- structure ---------------------------------------------------------------------
-
-def _headings(report: str) -> list[str]:
-    return [ln for ln in report.splitlines() if ln.startswith("## ")]
-
-
-def test_section_numbering_has_no_gaps(baseline_report, searched_report):
-    """A baseline run has no section 4 to show, so 'what to do' becomes 4, not 5."""
-    assert "## 4. What to do, and what it's worth" in baseline_report
-    assert "## 5. What to do, and what it's worth" in searched_report
-    for report in (baseline_report, searched_report):
-        numbers = [int(h.split(".")[0][3:]) for h in _headings(report)
-                   if h[3:4].isdigit()]
-        assert numbers == list(range(1, len(numbers) + 1))
+def test_scenario_section_says_what_the_sim_did_and_showed(scenario_report):
+    section = scenario_report.split("## What the simulation did")[1].split("## How to read")[0]
+    assert "fresh scenarios" in section
+    assert "whichever way the year breaks" in section or "provisional" in section
 
 
-def test_appendix_lettering_has_no_gaps(baseline_report, searched_report):
-    """The lever appendix only exists on a searched run; the letters must close up."""
-    for report in (baseline_report, searched_report):
-        letters = [h.split("Appendix ")[1][0] for h in _headings(report)
-                   if "Appendix " in h]
-        assert letters == list("ABCDEFGH"[:len(letters)])
+def test_baseline_stops_before_the_recommendation(baseline_report):
+    """No search, no recommendation section and no scenario section — inventing one is worse."""
+    assert "## The recommendation" not in baseline_report
+    assert "## What the simulation did" not in baseline_report
+    assert "## The changes on the table" in baseline_report   # the options still stand
 
 
-def test_no_variable_names_or_math_notation_reach_the_reader(searched_report):
-    """A managing partner reads this, not an engineer. No database field names, no Greek,
-    no evidence tags — the machinery stays behind plain language."""
+# --- executive lens: plain language, no machinery -----------------------------------
+
+def test_no_variable_names_jargon_or_math_reaches_the_reader(searched_report):
     forbidden = [
-        "pricing_posture", "leverage_ratio", "origination_concentration",
-        "practice_mix_transactional", "partner_power_mix", "tech_maturity",
-        "partner_ai_usage", "attrition_intensity", "baseline_ppp",
+        "pricing_posture", "leverage_ratio", "origination_concentration", "baseline_ppp",
         "Δ PPP", "Δ margin", "coefficient", "[SURVEY]", "[INFERRED]", "[ASSUMPTION]",
-        "| field | value |", "1σ", "95% CI",
+        "| field | value |", "1σ", "95% CI", "PPP of", "Phase 1", "Phase 2", "the band does not reach zero",
     ]
     for token in forbidden:
         assert token not in searched_report, f"leaked to the reader: {token!r}"
 
 
 def test_firm_appendix_reads_in_plain_language(searched_report):
-    """Appendix D is the firm on the record — human labels and plain values, not raw dials."""
     section = searched_report.split("Your firm, on the record")[1]
     assert "How you bill:" in section
-    assert "billing by the hour" in section          # humanized, not "hourly"
+    assert "billing by the hour" in section
     assert "Associates per partner:" in section
 
 
+def test_calibration_question_is_surfaced(searched_report):
+    """One answerable question beats 'calibrate the model' — kept in the appendix now."""
+    assert "AFA margin conversion" in searched_report
+
+
+# --- structure ---------------------------------------------------------------------
+
+def _headings(report):
+    return [ln for ln in report.splitlines() if ln.startswith("## ")]
+
+
+def test_appendix_lettering_has_no_gaps(baseline_report, searched_report):
+    for report in (baseline_report, searched_report):
+        letters = [h.split("Appendix ")[1][0] for h in _headings(report) if "Appendix " in h]
+        assert letters == list("ABCDEFGH"[:len(letters)])
+
+
 def test_headings_are_separated_from_their_prose(searched_report):
-    """Markdown needs the blank line. An earlier assembly bug stripped them and glued
-    headings onto the paragraph below, which broke list and table rendering."""
     lines = searched_report.splitlines()
     for i, line in enumerate(lines[:-1]):
         if line.startswith("#"):
             assert lines[i + 1].strip() == "", f"no blank line after heading: {line!r}"
+
+
+def test_no_apology_for_missing_data(tmp_path):
+    """A run with no metric history says so plainly, never '_Insufficient data_'."""
+    import json
+    run_dir = tmp_path / "empty"
+    run_dir.mkdir()
+    (run_dir / "meta.json").write_text(json.dumps({
+        "run_id": "empty", "firm_name": "Testwell LLP", "sprints": 4, "matters_per_sprint": 10,
+        "firm_signature": {"pricing_posture": "hourly", "leverage_ratio": 3.5},
+    }))
+    report = build_report(run_dir, {"optimize": OPTIMIZE})
+    assert "Insufficient data" not in report
