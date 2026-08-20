@@ -20,6 +20,41 @@ from app.services.descrybe import DescrybeClient
 
 QUOTE_RE = re.compile(r'"([^"\n]{15,})"|“([^”\n]{15,})”')
 
+# Extraction over a very large document in a single Descrybe call can exceed the
+# request timeout (resolve=True resolves + reads treatment for every citation in
+# one round trip). Split anything past this threshold into chunks that each stay
+# comfortably under the timeout, then stitch the results back together with
+# corrected global character offsets.
+_EXTRACT_CHUNK_CHARS = 20_000
+
+
+def _chunk_text(text: str, max_chars: int = _EXTRACT_CHUNK_CHARS) -> list[tuple[int, str]]:
+    """Split text into (offset, chunk) pairs, preferring paragraph boundaries.
+
+    Offsets are character positions into the original ``text`` so extracted
+    citation spans can be shifted back to global coordinates.
+    """
+    if len(text) <= max_chars:
+        return [(0, text)]
+
+    chunks: list[tuple[int, str]] = []
+    pos = 0
+    n = len(text)
+    while pos < n:
+        end = min(pos + max_chars, n)
+        if end < n:
+            # Back up to the last paragraph/line/space break to avoid slicing a
+            # citation in half; fall back to a hard cut if none is found.
+            window = text[pos:end]
+            for sep in ("\n\n", "\n", " "):
+                idx = window.rfind(sep)
+                if idx > max_chars // 2:
+                    end = pos + idx + len(sep)
+                    break
+        chunks.append((pos, text[pos:end]))
+        pos = end
+    return chunks
+
 # Map Descrybe treatment indicator -> a compact status label + glyph
 _STATUS = {
     "positive": ("good", "✓"),
@@ -82,16 +117,54 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID):
     yield {"type": "log", "message": "Starting cite check…"}
     yield {"type": "log", "message": f"Document: {len(text):,} characters"}
 
-    # 1. Descrybe extract_case_references — extract + resolve + treat in one call
+    # 1. Descrybe extract_case_references — extract + resolve + treat.
+    # Large documents are chunked so no single call risks the request timeout;
+    # spans are shifted back to global offsets and duplicate cases merged.
     yield {"type": "log", "message": "Descrybe extract_case_references — extracting citations, resolving to case IDs, and checking good-law treatment…"}
-    try:
-        data = await client.extract_references(text, resolve=True)
-    except Exception as e:
-        yield {"type": "error", "message": f"Cite check failed: {e}"}
-        yield {"type": "done"}
-        return
+    chunks = _chunk_text(text)
+    if len(chunks) > 1:
+        yield {"type": "log", "message": f"  Large document — extracting in {len(chunks)} chunks to stay under the request timeout."}
 
-    refs = data.get("references", [])
+    refs: list[dict] = []
+    seen: dict[str, dict] = {}
+    for i, (offset, chunk) in enumerate(chunks):
+        try:
+            data = await client.extract_references(chunk, resolve=True)
+        except Exception as e:
+            detail = str(e) or repr(e)
+            hint = ""
+            if "timed out" in detail.lower() or "timeout" in type(e).__name__.lower():
+                hint = " (raise DESCRYBE_TIMEOUT_SECONDS or lower _EXTRACT_CHUNK_CHARS)"
+            yield {"type": "error", "message": f"Cite check failed on chunk {i + 1}/{len(chunks)}: {type(e).__name__}: {detail}{hint}"}
+            yield {"type": "done"}
+            return
+
+        for ref in data.get("references", []):
+            # Shift every span from chunk-local to document-global coordinates.
+            span = ref.get("span")
+            if isinstance(span, dict):
+                if span.get("start") is not None:
+                    span["start"] += offset
+                if span.get("end") is not None:
+                    span["end"] += offset
+            for sp in ref.get("spans") or []:
+                if isinstance(sp, dict):
+                    if sp.get("start") is not None:
+                        sp["start"] += offset
+                    if sp.get("end") is not None:
+                        sp["end"] += offset
+
+            # Merge duplicate authorities across chunks (keep the first, richest
+            # occurrence for annotation/attribution).
+            key = ref.get("case_id") or ((ref.get("resolution") or {}).get("resolved") or {}).get("case_id") \
+                or ref.get("case_name_hint") or ref.get("citation_text") or ref.get("raw_text")
+            if key and key in seen:
+                prior = seen[key]
+                prior["occurrence_count"] = (prior.get("occurrence_count") or 1) + (ref.get("occurrence_count") or 1)
+                continue
+            if key:
+                seen[key] = ref
+            refs.append(ref)
     resolved = [r for r in refs if r.get("case_id") or (r.get("resolution") or {}).get("resolved")]
     yield {"type": "log", "message": f"Descrybe found {len(refs)} citation reference(s); {len(resolved)} resolved to case IDs."}
 
