@@ -72,6 +72,7 @@ export default function CiteCheckPage() {
   const [report, setReport] = useState<CiteCheckReport | null>(null);
   const [brief, setBrief] = useState<{ name: string; content: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function CiteCheckPage() {
     setReport(null);
     setBrief(null);
     setError(null);
+    setWarning(null);
 
     const API_URL =
       process.env.NEXT_PUBLIC_LEGAL_OS_API_URL ||
@@ -128,6 +130,7 @@ export default function CiteCheckPage() {
             try { payload = JSON.parse(line.slice(6)); } catch { continue; }
             if (payload.type === 'log') setLogs((p) => [...p, payload.message]);
             else if (payload.type === 'error') setError(payload.message);
+            else if (payload.type === 'warning') setWarning(payload.message);
             else if (payload.type === 'report') setReport(payload.report);
             else if (payload.type === 'brief') setBrief({ name: payload.name, content: payload.content });
           }
@@ -239,6 +242,18 @@ export default function CiteCheckPage() {
             <div>
               <h3 className="text-sm font-semibold text-[var(--rose)] mb-1">Cite check failed</h3>
               <p className="text-sm text-[var(--text-dim)] break-words">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {warning && (
+        <div className="card p-6 border-l-4 mb-6" style={{ borderLeftColor: '#f59e0b' }}>
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#f59e0b' }} />
+            <div>
+              <h3 className="text-sm font-semibold mb-1" style={{ color: '#f59e0b' }}>Partial results</h3>
+              <p className="text-sm text-[var(--text-dim)] break-words">{warning}</p>
             </div>
           </div>
         </div>

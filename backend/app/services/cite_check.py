@@ -13,10 +13,29 @@ event and a ``brief`` event, so the frontend can stream a live log.
 
 from __future__ import annotations
 
+import asyncio
 import re
 from uuid import UUID
 
-from app.services.descrybe import DescrybeClient
+from app.services.descrybe import DescrybeClient, DescrybeRateLimited
+
+
+async def _extract_with_retry(client, chunk: str, attempts: int = 4):
+    """Call extract_references, backing off on Descrybe rate limits.
+
+    Chunked extraction fires several calls in quick succession; Descrybe throttles
+    bursts, so retry the rate-limited ones with exponential backoff (2s, 4s, 8s)
+    rather than letting a 429 masquerade as 'no citations found'.
+    """
+    delay = 2
+    for i in range(attempts):
+        try:
+            return await client.extract_references(chunk, resolve=True)
+        except DescrybeRateLimited:
+            if i == attempts - 1:
+                raise
+            await asyncio.sleep(delay)
+            delay *= 2
 
 QUOTE_RE = re.compile(r'"([^"\n]{15,})"|“([^”\n]{15,})”')
 
@@ -188,8 +207,18 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
     refs: list[dict] = []
     seen: dict[str, dict] = {}
     for i, (offset, chunk) in enumerate(chunks):
+        if i > 0:
+            await asyncio.sleep(1)  # gentle pace between chunk calls to avoid throttling
         try:
-            data = await client.extract_references(chunk, resolve=True)
+            data = await _extract_with_retry(client, chunk)
+        except DescrybeRateLimited:
+            yield {"type": "error", "message": (
+                "Descrybe rate-limited this request (too many calls in a short window — "
+                "e.g. another cite-check or research session running at the same time). "
+                "No results were lost; wait a minute and run it again."
+            )}
+            yield {"type": "done"}
+            return
         except Exception as e:
             detail = str(e) or repr(e)
             hint = ""
@@ -199,7 +228,7 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
             yield {"type": "done"}
             return
 
-        for ref in data.get("references", []):
+        for ref in (data or {}).get("references", []):
             # Shift every span from chunk-local to document-global coordinates.
             span = ref.get("span")
             if isinstance(span, dict):
@@ -252,6 +281,7 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
     # entirely (counted as skipped) rather than reported as "unverifiable".
     quote_results = []
     skipped = 0
+    quotes_rate_limited = False
     for start, q in quotes:
         end = start + len(q)
         # Obvious non-case language (statute, testimony, contract, defined term,
@@ -278,10 +308,18 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
             mark = "✓" if found else "✗"
             note = "exact match" if found else "NO MATCH — possible misquote"
             yield {"type": "log", "message": f"  {mark} “{q[:60]}…” → {title} ({note})"}
+        except DescrybeRateLimited:
+            # Stop verifying — further calls will also fail. Flag it loudly rather
+            # than silently under-reporting misquotes.
+            quotes_rate_limited = True
+            yield {"type": "log", "message": "  ! Descrybe rate-limited during quote checks — stopping quote verification."}
+            break
         except Exception as e:
             skipped += 1
             yield {"type": "log", "message": f"  ! quote check failed: {e}"}
 
+    if quotes_rate_limited:
+        yield {"type": "warning", "message": "Quote verification was cut short by a Descrybe rate limit — some quotes were not checked. Re-run in a minute for complete quote results."}
     if skipped:
         yield {"type": "log", "message": f"  ({skipped} quoted passage(s) skipped — not case quotations)"}
 

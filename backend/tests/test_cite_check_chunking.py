@@ -213,6 +213,26 @@ def test_deep_pass_runs_corpus_search(monkeypatch):
     assert fix["correct_case"]["title"] == "Real v. Source"
 
 
+def test_rate_limit_surfaces_not_zero(monkeypatch):
+    from app.services.descrybe import DescrybeRateLimited
+
+    class _Client(_FakeClient):
+        async def extract_references(self, text, resolve=False):
+            raise DescrybeRateLimited("extract_case_references: rate-limited by Descrybe")
+
+    monkeypatch.setattr(cite_check, "DescrybeClient", _Client)
+    # patch sleep so backoff retries don't actually wait
+    import app.services.cite_check as cc
+    async def _nosleep(_): return None
+    monkeypatch.setattr(cc.asyncio, "sleep", _nosleep)
+
+    events = _drain(cite_check.run_cite_check("Some brief with 1 U.S. 1 cite.", "brief", uuid4()))
+    err = next((e for e in events if e["type"] == "error"), None)
+    assert err is not None and "rate-limited" in err["message"].lower()
+    # It must NOT emit a report claiming zero findings.
+    assert not any(e["type"] == "report" for e in events)
+
+
 def test_run_cite_check_surfaces_named_error(monkeypatch):
     class _BoomClient(_FakeClient):
         async def extract_references(self, text: str, resolve: bool = False):

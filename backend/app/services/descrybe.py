@@ -29,6 +29,10 @@ from app.database import get_supabase
 from app.services.audit import AuditTrail
 
 
+class DescrybeRateLimited(RuntimeError):
+    """Descrybe returned a rate-limit (HTTP 429) response."""
+
+
 # ---------------------------------------------------------------------------
 # Descrybe Legal Engine tool names (MCP endpoint)
 # ---------------------------------------------------------------------------
@@ -298,9 +302,32 @@ class DescrybeClient:
     # Case-level tools (citation intelligence suite)
     # ------------------------------------------------------------------
     async def call_case_tool(self, tool_name: str, arguments: dict) -> dict:
-        """Call any Descrybe case-level tool and unwrap the MCP result."""
+        """Call any Descrybe case-level tool and unwrap the MCP result.
+
+        Raises on error payloads (rate limits, upstream errors) so callers don't
+        mistake a failed call for an empty/clean result.
+        """
         raw = await asyncio.to_thread(self._get_engine().call_tool, tool_name, arguments)
-        return self._unwrap_tool_result(raw)
+        self._raise_for_error(raw, tool_name)
+        data = self._unwrap_tool_result(raw)
+        self._raise_for_error(data, tool_name)
+        return data
+
+    @staticmethod
+    def _raise_for_error(obj: Any, tool_name: str) -> None:
+        """Inspect an MCP response (or unwrapped payload) for an error signal."""
+        if not isinstance(obj, dict):
+            return
+        blob = obj.get("result") if isinstance(obj.get("result"), dict) else obj
+        err = blob.get("error")
+        code = str(blob.get("error_code") or blob.get("reason_code") or "").lower()
+        status = str(blob.get("status") or "").lower()
+        http = blob.get("http_status") or blob.get("status_code")
+        err_text = f"{err} {code}".lower() if err else code
+        if http == 429 or "rate_limit" in err_text or "rate-limit" in err_text:
+            raise DescrybeRateLimited(f"{tool_name}: rate-limited by Descrybe")
+        if err or status in ("error", "failed") or blob.get("isError"):
+            raise RuntimeError(f"{tool_name}: {err or code or status}")
 
     async def get_case_by_id(self, case_id: str) -> dict:
         return await self.call_case_tool(TOOL_CASE_DETAILS, {"case_id": case_id})
