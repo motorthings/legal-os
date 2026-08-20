@@ -70,6 +70,8 @@ _STATUS = {
 _STATUTE_RE = re.compile(r"§|\bU\.?S\.?C\.?\b|\bC\.?F\.?R\.?\b|\bC\.?R\.?S\.?\b|\bFed\.?\s*R\.?\s*(Civ|Crim|Evid|App)\b|\bRule\s+\d|\bSection\s+\d", re.IGNORECASE)
 _SPEAKER_RE = re.compile(r"\b(testified|deposition|declar(ed|ation)|affidavit|stated in (his|her|their|the)|wrote(?: that)?|email|Dep\.|Decl\.|Tr\.)\b", re.IGNORECASE)
 _CONTRACT_RE = re.compile(r"\b(agreement|contract|policy|handbook|the (offer|separation) )\b", re.IGNORECASE)
+# Arbitration / filing-structure language: the document's own prose, not a case.
+_ARBITRATION_RE = re.compile(r"\b(JAMS|arbitrat(or|ion)|Claimant|Respondent|Demand for Arbitration|Streamlined Rules|Comprehensive Rules|Employment (Arbitration )?Rules|prayer for relief|relief requested|WHEREFORE)\b", re.IGNORECASE)
 
 
 def _classify_non_case_quote(context_before: str, quote: str) -> str | None:
@@ -79,6 +81,8 @@ def _classify_non_case_quote(context_before: str, quote: str) -> str | None:
     clause). Returns ``None`` when nothing rules it out as a case quote.
     """
     window = f"{context_before} {quote}"
+    if _ARBITRATION_RE.search(window):
+        return "arbitration filing language (JAMS rules / party terms) — part of the document, no case to verify"
     if _STATUTE_RE.search(window):
         return "statute or rule text — verify against the code (search_laws_and_rules), not a case opinion"
     if _SPEAKER_RE.search(context_before):
@@ -259,7 +263,7 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
         if not owner:
             quote_results.append({
                 "text": q, "attributed_to": None, "verified": None,
-                "category": "unverifiable", "reason": "no case citation within range (likely a statute, contract, or party quote)",
+                "category": "unverifiable", "reason": "no case citation nearby — part of the filing's own prose, not a case quotation (no action needed)",
             })
             yield {"type": "log", "message": f"  – “{q[:60]}…” — no nearby case cite (skipped)"}
             continue
@@ -482,7 +486,7 @@ def _build_appendix(report: dict) -> str:
             cite = f" — {q['citation']}" if q.get("citation") else ""
             lines.append(f"- ✗ “{q['text']}” → **{q.get('attributed_to') or 'case'}**{cite}")
     if unverifiable:
-        lines += ["", "### Unverifiable quotes (no resolved case cite nearby — review manually)", ""]
+        lines += ["", "### Non-case quotes (filing prose / JAMS rules / party terms — no action needed)", ""]
         for q in unverifiable:
             reason = f" _{q.get('reason')}_" if q.get("reason") else ""
             lines.append(f"- ? “{q['text']}” —{reason}")

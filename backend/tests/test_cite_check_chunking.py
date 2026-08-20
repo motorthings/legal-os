@@ -155,6 +155,8 @@ def test_non_case_quote_classifier():
     assert c("the plaintiff testified that", "I never agreed to that") is not None
     assert c("under the separation agreement", "for cause termination") is not None
     assert c('the term means', "Confidential Information") is not None      # short defined term
+    assert c("pursuant to JAMS", "Employment Arbitration Rules & Procedures") is not None
+    assert c("Claimant seeks the following", "relief requested in this Demand") is not None
     # A genuine case-holding quote with a neutral intro is NOT filtered out.
     assert c("the court held that", "an employer may not retaliate against a worker who complains") is None
 

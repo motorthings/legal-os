@@ -260,7 +260,7 @@ export default function CiteCheckPage() {
               { label: 'Bad law', value: report.bad_law, color: '#ef4444' },
               { label: 'Quotes verified', value: report.quotes_verified, color: '#22c55e' },
               { label: 'Misquotes', value: report.quotes_failed, color: '#ef4444' },
-              { label: 'Unverifiable', value: report.quotes_unverifiable ?? 0, color: '#94a3b8' },
+              { label: 'Non-case quotes', value: report.quotes_unverifiable ?? 0, color: '#94a3b8' },
             ].map((s) => (
               <div key={s.label} className="card p-4">
                 <div className="text-2xl font-bold font-mono" style={{ color: s.color }}>{s.value}</div>
@@ -337,7 +337,7 @@ export default function CiteCheckPage() {
                 {unverifiable.length > 0 && (
                   <details className="card p-4">
                     <summary className="cursor-pointer text-sm font-medium text-[var(--text-dim)]">
-                      Unverifiable quotes — {unverifiable.length} (no nearby case cite; likely statute, contract, or party quote)
+                      Non-case quotes — {unverifiable.length} · no action needed (filing prose, JAMS rules, party terms — not case quotations)
                     </summary>
                     <div className="mt-3 space-y-2">
                       {unverifiable.map((q, i) => (
