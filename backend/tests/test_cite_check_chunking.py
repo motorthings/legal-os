@@ -81,6 +81,41 @@ def test_run_cite_check_merges_dupes_and_globalizes_spans(monkeypatch):
     assert any(e["type"] == "brief" for e in events)
 
 
+def test_quote_owner_requires_proximity():
+    from app.services.cite_check import _resolve_quote_owner, _QUOTE_PROXIMITY_CHARS
+
+    refs = [{"span": {"start": 0, "end": 12}, "case_id": "c1"}]
+    # Quote right after the cite → attributed.
+    assert _resolve_quote_owner(refs, 20, 60) is refs[0]
+    # Quote far past the proximity window → not a case quote.
+    far = _QUOTE_PROXIMITY_CHARS + 100
+    assert _resolve_quote_owner(refs, far, far + 40) is None
+
+
+def test_quote_classification_buckets(monkeypatch):
+    # One resolved cite; a quote next to it that verify_quote rejects → misquote.
+    # A quote with no cite anywhere near → unverifiable, NOT a failure.
+    class _Client(_FakeClient):
+        async def extract_references(self, text, resolve=False):
+            return {"references": [{
+                "case_id": "c1", "citation_text": "1 U.S. 1",
+                "span": {"start": 0, "end": 10}, "spans": [{"start": 0, "end": 10}],
+                "resolution": {"resolved": {"case_id": "c1", "title": "A v. B"}},
+                "treatment": {"indicator": "positive"},
+            }]}
+
+        async def verify_quote(self, case_id, quote):
+            return {"found": False}
+
+    monkeypatch.setattr(cite_check, "DescrybeClient", _Client)
+    text = '1 U.S. 1 said "this exact phrase here" and later.' + (" filler" * 200) + ' then "an orphan quote with no cite"'
+    by_type, _ = _run(text)
+    report = by_type["report"]["report"]
+    assert report["quotes_failed"] == 1          # the near-cite mismatch
+    assert report["quotes_unverifiable"] == 1    # the orphan quote
+    assert report["quotes_verified"] == 0
+
+
 def test_run_cite_check_surfaces_named_error(monkeypatch):
     class _BoomClient(_FakeClient):
         async def extract_references(self, text: str, resolve: bool = False):

@@ -74,15 +74,39 @@ def _extract_quotes(text: str) -> list[tuple[int, str]]:
     return quotes
 
 
-def _resolve_quote_owner(refs: list[dict], quote_start: int) -> dict | None:
-    """Attribute a quote to the most recent citation whose span ends before it."""
+# A quote is only treated as belonging to a citation when the cite sits within
+# this many characters of the quote (on either side). Legal writing puts the
+# cite right before or right after the quoted passage; anything farther away is
+# almost certainly a different source (statute, contract, party statement) and
+# should not be scored as a failed *case* quote.
+_QUOTE_PROXIMITY_CHARS = 400
+
+
+def _resolve_quote_owner(refs: list[dict], quote_start: int, quote_end: int) -> dict | None:
+    """Attribute a quote to the nearest citation within the proximity window.
+
+    Legal style places a quote's supporting cite immediately before or after it,
+    so we take the closest citation span in either direction and require it to be
+    within ``_QUOTE_PROXIMITY_CHARS``. Returns ``None`` when no cite is close
+    enough — i.e. the quote is probably not a case quotation at all.
+    """
     best = None
+    best_dist: int | None = None
     for ref in refs:
         span = ref.get("span") or {}
-        end = span.get("end", 0)
-        if end <= quote_start:
-            if best is None or end > (best.get("span") or {}).get("end", 0):
-                best = ref
+        s, e = span.get("start"), span.get("end")
+        if s is None or e is None:
+            continue
+        if e <= quote_start:
+            dist = quote_start - e          # cite before the quote
+        elif s >= quote_end:
+            dist = s - quote_end            # cite after the quote
+        else:
+            dist = 0                        # overlapping / inline
+        if best_dist is None or dist < best_dist:
+            best, best_dist = ref, dist
+    if best is None or (best_dist is not None and best_dist > _QUOTE_PROXIMITY_CHARS):
+        return None
     return best
 
 
@@ -181,27 +205,48 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID):
     quotes = _extract_quotes(text)
     yield {"type": "log", "message": f"Descrybe verify_quote — checking {len(quotes)} quoted passage(s) word-for-word…"}
 
+    # Each quote lands in one of three buckets:
+    #   verified     — matched word-for-word in the resolved case (verified=True)
+    #   misquote     — attributed to a RESOLVED case but not found (verified=False)
+    #   unverifiable — no nearby case cite, or the nearby cite didn't resolve, so
+    #                  it can't be a case-quote failure (verified=None + reason)
     quote_results = []
     for start, q in quotes:
-        owner = _resolve_quote_owner(refs, start)
+        end = start + len(q)
+        owner = _resolve_quote_owner(refs, start, end)
         if not owner:
-            quote_results.append({"text": q, "attributed_to": None, "verified": None})
-            yield {"type": "log", "message": f"  ? Could not attribute quote to a case: “{q[:60]}…”"}
+            quote_results.append({
+                "text": q, "attributed_to": None, "verified": None,
+                "category": "unverifiable", "reason": "no case citation within range (likely a statute, contract, or party quote)",
+            })
+            yield {"type": "log", "message": f"  – “{q[:60]}…” — no nearby case cite (skipped)"}
             continue
         case_id = owner.get("case_id") or ((owner.get("resolution") or {}).get("resolved") or {}).get("case_id")
         title = ((owner.get("resolution") or {}).get("resolved") or {}).get("title") or owner.get("case_name_hint") or "case"
+        citation = owner.get("citation_text") or owner.get("raw_text")
         if not case_id:
-            quote_results.append({"text": q, "attributed_to": title, "verified": None})
-            yield {"type": "log", "message": f"  ? {title} not resolved — skipping quote"}
+            quote_results.append({
+                "text": q, "attributed_to": title, "citation": citation, "verified": None,
+                "category": "unverifiable", "reason": "nearest citation did not resolve to a case",
+            })
+            yield {"type": "log", "message": f"  – “{q[:60]}…” → {title} (unresolved cite — skipped)"}
             continue
         try:
             result = await client.verify_quote(case_id, q)
             found = bool(result.get("found"))
-            quote_results.append({"text": q, "attributed_to": title, "verified": found, "case_id": case_id})
+            quote_results.append({
+                "text": q, "attributed_to": title, "citation": citation,
+                "verified": found, "case_id": case_id,
+                "category": "verified" if found else "misquote",
+            })
             mark = "✓" if found else "✗"
-            yield {"type": "log", "message": f"  {mark} “{q[:60]}…” → {title} ({'exact match' if found else 'no match'})"}
+            note = "exact match" if found else "NO MATCH — possible misquote"
+            yield {"type": "log", "message": f"  {mark} “{q[:60]}…” → {title} ({note})"}
         except Exception as e:
-            quote_results.append({"text": q, "attributed_to": title, "verified": None})
+            quote_results.append({
+                "text": q, "attributed_to": title, "citation": citation, "verified": None,
+                "category": "unverifiable", "reason": f"verify_quote error: {e}",
+            })
             yield {"type": "log", "message": f"  ! quote check failed: {e}"}
 
     # 3. Build report
@@ -217,7 +262,11 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID):
         "unknown": 0,
         "quotes_checked": len(quote_results),
         "quotes_verified": sum(1 for q in quote_results if q["verified"] is True),
-        "quotes_failed": sum(1 for q in quote_results if q["verified"] is False),
+        # quotes_failed now means REAL misquotes: attributed to a resolved case
+        # but not found word-for-word. (Was previously conflated with quotes that
+        # simply have no case owner — those are now quotes_unverifiable.)
+        "quotes_failed": sum(1 for q in quote_results if q.get("category") == "misquote"),
+        "quotes_unverifiable": sum(1 for q in quote_results if q.get("category") == "unverifiable"),
         "references": [],
         "quotes": quote_results,
     }
@@ -260,7 +309,7 @@ def _build_appendix(report: dict) -> str:
         f"- References found: {report['total_references']}",
         f"- Resolved: {report['resolved']}",
         f"- Good law: {report['good_law']}  ·  Caution: {report['caution']}  ·  Bad law: {report['bad_law']}  ·  Unknown: {report['unknown']}",
-        f"- Quotes checked: {report['quotes_checked']}  ·  Verified: {report['quotes_verified']}  ·  Failed: {report['quotes_failed']}",
+        f"- Quotes checked: {report['quotes_checked']}  ·  Verified: {report['quotes_verified']}  ·  Misquoted: {report['quotes_failed']}  ·  Unverifiable: {report.get('quotes_unverifiable', 0)}",
         "",
         "### Citations",
         "",
@@ -268,11 +317,23 @@ def _build_appendix(report: dict) -> str:
     for r in report["references"]:
         glyph = {"good": "✓", "bad": "✗", "caution": "⚠", "unknown": "?"}.get(r["status"], "?")
         lines.append(f"- {glyph} **{r['case_title']}** — {r['citation']} ({r['status']})")
-    if report["quotes"]:
-        lines.append("")
-        lines.append("### Quotes")
-        lines.append("")
-        for q in report["quotes"]:
-            mark = "✓" if q["verified"] is True else ("✗" if q["verified"] is False else "?")
-            lines.append(f"- {mark} “{q['text']}” — {q['attributed_to'] or 'unattributed'}")
+    quotes = report.get("quotes") or []
+    misquotes = [q for q in quotes if q.get("category") == "misquote"]
+    verified = [q for q in quotes if q.get("category") == "verified"]
+    unverifiable = [q for q in quotes if q.get("category") == "unverifiable"]
+
+    if misquotes:
+        lines += ["", "### ⚠ Misquotes to fix (attributed case resolved, text not found)", ""]
+        for q in misquotes:
+            cite = f" — {q['citation']}" if q.get("citation") else ""
+            lines.append(f"- ✗ “{q['text']}” → **{q.get('attributed_to') or 'case'}**{cite}")
+    if unverifiable:
+        lines += ["", "### Unverifiable quotes (no resolved case cite nearby — review manually)", ""]
+        for q in unverifiable:
+            reason = f" _{q.get('reason')}_" if q.get("reason") else ""
+            lines.append(f"- ? “{q['text']}” —{reason}")
+    if verified:
+        lines += ["", f"### ✓ Verified quotes ({len(verified)})", ""]
+        for q in verified:
+            lines.append(f"- ✓ “{q['text']}” → {q.get('attributed_to') or 'case'}")
     return "\n".join(lines)
