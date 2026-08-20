@@ -253,19 +253,24 @@ async def cite_check(
     Validate a brief/filing against Descrybe. Streams a live progress log,
     then a findings report and an annotated copy of the brief (new name).
 
-    Body: {text, name?}
+    Body: {text, name?, deep?}
+
+    When ``deep`` is true, each flagged item is drilled for a fix: misquotes get
+    the correct passage (get_case_passages), caution cites get the negative
+    forward-citation (find_cases_that_cite), unknown cites get a summary check.
     """
     _require_descrybe(user)
 
     text = (data.get("text") or "").strip()
     name = data.get("name")
+    deep = bool(data.get("deep"))
     if not text:
         raise HTTPException(status_code=400, detail="text is required")
 
     from app.services.cite_check import run_cite_check
 
     async def event_stream():
-        async for event in run_cite_check(text, name, user.id):
+        async for event in run_cite_check(text, name, user.id, deep=deep):
             yield f"data: {json.dumps(event, default=str)}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")

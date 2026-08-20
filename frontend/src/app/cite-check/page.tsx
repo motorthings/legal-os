@@ -20,6 +20,7 @@ interface CiteCheckReport {
   quotes_checked: number;
   quotes_verified: number;
   quotes_failed: number;
+  quotes_unverifiable?: number;
   references: {
     citation?: string;
     case_title: string;
@@ -43,6 +44,7 @@ export default function CiteCheckPage() {
   const { session } = useAuth();
   const [text, setText] = useState('');
   const [name, setName] = useState('');
+  const [deep, setDeep] = useState(false);
   const [running, setRunning] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [report, setReport] = useState<CiteCheckReport | null>(null);
@@ -77,7 +79,7 @@ export default function CiteCheckPage() {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ text, name: name || undefined }),
+        body: JSON.stringify({ text, name: name || undefined, deep }),
       });
 
       if (!res.ok || !res.body) {
@@ -155,7 +157,17 @@ export default function CiteCheckPage() {
           className="w-full rounded-lg border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 font-mono resize-y disabled:opacity-50"
           style={{ background: 'var(--surface2)' }}
         />
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <label className="inline-flex items-center gap-2 text-sm text-[var(--text-dim)] cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={deep}
+              onChange={(e) => setDeep(e.target.checked)}
+              disabled={running}
+              className="w-4 h-4 accent-[var(--primary)]"
+            />
+            Deep pass — pull correct passages for misquotes, drill caution/unknown cites (slower)
+          </label>
           <button
             onClick={handleRun}
             disabled={running || !text.trim()}
@@ -229,7 +241,8 @@ export default function CiteCheckPage() {
               { label: 'Caution', value: report.caution, color: '#f59e0b' },
               { label: 'Bad law', value: report.bad_law, color: '#ef4444' },
               { label: 'Quotes verified', value: report.quotes_verified, color: '#22c55e' },
-              { label: 'Quotes failed', value: report.quotes_failed, color: '#ef4444' },
+              { label: 'Misquotes', value: report.quotes_failed, color: '#ef4444' },
+              { label: 'Unverifiable', value: report.quotes_unverifiable ?? 0, color: '#94a3b8' },
             ].map((s) => (
               <div key={s.label} className="card p-4">
                 <div className="text-2xl font-bold font-mono" style={{ color: s.color }}>{s.value}</div>

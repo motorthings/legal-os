@@ -116,6 +116,38 @@ def test_quote_classification_buckets(monkeypatch):
     assert report["quotes_verified"] == 0
 
 
+def test_deep_pass_pulls_fixes(monkeypatch):
+    class _Client(_FakeClient):
+        async def extract_references(self, text, resolve=False):
+            return {"references": [{
+                "case_id": "c1", "citation_text": "1 U.S. 1",
+                "span": {"start": 0, "end": 10}, "spans": [{"start": 0, "end": 10}],
+                "resolution": {"resolved": {"case_id": "c1", "title": "A v. B"}},
+                "treatment": {"indicator": "caution", "category": "distinguished"},
+            }]}
+
+        async def verify_quote(self, case_id, quote):
+            return {"found": False}
+
+        async def get_case_passages(self, case_id, focus):
+            return {"passages": [{"text": "the real language from the opinion"}]}
+
+        async def find_cases_that_cite(self, case_id):
+            return {"results": [{"title": "C v. D", "treatment": {"indicator": "negative", "category": "overruled"}}]}
+
+    monkeypatch.setattr(cite_check, "DescrybeClient", _Client)
+    text = '1 U.S. 1 held "a phrase that will not match".'
+    events = _drain(cite_check.run_cite_check(text, "brief", uuid4(), deep=True))
+    report = next(e["report"] for e in events if e["type"] == "report")
+
+    fixes = report["fixes"]
+    assert fixes["misquotes"][0]["correct_passage"] == "the real language from the opinion"
+    assert len(fixes["caution"][0]["negative_citing"]) == 1
+    # deep-pass fix section makes it into the downloadable brief
+    brief = next(e["content"] for e in events if e["type"] == "brief")
+    assert "Suggested Fixes (deep pass)" in brief
+
+
 def test_run_cite_check_surfaces_named_error(monkeypatch):
     class _BoomClient(_FakeClient):
         async def extract_references(self, text: str, resolve: bool = False):

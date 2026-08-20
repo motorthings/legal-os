@@ -134,8 +134,13 @@ def _annotate_brief(text: str, refs: list[dict]) -> str:
     return annotated
 
 
-async def run_cite_check(text: str, name: str | None, user_id: UUID):
-    """Yield progress events, then a report and an annotated brief."""
+async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool = False):
+    """Yield progress events, then a report and an annotated brief.
+
+    When ``deep`` is set, each flagged item is drilled for a concrete fix after
+    the standard checks: misquotes get the correct passage, caution cites get
+    the negative forward-citation, unknown cites get a summary confirmation.
+    """
     client = DescrybeClient(user_id=user_id)
 
     yield {"type": "log", "message": "Starting cite check…"}
@@ -286,6 +291,14 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID):
             "display_reference": ref.get("display_reference"),
         })
 
+    # 3b. Deep pass — drill each flagged item for a concrete fix.
+    if deep:
+        async for ev in _deep_pass(client, report):
+            if ev.get("type") == "fixes":
+                report["fixes"] = ev["fixes"]
+            else:
+                yield ev
+
     yield {"type": "report", "report": report}
 
     # 4. Annotated new brief
@@ -296,6 +309,74 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID):
 
     yield {"type": "brief", "name": new_name, "content": new_brief}
     yield {"type": "done"}
+
+
+def _passage_text(data: dict) -> str | None:
+    """Pull the best human-readable passage text out of a get_case_passages result."""
+    passages = data.get("passages") or data.get("results") or []
+    for p in passages:
+        if isinstance(p, dict):
+            t = p.get("text") or p.get("passage") or p.get("body")
+            if t:
+                return t.strip()
+        elif isinstance(p, str) and p.strip():
+            return p.strip()
+    return None
+
+
+async def _deep_pass(client, report: dict):
+    """Drill each flagged item for a concrete fix; yield log events + a fixes payload.
+
+    - misquote  -> get_case_passages(case_id, focus=quote)  => correct language
+    - caution   -> find_cases_that_cite(case_id)            => who/what gave treatment
+    - unknown   -> get_case_summary(case_id)                => confirm it exists/holds
+    """
+    fixes = {"misquotes": [], "caution": [], "unknown": []}
+
+    misquotes = [q for q in (report.get("quotes") or []) if q.get("category") == "misquote"]
+    caution_refs = [r for r in report["references"] if r["status"] == "caution" and r.get("case_id")]
+    unknown_refs = [r for r in report["references"] if r["status"] == "unknown" and r.get("case_id")]
+
+    total = len(misquotes) + len(caution_refs) + len(unknown_refs)
+    yield {"type": "log", "message": f"Deep pass — drilling {total} flagged item(s) for fixes…"}
+
+    for q in misquotes:
+        try:
+            data = await client.get_case_passages(q["case_id"], q["text"])
+            correct = _passage_text(data)
+            fixes["misquotes"].append({"quote": q["text"], "case": q.get("attributed_to"),
+                                       "citation": q.get("citation"), "correct_passage": correct})
+            yield {"type": "log", "message": f"  ✎ misquote → pulled real passage for {q.get('attributed_to')}: " + (f"“{correct[:70]}…”" if correct else "no passage returned")}
+        except Exception as e:
+            fixes["misquotes"].append({"quote": q["text"], "case": q.get("attributed_to"), "error": str(e)})
+            yield {"type": "log", "message": f"  ! passage lookup failed: {e}"}
+
+    for r in caution_refs:
+        try:
+            data = await client.find_cases_that_cite(r["case_id"])
+            citing = data.get("results") or data.get("citing_cases") or []
+            negatives = [c for c in citing if isinstance(c, dict)
+                         and (c.get("treatment") or {}).get("indicator") in ("negative", "caution")]
+            fixes["caution"].append({"case": r["case_title"], "citation": r["citation"],
+                                     "treatment_category": r.get("treatment_category"),
+                                     "negative_citing": negatives[:5]})
+            yield {"type": "log", "message": f"  ⚠ caution → {r['case_title']}: {len(negatives)} case(s) gave negative/caution treatment"}
+        except Exception as e:
+            fixes["caution"].append({"case": r["case_title"], "citation": r["citation"], "error": str(e)})
+            yield {"type": "log", "message": f"  ! forward-citation drill failed: {e}"}
+
+    for r in unknown_refs:
+        try:
+            data = await client.get_case_summary(r["case_id"], simplified=True)
+            summary = data.get("summary") or data.get("holding") or data.get("text")
+            fixes["unknown"].append({"case": r["case_title"], "citation": r["citation"],
+                                     "confirmed": bool(summary), "summary": (summary or "")[:400]})
+            yield {"type": "log", "message": f"  ? unknown → {r['case_title']}: " + ("confirmed via summary" if summary else "no summary — verify manually")}
+        except Exception as e:
+            fixes["unknown"].append({"case": r["case_title"], "citation": r["citation"], "error": str(e)})
+            yield {"type": "log", "message": f"  ! summary check failed: {e}"}
+
+    yield {"type": "fixes", "fixes": fixes}
 
 
 def _build_appendix(report: dict) -> str:
@@ -336,4 +417,38 @@ def _build_appendix(report: dict) -> str:
         lines += ["", f"### ✓ Verified quotes ({len(verified)})", ""]
         for q in verified:
             lines.append(f"- ✓ “{q['text']}” → {q.get('attributed_to') or 'case'}")
+
+    fixes = report.get("fixes")
+    if fixes:
+        lines += ["", "---", "", "## Suggested Fixes (deep pass)", ""]
+        if fixes.get("misquotes"):
+            lines += ["### Misquotes — correct language pulled from the opinion", ""]
+            for f in fixes["misquotes"]:
+                lines.append(f"- **{f.get('case') or 'case'}** — your quote: “{f['quote']}”")
+                if f.get("correct_passage"):
+                    lines.append(f"  - Opinion says: “{f['correct_passage']}”")
+                elif f.get("error"):
+                    lines.append(f"  - _lookup failed: {f['error']}_")
+                else:
+                    lines.append("  - _no matching passage — likely fabricated or paraphrased; convert to accurate paraphrase or remove_")
+        if fixes.get("caution"):
+            lines += ["", "### Caution cites — who gave the negative treatment", ""]
+            for f in fixes["caution"]:
+                neg = f.get("negative_citing") or []
+                lines.append(f"- **{f.get('case')}** — {f.get('citation')} ({f.get('treatment_category') or 'caution'})")
+                if neg:
+                    for c in neg:
+                        lines.append(f"  - {c.get('title') or c.get('case_id')} — {(c.get('treatment') or {}).get('category') or 'negative'}")
+                    lines.append("  - _Check whether the point above touches your proposition; if not, the caution is noise._")
+                elif f.get("error"):
+                    lines.append(f"  - _drill failed: {f['error']}_")
+                else:
+                    lines.append("  - _no negative citing case surfaced — caution is likely on an unrelated sub-issue._")
+        if fixes.get("unknown"):
+            lines += ["", "### Unknown-treatment cites — existence/holding confirmation", ""]
+            for f in fixes["unknown"]:
+                status = "confirmed" if f.get("confirmed") else "NOT confirmed — verify against a primary source"
+                lines.append(f"- **{f.get('case')}** — {f.get('citation')}: {status}")
+                if f.get("summary"):
+                    lines.append(f"  - {f['summary']}")
     return "\n".join(lines)
