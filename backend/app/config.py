@@ -102,7 +102,7 @@ class Settings(BaseSettings):
     descrybe_redirect_uri: str = ""             # in-app OAuth callback, e.g. https://legal-os.fly.dev/api/descrybe/callback
     descrybe_client_name: str = "Legal AI OS"
     descrybe_token_key: Optional[str] = None    # Fernet key for at-rest token encryption
-    descrybe_timeout_seconds: int = 120
+    descrybe_timeout_seconds: int = 240
     descrybe_cache_ttl_seconds: int = 86400    # 24h for public-law results
 
     # ------------------------------------------------------------------
