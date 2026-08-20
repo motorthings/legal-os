@@ -49,6 +49,17 @@ mirrors the existing Supabase keepalive Action. Surfacing updates as PRs —
 rather than auto-merging — keeps a human in the loop for content that feeds
 legal decisions.
 
+## Current functional impact: none
+
+The vendoring, sync tool, and pin change **no code path**. The vendored skills
+are not read by `backend/app/agents/`, not served by `plugins/`, and not
+referenced by any route. `sync-upstream.sh` runs only by hand and touches only
+`vendor/`. Merging this branch leaves the platform functionally identical to
+before — just heavier.
+
+All functional change comes from the adapter layer below. Until one of its
+wirings is built, this work is plumbing and a map, not merged behavior.
+
 ## Adapter layer (where the merge does real work)
 
 Syncing yields a folder of `.md` skill files. That is not the product. The
