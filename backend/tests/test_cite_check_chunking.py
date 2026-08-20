@@ -159,6 +159,43 @@ def test_non_case_quote_classifier():
     assert c("the court held that", "an employer may not retaliate against a worker who complains") is None
 
 
+def test_corpus_verdict_buckets():
+    from app.services.cite_check import _corpus_verdict
+
+    assert _corpus_verdict("c1", {"results": [{"case_id": "c1"}]})["verdict"] == "found_in_cited_case"
+    v = _corpus_verdict("c1", {"results": [{"case_id": "c2", "title": "X v. Y"}]})
+    assert v["verdict"] == "found_in_other_case" and v["correct_case"]["title"] == "X v. Y"
+    assert _corpus_verdict("c1", {"results": []})["verdict"] == "found_nowhere"
+
+
+def test_deep_pass_runs_corpus_search(monkeypatch):
+    class _Client(_FakeClient):
+        async def extract_references(self, text, resolve=False):
+            return {"references": [{
+                "case_id": "c1", "citation_text": "1 U.S. 1",
+                "span": {"start": 0, "end": 10}, "spans": [{"start": 0, "end": 10}],
+                "resolution": {"resolved": {"case_id": "c1", "title": "A v. B"}},
+                "treatment": {"indicator": "positive"},
+            }]}
+
+        async def verify_quote(self, case_id, quote):
+            return {"found": False}
+
+        async def get_case_passages(self, case_id, focus):
+            return {"passages": []}
+
+        async def search_case_text(self, term, jurisdiction="all"):
+            return {"results": [{"case_id": "c2", "title": "Real v. Source", "citation": "2 U.S. 2"}]}
+
+    monkeypatch.setattr(cite_check, "DescrybeClient", _Client)
+    text = '1 U.S. 1 held "language that lives in a different case entirely here".'
+    events = _drain(cite_check.run_cite_check(text, "brief", uuid4(), deep=True))
+    report = next(e["report"] for e in events if e["type"] == "report")
+    fix = report["fixes"]["misquotes"][0]
+    assert fix["corpus_verdict"] == "found_in_other_case"
+    assert fix["correct_case"]["title"] == "Real v. Source"
+
+
 def test_run_cite_check_surfaces_named_error(monkeypatch):
     class _BoomClient(_FakeClient):
         async def extract_references(self, text: str, resolve: bool = False):

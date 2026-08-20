@@ -361,6 +361,26 @@ def _passage_text(data: dict) -> str | None:
     return None
 
 
+def _corpus_verdict(cited_case_id: str, data: dict) -> dict:
+    """Interpret a search_case_text result for a quote's exact language.
+
+    Returns a verdict that distinguishes a verify_quote false-negative from a
+    misattribution from a genuinely-absent (fabricated / non-case) quote.
+    """
+    results = [r for r in (data.get("results") or []) if isinstance(r, dict)]
+    ids = [r.get("case_id") for r in results]
+    if cited_case_id in ids:
+        return {"verdict": "found_in_cited_case",
+                "note": "exact language exists in the cited case — verify_quote was a false negative; the quote is likely fine"}
+    if results:
+        top = results[0]
+        return {"verdict": "found_in_other_case",
+                "note": f"language appears in a DIFFERENT case: {top.get('title') or top.get('case_id')} — likely misattributed",
+                "correct_case": {"case_id": top.get("case_id"), "title": top.get("title"), "citation": top.get("citation")}}
+    return {"verdict": "found_nowhere",
+            "note": "exact language found in no case — fabricated, materially altered, or not a case quote; correct or remove"}
+
+
 async def _deep_pass(client, report: dict):
     """Drill each flagged item for a concrete fix; yield log events + a fixes payload.
 
@@ -378,15 +398,31 @@ async def _deep_pass(client, report: dict):
     yield {"type": "log", "message": f"Deep pass — drilling {total} flagged item(s) for fixes…"}
 
     for q in misquotes:
+        entry = {"quote": q["text"], "case": q.get("attributed_to"), "citation": q.get("citation")}
         try:
             data = await client.get_case_passages(q["case_id"], q["text"])
-            correct = _passage_text(data)
-            fixes["misquotes"].append({"quote": q["text"], "case": q.get("attributed_to"),
-                                       "citation": q.get("citation"), "correct_passage": correct})
-            yield {"type": "log", "message": f"  ✎ misquote → pulled real passage for {q.get('attributed_to')}: " + (f"“{correct[:70]}…”" if correct else "no passage returned")}
+            entry["correct_passage"] = _passage_text(data)
+            yield {"type": "log", "message": f"  ✎ misquote → pulled real passage for {q.get('attributed_to')}: " + (f"“{entry['correct_passage'][:70]}…”" if entry["correct_passage"] else "no passage returned")}
         except Exception as e:
-            fixes["misquotes"].append({"quote": q["text"], "case": q.get("attributed_to"), "error": str(e)})
+            entry["error"] = str(e)
             yield {"type": "log", "message": f"  ! passage lookup failed: {e}"}
+
+        # Corpus-wide search: is this exact language anywhere in case law?
+        # Distinguishes a false negative / misattribution / truly-absent quote.
+        try:
+            phrase = q["text"][:200]
+            found = await client.search_case_text(phrase)
+            verdict = _corpus_verdict(q["case_id"], found)
+            entry["corpus_verdict"] = verdict["verdict"]
+            entry["corpus_note"] = verdict["note"]
+            if verdict.get("correct_case"):
+                entry["correct_case"] = verdict["correct_case"]
+            yield {"type": "log", "message": f"    ⌕ corpus search → {verdict['verdict']}: {verdict['note']}"}
+        except Exception as e:
+            entry["corpus_error"] = str(e)
+            yield {"type": "log", "message": f"    ! corpus search failed: {e}"}
+
+        fixes["misquotes"].append(entry)
 
     for r in caution_refs:
         try:
@@ -465,9 +501,11 @@ def _build_appendix(report: dict) -> str:
                 if f.get("correct_passage"):
                     lines.append(f"  - Opinion says: “{f['correct_passage']}”")
                 elif f.get("error"):
-                    lines.append(f"  - _lookup failed: {f['error']}_")
-                else:
-                    lines.append("  - _no matching passage — likely fabricated or paraphrased; convert to accurate paraphrase or remove_")
+                    lines.append(f"  - _passage lookup failed: {f['error']}_")
+                if f.get("corpus_note"):
+                    lines.append(f"  - Corpus search: **{f.get('corpus_verdict')}** — {f['corpus_note']}")
+                elif f.get("corpus_error"):
+                    lines.append(f"  - _corpus search failed: {f['corpus_error']}_")
         if fixes.get("caution"):
             lines += ["", "### Caution cites — who gave the negative treatment", ""]
             for f in fixes["caution"]:

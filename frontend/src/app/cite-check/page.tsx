@@ -31,7 +31,7 @@ interface CiteCheckReport {
   }[];
   quotes?: QuoteResult[];
   fixes?: {
-    misquotes?: { quote: string; case?: string; citation?: string; correct_passage?: string; error?: string }[];
+    misquotes?: { quote: string; case?: string; citation?: string; correct_passage?: string; error?: string; corpus_verdict?: string; corpus_note?: string; correct_case?: { title?: string; citation?: string } }[];
     caution?: { case?: string; citation?: string; treatment_category?: string; negative_citing?: { title?: string; case_id?: string; treatment?: { category?: string } }[]; error?: string }[];
     unknown?: { case?: string; citation?: string; confirmed?: boolean; summary?: string; error?: string }[];
   };
@@ -312,16 +312,21 @@ export default function CiteCheckPage() {
                             <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
                               → {q.attributed_to ?? 'case'}{q.citation ? ` · ${q.citation}` : ''}
                             </p>
-                            {fix?.correct_passage ? (
+                            {fix?.correct_passage && (
                               <p className="text-xs text-[#22c55e] mt-2 leading-relaxed">
                                 <span className="font-semibold">Opinion says:</span> “{fix.correct_passage}”
                               </p>
-                            ) : fix?.error ? (
-                              <p className="text-xs text-[#f59e0b] mt-2">Lookup failed: {fix.error}</p>
-                            ) : report.fixes ? (
-                              <p className="text-xs text-[#f59e0b] mt-2">No matching passage — likely fabricated or paraphrased; correct or remove.</p>
-                            ) : (
-                              <p className="text-xs text-[var(--text-muted)] mt-2">Run a Detailed Pass to pull the correct language.</p>
+                            )}
+                            {fix?.corpus_verdict && (
+                              <p
+                                className="text-xs mt-2 leading-relaxed"
+                                style={{ color: fix.corpus_verdict === 'found_in_cited_case' ? '#22c55e' : fix.corpus_verdict === 'found_nowhere' ? '#ef4444' : '#f59e0b' }}
+                              >
+                                <span className="font-semibold font-mono">{fix.corpus_verdict}:</span> {fix.corpus_note}
+                              </p>
+                            )}
+                            {!fix && (
+                              <p className="text-xs text-[var(--text-muted)] mt-2">Run a Detailed Pass to pull the correct language and search the corpus.</p>
                             )}
                           </div>
                         );

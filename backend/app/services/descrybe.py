@@ -323,6 +323,10 @@ class DescrybeClient:
     async def verify_quote(self, case_id: str, quote: str) -> dict:
         return await self.call_case_tool(TOOL_VERIFY_QUOTE, {"case_id": case_id, "quote": quote})
 
+    async def search_case_text(self, term: str, jurisdiction: str = "all") -> dict:
+        """Full-text search the case corpus for an exact phrase (any case)."""
+        return await self.call_case_tool(TOOL_SEARCH_TEXT, {"term": term, "jurisdiction": jurisdiction})
+
     async def extract_references(self, text: str, resolve: bool = False) -> dict:
         return await self.call_case_tool(TOOL_EXTRACT_REFS, {"text": text, "resolve": resolve})
 
