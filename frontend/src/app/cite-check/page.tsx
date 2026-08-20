@@ -27,7 +27,14 @@ interface CiteCheckReport {
     case_id?: string;
     status: 'good' | 'caution' | 'bad' | 'unknown';
     treatment_category?: string;
+    treatment_weight?: string;
     resolution_confidence?: string;
+    explanation?: {
+      why?: string;
+      danger?: 'low' | 'medium' | 'high';
+      safe_to_keep?: boolean;
+      recommendation?: string;
+    } | null;
   }[];
   quotes?: QuoteResult[];
   fixes?: {
@@ -273,19 +280,40 @@ export default function CiteCheckPage() {
             {report.references.map((r, i) => {
               const s = statusStyle(r.status);
               const Icon = s.icon;
+              const danger = r.explanation?.danger;
+              const dangerColor = danger === 'high' ? '#ef4444' : danger === 'medium' ? '#f59e0b' : '#22c55e';
               return (
-                <div key={i} className="card p-4 flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[var(--text)] leading-snug">{r.case_title}</p>
-                    <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5 truncate">{r.citation}</p>
+                <div key={i} className="card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[var(--text)] leading-snug">{r.case_title}</p>
+                      <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5 truncate">
+                        {r.citation}{r.treatment_category ? ` · ${r.treatment_category}` : ''}{r.treatment_weight ? ` · ${r.treatment_weight}` : ''}
+                      </p>
+                    </div>
+                    <span
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium font-mono flex-shrink-0"
+                      style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      {s.label}
+                    </span>
                   </div>
-                  <span
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium font-mono flex-shrink-0"
-                    style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    {s.label}
-                  </span>
+                  {r.explanation?.why && (
+                    <div className="mt-2 pt-2 border-t border-[var(--border)] text-xs space-y-1">
+                      <p className="text-[var(--text-dim)]">
+                        <span className="font-semibold" style={{ color: dangerColor }}>
+                          Why: {danger ? `${danger} risk` : ''}
+                        </span>{' '}— {r.explanation.why}
+                      </p>
+                      {r.explanation.recommendation && (
+                        <p className="text-[var(--text-muted)]">
+                          {r.explanation.safe_to_keep ? '✓ Safe to keep — ' : '✗ '}
+                          {r.explanation.recommendation}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

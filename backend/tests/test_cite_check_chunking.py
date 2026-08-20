@@ -161,6 +161,19 @@ def test_non_case_quote_classifier():
     assert c("the court held that", "an employer may not retaliate against a worker who complains") is None
 
 
+def test_explain_treatment_from_descrybe_data():
+    from app.services.cite_check import _explain_treatment
+
+    d = _explain_treatment("caution", "distinguished", "binding")
+    assert d["danger"] == "medium" and d["safe_to_keep"] is True and "distinguished" in d["why"].lower()
+
+    o = _explain_treatment("caution", "overruled", "binding")
+    assert o["danger"] == "high" and o["safe_to_keep"] is False
+
+    u = _explain_treatment("unknown", None, None)
+    assert u["danger"] == "low" and "no later cases" in u["why"].lower()
+
+
 def test_corpus_verdict_buckets():
     from app.services.cite_check import _corpus_verdict
 

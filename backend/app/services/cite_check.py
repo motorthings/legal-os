@@ -318,18 +318,28 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
     }
 
     for ref in refs:
-        indicator = ((ref.get("treatment") or {}).get("indicator")) or "unknown"
+        treatment = ref.get("treatment") or {}
+        indicator = treatment.get("indicator") or "unknown"
         status_label, glyph = _STATUS.get(indicator, _STATUS["unknown"])
         report[{"good": "good_law", "bad": "bad_law", "caution": "caution", "unknown": "unknown"}[status_label]] += 1
         resolved_info = (ref.get("resolution") or {}).get("resolved") or {}
+        category = treatment.get("category")
+        weight = treatment.get("weight")
         report["references"].append({
             "citation": ref.get("citation_text") or ref.get("raw_text"),
             "case_title": resolved_info.get("title") or ref.get("case_name_hint") or "Unknown",
             "case_id": ref.get("case_id") or resolved_info.get("case_id"),
             "status": status_label,
-            "treatment_category": (ref.get("treatment") or {}).get("category"),
+            "treatment_category": category,
+            "treatment_weight": weight,
             "resolution_confidence": resolved_info.get("resolution_confidence"),
             "display_reference": ref.get("display_reference"),
+            # Plain-language 'why + is it dangerous', derived from the treatment
+            # data Descrybe already returned — no extra call.
+            "explanation": _explain_treatment(status_label, category, weight) if status_label in ("caution", "unknown") else None,
+            # How the brief uses this authority — the sentence around the cite,
+            # with Descrybe's span markers stripped.
+            "usage_excerpt": _clean_excerpt(ref.get("first_excerpt") or ref.get("excerpt")),
         })
 
     # 3b. Deep pass — drill each flagged item for a concrete fix.
@@ -363,6 +373,64 @@ def _passage_text(data: dict) -> str | None:
         elif isinstance(p, str) and p.strip():
             return p.strip()
     return None
+
+
+# Plain-language meaning + danger level for each treatment category Descrybe
+# returns. danger: low = keep, medium = check it touches your point, high = fix.
+_TREATMENT_MEANING = {
+    "distinguished":     ("A later court distinguished this case — applied a different rule on different facts.", "medium",
+                          "Distinguishing limits a case to its facts; it does not overrule it. Safe to keep unless the distinguished point is the one you rely on."),
+    "limited":           ("A later court limited this holding to narrower circumstances.", "medium",
+                          "Keep it only if your proposition falls inside the narrowed scope."),
+    "criticized":        ("A later court criticized this case's reasoning without overruling it.", "medium",
+                          "Still citable, but expect pushback; consider a stronger parallel authority."),
+    "questioned":        ("A later court questioned this case's continued validity.", "medium",
+                          "Confirm no controlling authority has since rejected it."),
+    "declined to follow":("Another court declined to follow this case (often out-of-jurisdiction).", "medium",
+                          "Usually fine in your own jurisdiction; note the split if relevant."),
+    "called into doubt": ("A later court called this case into doubt.", "medium",
+                          "Verify it still holds on your point before relying on it."),
+    "superseded":        ("Superseded by statute or rule.", "high",
+                          "The statutory change likely controls — replace or reframe."),
+    "overruled":         ("Overruled by a later decision.", "high",
+                          "No longer good law — remove or replace."),
+}
+
+
+def _explain_treatment(status: str, category: str | None, weight: str | None) -> dict:
+    """Explain WHY a cite is caution/unknown and whether it's safe to keep."""
+    wlabel = f" ({weight} authority)" if weight else ""
+    if status == "unknown":
+        return {
+            "why": "No treatment signal — Descrybe found no later cases treating this authority (typically recent or rarely-cited).",
+            "danger": "low",
+            "safe_to_keep": True,
+            "recommendation": "Absence of treatment is not negative. Confirm the case still supports your proposition; if it's very recent, note that.",
+        }
+    cat = (category or "").lower()
+    meaning, danger, rec = _TREATMENT_MEANING.get(
+        cat,
+        (f"Flagged caution ({category or 'unspecified'}).", "medium",
+         "Drill the forward citations to see what point drew the treatment."),
+    )
+    return {
+        "why": meaning + wlabel,
+        "danger": danger,
+        "safe_to_keep": danger != "high",
+        "recommendation": rec,
+    }
+
+
+_MARKER_RE = re.compile(r"\[\[(?:TARGET|OTHER)_CITATION_(?:START|END)\]\]")
+
+
+def _clean_excerpt(excerpt: str | None, limit: int = 400) -> str | None:
+    """Strip Descrybe span markers and collapse whitespace from a usage excerpt."""
+    if not excerpt:
+        return None
+    cleaned = _MARKER_RE.sub("", excerpt)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned[:limit] or None
 
 
 def _corpus_verdict(cited_case_id: str, data: dict) -> dict:
@@ -475,6 +543,12 @@ def _build_appendix(report: dict) -> str:
     for r in report["references"]:
         glyph = {"good": "✓", "bad": "✗", "caution": "⚠", "unknown": "?"}.get(r["status"], "?")
         lines.append(f"- {glyph} **{r['case_title']}** — {r['citation']} ({r['status']})")
+        exp = r.get("explanation")
+        if exp and exp.get("why"):
+            keep = "safe to keep" if exp.get("safe_to_keep") else "needs a fix"
+            lines.append(f"  - _Why ({exp.get('danger')} risk — {keep}):_ {exp['why']}")
+            if exp.get("recommendation"):
+                lines.append(f"  - {exp['recommendation']}")
     quotes = report.get("quotes") or []
     misquotes = [q for q in quotes if q.get("category") == "misquote"]
     verified = [q for q in quotes if q.get("category") == "verified"]
