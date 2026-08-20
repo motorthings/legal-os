@@ -44,8 +44,8 @@ export default function CiteCheckPage() {
   const { session } = useAuth();
   const [text, setText] = useState('');
   const [name, setName] = useState('');
-  const [deep, setDeep] = useState(false);
   const [running, setRunning] = useState(false);
+  const [runningMode, setRunningMode] = useState<'normal' | 'deep' | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [report, setReport] = useState<CiteCheckReport | null>(null);
   const [brief, setBrief] = useState<{ name: string; content: string } | null>(null);
@@ -58,9 +58,10 @@ export default function CiteCheckPage() {
     }
   }, [logs]);
 
-  const handleRun = async () => {
+  const handleRun = async (deep: boolean) => {
     if (!text.trim() || running) return;
     setRunning(true);
+    setRunningMode(deep ? 'deep' : 'normal');
     setLogs([]);
     setReport(null);
     setBrief(null);
@@ -114,6 +115,7 @@ export default function CiteCheckPage() {
       setError(e instanceof Error ? e.message : 'Cite check failed');
     } finally {
       setRunning(false);
+      setRunningMode(null);
     }
   };
 
@@ -157,24 +159,25 @@ export default function CiteCheckPage() {
           className="w-full rounded-lg border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 font-mono resize-y disabled:opacity-50"
           style={{ background: 'var(--surface2)' }}
         />
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <label className="inline-flex items-center gap-2 text-sm text-[var(--text-dim)] cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={deep}
-              onChange={(e) => setDeep(e.target.checked)}
-              disabled={running}
-              className="w-4 h-4 accent-[var(--primary)]"
-            />
-            Deep pass — pull correct passages for misquotes, drill caution/unknown cites (slower)
-          </label>
+        <div className="mt-3 flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:justify-end">
+          <p className="text-xs text-[var(--text-muted)] mr-auto max-w-md">
+            Detailed run also pulls correct passages for misquotes and drills caution/unknown cites — slower.
+          </p>
           <button
-            onClick={handleRun}
+            onClick={() => handleRun(false)}
+            disabled={running || !text.trim()}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium border border-[var(--border)] text-[var(--text)] hover:bg-[var(--surface2)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {running && runningMode === 'normal' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+            {running && runningMode === 'normal' ? 'Running…' : 'Run Cite Check'}
+          </button>
+          <button
+            onClick={() => handleRun(true)}
             disabled={running || !text.trim()}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-            {running ? 'Running cite check…' : 'Run Cite Check'}
+            {running && runningMode === 'deep' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+            {running && runningMode === 'deep' ? 'Running deep pass…' : 'Run Detailed Pass'}
           </button>
         </div>
       </div>
