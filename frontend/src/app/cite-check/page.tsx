@@ -352,6 +352,61 @@ export default function CiteCheckPage() {
               </div>
             );
           })()}
+
+          {/* Treatment drill — caution & unknown cites resolved by the deep pass */}
+          {report.fixes && ((report.fixes.caution?.length ?? 0) > 0 || (report.fixes.unknown?.length ?? 0) > 0) && (
+            <div className="mt-6 space-y-4">
+              {report.fixes.caution && report.fixes.caution.length > 0 && (
+                <div>
+                  <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#f59e0b] mb-2">
+                    Caution cites drilled — {report.fixes.caution.length}
+                  </h3>
+                  <div className="space-y-2">
+                    {report.fixes.caution.map((c, i) => (
+                      <div key={i} className="card p-4 border-l-4" style={{ borderLeftColor: '#f59e0b' }}>
+                        <p className="text-sm font-medium text-[var(--text)]">{c.case}</p>
+                        <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5">{c.citation}{c.treatment_category ? ` · ${c.treatment_category}` : ''}</p>
+                        {c.negative_citing && c.negative_citing.length > 0 ? (
+                          <div className="mt-2 text-xs text-[var(--text-dim)]">
+                            <span className="font-semibold">Negative treatment from:</span>
+                            <ul className="list-disc ml-5 mt-1">
+                              {c.negative_citing.map((n, j) => (
+                                <li key={j}>{n.title ?? n.case_id} — {n.treatment?.category ?? 'negative'}</li>
+                              ))}
+                            </ul>
+                            <p className="mt-1 italic">Check whether that point touches your proposition; if not, the caution is noise.</p>
+                          </div>
+                        ) : c.error ? (
+                          <p className="text-xs text-[#f59e0b] mt-2">Drill failed: {c.error}</p>
+                        ) : (
+                          <p className="text-xs text-[#22c55e] mt-2">No negative citing case surfaced — caution is likely on an unrelated sub-issue. Safe to keep.</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {report.fixes.unknown && report.fixes.unknown.length > 0 && (
+                <div>
+                  <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-2">
+                    Unknown-treatment cites confirmed — {report.fixes.unknown.length}
+                  </h3>
+                  <div className="space-y-2">
+                    {report.fixes.unknown.map((u, i) => (
+                      <div key={i} className="card p-4 border-l-4" style={{ borderLeftColor: u.confirmed ? '#22c55e' : '#ef4444' }}>
+                        <p className="text-sm font-medium text-[var(--text)]">{u.case}</p>
+                        <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5">{u.citation}</p>
+                        <p className="text-xs mt-2" style={{ color: u.confirmed ? '#22c55e' : '#ef4444' }}>
+                          {u.confirmed ? 'Confirmed — case exists and holds' : 'NOT confirmed — verify against a primary source'}
+                        </p>
+                        {u.summary && <p className="text-xs text-[var(--text-dim)] mt-1 leading-relaxed">{u.summary}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
