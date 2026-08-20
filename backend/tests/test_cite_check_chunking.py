@@ -148,6 +148,17 @@ def test_deep_pass_pulls_fixes(monkeypatch):
     assert "Suggested Fixes (deep pass)" in brief
 
 
+def test_non_case_quote_classifier():
+    from app.services.cite_check import _classify_non_case_quote as c
+
+    assert c("as set forth in 29 U.S.C. § 206", "equal pay for equal work") is not None
+    assert c("the plaintiff testified that", "I never agreed to that") is not None
+    assert c("under the separation agreement", "for cause termination") is not None
+    assert c('the term means', "Confidential Information") is not None      # short defined term
+    # A genuine case-holding quote with a neutral intro is NOT filtered out.
+    assert c("the court held that", "an employer may not retaliate against a worker who complains") is None
+
+
 def test_run_cite_check_surfaces_named_error(monkeypatch):
     class _BoomClient(_FakeClient):
         async def extract_references(self, text: str, resolve: bool = False):

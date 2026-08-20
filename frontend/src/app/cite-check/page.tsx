@@ -29,6 +29,21 @@ interface CiteCheckReport {
     treatment_category?: string;
     resolution_confidence?: string;
   }[];
+  quotes?: QuoteResult[];
+  fixes?: {
+    misquotes?: { quote: string; case?: string; citation?: string; correct_passage?: string; error?: string }[];
+    caution?: { case?: string; citation?: string; treatment_category?: string; negative_citing?: { title?: string; case_id?: string; treatment?: { category?: string } }[]; error?: string }[];
+    unknown?: { case?: string; citation?: string; confirmed?: boolean; summary?: string; error?: string }[];
+  };
+}
+
+interface QuoteResult {
+  text: string;
+  attributed_to?: string | null;
+  citation?: string;
+  verified?: boolean | null;
+  category?: 'verified' | 'misquote' | 'unverifiable';
+  reason?: string;
 }
 
 function statusStyle(status: string) {
@@ -275,6 +290,63 @@ export default function CiteCheckPage() {
               );
             })}
           </div>
+
+          {/* Quotes — misquotes and exceptions surfaced for action */}
+          {report.quotes && report.quotes.length > 0 && (() => {
+            const misquotes = report.quotes.filter((q) => q.category === 'misquote');
+            const unverifiable = report.quotes.filter((q) => q.category === 'unverifiable');
+            const fixByQuote = new Map((report.fixes?.misquotes ?? []).map((f) => [f.quote, f]));
+            return (
+              <div className="mt-6 space-y-4">
+                {misquotes.length > 0 && (
+                  <div>
+                    <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#ef4444] mb-2">
+                      Misquotes — {misquotes.length} (case resolved, text not found)
+                    </h3>
+                    <div className="space-y-2">
+                      {misquotes.map((q, i) => {
+                        const fix = fixByQuote.get(q.text);
+                        return (
+                          <div key={i} className="card p-4 border-l-4" style={{ borderLeftColor: '#ef4444' }}>
+                            <p className="text-sm text-[var(--text)] leading-snug">“{q.text}”</p>
+                            <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
+                              → {q.attributed_to ?? 'case'}{q.citation ? ` · ${q.citation}` : ''}
+                            </p>
+                            {fix?.correct_passage ? (
+                              <p className="text-xs text-[#22c55e] mt-2 leading-relaxed">
+                                <span className="font-semibold">Opinion says:</span> “{fix.correct_passage}”
+                              </p>
+                            ) : fix?.error ? (
+                              <p className="text-xs text-[#f59e0b] mt-2">Lookup failed: {fix.error}</p>
+                            ) : report.fixes ? (
+                              <p className="text-xs text-[#f59e0b] mt-2">No matching passage — likely fabricated or paraphrased; correct or remove.</p>
+                            ) : (
+                              <p className="text-xs text-[var(--text-muted)] mt-2">Run a Detailed Pass to pull the correct language.</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                {unverifiable.length > 0 && (
+                  <details className="card p-4">
+                    <summary className="cursor-pointer text-sm font-medium text-[var(--text-dim)]">
+                      Unverifiable quotes — {unverifiable.length} (no nearby case cite; likely statute, contract, or party quote)
+                    </summary>
+                    <div className="mt-3 space-y-2">
+                      {unverifiable.map((q, i) => (
+                        <div key={i} className="text-xs">
+                          <p className="text-[var(--text)]">“{q.text}”</p>
+                          {q.reason && <p className="text-[var(--text-muted)] mt-0.5 italic">{q.reason}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 

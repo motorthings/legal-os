@@ -64,6 +64,33 @@ _STATUS = {
 }
 
 
+# Signals that a quoted string is NOT case-holding language and should not be
+# verified against a case opinion. Checked against the quote plus a small window
+# of text before it (the introductory clause carries the tell).
+_STATUTE_RE = re.compile(r"§|\bU\.?S\.?C\.?\b|\bC\.?F\.?R\.?\b|\bC\.?R\.?S\.?\b|\bFed\.?\s*R\.?\s*(Civ|Crim|Evid|App)\b|\bRule\s+\d|\bSection\s+\d", re.IGNORECASE)
+_SPEAKER_RE = re.compile(r"\b(testified|deposition|declar(ed|ation)|affidavit|stated in (his|her|their|the)|wrote(?: that)?|email|Dep\.|Decl\.|Tr\.)\b", re.IGNORECASE)
+_CONTRACT_RE = re.compile(r"\b(agreement|contract|policy|handbook|the (offer|separation) )\b", re.IGNORECASE)
+
+
+def _classify_non_case_quote(context_before: str, quote: str) -> str | None:
+    """Return a reason string if the quote is clearly not case-holding language.
+
+    ``context_before`` is the ~120 chars preceding the quote (the introductory
+    clause). Returns ``None`` when nothing rules it out as a case quote.
+    """
+    window = f"{context_before} {quote}"
+    if _STATUTE_RE.search(window):
+        return "statute or rule text — verify against the code (search_laws_and_rules), not a case opinion"
+    if _SPEAKER_RE.search(context_before):
+        return "testimony / party statement — quotes a person or document, not a court"
+    if _CONTRACT_RE.search(context_before):
+        return "contract or policy language — quotes an agreement, not a court"
+    words = quote.split()
+    if len(words) <= 4 and (quote.istitle() or quote.isupper()):
+        return "short defined term — not a case holding"
+    return None
+
+
 def _extract_quotes(text: str) -> list[tuple[int, str]]:
     """Return (start_offset, quote_text) for each meaningful quoted passage."""
     quotes = []
@@ -218,6 +245,16 @@ async def run_cite_check(text: str, name: str | None, user_id: UUID, deep: bool 
     quote_results = []
     for start, q in quotes:
         end = start + len(q)
+        # Type-based pre-filter: skip verifying quotes that clearly aren't case
+        # holdings (statutes, testimony, contract language, defined terms).
+        non_case = _classify_non_case_quote(text[max(0, start - 120):start], q)
+        if non_case:
+            quote_results.append({
+                "text": q, "attributed_to": None, "verified": None,
+                "category": "unverifiable", "reason": non_case,
+            })
+            yield {"type": "log", "message": f"  – “{q[:60]}…” — {non_case.split(' — ')[0]} (skipped)"}
+            continue
         owner = _resolve_quote_owner(refs, start, end)
         if not owner:
             quote_results.append({
