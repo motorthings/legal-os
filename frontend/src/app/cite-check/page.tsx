@@ -20,7 +20,7 @@ interface CiteCheckReport {
   quotes_checked: number;
   quotes_verified: number;
   quotes_failed: number;
-  quotes_unverifiable?: number;
+  quotes_skipped?: number;
   references: {
     citation?: string;
     case_title: string;
@@ -259,15 +259,14 @@ export default function CiteCheckPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[
               { label: 'References', value: report.total_references, color: 'var(--text)' },
               { label: 'Good law', value: report.good_law, color: '#22c55e' },
               { label: 'Caution', value: report.caution, color: '#f59e0b' },
               { label: 'Bad law', value: report.bad_law, color: '#ef4444' },
-              { label: 'Quotes verified', value: report.quotes_verified, color: '#22c55e' },
+              { label: 'Case quotes verified', value: report.quotes_verified, color: '#22c55e' },
               { label: 'Misquotes', value: report.quotes_failed, color: '#ef4444' },
-              { label: 'Non-case quotes', value: report.quotes_unverifiable ?? 0, color: '#94a3b8' },
             ].map((s) => (
               <div key={s.label} className="card p-4">
                 <div className="text-2xl font-bold font-mono" style={{ color: s.color }}>{s.value}</div>
@@ -276,14 +275,47 @@ export default function CiteCheckPage() {
             ))}
           </div>
 
-          <div className="space-y-2">
-            {report.references.map((r, i) => {
+          {(() => {
+            const fixByQuote = new Map((report.fixes?.misquotes ?? []).map((f) => [f.quote, f]));
+            const cautionFix = new Map((report.fixes?.caution ?? []).map((f) => [f.case, f]));
+            const unknownFix = new Map((report.fixes?.unknown ?? []).map((f) => [f.case, f]));
+            const misquotes = (report.quotes ?? []).filter((q) => q.category === 'misquote');
+
+            // Severity of each finding
+            const refSev = (r: (typeof report.references)[number]) => {
+              if (r.status === 'bad') return 0;
+              if (r.status === 'caution') return r.explanation?.danger === 'high' ? 0 : 1;
+              if (r.status === 'unknown') return unknownFix.get(r.case_title)?.confirmed === false ? 0 : 2;
+              return 3; // good
+            };
+            const quoteSev = (q: QuoteResult) => {
+              const v = fixByQuote.get(q.text)?.corpus_verdict;
+              if (v === 'found_in_cited_case') return 3;
+              if (v === 'found_in_other_case') return 1;
+              return 0; // found_nowhere or not yet drilled
+            };
+
+            const findings = [
+              ...report.references.map((r) => ({ kind: 'ref' as const, sev: refSev(r), data: r })),
+              ...misquotes.map((q) => ({ kind: 'quote' as const, sev: quoteSev(q), data: q })),
+            ];
+
+            const groups = [
+              { sev: 0, label: 'Must fix', color: '#ef4444' },
+              { sev: 1, label: 'Review', color: '#f59e0b' },
+              { sev: 2, label: 'Confirm', color: '#94a3b8' },
+              { sev: 3, label: 'Clear', color: '#22c55e' },
+            ];
+
+            const renderRef = (r: (typeof report.references)[number], key: number) => {
               const s = statusStyle(r.status);
               const Icon = s.icon;
               const danger = r.explanation?.danger;
               const dangerColor = danger === 'high' ? '#ef4444' : danger === 'medium' ? '#f59e0b' : '#22c55e';
+              const cf = cautionFix.get(r.case_title);
+              const uf = unknownFix.get(r.case_title);
               return (
-                <div key={i} className="card p-4">
+                <div key={key} className="card p-4">
                   <div className="flex items-start gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-[var(--text)] leading-snug">{r.case_title}</p>
@@ -291,10 +323,8 @@ export default function CiteCheckPage() {
                         {r.citation}{r.treatment_category ? ` · ${r.treatment_category}` : ''}{r.treatment_weight ? ` · ${r.treatment_weight}` : ''}
                       </p>
                     </div>
-                    <span
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium font-mono flex-shrink-0"
-                      style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
-                    >
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium font-mono flex-shrink-0"
+                      style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}>
                       <Icon className="w-3.5 h-3.5" />
                       {s.label}
                     </span>
@@ -302,139 +332,80 @@ export default function CiteCheckPage() {
                   {r.explanation?.why && (
                     <div className="mt-2 pt-2 border-t border-[var(--border)] text-xs space-y-1">
                       <p className="text-[var(--text-dim)]">
-                        <span className="font-semibold" style={{ color: dangerColor }}>
-                          Why: {danger ? `${danger} risk` : ''}
-                        </span>{' '}— {r.explanation.why}
+                        <span className="font-semibold" style={{ color: dangerColor }}>Why{danger ? ` (${danger} risk)` : ''}:</span>{' '}{r.explanation.why}
                       </p>
                       {r.explanation.recommendation && (
                         <p className="text-[var(--text-muted)]">
-                          {r.explanation.safe_to_keep ? '✓ Safe to keep — ' : '✗ '}
-                          {r.explanation.recommendation}
+                          {r.explanation.safe_to_keep ? '✓ Safe to keep — ' : '✗ '}{r.explanation.recommendation}
                         </p>
                       )}
                     </div>
                   )}
+                  {cf && cf.negative_citing && cf.negative_citing.length > 0 && (
+                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                      Negative treatment from: {cf.negative_citing.map((n) => `${n.title ?? n.case_id} (${n.treatment?.category ?? 'negative'})`).join('; ')}
+                    </p>
+                  )}
+                  {uf?.summary && <p className="text-xs text-[var(--text-dim)] mt-2 leading-relaxed">{uf.summary}</p>}
                 </div>
               );
-            })}
-          </div>
+            };
 
-          {/* Quotes — misquotes and exceptions surfaced for action */}
-          {report.quotes && report.quotes.length > 0 && (() => {
-            const misquotes = report.quotes.filter((q) => q.category === 'misquote');
-            const unverifiable = report.quotes.filter((q) => q.category === 'unverifiable');
-            const fixByQuote = new Map((report.fixes?.misquotes ?? []).map((f) => [f.quote, f]));
+            const renderQuote = (q: QuoteResult, key: number) => {
+              const fix = fixByQuote.get(q.text);
+              const vColor = fix?.corpus_verdict === 'found_in_cited_case' ? '#22c55e' : fix?.corpus_verdict === 'found_nowhere' ? '#ef4444' : '#f59e0b';
+              return (
+                <div key={key} className="card p-4 border-l-4" style={{ borderLeftColor: '#ef4444' }}>
+                  <p className="text-sm text-[var(--text)] leading-snug">Misquote: “{q.text}”</p>
+                  <p className="text-xs font-mono text-[var(--text-muted)] mt-1">→ {q.attributed_to ?? 'case'}{q.citation ? ` · ${q.citation}` : ''}</p>
+                  {fix?.correct_passage && (
+                    <p className="text-xs text-[#22c55e] mt-2 leading-relaxed"><span className="font-semibold">Opinion says:</span> “{fix.correct_passage}”</p>
+                  )}
+                  {fix?.corpus_verdict && (
+                    <p className="text-xs mt-2 leading-relaxed" style={{ color: vColor }}>
+                      <span className="font-semibold font-mono">{fix.corpus_verdict}:</span> {fix.corpus_note}
+                    </p>
+                  )}
+                  {!fix && <p className="text-xs text-[var(--text-muted)] mt-2">Run a Detailed Pass to pull the correct language and search the corpus.</p>}
+                </div>
+              );
+            };
+
             return (
-              <div className="mt-6 space-y-4">
-                {misquotes.length > 0 && (
-                  <div>
-                    <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#ef4444] mb-2">
-                      Misquotes — {misquotes.length} (case resolved, text not found)
-                    </h3>
+              <div className="space-y-6">
+                {groups.map((g) => {
+                  const items = findings.filter((f) => f.sev === g.sev);
+                  if (items.length === 0) return null;
+                  const body = (
                     <div className="space-y-2">
-                      {misquotes.map((q, i) => {
-                        const fix = fixByQuote.get(q.text);
-                        return (
-                          <div key={i} className="card p-4 border-l-4" style={{ borderLeftColor: '#ef4444' }}>
-                            <p className="text-sm text-[var(--text)] leading-snug">“{q.text}”</p>
-                            <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
-                              → {q.attributed_to ?? 'case'}{q.citation ? ` · ${q.citation}` : ''}
-                            </p>
-                            {fix?.correct_passage && (
-                              <p className="text-xs text-[#22c55e] mt-2 leading-relaxed">
-                                <span className="font-semibold">Opinion says:</span> “{fix.correct_passage}”
-                              </p>
-                            )}
-                            {fix?.corpus_verdict && (
-                              <p
-                                className="text-xs mt-2 leading-relaxed"
-                                style={{ color: fix.corpus_verdict === 'found_in_cited_case' ? '#22c55e' : fix.corpus_verdict === 'found_nowhere' ? '#ef4444' : '#f59e0b' }}
-                              >
-                                <span className="font-semibold font-mono">{fix.corpus_verdict}:</span> {fix.corpus_note}
-                              </p>
-                            )}
-                            {!fix && (
-                              <p className="text-xs text-[var(--text-muted)] mt-2">Run a Detailed Pass to pull the correct language and search the corpus.</p>
-                            )}
-                          </div>
-                        );
-                      })}
+                      {items.map((f, i) => (f.kind === 'ref' ? renderRef(f.data, i) : renderQuote(f.data, i)))}
                     </div>
-                  </div>
-                )}
-                {unverifiable.length > 0 && (
-                  <details className="card p-4">
-                    <summary className="cursor-pointer text-sm font-medium text-[var(--text-dim)]">
-                      Non-case quotes — {unverifiable.length} · no action needed (filing prose, JAMS rules, party terms — not case quotations)
-                    </summary>
-                    <div className="mt-3 space-y-2">
-                      {unverifiable.map((q, i) => (
-                        <div key={i} className="text-xs">
-                          <p className="text-[var(--text)]">“{q.text}”</p>
-                          {q.reason && <p className="text-[var(--text-muted)] mt-0.5 italic">{q.reason}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  </details>
+                  );
+                  const header = (
+                    <h3 className="font-mono text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: g.color }}>
+                      {g.label} — {items.length}
+                    </h3>
+                  );
+                  // Collapse the "Clear" group by default to keep focus on problems.
+                  return g.sev === 3 ? (
+                    <details key={g.sev}>
+                      <summary className="cursor-pointer font-mono text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: g.color }}>
+                        {g.label} — {items.length} (good law, no action)
+                      </summary>
+                      <div className="mt-2">{body}</div>
+                    </details>
+                  ) : (
+                    <div key={g.sev}>{header}{body}</div>
+                  );
+                })}
+                {(report.quotes_skipped ?? 0) > 0 && (
+                  <p className="text-xs text-[var(--text-muted)] italic">
+                    {report.quotes_skipped} quoted passage{report.quotes_skipped === 1 ? '' : 's'} skipped — not case quotations (defined terms, party names, statutes, filing prose).
+                  </p>
                 )}
               </div>
             );
           })()}
-
-          {/* Treatment drill — caution & unknown cites resolved by the deep pass */}
-          {report.fixes && ((report.fixes.caution?.length ?? 0) > 0 || (report.fixes.unknown?.length ?? 0) > 0) && (
-            <div className="mt-6 space-y-4">
-              {report.fixes.caution && report.fixes.caution.length > 0 && (
-                <div>
-                  <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#f59e0b] mb-2">
-                    Caution cites drilled — {report.fixes.caution.length}
-                  </h3>
-                  <div className="space-y-2">
-                    {report.fixes.caution.map((c, i) => (
-                      <div key={i} className="card p-4 border-l-4" style={{ borderLeftColor: '#f59e0b' }}>
-                        <p className="text-sm font-medium text-[var(--text)]">{c.case}</p>
-                        <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5">{c.citation}{c.treatment_category ? ` · ${c.treatment_category}` : ''}</p>
-                        {c.negative_citing && c.negative_citing.length > 0 ? (
-                          <div className="mt-2 text-xs text-[var(--text-dim)]">
-                            <span className="font-semibold">Negative treatment from:</span>
-                            <ul className="list-disc ml-5 mt-1">
-                              {c.negative_citing.map((n, j) => (
-                                <li key={j}>{n.title ?? n.case_id} — {n.treatment?.category ?? 'negative'}</li>
-                              ))}
-                            </ul>
-                            <p className="mt-1 italic">Check whether that point touches your proposition; if not, the caution is noise.</p>
-                          </div>
-                        ) : c.error ? (
-                          <p className="text-xs text-[#f59e0b] mt-2">Drill failed: {c.error}</p>
-                        ) : (
-                          <p className="text-xs text-[#22c55e] mt-2">No negative citing case surfaced — caution is likely on an unrelated sub-issue. Safe to keep.</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {report.fixes.unknown && report.fixes.unknown.length > 0 && (
-                <div>
-                  <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-2">
-                    Unknown-treatment cites confirmed — {report.fixes.unknown.length}
-                  </h3>
-                  <div className="space-y-2">
-                    {report.fixes.unknown.map((u, i) => (
-                      <div key={i} className="card p-4 border-l-4" style={{ borderLeftColor: u.confirmed ? '#22c55e' : '#ef4444' }}>
-                        <p className="text-sm font-medium text-[var(--text)]">{u.case}</p>
-                        <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5">{u.citation}</p>
-                        <p className="text-xs mt-2" style={{ color: u.confirmed ? '#22c55e' : '#ef4444' }}>
-                          {u.confirmed ? 'Confirmed — case exists and holds' : 'NOT confirmed — verify against a primary source'}
-                        </p>
-                        {u.summary && <p className="text-xs text-[var(--text-dim)] mt-1 leading-relaxed">{u.summary}</p>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
 

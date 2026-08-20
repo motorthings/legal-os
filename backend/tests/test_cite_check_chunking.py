@@ -112,8 +112,10 @@ def test_quote_classification_buckets(monkeypatch):
     by_type, _ = _run(text)
     report = by_type["report"]["report"]
     assert report["quotes_failed"] == 1          # the near-cite mismatch
-    assert report["quotes_unverifiable"] == 1    # the orphan quote
+    assert report["quotes_skipped"] == 1         # the orphan quote — dropped, not reported
     assert report["quotes_verified"] == 0
+    # Non-case quotes are no longer surfaced as findings.
+    assert all(q.get("category") != "unverifiable" for q in report["quotes"])
 
 
 def test_deep_pass_pulls_fixes(monkeypatch):
