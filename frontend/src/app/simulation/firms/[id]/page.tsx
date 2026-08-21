@@ -42,7 +42,7 @@ export default function FirmPage() {
           <h2 className="text-xl font-bold text-[var(--text)] tracking-tight mb-4">Intake</h2>
           <IntakeForm firmId={firmId} existing={config} />
           <RunSection firmId={firmId} hasConfig={!!config} />
-          <details className="card p-4 mb-4">
+          <details open className="card p-4 mb-4">
             <summary className="cursor-pointer select-none font-semibold text-[var(--text)]">Runs</summary>
             <div className="mt-3">
               <RunHistory firmId={firmId} />
