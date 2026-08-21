@@ -5,8 +5,8 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
   const { id, runId } = await params;
   return (
     <main style={{ maxWidth: 960, margin: '0 auto', padding: '2rem 1rem' }}>
-      <Link href={`/simulation/firms/${id}`} style={{ color: '#888', textDecoration: 'none' }}>← Back to firm</Link>
-      <h1>Run {runId.slice(0, 8)}</h1>
+      <Link href={`/simulation/firms/${id}`} style={{ color: '#888', textDecoration: 'none' }} className="no-print">← Back to firm</Link>
+      <h1 className="no-print">Run {runId.slice(0, 8)}</h1>
       <RunProgress runId={runId} />
     </main>
   );

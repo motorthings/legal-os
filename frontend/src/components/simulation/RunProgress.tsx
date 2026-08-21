@@ -412,7 +412,7 @@ export default function RunProgress({ runId }: Props) {
                     </ReactMarkdown>
                     <LeverImpactChart effects={r.payload?.main_effects} />
                     {appendix && (
-                      <details className="appendix-toggle group mt-6 border border-[var(--border)] rounded-lg overflow-hidden">
+                      <details className="appendix-toggle group mt-6 border border-[var(--border)] rounded-lg overflow-hidden" open={printId === r.id}>
                         <summary className="cursor-pointer select-none px-4 py-3 bg-[var(--surface2)] text-[13px] font-medium text-[var(--text)] list-none [&::-webkit-details-marker]:hidden flex items-center gap-2">
                           <ChevronRight className="w-4 h-4 text-[var(--text-dim)] transition-transform group-open:rotate-90 shrink-0" />
                           See the evidence — assumptions, measured changes, and the full record

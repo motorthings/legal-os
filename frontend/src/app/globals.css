@@ -133,12 +133,11 @@ body {
 @media print {
   /* Hide app chrome and everything tagged .no-print; the target report + charts remain
      in normal flow so long reports paginate correctly. */
-  body.printing .no-print,
+  .no-print { display: none !important; }
   body.printing aside,
   body.printing .theme-toggle-slot { display: none !important; }
   body.printing details[data-report-card] { border: none !important; }
   body.printing details[data-report-card] > summary { display: none !important; }
-  body.printing .appendix-toggle { display: none !important; }
   body.printing .print-hide-chart { display: none !important; }
   body.printing .report-body { color: #000 !important; }
   body.printing .recharts-wrapper { break-inside: avoid; }
