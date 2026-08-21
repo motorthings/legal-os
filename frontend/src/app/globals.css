@@ -138,6 +138,8 @@ body {
   body.printing .theme-toggle-slot { display: none !important; }
   body.printing details[data-report-card] { border: none !important; }
   body.printing details[data-report-card] > summary { display: none !important; }
+  body.printing .appendix-toggle { display: none !important; }
+  body.printing .print-hide-chart { display: none !important; }
   body.printing .report-body { color: #000 !important; }
   body.printing .recharts-wrapper { break-inside: avoid; }
   @page { margin: 16mm; }

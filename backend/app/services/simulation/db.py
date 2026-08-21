@@ -152,11 +152,12 @@ class DB:
     async def list_reports(self, run_id: str) -> list[dict]:
         """All saved reports for a run, newest first."""
         rows = await self._pool.fetch(
-            """select id, stage, title, lever_set, report_markdown, created_at
+            """select id, stage, title, lever_set, payload, report_markdown, created_at
                from sim_reports where run_id = $1 order by created_at desc""", run_id)
         return [{
             "id": str(r["id"]), "stage": r["stage"], "title": r["title"],
             "lever_set": json.loads(r["lever_set"]) if r["lever_set"] else [],
+            "payload": json.loads(r["payload"]) if r["payload"] else None,
             "report_markdown": r["report_markdown"],
             "created_at": r["created_at"].isoformat(),
         } for r in rows]
