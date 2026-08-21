@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Legend,
 } from 'recharts';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 
@@ -77,6 +77,7 @@ export default function MetricsCharts({
           {hasRecommendedLine && (
             <Line type="monotone" dataKey="recommended" stroke="#10b981" strokeWidth={2.5} dot={false} name="Recommended" />
           )}
+          <Legend iconType="line" wrapperStyle={{ fontSize: 11, color: 'var(--text-muted)' }} />
         </LineChart>
       </ResponsiveContainer>
     </div>
