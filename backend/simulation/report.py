@@ -368,15 +368,20 @@ def _scale_phrase(sprints) -> str:
 # 1. What you told us
 # ---------------------------------------------------------------------------------
 
-def _reconcile_baseline(sig: dict, metrics: dict) -> list[str]:
+def _reconcile_baseline(sig: dict, metrics: dict, search_baseline=None) -> list[str]:
     """Explain the gap between the PPP the firm reported and where the model starts them.
 
     The two differ because the firm's CURRENT rework and exception rates already degrade
     the nominal number before any AI decision is made. Left unexplained, the two figures
     read as an arithmetic error and cost the whole report its credibility. Suppressed when
-    the gap is small enough not to raise the question."""
+    the gap is small enough not to raise the question.
+
+    When a search ran, the model starts from the SEARCH's own baseline (a multi-seed mean),
+    not the single-scenario trajectory's first quarter — the recommendation's `best_delta`
+    is measured against that search baseline, so "every figure moves from X" must name the
+    same X the recommendation uses."""
     stated = sig.get("baseline_ppp")
-    simulated = _first(metrics, "ppp")
+    simulated = search_baseline if search_baseline is not None else _first(metrics, "ppp")
     if not stated or simulated is None or stated <= 0:
         return []
     gap = stated - simulated
@@ -404,18 +409,49 @@ def _reconcile_baseline(sig: dict, metrics: dict) -> list[str]:
 # 2. What we ran
 # ---------------------------------------------------------------------------------
 
+def _active_weight_count(opt: dict) -> int:
+    """How many objectives are actually weighted — a non-zero weight, not a key in the
+    dict. `weights` always lists every objective (ppp/rpl/margin/retention/realization)
+    even at 0.0, so counting keys wrongly treats a pure-PPP run as a blend and formats
+    the objective-normalized delta (e.g. 0.42) as dollars ($0)."""
+    return sum(1 for w in (opt.get("weights") or {}).values() if w and w > 0)
+
+
 def _obj_unit(opt: dict) -> str:
     """Formatting unit for the objective the search optimized."""
-    if len(opt.get("weights") or {}) > 1:
+    if _active_weight_count(opt) > 1:
         return "blend"
     return "$" if opt.get("objective", "ppp") in ("ppp", "rpl") else "%"
 
 
 def _effect(fx: dict, opt: dict):
     """A lever's main effect in the units the search actually ranked by."""
-    if opt.get("objective", "ppp") == "ppp" and len(opt.get("weights") or {}) <= 1:
+    if opt.get("objective", "ppp") == "ppp" and _active_weight_count(opt) <= 1:
         return fx.get("delta_ppp"), "$"
     return fx.get("delta_objective", fx.get("delta_ppp")), _obj_unit(opt)
+
+
+def _interaction_dollars(v, opt: dict):
+    """An interaction delta, converted from objective space to dollars.
+
+    optimize.py records interaction deltas (`both` / `additive` / `synergy` /
+    `comp_x_pricing.delta`) in objective space — a fraction of baseline PPP, exactly
+    `delta_objective = delta_ppp / baseline_ppp`. The report renders them in dollars, so
+    scale back up. A no-op when the value is already a dollar figure (blend objective),
+    when there's no baseline to scale against, or when the value is None."""
+    if v is None:
+        return None
+    if opt.get("objective", "ppp") != "ppp" or _active_weight_count(opt) > 1:
+        return v
+    base = opt.get("baseline_ppp")
+    if not base:
+        return v
+    # Objective-space deltas are fractions of baseline PPP (|v| ≲ 2); anything already in
+    # dollars is orders of magnitude larger. Pass dollar values through untouched so the
+    # conversion never double-applies.
+    if abs(v) > 10:
+        return v
+    return v * base
 
 
 def _levers_in(name: str) -> list[str]:
@@ -583,18 +619,18 @@ def render_experiments(exp: dict, metrics: dict, letter: str = "B") -> str:
         for name, i in interactions.items():
             label = " + ".join(_lever_name(l) for l in (_levers_in(name) or [name]))
             if "synergy" in i:
-                lines.append(f"- {label}: together {_fmt_delta(i.get('both'), '$')} versus "
-                             f"{_fmt_delta(i.get('additive'), '$')} if their effects simply "
-                             f"added — the combination itself adds {_fmt_delta(i.get('synergy'), '$')}")
+                lines.append(f"- {label}: together {_fmt_delta(_interaction_dollars(i.get('both'), opt), '$')} versus "
+                             f"{_fmt_delta(_interaction_dollars(i.get('additive'), opt), '$')} if their effects simply "
+                             f"added — the combination itself adds {_fmt_delta(_interaction_dollars(i.get('synergy'), opt), '$')}")
             elif "delta" in i:
-                lines.append(f"- {label}: {_fmt_delta(i.get('delta'), '$')}")
+                lines.append(f"- {label}: {_fmt_delta(_interaction_dollars(i.get('delta'), opt), '$')}")
         lines.append("")
 
     if opt.get("best_combo"):
         band = opt.get("ci95", opt.get("spread"))
         names = " + ".join(_lever_name(l) for l in opt["best_combo"])
         lines += [f"**Best combination:** {names} → {fmt(opt.get('best_ppp'), '$')} profit per "
-                  f"partner ({_fmt_delta(opt.get('best_delta'), '$')} against standing still, "
+                  f"partner ({_fmt_delta(opt.get('best_delta'), '$')} of recovered friction, "
                   f"give or take {fmt(band, '$')} across scenarios).", ""]
     return "\n".join(lines)
 
@@ -770,16 +806,28 @@ def _firm_portrait(meta: dict) -> str:
             "puts a number on.")
 
 
-def _heading_unchanged(meta: dict, metrics: dict) -> list[str]:
-    """Where the firm lands if nothing changes — the slide, the reason, the honest feasibility."""
+def _heading_unchanged(meta: dict, metrics: dict, baseline=None) -> list[str]:
+    """Where the firm lands if nothing changes — the reason, the honest feasibility.
+
+    When a search ran, `baseline` is the search's stable multi-seed baseline, so the story
+    anchors there instead of the single scenario's noisy first quarter — a high draw that
+    would otherwise read as a spurious "-13% slide" and clash with the recommendation's own
+    baseline."""
     ppp_first, ppp_last = _series_ends(metrics, "ppp")
     L = ["## Where it's heading, unchanged", ""]
     if ppp_last is None:
         return L + ["_No trajectory was recorded for this run._", ""]
-    L += [f"Left as it is, profit per partner moves from {fmt(ppp_first, '$')} to "
-          f"**{fmt(ppp_last, '$')}**{_pct_change(ppp_first, ppp_last)} over "
-          f"{_scale_phrase(meta.get('sprints', '?'))}.", ""]
-    redline = _last(metrics, "redline_rework_rate")
+    if baseline is not None:
+        L += [f"Left as it is, profit per partner holds around **{fmt(baseline, '$')}** — settling "
+              f"to {fmt(ppp_last, '$')} over {_scale_phrase(meta.get('sprints', '?'))}. The friction "
+              "doesn't go away on its own.", ""]
+    else:
+        L += [f"Left as it is, profit per partner moves from {fmt(ppp_first, '$')} to "
+              f"**{fmt(ppp_last, '$')}**{_pct_change(ppp_first, ppp_last)} over "
+              f"{_scale_phrase(meta.get('sprints', '?'))}.", ""]
+    # Q1 (not the last quarter) keeps the redline number consistent with the reconcile
+    # section, so "rewriting X% of drafts" isn't stated as two different figures.
+    redline = _first(metrics, "redline_rework_rate")
     real_rate = _last(metrics, "realization_rate")
     leaks = []
     if redline is not None:
@@ -789,7 +837,7 @@ def _heading_unchanged(meta: dict, metrics: dict) -> list[str]:
         leaks.append(f"the firm collects **{fmt(real_rate, '%')}** of what it bills — the rest never "
                      "turns into cash")
     if leaks:
-        L += ["The drift isn't an AI problem. It's value leaking at the hand-offs: "
+        L += ["That gap isn't an AI problem. It's value leaking at the hand-offs: "
               + "; and ".join(leaks) + ".", ""]
     attr = _last(metrics, "associate_attrition")
     p_trust = _last(metrics, "partner_ai_trust")
@@ -858,15 +906,19 @@ def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
     conf = ("and the gain holds up in every version of the future we ran, not just on average — "
             "a real result, not a lucky one" if holds else
             "though the size is still uncertain, so trust the direction more than the exact figure")
-    comp_delta = ((opt.get("interactions") or {}).get("comp_x_pricing") or {}).get("delta")
+    comp_delta = _interaction_dollars(((opt.get("interactions") or {}).get("comp_x_pricing") or {}).get("delta"), opt)
     interactions = opt.get("interactions") or {}
     pair, inter = _interaction_pair(interactions)
 
     actions = "; then ".join(_action(lv) for lv in combo)
+    stated = (meta.get("firm_signature") or {}).get("baseline_ppp")
+    base = opt.get("baseline_ppp")
+    recovery = (f" Your reported {fmt(stated, '$')} was already down to {fmt(base, '$')} once rework "
+                f"and write-offs were counted, so most of that lift is friction you're already paying "
+                f"for, coming back" if stated and base else "")
     L = ["## The recommendation", "",
          f"**{_cap(actions)}.** Made together, in that order, they lift {obj_plain} to about "
-         f"**{fmt(best, '$')}** — roughly **{_approx_money(delta)}** a year more than changing "
-         f"nothing, {conf}.", ""]
+         f"**{fmt(best, '$')}**.{recovery} — {conf}.", ""]
 
     # Why the order — only the levers that are actually in the plan.
     L += ["**Why that order.**", ""]
@@ -900,7 +952,7 @@ def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
             L.append(_lever_standing_line(lv, opt, combo_set, comp_delta))
     if pair and inter and _material(inter.get("synergy"), inter.get("both")) and (inter.get("synergy") or 0) > 0:
         a, b = (_lever_name(x).lower() for x in pair)
-        L.append(f"- Combined, {a} and {b} do about {_approx_money(inter.get('synergy'))} more "
+        L.append(f"- Combined, {a} and {b} do about {_approx_money(_interaction_dollars(inter.get('synergy'), opt))} more "
                  "together than each does alone.")
     L += [""]
 
@@ -934,12 +986,12 @@ def _what_the_sim_showed(meta: dict, metrics: dict, exp: dict) -> list[str]:
          f"across **{mc} fresh scenarios**: the same firm, different rolls of the dice on which "
          "matters land, which hand-offs go wrong, and who leaves.", ""]
     if holds:
-        L += [f"It came back **{_money(delta)}** ahead of changing nothing, give or take "
-              f"{fmt(band, du if du != 'blend' else '')} — and it stayed ahead in every scenario, "
-              "not just on average. That's the difference between a real effect and a lucky draw: "
+        L += [f"It recovered **{_money(delta)}** of the friction you're already paying for, give or "
+              f"take {fmt(band, du if du != 'blend' else '')} — and it held in every scenario, "
+              "not just on average. That's the difference between a real recovery and a lucky draw: "
               "the same plan wins whichever way the year breaks.", ""]
     else:
-        L += [f"It came back about {_money(delta)} ahead, but the spread is wide enough that some "
+        L += [f"It recovered about {_money(delta)} of friction, but the spread is wide enough that some "
               "scenarios land near flat. Trust the direction; treat the size as provisional until "
               "more scenarios or your own numbers tighten it.", ""]
     prior = (exp or {}).get("prior") or {}
@@ -964,8 +1016,9 @@ def _how_to_read(meta: dict, exp: dict) -> list[str]:
             f"This is a comparison engine, not a forecast of your P&L. It runs your firm — {scale}, "
             f"quarter by quarter{scen} — down different roads and shows which ends up ahead, and "
             "why. Every quarter, simulated partners, associates, and AI tools work real matters; "
-            "the rework and write-offs that come out of that are what set the numbers. Nothing is "
-            "assumed.", "",
+            "the rework and write-offs that come out of that are what set the numbers. The "
+            "assumptions that move the answer are listed and tested in Appendix A — nothing is "
+            "hidden.", "",
             "**Trust the direction and the order. Check the dollars before you quote them** — the "
             "magnitudes are calibrated to a firm like yours, not your ledger. Every figure traces "
             "to the record at the end.", ""]
@@ -987,9 +1040,10 @@ def build_report(run_dir: Path, experiments: dict) -> str:
     body = ["## The bottom line", "", _bottom_line(meta, metrics, experiments, stage, searched), "",
             "---", "",
             "## Your firm", "", _firm_portrait(meta)]
-    body += _reconcile_baseline(meta.get("firm_signature") or {}, metrics)
+    search_baseline = ((experiments.get("optimize") or {}).get("baseline_ppp")) if searched else None
+    body += _reconcile_baseline(meta.get("firm_signature") or {}, metrics, search_baseline)
     body += ["", "---", ""]
-    body += _heading_unchanged(meta, metrics) + ["---", ""]
+    body += _heading_unchanged(meta, metrics, search_baseline) + ["---", ""]
     body += _options_on_the_table(experiments) + ["---", ""]
     if searched:
         body += _recommendation(meta, metrics, experiments) + ["---", ""]
@@ -1026,9 +1080,21 @@ def _bottom_line(meta: dict, metrics: dict, exp: dict, stage: str, searched: boo
     holds = (delta is not None and band is not None and abs(delta) > abs(band))
     conf = ("and it holds up across every scenario we ran" if holds
             else "though the exact size is still uncertain")
-    line = (f"**The move: {', then '.join(_action(lv) for lv in combo)} — in that order.** Done "
-            f"together they lift {obj_plain} by about **{_approx_money(delta)}** a year over changing "
-            f"nothing, {conf}.")
+    # The recovery story, first: the reported figure is already eroded by friction, and the
+    # plan gets it back — so a partner doesn't read the gain as net-on-top of the number
+    # they think they have. Reusable verbatim in a partnership meeting.
+    stated = (meta.get("firm_signature") or {}).get("baseline_ppp")
+    base = opt.get("baseline_ppp")
+    best = opt.get("best_ppp") if obj == "ppp" else opt.get("best_objective")
+    if stated and base and best:
+        lead = (f"**{firm} reports {fmt(stated, '$')} a partner, but the model prices that at "
+                f"{fmt(base, '$')} once rework and write-offs are counted. {_cap(_action(combo[0]))} "
+                f"first — plus the changes that make it stick — lifts it back to {fmt(best, '$')}.** ")
+    else:
+        lead = (f"**{firm} is leaking value at the hand-offs where its judgment lives — and one "
+                f"change up front, {_action(combo[0])}, turns most of it back.** ")
+    line = (lead
+            + f"The move: {', then '.join(_action(lv) for lv in combo)} — in that order, {conf}.")
     if stage == "scenario_simulation":
         line += " We re-ran that plan across fresh scenarios to confirm it, and it held."
     return line

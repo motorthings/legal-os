@@ -179,9 +179,12 @@ def reset_sims_run() -> None:
 _COLLECT = ("ppp", "matter_profit_margin", "rpl", "realization_rate", "associate_attrition")
 
 
-def run_trials(pulled: set, seeds, sprints, matters):
-    """Return {metric: [per-seed final values]}. Cached by (levers, seeds, size)
-    so a combination tested in one round isn't re-simulated in the next."""
+def _simulate(pulled: set, seeds, sprints, matters):
+    """Run each seed once; cache and return {metric: [[per-sprint values] per seed]}.
+
+    The cache keeps full quarter-by-quarter histories, not just finals, so `run_trials`
+    (finals) and `run_trajectory` (mean per-sprint curve) both derive from the same runs
+    without re-simulating."""
     key = (frozenset(pulled), tuple(seeds), sprints, matters)
     if key in _TRIAL_CACHE:
         return _TRIAL_CACHE[key]
@@ -198,9 +201,28 @@ def run_trials(pulled: set, seeds, sprints, matters):
             r = asyncio.run(o.run())
         for m in _COLLECT:
             h = r.company.metric_history.get(m)
-            out[m].append(h.values[-1].value if h and h.values else 0.0)
+            out[m].append([snap.value for snap in h.values] if h else [])
     _TRIAL_CACHE[key] = out
     return out
+
+
+def run_trials(pulled: set, seeds, sprints, matters):
+    """Return {metric: [per-seed final values]}, derived from the cached full histories."""
+    histories = _simulate(pulled, seeds, sprints, matters)
+    return {m: [series[-1] if series else 0.0 for series in histories[m]]
+            for m in _COLLECT}
+
+
+def run_trajectory(pulled: set, seeds, sprints, matters, key: str = "ppp") -> list[float]:
+    """Mean per-sprint trajectory of `key`, aligned across seeds by sprint index.
+
+    Returns [q1, q2, …, qN] — the average value at each quarter, across seeds. Reads the
+    cached histories, so it's free after the trials run."""
+    histories = _simulate(pulled, seeds, sprints, matters)[key]
+    n = max((len(s) for s in histories), default=0)
+    if n == 0:
+        return []
+    return [statistics.mean([s[i] for s in histories if i < len(s)]) for i in range(n)]
 
 
 def run_metric(pulled: set, seeds, sprints, matters, key: str) -> float:
@@ -636,6 +658,10 @@ def run_scenario_mc(rc: dict, combo, *, sprints: int, matters: int,
         "ci95": ci95,
         "mc_seeds": mc_seeds,
         "sims_run": sims_run(),
+        # Mean per-quarter PPP across the same seeds — baseline vs recommended — so the
+        # report can draw the decline and the recovery on one axes (apples-to-apples).
+        "ppp_trajectory": run_trajectory(combo, mc_list, sprints, matters, "ppp"),
+        "baseline_trajectory": run_trajectory(set(), mc_list, sprints, matters, "ppp"),
     }
 
 

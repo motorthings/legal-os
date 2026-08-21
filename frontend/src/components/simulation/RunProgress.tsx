@@ -6,6 +6,8 @@ import remarkGfm from 'remark-gfm';
 import { ChevronRight, HelpCircle, Download } from 'lucide-react';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 import MetricsCharts from './MetricsCharts';
+import SimulationHero from './SimulationHero';
+import LeverImpactChart from './LeverImpactChart';
 import HowItWorks from './HowItWorks';
 
 interface Props {
@@ -34,6 +36,15 @@ interface Report {
   stage: 'baseline' | 'lever_optimization' | 'scenario_simulation';
   title: string;
   lever_set: string[];
+  payload?: {
+    baseline_ppp?: number;
+    best_ppp?: number;
+    best_delta?: number;
+    best_combo?: string[];
+    main_effects?: Record<string, { delta_ppp?: number }>;
+    ppp_trajectory?: number[];
+    baseline_trajectory?: number[];
+  } | null;
   report_markdown: string;
   created_at: string;
 }
@@ -60,6 +71,24 @@ function describeSprint(p: any): string {
   return `scenario ${scenario} · month ${p.sprint}: ${parts.join(' · ') || 'working…'}`;
 }
 
+// Split a report into its lead (title + bottom line), its story, and its appendices, so
+// the money chart can sit between the answer and the narrative — title → answer → chart →
+// story → evidence — instead of charts-first. The report writes "## Your firm" as the seam
+// between the answer and the story, and "## Appendix X" as the seam into the evidence.
+function splitReport(md: string): { lead: string; story: string; appendix: string | null } {
+  const appendixMarker = '## Appendix ';
+  const aIdx = md.indexOf(appendixMarker);
+  const body = aIdx === -1 ? md : md.slice(0, aIdx);
+  const appendix = aIdx === -1 ? null : md.slice(aIdx);
+
+  const firmMarker = '## Your firm';
+  const fIdx = body.indexOf(firmMarker);
+  const lead = fIdx === -1 ? body : body.slice(0, fIdx).trimEnd();
+  const story = fIdx === -1 ? '' : body.slice(fIdx);
+
+  return { lead, story, appendix };
+}
+
 export default function RunProgress({ runId }: Props) {
   const [status, setStatus] = useState('queued');
   const [done, setDone] = useState(0);
@@ -75,6 +104,7 @@ export default function RunProgress({ runId }: Props) {
   const [reconnecting, setReconnecting] = useState(false);
   const [optimizing, setOptimizing] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
+  const [reportedPPP, setReportedPPP] = useState<number | null>(null);
   const [howOpen, setHowOpen] = useState(false);
   const [printId, setPrintId] = useState<string | null>(null);
   const np = printId ? 'no-print' : '';
@@ -133,6 +163,13 @@ export default function RunProgress({ runId }: Props) {
       cancelled = true;
     };
   }, [runId, loadReports]);
+
+  useEffect(() => {
+    fetch(`${SIM_API_BASE}/runs/${runId}/config`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((cfg) => setReportedPPP(cfg?.firm?.baseline_ppp ?? null))
+      .catch(() => {});
+  }, [runId]);
 
   useEffect(() => {
     const es = new EventSource(`${SIM_API_BASE}/runs/${runId}/events`);
@@ -197,6 +234,14 @@ export default function RunProgress({ runId }: Props) {
 
   const hasBaseline = reports.some((r) => r.stage === 'baseline');
   const optimization = reports.find((r) => r.stage === 'lever_optimization');
+  const scenario = reports.find((r) => r.stage === 'scenario_simulation') ?? optimization;
+  const scenarioPayload = scenario?.payload;
+  const recovered = scenarioPayload?.best_ppp ?? null;
+  const baseline = scenarioPayload?.baseline_ppp ?? null;
+  // lever_set is stored alphabetically; the recommendation has its own order (flat fees
+  // first). Re-order to match the report so the hero's "the move" line isn't misleading.
+  const LEVER_ORDER = ['pricing', 'seams', 'comp', 'latency', 'leverage'];
+  const heroLevers = LEVER_ORDER.filter((l) => (scenario?.lever_set ?? []).includes(l));
 
   async function onOptimize() {
     setOptimizing(true);
@@ -266,21 +311,37 @@ export default function RunProgress({ runId }: Props) {
         </div>
       )}
       </div>
-      <MetricsCharts runId={runId} />
+      <div className={np}>
+        <SimulationHero
+          reportedPPP={reportedPPP}
+          baseline={baseline}
+          recovered={recovered}
+          levers={heroLevers}
+        />
+      </div>
       <div className={np}>
       {reconnecting && (
         <p style={{ color: 'var(--amber)', fontSize: '0.8rem' }}>Reconnecting…</p>
       )}
       {error && <p style={{ color: '#b8860b' }}>{error}</p>}
       {log.length > 0 && (
-        <div className="mt-4 border border-[var(--border)] rounded-lg overflow-hidden">
-          <div className="px-3 py-2 border-b border-[var(--border)] font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+        <details
+          className="group mt-4 border border-[var(--border)] rounded-lg overflow-hidden"
+          onToggle={(e) => {
+            if ((e.target as HTMLDetailsElement).open && logRef.current) {
+              logRef.current.scrollTop = logRef.current.scrollHeight;
+            }
+          }}
+        >
+          <summary className="cursor-pointer select-none px-3 py-2 bg-[var(--surface2)] font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] list-none [&::-webkit-details-marker]:hidden flex items-center gap-2">
+            <ChevronRight className="w-4 h-4 text-[var(--text-dim)] transition-transform group-open:rotate-90 shrink-0" />
             Live trace
-          </div>
+            <span className="ml-auto font-normal normal-case text-[var(--text-dim)]">{log.length} events</span>
+          </summary>
           <div ref={logRef} className="p-3 font-mono text-[11px] leading-relaxed text-[var(--text-dim)] bg-[var(--surface2)] overflow-auto max-h-72 whitespace-pre-wrap">
             {log.join('\n')}
           </div>
-        </div>
+        </details>
       )}
       </div>
       {reports.length > 0 ? (
@@ -298,6 +359,8 @@ export default function RunProgress({ runId }: Props) {
           <div className="space-y-3">
             {reports.map((r, i) => {
               const meta = STAGE_META[r.stage];
+              const { lead, story, appendix } = splitReport(r.report_markdown);
+              const ref = r.payload?.best_ppp;
               return (
                 <details
                   key={r.id}
@@ -328,8 +391,47 @@ export default function RunProgress({ runId }: Props) {
                         return url;
                       }}
                     >
-                      {r.report_markdown}
+                      {lead}
                     </ReactMarkdown>
+                    <MetricsCharts
+                      runId={runId}
+                      baseline={r.payload?.baseline_trajectory}
+                      recommended={r.payload?.ppp_trajectory}
+                      reference={ref != null ? { value: ref, label: 'Recommended' } : undefined}
+                    />
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      urlTransform={(url) => {
+                        if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
+                          return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
+                        }
+                        return url;
+                      }}
+                    >
+                      {story}
+                    </ReactMarkdown>
+                    <LeverImpactChart effects={r.payload?.main_effects} />
+                    {appendix && (
+                      <details className="appendix-toggle group mt-6 border border-[var(--border)] rounded-lg overflow-hidden">
+                        <summary className="cursor-pointer select-none px-4 py-3 bg-[var(--surface2)] text-[13px] font-medium text-[var(--text)] list-none [&::-webkit-details-marker]:hidden flex items-center gap-2">
+                          <ChevronRight className="w-4 h-4 text-[var(--text-dim)] transition-transform group-open:rotate-90 shrink-0" />
+                          See the evidence — assumptions, measured changes, and the full record
+                        </summary>
+                        <div className="px-4 py-4">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            urlTransform={(url) => {
+                              if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
+                                return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
+                              }
+                              return url;
+                            }}
+                          >
+                            {appendix}
+                          </ReactMarkdown>
+                        </div>
+                      </details>
+                    )}
                     <div className="no-print mt-6 pt-4 border-t border-[var(--border)] flex flex-wrap items-center gap-4 text-[13px]">
                       <button
                         onClick={() => printReport(r.id)}

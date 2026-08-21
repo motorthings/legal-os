@@ -150,13 +150,17 @@ def test_your_firm_is_recognizable_and_reconciled(searched_report):
     section = searched_report.split("## Your firm")[1].split("## Where")[0]
     assert "billing by the hour" in section
     assert "One number to reconcile" in section
-    assert "$440,000" in section                          # the gap, stated plainly
+    assert "$600,000" in section                          # the gap, stated plainly
 
 
-def test_heading_unchanged_shows_the_slide(searched_report):
-    section = searched_report.split("## Where it's heading")[1].split("## The changes")[0]
-    assert "profit per partner moves from" in section
-    assert "%)" in section                                # the percentage move
+def test_heading_unchanged_shows_the_slide(searched_report, baseline_report):
+    # Searched: anchored to the stable search baseline, not the noisy first quarter.
+    searched = searched_report.split("## Where it's heading")[1].split("## The changes")[0]
+    assert "holds around" in searched
+    # Baseline (no search yet): still shows the raw single-scenario slide.
+    baseline = baseline_report.split("## Where it's heading")[1].split("## The changes")[0]
+    assert "profit per partner moves from" in baseline
+    assert "%)" in baseline                                # the percentage move
 
 
 def test_changes_on_the_table_lists_five_plain_options(searched_report):
