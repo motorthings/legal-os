@@ -364,13 +364,20 @@ export default function RunProgress({ runId }: Props) {
         </div>
       )}
       {Object.keys(latest).length > 0 && (
-        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>
-          {HEADLINE.filter((m) => latest[m.key] !== undefined).map((m) => (
-            <div key={m.key}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{m.label}</div>
-              <strong style={{ fontSize: '1.15rem' }}>{m.fmt(latest[m.key])}</strong>
-            </div>
-          ))}
+        <div style={{ margin: '1rem 0' }}>
+          <p style={{ color: 'var(--text-dim)', fontSize: '0.78rem', margin: '0 0 0.5rem' }}>
+            Your firm&apos;s health in four numbers: what you keep of what you bill (realization),
+            what each matter pays (margin), whether the bench holds (attrition), and what it nets
+            each partner (profit per partner).
+          </p>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+            {HEADLINE.filter((m) => latest[m.key] !== undefined).map((m) => (
+              <div key={m.key}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{m.label}</div>
+                <strong style={{ fontSize: '1.15rem' }}>{m.fmt(latest[m.key])}</strong>
+              </div>
+            ))}
+          </div>
         </div>
       )}
       </div>
