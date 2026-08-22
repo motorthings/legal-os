@@ -171,13 +171,15 @@ class DB:
         )
 
     async def list_runs(self, firm_id: str | None = None) -> list[dict]:
+        # updated_at = the run's last activity (a re-run via optimize/scenario touches it), so
+        # the list can show the date the run was actually last run, not just when it was created.
         if firm_id:
             rows = await self._pool.fetch(
-                "select id, firm_id, status, total_seeds, seeds_completed, spend, created_at "
+                "select id, firm_id, status, total_seeds, seeds_completed, spend, created_at, updated_at "
                 "from runs where firm_id = $1 order by created_at desc", firm_id)
         else:
             rows = await self._pool.fetch(
-                "select id, firm_id, status, total_seeds, seeds_completed, spend, created_at "
+                "select id, firm_id, status, total_seeds, seeds_completed, spend, created_at, updated_at "
                 "from runs order by created_at desc limit 100")
         return [dict(r) for r in rows]
 

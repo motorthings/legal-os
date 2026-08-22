@@ -12,6 +12,7 @@ interface Run {
   seeds_completed: number;
   spend: number;
   created_at: string;
+  updated_at?: string;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -59,7 +60,8 @@ export default function RunHistory({ firmId }: { firmId: string }) {
             className="flex-1 p-3 flex items-center justify-between no-underline hover:border-[var(--primary)]"
           >
             <div>
-              <div style={{ fontWeight: 600 }}>{new Date(run.created_at).toLocaleString()}</div>
+              {/* Show when the run was LAST run (a re-run updates updated_at), not just created */}
+              <div style={{ fontWeight: 600 }}>{new Date(run.updated_at ?? run.created_at).toLocaleString()}</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                 {run.seeds_completed}/{run.total_seeds} seeds · ${(run.spend ?? 0).toFixed(2)}
               </div>
