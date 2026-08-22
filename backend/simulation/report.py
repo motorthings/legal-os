@@ -10,7 +10,7 @@ so a partner reads it top to bottom and every fact lives in exactly one place:
     The changes on the table — the decisions available (how the levers were determined)
     The recommendation       — which changes, in what order, and why (how they were optimized)
     What the simulation did   — running the plan across fresh scenarios, and whether it held
-    How to read this         — a short note on what the machine is
+    How to read the data     — a short note on what the machine is
     Appendices               — what the answer depends on, the measured numbers, trajectories,
                                the firm on record, and the complete auditable record
 
@@ -1135,7 +1135,7 @@ def _how_to_read(meta: dict, exp: dict) -> list[str]:
                  or (exp.get("optimize") or {}).get("mc_seeds")) if exp else None
     scale = _scale_phrase(meta.get("sprints", "?"))
     scen = f" across {scenarios} independent scenarios" if scenarios else ""
-    L = ["## How to read this", "",
+    L = ["## How to read the data", "",
          f"This is a comparison engine, not a forecast of your P&L. It runs your firm — {scale}, "
          f"quarter by quarter{scen} — down different roads and shows which ends up ahead, and "
          "why. Every quarter, simulated partners, associates, and AI tools work real matters; "
