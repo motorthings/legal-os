@@ -48,7 +48,7 @@ def build_system_prompt(
     for kpi, weight in sorted(role.kpis.items(), key=lambda x: x[1], reverse=True):
         parts.append(f"  - {kpi}: {weight*100:.0f}% of your performance evaluation")
     parts.append(f"Your annual compensation: ${role.salary_band[0]/1000:.0f}K-${role.salary_band[1]/1000:.0f}K")
-    parts.append(f"Variable/origination comp: up to {role.variable_comp_pct*100:.0f}% — tied to your book of business and realization, not a company-wide pool.")
+    parts.append(f"Variable/origination comp: up to {role.variable_comp_pct*100:.0f}% — tied to your book and realization.")
     parts.append("")
 
     # === YOUR AUTHORITY AND CONSTRAINTS ===
@@ -91,9 +91,8 @@ def build_system_prompt(
 
     # === RESPONSE FORMAT ===
     parts.append("=== HOW YOU COMMUNICATE ===")
-    parts.append("You are processing work in an operational system. Your responses must be structured JSON.")
-    parts.append("You are not writing to a human — your response will be parsed by the workflow engine.")
-    parts.append("Your personal feelings, personality, and biases should be expressed THROUGH your decision and reasoning, not alongside them.")
+    parts.append("Respond only in structured JSON, parsed by the workflow engine — not read by a human.")
+    parts.append("Express personality through your decision and reasoning, not alongside them.")
 
     return "\n".join(parts)
 
@@ -267,11 +266,14 @@ def build_task_prompt(
     parts.append("")
 
     # === STRUCTURED RESPONSE FORMAT ===
-    parts.append("=== YOUR RESPONSE (JSON only) ===")
+    # Concise output: reasoning is logged, not read by a human, and the metrics derive from
+    # the decision fields — so cap prose hard. Output tokens bill at full rate, and reasoning
+    # was the dominant cost on real runs.
+    parts.append("=== YOUR RESPONSE (JSON only, terse) ===")
     parts.append("{")
     parts.append('  "decision": "approve|reject|escalate|request_info|defer|accept_ai|override_ai",')
-    parts.append('  "reasoning": "Your explanation. Make it specific to THIS matter. Reference your role, your constraints, and your judgment.",')
-    parts.append('  "concerns": ["Any reservations or risks you see"],')
+    parts.append('  "reasoning": "1-2 sentences, specific to THIS matter.",')
+    parts.append('  "concerns": ["Reservations or risks, if any"],')
     parts.append('  "next_step": "Which workflow step should this matter go to next?",')
     parts.append('  "ai_interaction": {')
     if step.ai_capable:
@@ -286,7 +288,7 @@ def build_task_prompt(
     parts.append('  "emotional_state": {')
     parts.append('    "stress_change": -0.1 to 0.1,')
     parts.append('    "ai_trust_change": -0.1 to 0.1,')
-    parts.append('    "note": "Brief note on how this decision made you feel — frustrated? relieved? validated?"')
+    parts.append('    "note": "One short phrase."')
     parts.append("  }")
     parts.append("}")
 

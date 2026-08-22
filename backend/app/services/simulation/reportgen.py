@@ -6,6 +6,7 @@ Reuses report.build_report by constructing the `experiments` dict the report exp
 then injecting it into the primary run's folder. `optimize.set_base_firm` must already be
 called (by the runner) so the sensitivity sweep runs the FIRM's numbers.
 """
+import asyncio
 import math
 import statistics
 import tempfile
@@ -32,7 +33,7 @@ LEVER_NOTES = {
     "comp": "partner comp incentives",
     "leverage": "staffing leverage",
 }
-_SENS_SEEDS = 3  # band needs a range, not a CI — keep the sweep cheap
+_SENS_SEEDS = 2  # band needs a range, not a CI — keep the sweep cheap; 2 seeds cuts 33% of the sims
 _SENS_OUT = Path(tempfile.gettempdir()) / "law-firm-sim-sens"  # throwaway artifacts, not repo clutter
 
 
@@ -72,22 +73,22 @@ def _mc_band(mc: dict) -> dict:
 
 async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=None) -> dict:
     base_profile = cfg.elasticities or default_profile()
-    bands = {}
-    for lever in LEVERS:
-        cid = _GOVERNING.get(lever)
-        if not cid or cid not in DEFAULT_ELASTICITIES:
-            continue
+    # The "base" point sets each coefficient to its default, so it's the SAME baseline for
+    # every lever. Computing it once (not once per lever) saves 3 full simulations.
+    base_base = await _ppp_async(set(), seeds, sprints, matters, base_profile)
+
+    async def one(lever: str, cid: str):
         if progress:
             progress(f"testing how {LEVER_NOTES.get(lever, lever)} moves profit — low, base, high")
         coef = DEFAULT_ELASTICITIES[cid]
         deltas = {}
         for where in ("low", "base", "high"):
             prof = base_profile.with_point(cid, where)
-            base = await _ppp_async(set(), seeds, sprints, matters, prof)
+            base = base_base if where == "base" else await _ppp_async(set(), seeds, sprints, matters, prof)
             lever_ppp = await _ppp_async({lever}, seeds, sprints, matters, prof)
             deltas[where] = lever_ppp - base
         lo, hi = min(deltas.values()), max(deltas.values())
-        bands[lever] = {
+        return lever, {
             "coefficient": cid, "coefficient_name": coef.name, "source": coef.source,
             # The intake question that pins this coefficient down. The report surfaces it
             # for the widest band, so "calibrate the model" becomes one answerable question.
@@ -95,7 +96,12 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
             "low": deltas["low"], "base": deltas["base"], "high": deltas["high"],
             "band_low": lo, "band_high": hi,
         }
-    return bands
+
+    # Levers are independent — run them concurrently. For real (I/O-bound) providers this
+    # parallelizes the sweep across the event loop; for mock it interleaves the CPU work.
+    tasks = [one(lever, cid) for lever, cid in _GOVERNING.items() if cid in DEFAULT_ELASTICITIES]
+    results = await asyncio.gather(*tasks) if tasks else []
+    return dict(results)
 
 
 async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None,
