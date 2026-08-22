@@ -46,7 +46,7 @@ export default function MetricsCharts({
   return (
     <div className="border border-[var(--border)] rounded-lg p-3 my-4">
       <div className="text-[12px] text-[var(--text-dim)] mb-1">
-        Profit per partner, quarter by quarter
+        Profit per partner, quarter by quarter — what happens if you do nothing vs. follow the recommendation
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={rows} margin={{ top: 4, right: 8, bottom: 0, left: 8 }}>
@@ -73,9 +73,9 @@ export default function MetricsCharts({
               label={{ value: reference.label, position: 'insideTopRight', fill: '#10b981', fontSize: 11 }}
             />
           )}
-          <Line type="monotone" dataKey="baseline" stroke="#2dd4bf" strokeWidth={2} dot={false} name="Baseline" />
+          <Line type="monotone" dataKey="baseline" stroke="#2dd4bf" strokeWidth={2} dot={false} name="If nothing changes" />
           {hasRecommendedLine && (
-            <Line type="monotone" dataKey="recommended" stroke="#10b981" strokeWidth={2.5} dot={false} name="Recommended" />
+            <Line type="monotone" dataKey="recommended" stroke="#10b981" strokeWidth={2.5} dot={false} name="With the recommendation" />
           )}
           <Legend iconType="line" wrapperStyle={{ fontSize: 11, color: 'var(--text-muted)' }} />
         </LineChart>

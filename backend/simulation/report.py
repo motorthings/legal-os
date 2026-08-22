@@ -683,15 +683,18 @@ def render_metric_table(metrics: dict, letter: str = "C", searched: bool = False
     sep = "|" + "---|" * (len(sprints) + 1)
     for gid, glabel in GROUPS:
         rows = []
+        defs = []
         for metric in by_group[gid]:
             if metric.id not in metrics:
                 continue
             cells = [fmt(metrics[metric.id].get(s), metric.unit) for s in sprints]
             rows.append(f"| {metric.label} | " + " | ".join(cells) + " |")
+            defs.append(f"- **{metric.label}** = {metric.what} {metric.why}")
         if not rows:
             continue
         lines += [f"**{glabel}** — _{GROUP_READ[gid]}._", "",
-                  header, sep, *rows, ""]
+                  header, sep, *rows, "",
+                  "**What these mean, and why they matter.**", *defs, ""]
     return "\n".join(lines)
 
 
@@ -1187,8 +1190,12 @@ def build_report(run_dir: Path, experiments: dict) -> str:
     body += _how_to_read(meta, experiments) + ["---", ""]
 
     appendices = _lettered_appendices(experiments, metrics, meta, searched)
+    intro = (f"This is a computer model of **{firm}** run forward over "
+             f"{_scale_phrase(meta.get('sprints', '?'))}. It compares two futures: keep doing "
+             "what the firm does today, or make a set of strategic changes (called \"levers\"). "
+             "Every number here is an estimate from the model, not the firm's actual books.")
     blocks = [
-        f"# Firm Simulation — {firm}\n\n**Run:** {run_dir.name}\n",
+        f"# Firm Simulation — {firm}\n\n**Run:** {run_dir.name}\n\n{intro}\n",
         "\n".join(body),
         *appendices,
     ]

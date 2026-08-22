@@ -40,52 +40,71 @@ class Metric:
     label: str
     unit: str        # "$", "%", "hrs", "days", "mo", "/100", "/10"
     direction: str   # "higher" (better) | "lower" (better)
-    what: str        # one-line plain-English definition
+    what: str        # one-line plain-English definition — what the number IS
+    why: str         # one-line plain-English reason it MATTERS to the firm
     group: str       # "pnl" | "causal" | "people"
 
 
 METRICS = [
     # --- P&L: the "what moved" ---
     Metric("ppp", "Profit Per Partner", "$", "higher",
-           "Net income per equity partner — the single optimizing number.", "pnl"),
+           "Profit left for each partner after all costs.",
+           "The headline number — what each partner actually takes home.", "pnl"),
     Metric("rpl", "Revenue Per Lawyer", "$", "higher",
-           "Total revenue per lawyer — top-line productivity.", "pnl"),
+           "Total revenue for each lawyer.",
+           "How productive each lawyer is — the money coming in before costs.", "pnl"),
     Metric("matter_profit_margin", "Matter Profit Margin", "%", "higher",
-           "Margin on a matter, especially under AFA/fixed fee.", "pnl"),
+           "How much profit a matter earns.",
+           "Whether each matter actually makes money, not just does work.", "pnl"),
     Metric("realization_rate", "Realization Rate", "%", "higher",
-           "Share of billed hours actually collected.", "pnl"),
+           "Of what you bill, how much actually gets paid.",
+           "Billed is not the same as collected — this is the cash that really arrives.", "pnl"),
     Metric("utilization", "Associate Utilization", "hrs", "higher",
-           "Billable hours per associate per year.", "pnl"),
+           "Billable hours per associate per year.",
+           "How fully the junior lawyers are actually working on billable matters.", "pnl"),
     Metric("ai_assisted_matter_pct", "AI-Assisted Matters", "%", "higher",
-           "Adoption — matters where AI touched a workflow step.", "pnl"),
+           "Share of matters where AI touched a step.",
+           "How widely the AI is actually being used, not just bought.", "pnl"),
 
     # --- Causal: the "why it moved" ---
     Metric("matter_cycle_time", "Matter Cycle Time", "mo", "lower",
-           "Sprints from intake to close.", "causal"),
+           "Time from opening a matter to closing it.",
+           "Faster matters bill sooner and tie up less work in progress.", "causal"),
     Metric("exception_rate", "Exception Rate", "%", "lower",
-           "How often work hits an exception needing partner judgment.", "causal"),
+           "How often work hits a snag that needs a senior person.",
+           "Every exception pulls a partner off their own work to rescue someone's.", "causal"),
     Metric("first_pass_accuracy", "First-Pass Accuracy", "%", "higher",
-           "Share of work right the first time, no rework.", "causal"),
+           "Share of work right the first time, no redo.",
+           "Getting it right once is far cheaper than fixing it later.", "causal"),
     Metric("translation_debt_index", "Translation Debt", "/100", "lower",
-           "Meaning lost when work passes between steps.", "causal"),
+           "How much meaning is lost when work passes between people.",
+           "The quieter the loss, the more rework and missed details pile up.", "causal"),
     Metric("handoff_failure_rate", "Handoff Failure Rate", "%", "lower",
-           "How often a handoff between steps breaks.", "causal"),
+           "How often a hand-off between steps drops the ball.",
+           "A clean hand-off keeps a matter moving; a broken one stalls it.", "causal"),
     Metric("redline_rework_rate", "Redline Rework Rate", "%", "lower",
-           "How often the partner substantially rewrote an AI/associate draft.", "causal"),
+           "How often a partner rewrites a draft instead of using it.",
+           "Rewriting is the most expensive time in the firm — it doubles the cost of the work.", "causal"),
 
     # --- People & cost: the "what it cost" ---
     Metric("partner_ai_trust", "Partner AI Trust", "/10", "higher",
-           "How much partners trust the AI.", "people"),
+           "How much the partners trust the AI.",
+           "If partners don't trust it, they won't use it — and the whole plan stalls.", "people"),
     Metric("associate_ai_trust", "Associate AI Trust", "/10", "higher",
-           "How much associates trust the AI.", "people"),
+           "How much the associates trust the AI.",
+           "Associates do the daily work; their buy-in decides whether it sticks.", "people"),
     Metric("trust_polarization", "Trust Polarization", "/10", "lower",
-           "How divided the firm is about the AI.", "people"),
+           "How divided the firm is about the AI.",
+           "A firm split on the AI can't move together — division is a cost, not a debate.", "people"),
     Metric("associate_attrition", "Associate Attrition", "%", "lower",
-           "Voluntary turnover of associates.", "people"),
+           "How many associates leave each year.",
+           "If the bench keeps walking out, there's no one to do the work tomorrow.", "people"),
     Metric("collection_cycle", "Collection Cycle", "days", "lower",
-           "Days from invoice to payment.", "people"),
+           "Days from sending the bill to getting paid.",
+           "The longer clients take to pay, the longer the firm funds the work itself.", "people"),
     Metric("wip_aging", "WIP Aging", "days", "lower",
-           "Days of unbilled work-in-progress.", "people"),
+           "Days of work done but not yet billed.",
+           "Done-but-unbilled work is money the firm has earned but can't touch.", "people"),
 ]
 
 # Convenience views.

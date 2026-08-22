@@ -37,7 +37,7 @@ export default function LeverImpactChart({
   return (
     <div className="border border-[var(--border)] rounded-lg p-3">
       <div className="text-[12px] text-[var(--text-dim)] mb-1">
-        Each change, on its own — effect on profit per partner
+        Each change tried on its own (vs. doing nothing) — the effect on profit per partner
       </div>
       <ResponsiveContainer width="100%" height={data.length * 44}>
         <BarChart data={data} layout="vertical" margin={{ top: 4, right: 24, bottom: 0, left: 8 }}>
