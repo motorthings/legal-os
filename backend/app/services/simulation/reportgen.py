@@ -100,7 +100,8 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
 
 async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None,
                           optimize_result: dict | None = None, stage: str | None = None,
-                          prior: dict | None = None) -> str:
+                          prior: dict | None = None,
+                          model_variance: dict | None = None) -> str:
     # Determinate progress: confidence band (1) + per-lever sensitivity (N) + write (1).
     n_sens = len([l for l in LEVERS if _GOVERNING.get(l) and _GOVERNING.get(l) in DEFAULT_ELASTICITIES])
     total = n_sens + 2
@@ -147,6 +148,10 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
         },
         "optimize": optimize,
         "sensitivity": {"bands": await _sensitivity_bands(cfg, seeds, sprints, matters, step)},
+        # The model's own uncertainty envelope (measured at the runner for real providers;
+        # {"mode":"deterministic"} for mock). The report quotes it so a reader can tell model
+        # variance from world variance — the two bands, not one.
+        "model_variance": model_variance,
     }
 
     step("writing the report")

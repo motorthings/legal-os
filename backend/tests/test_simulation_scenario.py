@@ -72,7 +72,7 @@ def test_negative_alone_but_kept_lever_reads_as_kept_not_denied(tmp_path):
                            "stage": "lever_optimization"})
     section = report.split("## The recommendation")[1]
     assert "earns its place once the others are in" in section
-    assert "doesn't earn a place here" not in section.split("Act on results faster")[1][:200]
+    assert "doesn't earn a place here" not in section.split("Act on flagged matters within the week")[1][:200]
 
 
 def test_scenario_stage_says_whether_it_held(tmp_path):
@@ -85,7 +85,7 @@ def test_scenario_stage_says_whether_it_held(tmp_path):
                            "stage": "scenario_simulation", "prior": {"best_delta": 380_000}})
     section = report.split("## What the simulation did")[1]
     assert "40 fresh scenarios" in section
-    assert "whichever way the year breaks" in section       # confirmed wording
+    assert "real recovery rather than a lucky draw" in section       # confirmed wording
     assert "optimization had estimated" in section           # compares to prior
 
 

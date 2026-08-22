@@ -108,21 +108,30 @@ DEFAULT_ELASTICITIES = {e.id: e for e in _DEFS}
 @dataclass
 class ElasticityProfile:
     """A firm's coefficient set. Starts from the defaults; `override` sets a coefficient's
-    working value (e.g. from calibration) or swaps in a low/high for a sensitivity sweep."""
+    working value (e.g. from calibration) or swaps in a low/high for a sensitivity sweep.
+
+    `calibrated` records which coefficients the FIRM itself set (via the intake/calibration
+    path) as opposed to archetype defaults or sensitivity-sweep values. The report reads it
+    to stamp every number as "firm-calibrated" or "archetype default" — the waterline between
+    what's measured and what's assumed."""
     values: dict = field(default_factory=lambda: {k: v.base for k, v in DEFAULT_ELASTICITIES.items()})
+    calibrated: frozenset = frozenset()
 
     def get(self, coef_id: str) -> float:
         return self.values.get(coef_id, DEFAULT_ELASTICITIES[coef_id].base)
 
     def with_override(self, coef_id: str, value: float) -> "ElasticityProfile":
+        """Set a coefficient from firm calibration — marks it `calibrated`."""
         v = dict(self.values)
         v[coef_id] = value
-        return ElasticityProfile(values=v)
+        return ElasticityProfile(values=v, calibrated=self.calibrated | {coef_id})
 
     def with_point(self, coef_id: str, where: str) -> "ElasticityProfile":
         """Return a profile with one coefficient set to its 'low'/'base'/'high' — the unit
-        of a sensitivity sweep."""
-        return self.with_override(coef_id, DEFAULT_ELASTICITIES[coef_id].at(where))
+        of a sensitivity sweep. NOT marked calibrated: a sweep isn't a firm calibration."""
+        v = dict(self.values)
+        v[coef_id] = DEFAULT_ELASTICITIES[coef_id].at(where)
+        return ElasticityProfile(values=v, calibrated=self.calibrated)
 
 
 def default_profile() -> ElasticityProfile:

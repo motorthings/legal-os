@@ -32,6 +32,7 @@ from pathlib import Path
 ROOT = Path(os.path.dirname(os.path.abspath(__file__)))
 
 from .src.utils.metric_catalog import GROUPS, GROUP_READ, METRICS, METRIC_INFO, metrics_by_group
+from .src.models.elasticities import DEFAULT_ELASTICITIES
 
 # Firm-signature fields worth surfacing, grouped for readability.
 FIRM_SECTIONS = [
@@ -233,7 +234,7 @@ LEVER_GLOSS = {
     "leverage": "change how many junior lawyers sit under each partner (the pyramid)",
     "seams":    "write down the know-how that lives in senior lawyers' heads, so work "
                 "doesn't get garbled when it passes from one person to the next",
-    "latency":  "shorten the lag between seeing a result and acting on it",
+    "latency":  "flag the matters that need a decision and act on them within the same week",
 }
 
 
@@ -515,7 +516,7 @@ _LEVER_ACTION = {
     "pricing":  "move to flat fees",
     "seams":    "write down the know-how at your hand-offs",
     "comp":     "pay partners to use AI",
-    "latency":  "act on results faster",
+    "latency":  "act on flagged matters within the week",
     "leverage": "reshape the pyramid — how many juniors sit under each partner",
 }
 
@@ -526,6 +527,15 @@ def _action(lever: str) -> str:
 
 def _cap(s: str) -> str:
     return s[0].upper() + s[1:] if s else s
+
+
+def _and_list(items: list) -> str:
+    """'a, b, and c' — a readable join for 0..n items."""
+    if len(items) <= 1:
+        return items[0] if items else "none"
+    if len(items) == 2:
+        return f"{items[0]} and {items[1]}"
+    return f"{', '.join(items[:-1])}, and {items[-1]}"
 
 
 _OBJECTIVE_PLAIN = {
@@ -560,6 +570,26 @@ _SOURCE_WORDS = {
     "INFERRED":   "follows from your own numbers",
     "ASSUMPTION": "our estimate — worth confirming",
 }
+
+
+def _coefficient_name(cid: str) -> str:
+    """A coefficient's plain name, or a readable fallback for unknown ids."""
+    c = DEFAULT_ELASTICITIES.get(cid)
+    if c and c.name:
+        return c.name
+    return cid.replace("_", " ").title()
+
+
+def _calibration(meta: dict) -> dict:
+    """The calibration waterline: which coefficients the firm set, and whether the whole
+    report is a generic reference scenario (zero firm-set coefficients) or their firm."""
+    calibrated = sorted(meta.get("calibrated_elasticities") or [])
+    return {
+        "calibrated": calibrated,
+        "names": [_coefficient_name(c) for c in calibrated],
+        "count": len(calibrated),
+        "generic": len(calibrated) == 0,   # no firm calibration => archetype averages
+    }
 
 
 def render_sensitivity(exp: dict, letter: str = "A") -> str:
@@ -768,6 +798,24 @@ def render_firm(meta: dict, letter: str = "D") -> str:
         for k, v in rows:
             lines.append(f"- **{_FIRM_FIELD_LABEL.get(k, k)}:** {_firm_value(k, v)}.")
         lines.append("")
+
+    # The calibration waterline — which internal settings came from THIS firm vs archetype
+    # defaults. Without it, a firm that never supplied numbers reads as "your firm" while
+    # actually running on averages wearing their logo. Make it explicit either way.
+    cal = _calibration(meta)
+    if cal["generic"]:
+        lines += ["**What's set from your numbers**", "",
+                  "None of the dials that set how strongly each change moves your numbers were "
+                  "set from this firm's own data. Every one runs on an **archetype default** — "
+                  "the model's averages, not measurements from your firm. Treat this whole "
+                  "report as a **generic reference scenario**, a starting point, not a statement "
+                  "about your ledger.", ""]
+    else:
+        total = len(DEFAULT_ELASTICITIES)
+        lines += ["**What's set from your numbers**", "",
+                  f"**{cal['count']} of {total}** of the dials that set how strongly each change "
+                  f"moves your numbers were set from this firm's own data — the rest run on "
+                  f"archetype defaults. Set from your data: {_and_list(cal['names'])}.", ""]
     return "\n".join(lines)
 
 
@@ -786,6 +834,20 @@ def _order_combo(combo: list) -> list:
     return [lv for lv in _LEVER_ORDER if lv in set(combo or [])]
 
 
+def _lever_within_noise(lv: str, opt: dict) -> bool:
+    """Is this lever's effect inside its own run-to-run spread — i.e. not distinguishable
+    from noise yet? The optimizer admits a lever into best_combo on absolute thresholds, so
+    this is the report's last line of defense: a within-noise lever must not be presented
+    as a reliable mover. Returns False (treat as real) when per-lever spread isn't recorded
+    (older experiment files), so nothing regresses on legacy data."""
+    fx = (opt.get("main_effects") or {}).get(lv) or {}
+    delta = fx.get("delta_ppp")
+    spread = fx.get("spread_ppp")
+    if spread is None or delta is None:
+        return False
+    return abs(delta) < abs(spread)
+
+
 def _firm_portrait(meta: dict) -> str:
     """Two or three sentences that let a partner recognize their own firm."""
     sig = meta.get("firm_signature") or {}
@@ -798,12 +860,19 @@ def _firm_portrait(meta: dict) -> str:
     mix = _band(sig.get("practice_mix_transactional"), 0.33, 0.66,
                 "mostly litigation", "a mix of litigation and transactional work", "mostly transactional")
     lev_txt = f", about {lev:g} associates to a partner," if lev is not None else ""
-    return (f"**{firm}** is {pricing}{lev_txt} with {book} and {mix}. Its real value sits at four "
-            "hand-offs — the partner's redlines, the settlement call, who gets staffed, and which "
-            "bill a client will actually pay — where the work turns on judgment no template holds. "
-            "AI can carry the routine around those hand-offs; it can't carry the judgment inside "
-            "them. Whether the firm keeps that value as the work changes is what this simulation "
-            "puts a number on.")
+    portrait = (f"**{firm}** is {pricing}{lev_txt} with {book} and {mix}. Its real value sits at four "
+                "hand-offs — the partner's redlines, the settlement call, who gets staffed, and which "
+                "bill a client will actually pay — where the work turns on judgment no template holds. "
+                "AI can carry the routine around those hand-offs; it can't carry the judgment inside "
+                "them. Whether the firm keeps that value as the work changes is what this simulation "
+                "puts a number on.")
+    # The waterline, said early: a firm that never supplied its own numbers is not "their
+    # firm" in the figures — it's archetype averages wearing their name. Say that up front.
+    if _calibration(meta)["generic"]:
+        portrait += (" To be clear: none of the dials behind these numbers were set from your "
+                     "own data, so this is a **generic reference scenario**, not a measurement "
+                     "of your firm.")
+    return portrait
 
 
 def _heading_unchanged(meta: dict, metrics: dict, baseline=None) -> list[str]:
@@ -869,6 +938,15 @@ def _lever_standing_line(lv: str, opt: dict, combo: set, comp_delta) -> str:
     fx = (opt.get("main_effects") or {}).get(lv)
     val, unit = _effect(fx, opt) if fx else (None, "$")
     name = _cap(_action(lv))
+    # A within-noise lever must not be sold as a reliable mover — checked first so it applies
+    # to every lever, including comp (which otherwise has a dedicated "flips under AFA" path).
+    if _lever_within_noise(lv, opt) and val is not None and not _is_zero(val, unit):
+        if lv in combo:
+            return (f"- **{name}** moves within its own run-to-run spread, so its part of this "
+                    "plan isn't yet distinguishable from noise. Treat the plan's total as the "
+                    "number; don't count on this lever alone.")
+        return (f"- **{name}** moves within its own run-to-run spread — not yet distinguishable "
+                "from noise, so it's left out.")
     if lv == "comp" and comp_delta is not None and not _is_zero(comp_delta, unit):
         base = (opt.get("main_effects") or {}).get("comp", {})
         comp_alone = base.get("delta_ppp")
@@ -888,6 +966,32 @@ def _lever_standing_line(lv: str, opt: dict, combo: set, comp_delta) -> str:
     return f"- **{name}** loses about {_approx_money(val)} and doesn't earn a place here. Left out."
 
 
+def _falsifiable(exp: dict, opt: dict, obj_plain: str, best) -> list[str]:
+    """The claim, falsified before anyone trusts it: the number is a range, not a point, and
+    it names the one assumption that would move it most — so a reader can check it, not just
+    accept it. This is what turns a pitch into a testable claim."""
+    # The MC spread on the recommendation's own number (ci95 > spread when available).
+    band = opt.get("ci95", opt.get("spread"))
+    if not band or best is None:
+        return []
+    L = [f"**How much that number depends on the assumptions.** The {fmt(best, '$')} is a "
+         f"range, not a point: roughly **{fmt(best - band, '$')} to {fmt(best + band, '$')}** "
+         f"on {obj_plain}, depending on how strongly the assumptions behind it hold for you.", ""]
+    widest = _widest_calibration(exp)
+    if widest:
+        _, lever, b, q = widest
+        low, high = b.get("band_low"), b.get("band_high")
+        name = b.get("coefficient_name", _lever_name(lever))
+        rng = f"{fmt(low, '$')} to {fmt(high, '$')}" if low is not None else "a wide range"
+        L.append(f"The single biggest swing factor is **{name}** — it alone moves the answer by "
+                 f"{rng}.")
+        if q:
+            L.append(f"Pin it down with your own answer to this: _{q}_")
+        L.append("Change that one number and the recommendation moves. That's the point of this "
+                 "section: the claim is stated so you can test it.")
+    return L + [""]
+
+
 def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
     """How the levers were optimized — the choice, the order, why, and each change's standing."""
     opt = (exp or {}).get("optimize") or {}
@@ -901,11 +1005,14 @@ def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
     obj_plain = _OBJECTIVE_PLAIN.get(obj, "profit per partner")
     delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
     best = opt.get("best_ppp") if obj == "ppp" else opt.get("best_objective")
-    band = opt.get("ci95", opt.get("spread"))
+    # Significance bar: the 1σ run-to-run spread, not the CI half-width. A gain that clears
+    # the spread is a real signal; one that only clears the CI is inside the noise and must
+    # not be asserted as a reliable recovery. The CI half-width (~0.4σ at 20 seeds) is too
+    # loose a bar to license confident language.
+    band = opt.get("spread", opt.get("ci95"))
     holds = (delta is not None and band is not None and abs(delta) > abs(band))
-    conf = ("and the gain holds up in every version of the future we ran, not just on average — "
-            "a real result, not a lucky one" if holds else
-            "though the size is still uncertain, so trust the direction more than the exact figure")
+    conf = ("and the gain clears the run-to-run spread — a real result, not a lucky draw" if holds
+            else "though the size is still uncertain, so trust the direction more than the exact figure")
     comp_delta = _interaction_dollars(((opt.get("interactions") or {}).get("comp_x_pricing") or {}).get("delta"), opt)
     interactions = opt.get("interactions") or {}
     pair, inter = _interaction_pair(interactions)
@@ -919,6 +1026,7 @@ def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
     L = ["## The recommendation", "",
          f"**{_cap(actions)}.** Made together, in that order, they lift {obj_plain} to about "
          f"**{fmt(best, '$')}**.{recovery} — {conf}.", ""]
+    L += _falsifiable(exp, opt, obj_plain, best)
 
     # Why the order — only the levers that are actually in the plan.
     L += ["**Why that order.**", ""]
@@ -956,6 +1064,19 @@ def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
                  "together than each does alone.")
     L += [""]
 
+    # Per-lever honesty: if any member of the plan is still within its own spread, the plan's
+    # total is the reliable estimate but that lever's contribution is unproven — say so.
+    noisy = [lv for lv in combo if _lever_within_noise(lv, opt)]
+    if noisy:
+        plural = len(noisy) > 1
+        L += ["**A caveat.** " + ", ".join(_action(lv) for lv in noisy)
+              + (" is" if not plural else " are")
+              + " still within the run-to-run spread, so "
+              + ("its" if not plural else "their")
+              + " contribution to this plan isn't proven yet. Treat the plan's total as the "
+              "reliable estimate and its composition as provisional, until more runs or your "
+              "own numbers tighten it.", ""]
+
     # How we got here — the method, briefly (kept visible per the partner's ask).
     sims = opt.get("sims_run")
     mc = opt.get("mc_seeds")
@@ -976,7 +1097,7 @@ def _what_the_sim_showed(meta: dict, metrics: dict, exp: dict) -> list[str]:
     obj = opt.get("objective", "ppp")
     obj_plain = _OBJECTIVE_PLAIN.get(obj, "profit per partner")
     delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
-    band = opt.get("ci95", opt.get("spread"))
+    band = opt.get("spread", opt.get("ci95"))
     mc = opt.get("mc_seeds")
     holds = (delta is not None and band is not None and abs(delta) > abs(band))
     du = "$" if obj == "ppp" else _obj_unit(opt)
@@ -987,9 +1108,8 @@ def _what_the_sim_showed(meta: dict, metrics: dict, exp: dict) -> list[str]:
          "matters land, which hand-offs go wrong, and who leaves.", ""]
     if holds:
         L += [f"It recovered **{_money(delta)}** of the friction you're already paying for, give or "
-              f"take {fmt(band, du if du != 'blend' else '')} — and it held in every scenario, "
-              "not just on average. That's the difference between a real recovery and a lucky draw: "
-              "the same plan wins whichever way the year breaks.", ""]
+              f"take {fmt(band, du if du != 'blend' else '')} — the gain clears the run-to-run "
+              "spread, so it's a real recovery rather than a lucky draw.", ""]
     else:
         L += [f"It recovered about {_money(delta)} of friction, but the spread is wide enough that some "
               "scenarios land near flat. Trust the direction; treat the size as provisional until "
@@ -1012,16 +1132,31 @@ def _how_to_read(meta: dict, exp: dict) -> list[str]:
                  or (exp.get("optimize") or {}).get("mc_seeds")) if exp else None
     scale = _scale_phrase(meta.get("sprints", "?"))
     scen = f" across {scenarios} independent scenarios" if scenarios else ""
-    return ["## How to read this", "",
-            f"This is a comparison engine, not a forecast of your P&L. It runs your firm — {scale}, "
-            f"quarter by quarter{scen} — down different roads and shows which ends up ahead, and "
-            "why. Every quarter, simulated partners, associates, and AI tools work real matters; "
-            "the rework and write-offs that come out of that are what set the numbers. The "
-            "assumptions that move the answer are listed and tested in Appendix A — nothing is "
-            "hidden.", "",
-            "**Trust the direction and the order. Check the dollars before you quote them** — the "
-            "magnitudes are calibrated to a firm like yours, not your ledger. Every figure traces "
-            "to the record at the end.", ""]
+    L = ["## How to read this", "",
+         f"This is a comparison engine, not a forecast of your P&L. It runs your firm — {scale}, "
+         f"quarter by quarter{scen} — down different roads and shows which ends up ahead, and "
+         "why. Every quarter, simulated partners, associates, and AI tools work real matters; "
+         "the rework and write-offs that come out of that are what set the numbers. The "
+         "assumptions that move the answer are listed and tested in Appendix A — nothing is "
+         "hidden.", ""]
+    mv = (exp or {}).get("model_variance") or meta.get("model_variance")
+    if mv:
+        mode = mv.get("mode")
+        if mode == "deterministic":
+            L += ["**This run used a deterministic stand-in for the reasoning** — the model "
+                  "gave the same answer every time, so the range you see is the model's own "
+                  "spread, not the world's. A real model would add more uncertainty than this "
+                  "shows.", ""]
+        elif mv.get("count", 0) >= 2:
+            L += [f"**The range is two bands, not one.** The scenario band above is structural "
+                  f"— how the firm plays out across different runs. On top of it, re-running "
+                  f"the reasoning itself at different temperatures moved the headline from "
+                  f"{fmt(mv.get('low'), '$')} to {fmt(mv.get('high'), '$')}. Real results sit "
+                  f"inside both, not either.", ""]
+    L += ["**Trust the direction and the order. Check the dollars before you quote them** — the "
+          "magnitudes are calibrated to a firm like yours, not your ledger. Every figure traces "
+          "to the record at the end.", ""]
+    return L
 
 
 def build_report(run_dir: Path, experiments: dict) -> str:
@@ -1076,9 +1211,9 @@ def _bottom_line(meta: dict, metrics: dict, exp: dict, stage: str, searched: boo
     obj = opt.get("objective", "ppp")
     obj_plain = _OBJECTIVE_PLAIN.get(obj, "profit per partner")
     delta = opt.get("best_delta") if obj == "ppp" else opt.get("best_delta_objective")
-    band = opt.get("ci95", opt.get("spread"))
+    band = opt.get("spread", opt.get("ci95"))
     holds = (delta is not None and band is not None and abs(delta) > abs(band))
-    conf = ("and it holds up across every scenario we ran" if holds
+    conf = ("and the gain clears the run-to-run spread" if holds
             else "though the exact size is still uncertain")
     # The recovery story, first: the reported figure is already eroded by friction, and the
     # plan gets it back — so a partner doesn't read the gain as net-on-top of the number

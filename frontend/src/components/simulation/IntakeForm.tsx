@@ -18,7 +18,7 @@ interface Props {
   existing?: FirmConfigJson;
 }
 
-const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, model: 'deepseek-v4-flash', legalTool: 'mock' };
+const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, model: 'mock', legalTool: 'mock' };
 const GUARDRAIL_METRICS = [
   { key: 'ppp', label: 'Profit per partner' },
   { key: 'matter_profit_margin', label: 'Matter margin' },
@@ -311,6 +311,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
           <label className="flex flex-col gap-1">
             <span className="text-[13px] font-semibold text-[var(--text)]">Model</span>
             <select className={INPUT_CLS} value={run.model} onChange={(e) => setRun({ ...run, model: e.target.value })}>
+              <option value="mock">mock (deterministic)</option>
               <option value="deepseek-v4-flash">deepseek-v4-flash (iteration)</option>
               <option value="deepseek-v4-pro">deepseek-v4-pro (client pass)</option>
             </select>

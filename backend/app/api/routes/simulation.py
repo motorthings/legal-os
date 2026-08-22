@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.config import settings
-from app.services.simulation.db import DB
+from app.services.simulation.db import DB, replay_hash
 from app.services.simulation.events import EventBus, sse, sse_comment
 from app.services.simulation import runner
 
@@ -29,6 +29,12 @@ class RunRequest(BaseModel):
     budget: float | None = None
     max_cost: float | None = None
     firm_id: str | None = None
+
+
+class OutcomeRequest(BaseModel):
+    metric: str = Field(default="ppp")
+    actual_value: float
+    source: str | None = None
 
 
 class RunOut(BaseModel):
@@ -120,7 +126,54 @@ async def get_run(run_id: str):
         "total_seeds": row.total_seeds, "seeds_completed": row.seeds_completed,
         "budget": row.budget, "max_cost": row.max_cost, "spend": row.spend,
         "has_report": row.report is not None, "error": row.error,
+        "replay_hash": replay_hash(row.config_snapshot, row.provider, row.total_seeds),
+        "model_variance": row.model_variance,
     }
+
+
+@router.post("/runs/{run_id}/replay", status_code=202)
+async def replay_run(run_id: str):
+    """Re-run the exact run from its stored inputs — same config, same provider, same seed
+    count. Anyone can check that a replay reproduces the original by comparing the hashes."""
+    row = await db.fetch_run(run_id)
+    if row is None:
+        raise HTTPException(404, "run not found")
+    new_id = await db.create_run(
+        None, row.config_snapshot, provider=row.provider, total_seeds=row.total_seeds,
+        budget=row.budget, max_cost=row.max_cost,
+    )
+    asyncio.create_task(runner.execute_run(new_id, db, bus))
+    return RunOut(run_id=new_id, events_url=f"/runs/{new_id}/events")
+
+
+@router.get("/runs/{run_id}/predictions")
+async def list_predictions(run_id: str):
+    """The model's recorded predictions for this run — the falsifiable claims awaiting or
+    carrying a real outcome."""
+    if await db.fetch_run(run_id) is None:
+        raise HTTPException(404, "run not found")
+    return await db.run_predictions(run_id)
+
+
+@router.post("/runs/{run_id}/outcomes", status_code=201)
+async def record_outcome(run_id: str, req: OutcomeRequest):
+    """Attach a real outcome to the run's prediction for a metric. This is the validation
+    write: predicted PPP vs what actually happened, measured against the predicted band."""
+    if await db.fetch_run(run_id) is None:
+        raise HTTPException(404, "run not found")
+    pred = await db.latest_prediction(run_id, req.metric)
+    if pred is None:
+        raise HTTPException(409, f"no {req.metric} prediction recorded for this run")
+    await db.record_outcome(pred["id"], req.actual_value, req.source)
+    return {"prediction_id": pred["id"], "metric": req.metric,
+            "actual_value": req.actual_value}
+
+
+@router.get("/firms/{firm_id}/divergence")
+async def firm_divergence(firm_id: str):
+    """The validation record for a firm: every prediction, its outcome, the error, and whether
+    the actual landed inside the predicted band. The honest 'where the model was wrong' page."""
+    return await db.firm_divergence(firm_id)
 
 
 @router.get("/runs/{run_id}/config")

@@ -831,6 +831,16 @@ class Orchestrator:
                 "sprints": self.config.sprints, "matters_per_sprint": self.config.matters_per_sprint,
                 "provider": self.config.llm_provider, "legal_tool": self.config.legal_tool,
                 "llm_model": getattr(self.llm, "model", None) or self.config.llm_model,
+                # Provider-derived model variance so even an offline (CLI) report discloses it.
+                # Mock is deterministic — the band is the model's own spread, not the world's.
+                # The web runner's measured sweep (reportgen) overrides this via experiments.
+                "model_variance": ({"mode": "deterministic", "count": 0}
+                                   if self.config.llm_provider == "mock" else None),
+                # Which transfer-function coefficients the FIRM set (vs archetype defaults).
+                # The report stamps every number "firm-calibrated" or "archetype default" from
+                # this, so a firm that never calibrated is labeled a generic reference scenario.
+                "calibrated_elasticities": sorted(
+                    (self.config.elasticities or default_profile()).calibrated),
                 "levers_pulled": levers_pulled,
                 "lever_settings": {
                     "pricing_posture": sig.pricing_posture,

@@ -7,6 +7,7 @@ shared report machinery (optimize.set_base_firm) at the run's firm.
 """
 import asyncio
 import math
+import statistics
 from dataclasses import replace
 from pathlib import Path
 
@@ -16,13 +17,59 @@ from simulation.src.orchestrator import Orchestrator
 from simulation.optimize import set_base_firm, _COLLECT, run_optimization, run_scenario_mc
 
 from . import reportgen
+from .db import replay_hash
 
 WORK_DIR = Path(settings.work_dir)
+
+# Sampling temperatures for the model-variance sweep. Same structure, same seed — only the
+# LLM's sampling varies — so the spread it yields is the MODEL's uncertainty, separate from
+# the Monte-Carlo band over seeds (which is structural/process variance).
+_MODEL_VAR_TEMPS = (0.2, 0.7, 1.2)
 
 
 def _combo_label(combo: list | None) -> str:
     """A lever set as a human-readable label — 'pricing + seams + comp', or 'no levers'."""
     return " + ".join(combo) if combo else "no levers"
+
+
+async def _model_variance(cfg, *, cumulative, budget, cap) -> dict:
+    """Measure the model's own uncertainty by re-running the same firm at different LLM
+    sampling temperatures. For a real provider this is the spread the LLM adds ON TOP of the
+    Monte-Carlo band; for mock it's trivially zero (deterministic — same answer every time).
+
+    Budget-guarded: the sweep only runs while spend stays under the run's cap, and reports
+    honestly if budget ran out before two temperatures could complete."""
+    if cfg.llm_provider == "mock":
+        return {"mode": "deterministic", "count": 0}
+    values, spent = [], cumulative
+    for temp in _MODEL_VAR_TEMPS:
+        remaining = budget if budget is not None else math.inf
+        if cap is not None:
+            remaining = min(remaining, cap)
+        remaining -= spent
+        if remaining <= 0:
+            break
+        seed_cfg = replace(cfg, seed=cfg.seed, run_id="VAR",
+                           llm_temperature=temp, max_cost=remaining)
+        orch = Orchestrator(seed_cfg)
+        orch.initialize()
+        run = await orch.run()
+        spent += getattr(getattr(orch.llm, "usage", None), "cost_estimate", 0.0)
+        h = run.company.metric_history.get("ppp")
+        if h and h.values:
+            values.append(h.values[-1].value)
+    if len(values) < 2:
+        return {"mode": "llm", "count": len(values),
+                "reason": "insufficient budget to measure model variance"}
+    return {
+        "mode": "llm", "count": len(values),
+        "temps": list(_MODEL_VAR_TEMPS[:len(values)]),
+        "values": [round(v) for v in values],
+        "mean": round(statistics.mean(values)),
+        "stdev": round(statistics.stdev(values)),
+        "low": round(min(values)), "high": round(max(values)),
+        "spread": round(max(values) - min(values)),
+    }
 
 
 def workdir(run_id: str) -> Path:
@@ -168,6 +215,16 @@ async def _execute_run(run_id: str, db, bus) -> None:
     # run the primary's folder persists on disk from the prior launch.
     completed = len(mc["ppp"])
     primary_dir = primary_dir or (out_dir / "primary")
+
+    # The model's own uncertainty — separate from the seed-level MC band. Mock is free
+    # (deterministic); a real provider pays the cost of a short temperature sweep, guarded by
+    # the run's budget. Persisted so the UI and later-stage reports can both quote it.
+    model_variance = await _model_variance(cfg, cumulative=cumulative, budget=budget, cap=cap)
+    try:
+        await db.save_model_variance(run_id, model_variance)
+    except Exception:
+        pass  # non-fatal — the report still stamps what it has
+
     if primary_dir.exists() and completed > 0:
         bus.publish(run_id, "status", {"status": "generating_report",
                                        "seeds_completed": completed, "total_seeds": row.total_seeds,
@@ -176,7 +233,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
             run_id, primary_dir, rc, cfg, mc,
             progress=lambda msg, done=None, total=None: bus.publish(
                 run_id, "progress", {"message": msg, "done": done, "total": total}),
-            stage="baseline",
+            stage="baseline", model_variance=model_variance,
         )
     else:
         report = None
@@ -231,12 +288,13 @@ async def optimize_run(run_id: str, db, bus) -> None:
         return
 
     bus.publish(run_id, "progress", {"message": "regenerating the report with the recommendation"})
+    model_variance = await db.load_model_variance(run_id)
     report = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
-        optimize_result=opt,
-        stage="lever_optimization",
+        optimize_result=opt, stage="lever_optimization",
+        model_variance=model_variance,
     )
     combo = opt.get("best_combo") or []
     await db.set_status(run_id, "complete", report=report)
@@ -245,6 +303,25 @@ async def optimize_run(run_id: str, db, bus) -> None:
     await db.insert_report(
         run_id, "lever_optimization", f"Lever Optimization · {_combo_label(combo)}",
         report_markdown=report, lever_set=combo, payload=opt)
+
+    # Back-test: record the recommendation's headline claim as a falsifiable prediction
+    # (point + band, bound to its inputs by the replay hash). A real outcome recorded later
+    # is measured against this — the validation loop that tells us whether the model was right.
+    _best = opt.get("best_ppp") or opt.get("best_objective")
+    _spread = opt.get("spread")
+    if _best is not None:
+        try:
+            await db.insert_prediction(
+                firm_id=row.firm_id, run_id=run_id, metric="ppp",
+                predicted_value=_best,
+                band_low=(_best - _spread) if _spread is not None else None,
+                band_high=(_best + _spread) if _spread is not None else None,
+                horizon_sprints=cfg.sprints,
+                config_hash=replay_hash(row.config_snapshot, row.provider, row.total_seeds),
+            )
+        except Exception:
+            pass  # non-fatal — the report stands; the validation record is best-effort
+
     bus.publish(run_id, "status", {"status": "complete", "seeds_completed": row.seeds_completed,
                                    "total_seeds": row.total_seeds, "spend": row.spend})
     bus.publish(run_id, "report_ready", {"report": True})
@@ -294,6 +371,7 @@ async def scenario_run(run_id: str, db, bus) -> None:
     prior = {"best_delta": base_opt.get("best_delta"),
              "best_delta_objective": base_opt.get("best_delta_objective")}
     opt = {**base_opt, **overlay}
+    model_variance = await db.load_model_variance(run_id)
     bus.publish(run_id, "progress", {"message": "writing the scenario report"})
     report = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
@@ -301,7 +379,7 @@ async def scenario_run(run_id: str, db, bus) -> None:
             run_id, "progress", {"message": msg, "done": done, "total": total}),
         optimize_result=opt,
         stage="scenario_simulation",
-        prior=prior,
+        prior=prior, model_variance=model_variance,
     )
     mc_seeds = overlay.get("mc_seeds")
     title = f"Scenario Simulation · {_combo_label(combo)}" + (

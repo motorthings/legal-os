@@ -24,12 +24,15 @@ export function RunSection({ firmId, hasConfig }: { firmId: string; hasConfig: b
         .maybeSingle();
       if (!cfg) throw new Error('no active config — fill the intake form first');
 
+      const model = cfg.config?.run?.model ?? 'mock';
+      const provider = model === 'mock' ? 'mock' : 'deepseek';
+
       const res = await fetch(`${SIM_API_BASE}/runs`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           config: cfg.config, firm_id: firmId, seeds,
-          budget: budget ? Number(budget) : null, provider: 'mock',
+          budget: budget ? Number(budget) : null, provider,
         }),
       });
       if (!res.ok) throw new Error(`run launch failed: ${res.status}`);

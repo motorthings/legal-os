@@ -182,7 +182,7 @@ def test_recommendation_gives_order_standing_and_method(searched_report):
 def test_scenario_section_says_what_the_sim_did_and_showed(scenario_report):
     section = scenario_report.split("## What the simulation did")[1].split("## How to read")[0]
     assert "fresh scenarios" in section
-    assert "whichever way the year breaks" in section or "provisional" in section
+    assert "real recovery rather than a lucky draw" in section or "provisional" in section
 
 
 def test_baseline_stops_before_the_recommendation(baseline_report):
@@ -214,6 +214,88 @@ def test_firm_appendix_reads_in_plain_language(searched_report):
 def test_calibration_question_is_surfaced(searched_report):
     """One answerable question beats 'calibrate the model' — kept in the appendix now."""
     assert "AFA margin conversion" in searched_report
+
+
+def test_generic_reference_scenario_is_labeled_when_uncalibrated(searched_report):
+    """A firm that supplied no coefficients must not read as 'your firm' — label it generic."""
+    assert "generic reference scenario" in searched_report
+    # Early waterline, in the portrait, not buried in an appendix.
+    assert "none of the dials behind these numbers were set from your own data" in searched_report
+
+
+def test_recommendation_is_falsifiable(searched_report):
+    """The recommendation states its own band and the assumption that moves it most, so a
+    reader can test it rather than accept it."""
+    assert "depends on the assumptions" in searched_report
+    assert "a range, not a point" in searched_report
+    assert "single biggest swing factor" in searched_report
+    # The band's two endpoints are spelled out as dollar figures.
+    assert "$" in searched_report.split("depends on the assumptions")[1][:200]
+
+
+def test_within_noise_lever_is_not_sold_as_a_reliable_mover(tmp_path):
+    """A lever whose effect sits inside its own run-to-run spread is flagged, not sold.
+    The plan's total stays, but the lever's part is called unproven."""
+    # Give 'comp' a delta ($15k) well inside its spread ($150k) — within noise.
+    opt = dict(OPTIMIZE)
+    opt["main_effects"] = dict(opt["main_effects"])
+    opt["main_effects"]["comp"] = dict(opt["main_effects"]["comp"])
+    opt["main_effects"]["comp"].update({"delta_ppp": 15_000, "spread_ppp": 150_000})
+    # Give pricing/seams a real spread so the caveat is about comp alone.
+    for lv in ("pricing", "seams"):
+        opt["main_effects"][lv] = dict(opt["main_effects"][lv])
+        opt["main_effects"][lv].update({"spread_ppp": 30_000})
+    exp = {"run": RUN_BLOCK, "optimize": opt, "sensitivity": SENSITIVITY}
+    report = build_report(_write_run(tmp_path), exp)
+    assert "isn't yet distinguishable from noise" in report   # standing line
+    assert "A caveat." in report                              # recommendation caveat
+    assert "within the run-to-run spread" in report
+
+
+def test_offline_mock_report_discloses_deterministic_variance(tmp_path):
+    """The standalone (CLI) path has no experiments model_variance, but meta.json carries the
+    provider-derived marker — so an offline mock report still says its band isn't the world's."""
+    run_dir = _write_run(tmp_path)
+    meta = json.loads((run_dir / "meta.json").read_text())
+    meta["model_variance"] = {"mode": "deterministic", "count": 0}
+    (run_dir / "meta.json").write_text(json.dumps(meta))
+    report = build_report(run_dir, {"run": RUN_BLOCK, "sensitivity": SENSITIVITY})
+    assert "deterministic stand-in" in report
+    assert "not the world's" in report
+
+
+def test_model_variance_is_stamped_two_bands(tmp_path):
+    """A real-provider run labels the model's own uncertainty as a band ON TOP of the MC band,
+    so model variance isn't mistaken for world variance."""
+    exp = {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY,
+           "model_variance": {"mode": "llm", "count": 3, "low": 2_300_000, "high": 2_600_000,
+                              "temps": [0.2, 0.7, 1.2], "values": [2_300_000, 2_450_000, 2_600_000]}}
+    report = build_report(_write_run(tmp_path), exp)
+    assert "two bands, not one" in report
+    assert "structural" in report
+    assert "$2,300,000 to $2,600,000" in report
+
+
+def test_deterministic_run_labels_its_band(tmp_path):
+    """A mock run is honest that its band is the model's own spread, not the world's."""
+    exp = {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY,
+           "model_variance": {"mode": "deterministic", "count": 0}}
+    report = build_report(_write_run(tmp_path), exp)
+    assert "deterministic stand-in" in report
+    assert "not the world's" in report
+
+
+def test_calibrated_elasticities_are_disclosed(tmp_path):
+    """When the firm set some coefficients, the report names them and counts them."""
+    run_dir = _write_run(tmp_path)
+    meta = json.loads((run_dir / "meta.json").read_text())
+    meta["calibrated_elasticities"] = ["margin_ai_afa_gain", "seam_incident_slope"]
+    (run_dir / "meta.json").write_text(json.dumps(meta))
+    report = build_report(run_dir, {"run": RUN_BLOCK, "sensitivity": SENSITIVITY})
+    assert "generic reference scenario" not in report
+    assert "2 of" in report                       # the count
+    assert "AFA margin conversion" in report       # a calibrated name, spelled out
+    assert "set from this firm's own data" in report
 
 
 # --- structure ---------------------------------------------------------------------

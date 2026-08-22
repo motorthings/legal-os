@@ -414,7 +414,10 @@ def main():
         if comp_under_afa > 0 else "Skip comp — it doesn't help even under AFA.")
     # PPP-space values kept for the report/dashboard (which are PPP-centric); all cached, so cheap.
     ppp_base_opt = run_metric(set(), opt_seeds, args.sprints, args.matters, "ppp")
-    ppp_effects = {lv: run_metric({lv}, opt_seeds, args.sprints, args.matters, "ppp") - ppp_base_opt
+    ppp_trials = {lv: run_trials({lv}, opt_seeds, args.sprints, args.matters)["ppp"]
+                  for lv in LEVERS}
+    ppp_effects = {lv: statistics.mean(ppp_trials[lv]) - ppp_base_opt for lv in LEVERS}
+    ppp_spreads = {lv: statistics.stdev(ppp_trials[lv]) if len(ppp_trials[lv]) > 1 else 0.0
                    for lv in LEVERS}
     ppp_base_mc = run_metric(set(), mc_seeds, args.sprints, args.matters, "ppp")
     persist_experiment({
@@ -428,7 +431,8 @@ def main():
             "baseline_objective": obj_dir * baseline,
             "main_effects": {lv: {"delta_ppp": ppp_effects[lv],
                                   "delta_objective": effects[lv],
-                                  "delta_margin": margin_effects[lv]}
+                                  "delta_margin": margin_effects[lv],
+                                  "spread_ppp": ppp_spreads[lv]}
                              for lv in LEVERS},
             "interactions": {
                 f"{a}x{b}": {"both": both, "additive": additive, "synergy": synergy},
@@ -573,7 +577,12 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
     ppp_win = run_metric(best, mc_list, sprints, matters, "ppp")
 
     ppp_base_opt = run_metric(set(), opt_seeds, sprints, matters, "ppp")
-    ppp_effects = {lv: run_metric({lv}, opt_seeds, sprints, matters, "ppp") - ppp_base_opt for lv in LEVERS}
+    # Per-lever trials capture both the effect and its own run-to-run spread — the noise
+    # floor the report uses to refuse calling a within-spread lever a real finding.
+    ppp_trials = {lv: run_trials({lv}, opt_seeds, sprints, matters)["ppp"] for lv in LEVERS}
+    ppp_effects = {lv: statistics.mean(ppp_trials[lv]) - ppp_base_opt for lv in LEVERS}
+    ppp_spreads = {lv: statistics.stdev(ppp_trials[lv]) if len(ppp_trials[lv]) > 1 else 0.0
+                   for lv in LEVERS}
     ppp_base_mc = run_metric(set(), mc_list, sprints, matters, "ppp")
 
     movers = ", ".join(sorted(best)) or "(no lever reliably helps this objective)"
@@ -596,7 +605,8 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
             "baseline_ppp": ppp_base_opt,
             "baseline_objective": obj_dir * baseline,
             "main_effects": {lv: {"delta_ppp": ppp_effects[lv], "delta_objective": effects[lv],
-                                  "delta_margin": margin_effects[lv]} for lv in LEVERS},
+                                  "delta_margin": margin_effects[lv],
+                                  "spread_ppp": ppp_spreads[lv]} for lv in LEVERS},
             "interactions": {
                 f"{a}x{b}": {"both": both, "additive": additive, "synergy": synergy},
                 "comp_x_pricing": {"delta": comp_under_afa},

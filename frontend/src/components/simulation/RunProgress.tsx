@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ChevronRight, HelpCircle, Download } from 'lucide-react';
+import { ChevronRight, HelpCircle, Download, RotateCcw } from 'lucide-react';
 import { SIM_API_BASE } from '@/lib/simulation-api';
 import MetricsCharts from './MetricsCharts';
 import SimulationHero from './SimulationHero';
@@ -90,6 +91,8 @@ function splitReport(md: string): { lead: string; story: string; appendix: strin
 }
 
 export default function RunProgress({ runId }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [status, setStatus] = useState('queued');
   const [done, setDone] = useState(0);
   const [total, setTotal] = useState(0);
@@ -105,6 +108,11 @@ export default function RunProgress({ runId }: Props) {
   const [optimizing, setOptimizing] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
   const [reportedPPP, setReportedPPP] = useState<number | null>(null);
+  const [provider, setProvider] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
+  const [replayHash, setReplayHash] = useState<string | null>(null);
+  const [replaying, setReplaying] = useState(false);
+  const [modelVariance, setModelVariance] = useState<{ mode: string; low?: number; high?: number; count?: number } | null>(null);
   const [howOpen, setHowOpen] = useState(false);
   const [printId, setPrintId] = useState<string | null>(null);
   const np = printId ? 'no-print' : '';
@@ -156,6 +164,9 @@ export default function RunProgress({ runId }: Props) {
         if (run.total_seeds !== undefined) setTotal(run.total_seeds);
         if (run.seeds_completed !== undefined) setDone(run.seeds_completed);
         if (run.spend !== undefined) setSpend(run.spend);
+        if (run.provider !== undefined) setProvider(run.provider);
+        if (run.replay_hash !== undefined) setReplayHash(run.replay_hash);
+        if (run.model_variance !== undefined) setModelVariance(run.model_variance);
         if (run.has_report) loadReports();
       })
       .catch(() => {}); // SSE replay is the fallback
@@ -167,7 +178,10 @@ export default function RunProgress({ runId }: Props) {
   useEffect(() => {
     fetch(`${SIM_API_BASE}/runs/${runId}/config`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((cfg) => setReportedPPP(cfg?.firm?.baseline_ppp ?? null))
+      .then((cfg) => {
+        setReportedPPP(cfg?.firm?.baseline_ppp ?? null);
+        if (cfg?.run?.model) setModel(cfg.run.model);
+      })
       .catch(() => {});
   }, [runId]);
 
@@ -259,6 +273,23 @@ export default function RunProgress({ runId }: Props) {
     await fetch(`${SIM_API_BASE}/runs/${runId}/scenario`, { method: 'POST' });
   }
 
+  async function onReplay() {
+    setReplaying(true);
+    setError(null);
+    try {
+      const res = await fetch(`${SIM_API_BASE}/runs/${runId}/replay`, { method: 'POST' });
+      if (!res.ok) throw new Error('replay failed');
+      const { run_id } = await res.json();
+      // Swap the trailing run id in the current path, keep the firm.
+      const base = pathname.substring(0, pathname.lastIndexOf('/'));
+      router.push(`${base}/${run_id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'replay failed');
+    } finally {
+      setReplaying(false);
+    }
+  }
+
   return (
     <div className="print-root">
       <div className={np}>
@@ -271,6 +302,38 @@ export default function RunProgress({ runId }: Props) {
           <span className="text-[var(--text-dim)]"> · {done} of {total} scenarios complete</span>
         )}
         {spend > 0 && <span className="text-[var(--text-dim)]"> · ${spend.toFixed(2)} spent</span>}
+        {provider && (
+          <span
+            className="ml-auto text-[11px] font-mono px-2 py-0.5 rounded-full border"
+            style={{
+              color: provider === 'mock' ? 'var(--text-muted)' : 'var(--primary)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            {provider === 'mock' ? 'mock · deterministic' : `${provider} · ${model ?? 'llm'}`}
+          </span>
+        )}
+        {modelVariance && modelVariance.mode === 'llm' && (modelVariance.count ?? 0) >= 2 && (
+          <span
+            className="text-[11px] font-mono px-2 py-0.5 rounded-full border"
+            title={`Model's own uncertainty: re-running the reasoning at different temperatures moved the headline from $${(modelVariance.low ?? 0).toLocaleString()} to $${(modelVariance.high ?? 0).toLocaleString()}`}
+            style={{ color: 'var(--amber)', borderColor: 'var(--border)' }}
+          >
+            ±${((modelVariance.high ?? 0) - (modelVariance.low ?? 0)).toLocaleString()} model uncertainty
+          </span>
+        )}
+        {finished && replayHash && (
+          <button
+            onClick={onReplay}
+            disabled={replaying}
+            title={`Replay hash ${replayHash} — re-run this exact config, provider, and seed count`}
+            className="flex items-center gap-1.5 text-[11px] font-mono px-2 py-0.5 rounded-full border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed no-print"
+            style={{ borderColor: 'var(--border)', color: 'var(--text-dim)' }}
+          >
+            <RotateCcw className="w-3 h-3" />
+            {replaying ? 'Re-running…' : `↻ replay ${replayHash}`}
+          </button>
+        )}
       </p>
       {status === 'running' && (
         total > 0 ? (

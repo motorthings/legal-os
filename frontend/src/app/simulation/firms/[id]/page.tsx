@@ -48,6 +48,13 @@ export default function FirmPage() {
               <RunHistory firmId={firmId} />
             </div>
           </details>
+          <Link
+            href={`/simulation/firms/${firmId}/divergence`}
+            className="btn-primary inline-block border-none cursor-pointer px-4 py-2 rounded-lg text-[13px] font-medium text-center"
+            style={{ textDecoration: 'none' }}
+          >
+            View validation record
+          </Link>
         </>
       )}
     </main>
