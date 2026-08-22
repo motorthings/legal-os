@@ -366,9 +366,9 @@ export default function RunProgress({ runId }: Props) {
       {Object.keys(latest).length > 0 && (
         <div style={{ margin: '1rem 0' }}>
           <p style={{ color: 'var(--text-dim)', fontSize: '0.78rem', margin: '0 0 0.5rem' }}>
-            Your firm&apos;s health in four numbers: what you keep of what you bill (realization),
-            what each matter pays (margin), whether the bench holds (attrition), and what it nets
-            each partner (profit per partner).
+            Where the simulation projects the firm lands — not today&apos;s books: what you keep of
+            what you bill (realization), what each matter pays (margin), whether the bench holds
+            (attrition), and what it nets each partner (profit per partner).
           </p>
           <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             {HEADLINE.filter((m) => latest[m.key] !== undefined).map((m) => (
