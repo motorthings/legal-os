@@ -446,6 +446,9 @@ def main():
             "spread": spread,
             "ci95": ci95,
             "story": story,
+            # The two chart lines (decline vs recovery) so the report's chart renders both.
+            "ppp_trajectory": run_trajectory(best, mc_seeds, args.sprints, args.matters, "ppp"),
+            "baseline_trajectory": run_trajectory(set(), mc_seeds, args.sprints, args.matters, "ppp"),
         }
     })
 
@@ -619,6 +622,12 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
             "spread": spread,
             "ci95": ci95,
             "story": story,
+            # The two chart lines, apples-to-apples across the same seeds: the decline if
+            # nothing changes vs the recovery under the recommended lever set. The lever-
+            # optimization report's chart needs these just like the scenario report does,
+            # or it renders a single line and loses the decision comparison.
+            "ppp_trajectory": run_trajectory(best, mc_list, sprints, matters, "ppp"),
+            "baseline_trajectory": run_trajectory(set(), mc_list, sprints, matters, "ppp"),
         }
     }
 
