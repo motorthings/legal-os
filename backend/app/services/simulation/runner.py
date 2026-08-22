@@ -110,6 +110,16 @@ def _report_metrics(runs_metrics: dict) -> dict:
     return {m: {i + 1: v for i, v in enumerate(vals)} for m, vals in (runs_metrics or {}).items()}
 
 
+def _optimize_provider(rc: dict) -> tuple:
+    """Which model drives the lever search. Defaults to mock (fast, free); set
+    `optimize_model` in the config (e.g. 'deepseek-v4-flash') for a real-model search.
+    Returns (provider, model)."""
+    m = (rc.get("run") or {}).get("optimize_model") or "mock"
+    if m == "mock":
+        return "mock", None
+    return "deepseek", m
+
+
 async def _load_mc(db, run_id: str, start: int) -> dict:
     """Reload the per-seed finals for seeds already completed on a prior (crashed) launch,
     so a resumed run builds the full MC band from all seeds, not just this session's."""
@@ -289,9 +299,10 @@ async def optimize_run(run_id: str, db, bus) -> None:
             loop.call_soon_threadsafe(
                 bus.publish, run_id, "progress", {"message": msg, "done": done, "total": total})
 
+        _opt_provider, _opt_model = _optimize_provider(rc)
         opt = (await asyncio.to_thread(
             run_optimization, rc, sprints=cfg.sprints, matters=cfg.matters_per_sprint,
-            progress=progress,
+            progress=progress, provider=_opt_provider, model=_opt_model,
         ))["optimize"]
     except Exception as exc:
         import traceback
@@ -371,9 +382,10 @@ async def scenario_run(run_id: str, db, bus) -> None:
         def progress(msg, done=None, total=None):
             bus.publish(run_id, "progress", {"message": msg, "done": done, "total": total})
 
+        _opt_provider, _opt_model = _optimize_provider(rc)
         overlay = await asyncio.to_thread(
             run_scenario_mc, rc, combo, sprints=cfg.sprints, matters=cfg.matters_per_sprint,
-            progress=progress)
+            progress=progress, provider=_opt_provider, model=_opt_model)
     except Exception as exc:
         import traceback
         await db.set_status(run_id, "error", error=traceback.format_exc())

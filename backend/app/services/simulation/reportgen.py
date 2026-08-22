@@ -59,10 +59,12 @@ def _build_meta(rc: dict, cfg, model_variance=None) -> dict:
     }
 
 
-async def _ppp_async(pulled, seeds, sprints: int, matters: int, profile) -> float:
+async def _ppp_async(pulled, seeds, sprints: int, matters: int, profile,
+                     provider: str = "mock", model=None) -> float:
     """Mean final PPP for a lever set under a given elasticity profile. Mirrors
     sensitivity._ppp but AWAITS the orchestrator (that one uses asyncio.run, which
-    cannot be called from inside the running runner loop)."""
+    cannot be called from inside the running runner loop). provider/model match the run's
+    model so the sensitivity bands reflect the same (mock or real) model as the search."""
     import contextlib
     import io
     overrides = build_overrides(pulled)
@@ -70,8 +72,8 @@ async def _ppp_async(pulled, seeds, sprints: int, matters: int, profile) -> floa
     vals = []
     for seed in seeds:
         cfg = SimulationConfig(sprints=sprints, matters_per_sprint=matters,
-                               llm_provider="mock", seed=seed, output_dir=str(_SENS_OUT),
-                               run_id="SENS", **overrides)
+                               llm_provider=provider, llm_model=model, seed=seed,
+                               output_dir=str(_SENS_OUT), run_id="SENS", **overrides)
         o = Orchestrator(cfg)
         o.initialize()
         with contextlib.redirect_stdout(io.StringIO()):
@@ -95,9 +97,12 @@ def _mc_band(mc: dict) -> dict:
 
 async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=None) -> dict:
     base_profile = cfg.elasticities or default_profile()
+    provider = cfg.llm_provider
+    model = cfg.llm_model
     # The "base" point sets each coefficient to its default, so it's the SAME baseline for
     # every lever. Computing it once (not once per lever) saves 3 full simulations.
-    base_base = await _ppp_async(set(), seeds, sprints, matters, base_profile)
+    base_base = await _ppp_async(set(), seeds, sprints, matters, base_profile,
+                                 provider=provider, model=model)
 
     async def one(lever: str, cid: str):
         if progress:
@@ -106,8 +111,10 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
         deltas = {}
         for where in ("low", "base", "high"):
             prof = base_profile.with_point(cid, where)
-            base = base_base if where == "base" else await _ppp_async(set(), seeds, sprints, matters, prof)
-            lever_ppp = await _ppp_async({lever}, seeds, sprints, matters, prof)
+            base = base_base if where == "base" else await _ppp_async(
+                set(), seeds, sprints, matters, prof, provider=provider, model=model)
+            lever_ppp = await _ppp_async({lever}, seeds, sprints, matters, prof,
+                                         provider=provider, model=model)
             deltas[where] = lever_ppp - base
         lo, hi = min(deltas.values()), max(deltas.values())
         return lever, {

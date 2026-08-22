@@ -19,7 +19,7 @@ interface Props {
   existing?: FirmConfigJson;
 }
 
-const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, seeds: 12, model: 'mock', legalTool: 'mock' };
+const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, seeds: 12, model: 'mock', legalTool: 'mock', optimizeModel: 'mock' };
 const GUARDRAIL_METRICS = [
   { key: 'ppp', label: 'Profit per partner' },
   { key: 'matter_profit_margin', label: 'Matter margin' },
@@ -356,9 +356,18 @@ export default function IntakeForm({ firmId, existing }: Props) {
               ))}
             </select>
           </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Optimize with</span>
+            <select className={INPUT_CLS} value={run.optimizeModel} onChange={(e) => setRun({ ...run, optimizeModel: e.target.value })}>
+              <option value="mock">mock (fast, free)</option>
+              <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+              <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+            </select>
+          </label>
         </div>
         <p className="text-[11px] text-[var(--text-muted)] mt-2">
-          One run does the baseline and the recommendation together. A real model (deepseek) is
+          One run does the baseline and the recommendation together. <strong>Optimize with</strong>{' '}
+          sets the model for the lever search (the recommendation). A real model (deepseek) is
           slower and costs tokens; mock is fast and deterministic.
         </p>
       </section>

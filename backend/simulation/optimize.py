@@ -14,7 +14,7 @@ what order — not just a ranking. It's "adaptive," not Bayesian: there's no pos
 or acquisition function, just a fixed 3-round schedule where each round's experiments
 are chosen from the last round's results instead of testing everything blindly.
 """
-import argparse, asyncio, contextlib, io, json, math, os, sys, statistics
+import argparse, asyncio, contextlib, io, json, math, os, sys, statistics, threading
 from pathlib import Path
 
 from .src.orchestrator import Orchestrator, SimulationConfig, FirmSignature
@@ -179,13 +179,27 @@ def reset_sims_run() -> None:
 _COLLECT = ("ppp", "matter_profit_margin", "rpl", "realization_rate", "associate_attrition")
 
 
+# The lever search normally runs on the deterministic mock (fast, free). To run it on a real
+# model (e.g. deepseek) for comparison, `run_optimization`/`run_scenario_mc` set the current
+# provider/model on a THREAD-LOCAL — each `asyncio.to_thread` optimize has its own state, so
+# concurrent optimizes on different providers don't clash. `_simulate` reads it.
+_provider_state = threading.local()
+
+
+def _current_provider() -> tuple[str, object]:
+    return (getattr(_provider_state, "provider", "mock"),
+            getattr(_provider_state, "model", None))
+
+
 def _simulate(pulled: set, seeds, sprints, matters):
     """Run each seed once; cache and return {metric: [[per-sprint values] per seed]}.
 
     The cache keeps full quarter-by-quarter histories, not just finals, so `run_trials`
     (finals) and `run_trajectory` (mean per-sprint curve) both derive from the same runs
-    without re-simulating."""
-    key = (frozenset(pulled), tuple(seeds), sprints, matters)
+    without re-simulating. Provider/model are part of the cache key, because a mock result
+    is not interchangeable with a real one."""
+    provider, model = _current_provider()
+    key = (frozenset(pulled), tuple(seeds), sprints, matters, provider, model)
     if key in _TRIAL_CACHE:
         return _TRIAL_CACHE[key]
     overrides = build_overrides(pulled)
@@ -193,8 +207,8 @@ def _simulate(pulled: set, seeds, sprints, matters):
     _SIMS_RUN[0] += len(seeds)
     for seed in seeds:
         cfg = SimulationConfig(sprints=sprints, matters_per_sprint=matters,
-                               llm_provider="mock", seed=seed, output_dir="results/_opt",
-                               run_id="OPT", **overrides)
+                               llm_provider=provider, llm_model=model, seed=seed,
+                               output_dir="results/_opt", run_id="OPT", **overrides)
         o = Orchestrator(cfg)
         o.initialize()
         with contextlib.redirect_stdout(io.StringIO()):
@@ -479,10 +493,15 @@ def main():
 
 
 def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int = 8,
-                     mc_seeds: int = 20, progress=None) -> dict:
+                     mc_seeds: int = 20, progress=None, provider: str = "mock",
+                     model=None) -> dict:
     """Run the adaptive 3-round lever optimization for a firm config and return the
     `experiments` dict (the `optimize` key) the report consumes. Synchronous — the runner
+    `provider`/`model` set which LLM drives the search simulations (default mock; pass
+    e.g. provider="deepseek", model="deepseek-v4-flash" for a real-model search).
     calls it off the event loop (asyncio.to_thread) because run_trials spins its own loop."""
+    _provider_state.provider = provider
+    _provider_state.model = model
     from .run_config import build_firm, build_elasticities, build_objective
     set_base_firm(build_firm(rc.get("firm") or {}), build_elasticities(rc))
     cfg_objective = build_objective(rc)
@@ -633,7 +652,8 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
 
 
 def run_scenario_mc(rc: dict, combo, *, sprints: int, matters: int,
-                    mc_seeds: int = 20, progress=None) -> dict:
+                    mc_seeds: int = 20, progress=None, provider: str = "mock",
+                    model=None) -> dict:
     """Re-run ONLY the final Monte Carlo for a determined lever set — no search rounds.
 
     This is the "Scenario Simulation" stage: the lever set is already fixed (by a prior
@@ -641,6 +661,8 @@ def run_scenario_mc(rc: dict, combo, *, sprints: int, matters: int,
     the confidence band. Returns the subset of the `optimize` dict that the band-dependent
     parts of the report read; callers overlay it onto the optimization's stored dict so the
     narrative stays intact and only the numbers move. Synchronous, like run_optimization."""
+    _provider_state.provider = provider
+    _provider_state.model = model
     from .run_config import build_firm, build_elasticities, build_objective
     set_base_firm(build_firm(rc.get("firm") or {}), build_elasticities(rc))
     weights = build_objective(rc)["weights"]

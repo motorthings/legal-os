@@ -150,6 +150,7 @@ export interface FirmConfigJson {
     max_cost: number | null;
     model: string;
     legal_tool: string;
+    optimize_model?: string;  // which model drives the lever search (default mock)
   };
   firm: Record<string, string | number>;
   levers: {
@@ -185,6 +186,7 @@ export interface IntakeValues {
     maxCost: number | null;
     model: string;
     legalTool: string;
+    optimizeModel?: string;  // which model drives the lever search (default mock)
   };
 }
 
@@ -278,6 +280,7 @@ export function buildConfig(input: IntakeValues): FirmConfigJson {
       max_cost: input.run.maxCost,
       model: input.run.model,
       legal_tool: input.run.legalTool,
+      optimize_model: input.run.optimizeModel,
     },
     firm,
     levers: {
