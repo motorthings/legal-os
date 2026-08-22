@@ -11,11 +11,15 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+import tempfile
+
 from app.config import settings
 from app.services.simulation.db import DB, replay_hash
 from app.services.simulation.events import EventBus, sse, sse_comment
 from app.services.simulation import runner
+from app.services.simulation.reportgen import _build_meta
 from simulation.report import render_report
+from simulation.run_config import build_sim_config
 
 router = APIRouter()
 
@@ -218,7 +222,8 @@ async def regenerate_report(run_id: str, req: RegenerateRequest):
     (including the sensitivity bands and model variance). This endpoint re-runs the report
     renderer on that stored data, so changing the report's format is instant. Runs created
     before this feature have no stored inputs and return 409."""
-    if await db.fetch_run(run_id) is None:
+    row = await db.fetch_run(run_id)
+    if row is None:
         raise HTTPException(404, "run not found")
 
     if req.stage:
@@ -233,8 +238,18 @@ async def regenerate_report(run_id: str, req: RegenerateRequest):
     if not render_inputs:
         raise HTTPException(409, "no stored render inputs for this stage — the run predates report regeneration")
 
+    meta = render_inputs.get("meta") or {}
+    # Firm context can be lost if the run disk was wiped by a deploy/restart before the report
+    # was rendered. Rebuild it from the persisted config snapshot so a regenerate never renders
+    # "? quarters" or a default firm name.
+    if not meta.get("sprints"):
+        cfg = build_sim_config(row.config_snapshot, provider=row.provider,
+                               output_dir=str(tempfile.mkdtemp()))
+        meta = _build_meta(row.config_snapshot, cfg, row.model_variance)
+        render_inputs["meta"] = meta
+
     markdown = render_report(
-        render_inputs.get("meta") or {},
+        meta,
         render_inputs.get("metrics") or {},
         render_inputs.get("experiments") or {},
         run_label=run_id,

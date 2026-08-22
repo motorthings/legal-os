@@ -10,11 +10,13 @@ import asyncio
 import math
 import statistics
 import tempfile
+from dataclasses import asdict
 from pathlib import Path
 
 from app.config import settings
-from simulation.report import build_report, load_meta, load_metrics
+from simulation.report import render_report, load_meta, load_metrics
 from simulation.optimize import LEVERS, build_overrides
+from simulation.run_config import build_firm
 from simulation.src.models.elasticities import DEFAULT_ELASTICITIES, default_profile
 from simulation.src.orchestrator import Orchestrator, SimulationConfig
 
@@ -35,6 +37,26 @@ LEVER_NOTES = {
 }
 _SENS_SEEDS = 2  # band needs a range, not a CI — keep the sweep cheap; 2 seeds cuts 33% of the sims
 _SENS_OUT = Path(tempfile.gettempdir()) / "law-firm-sim-sens"  # throwaway artifacts, not repo clutter
+
+
+def _build_meta(rc: dict, cfg, model_variance=None) -> dict:
+    """Rebuild the report's firm context from the PERSISTED config snapshot (not the ephemeral
+    run disk). Fly's disk is wiped on deploy/restart, so meta.json can vanish mid-run and leave
+    the report with no firm name, no horizon, and no signature. This reconstructs those from the
+    stored config so a report never degrades to '? quarters'."""
+    run = rc.get("run") or {}
+    firm = build_firm(rc.get("firm") or {})
+    return {
+        "firm_name": rc.get("firm_name") or rc.get("name") or "Aldrich & Vale LLP",
+        "sprints": cfg.sprints or run.get("sprints"),
+        "matters_per_sprint": cfg.matters_per_sprint or run.get("matters_per_sprint"),
+        "provider": cfg.llm_provider,
+        "llm_model": cfg.llm_model,
+        "legal_tool": cfg.legal_tool,
+        "firm_signature": asdict(firm) if firm else None,
+        "calibrated_elasticities": sorted((cfg.elasticities or default_profile()).calibrated),
+        "model_variance": model_variance,
+    }
 
 
 async def _ppp_async(pulled, seeds, sprints: int, matters: int, profile) -> float:
@@ -161,14 +183,15 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
     }
 
     step("writing the report")
-    markdown = build_report(primary_dir, experiments)
+    # Firm context must survive a deploy/restart that wipes the run disk. Build meta from the
+    # persisted config snapshot, then let the on-disk meta.json (if it survived) win per key.
+    disk_meta = load_meta(primary_dir)
+    meta = {**_build_meta(rc, cfg, model_variance), **disk_meta}
+    metrics = load_metrics(primary_dir)
+    markdown = render_report(meta, metrics, experiments, run_label=run_id)
     # Persist the exact inputs the report was rendered from (incl. the sensitivity bands and
     # model variance), so it can be regenerated from stored data without re-running the sim.
-    render_inputs = {
-        "meta": load_meta(primary_dir),
-        "metrics": load_metrics(primary_dir),
-        "experiments": experiments,
-    }
+    render_inputs = {"meta": meta, "metrics": metrics, "experiments": experiments}
     return markdown, render_inputs
 
 

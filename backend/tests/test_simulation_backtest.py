@@ -7,6 +7,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.services.simulation.db import _divergence_rows, replay_hash
+from app.services.simulation.reportgen import _build_meta
+from simulation.run_config import build_sim_config
 
 
 def _row(pred=100.0, lo=80.0, hi=120.0, actual=None):
@@ -46,3 +48,17 @@ def test_replay_hash_is_stable_and_distinguishing():
     assert replay_hash(cfg, "mock", 20) == replay_hash(cfg, "mock", 20)
     assert replay_hash(cfg, "mock", 20) != replay_hash(cfg, "mock", 21)
     assert replay_hash(cfg, "mock", 20) != replay_hash(cfg, "deepseek", 20)
+
+
+def test_build_meta_reconstructs_firm_context_from_config():
+    """A deploy/restart can wipe the run disk and leave meta.json gone; the report must be
+    able to rebuild firm name, horizon, and signature from the persisted config snapshot."""
+    import tempfile
+    rc = {"run": {"sprints": 12, "matters_per_sprint": 30, "model": "mock"},
+          "firm": {"pricing_posture": "hourly", "leverage_ratio": 3.5, "baseline_ppp": 3_000_000}}
+    cfg = build_sim_config(rc, provider="mock", output_dir=str(tempfile.mkdtemp()))
+    meta = _build_meta(rc, cfg, {"mode": "deterministic", "count": 0})
+    assert meta["sprints"] == 12
+    assert "Aldrich" in meta["firm_name"]
+    assert meta["provider"] == "mock"
+    assert (meta.get("firm_signature") or {}).get("baseline_ppp") == 3_000_000
