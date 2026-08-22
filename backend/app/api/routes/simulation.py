@@ -248,9 +248,18 @@ async def regenerate_report(run_id: str, req: RegenerateRequest):
         meta = _build_meta(row.config_snapshot, cfg, row.model_variance)
         render_inputs["meta"] = meta
 
+    # The per-sprint trajectories (metrics.csv) can also be wiped with the disk. Fall back to
+    # runs.metrics (persisted) so "Where it's heading, unchanged" never says no trajectory.
+    metrics = render_inputs.get("metrics") or {}
+    if not metrics:
+        db_metrics = await db.load_metrics(run_id)
+        if db_metrics:
+            metrics = {m: {i + 1: v for i, v in enumerate(vals)} for m, vals in db_metrics.items()}
+            render_inputs["metrics"] = metrics
+
     markdown = render_report(
         meta,
-        render_inputs.get("metrics") or {},
+        metrics,
         render_inputs.get("experiments") or {},
         run_label=run_id,
     )

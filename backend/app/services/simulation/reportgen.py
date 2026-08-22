@@ -128,8 +128,10 @@ async def _sensitivity_bands(cfg, seeds, sprints: int, matters: int, progress=No
 
 async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dict, progress=None,
                           optimize_result: dict | None = None, stage: str | None = None,
-                          prior: dict | None = None,
-                          model_variance: dict | None = None) -> str:
+                          prior: dict | None = None, model_variance: dict | None = None,
+                          fallback_metrics: dict | None = None) -> str:
+    # fallback_metrics: {metric_id: {sprint: value}} from the persisted runs.metrics, used when
+    # the run disk's metrics.csv was wiped by a deploy/restart (see _build_meta).
     # Determinate progress: confidence band (1) + per-lever sensitivity (N) + write (1).
     n_sens = len([l for l in LEVERS if _GOVERNING.get(l) and _GOVERNING.get(l) in DEFAULT_ELASTICITIES])
     total = n_sens + 2
@@ -187,7 +189,7 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
     # persisted config snapshot, then let the on-disk meta.json (if it survived) win per key.
     disk_meta = load_meta(primary_dir)
     meta = {**_build_meta(rc, cfg, model_variance), **disk_meta}
-    metrics = load_metrics(primary_dir)
+    metrics = load_metrics(primary_dir) or fallback_metrics or {}
     markdown = render_report(meta, metrics, experiments, run_label=run_id)
     # Persist the exact inputs the report was rendered from (incl. the sensitivity bands and
     # model variance), so it can be regenerated from stored data without re-running the sim.

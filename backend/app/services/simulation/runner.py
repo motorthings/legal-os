@@ -104,6 +104,12 @@ def _trajectories(run) -> dict:
     return out
 
 
+def _report_metrics(runs_metrics: dict) -> dict:
+    """Convert persisted runs.metrics ({metric: [v1, v2, ...]}) into the report's shape
+    ({metric: {sprint: value}}) so a report can be rendered when metrics.csv is gone."""
+    return {m: {i + 1: v for i, v in enumerate(vals)} for m, vals in (runs_metrics or {}).items()}
+
+
 async def _load_mc(db, run_id: str, start: int) -> dict:
     """Reload the per-seed finals for seeds already completed on a prior (crashed) launch,
     so a resumed run builds the full MC band from all seeds, not just this session's."""
@@ -234,6 +240,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
             progress=lambda msg, done=None, total=None: bus.publish(
                 run_id, "progress", {"message": msg, "done": done, "total": total}),
             stage="baseline", model_variance=model_variance,
+            fallback_metrics=_report_metrics(await db.load_metrics(run_id) or {}),
         )
     else:
         report, render_inputs = None, None
@@ -295,6 +302,7 @@ async def optimize_run(run_id: str, db, bus) -> None:
             run_id, "progress", {"message": msg, "done": done, "total": total}),
         optimize_result=opt, stage="lever_optimization",
         model_variance=model_variance,
+        fallback_metrics=_report_metrics(await db.load_metrics(run_id) or {}),
     )
     combo = opt.get("best_combo") or []
     await db.set_status(run_id, "complete", report=report)
@@ -380,6 +388,7 @@ async def scenario_run(run_id: str, db, bus) -> None:
         optimize_result=opt,
         stage="scenario_simulation",
         prior=prior, model_variance=model_variance,
+        fallback_metrics=_report_metrics(await db.load_metrics(run_id) or {}),
     )
     mc_seeds = overlay.get("mc_seeds")
     title = f"Scenario Simulation · {_combo_label(combo)}" + (
