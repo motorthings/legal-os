@@ -15,12 +15,6 @@ interface Props {
   runId: string;
 }
 
-const HEADLINE: { key: string; label: string; fmt: (v: number) => string }[] = [
-  { key: 'ppp', label: 'Profit per partner', fmt: (v) => `$${(v / 1_000_000).toFixed(2)}M` },
-  { key: 'matter_profit_margin', label: 'Matter margin', fmt: (v) => `${v.toFixed(1)}%` },
-  { key: 'realization_rate', label: 'Realization rate', fmt: (v) => `${v.toFixed(1)}%` },
-  { key: 'associate_attrition', label: 'Associate attrition', fmt: (v) => `${v.toFixed(1)}%` },
-];
 
 const STATUS_TEXT: Record<string, string> = {
   queued: 'Queued',
@@ -57,7 +51,7 @@ const STAGE_META: Record<Report['stage'], { label: string; color: string }> = {
   scenario_simulation: { label: 'Scenario Simulation', color: '#10b981' },
 };
 
-function describeSprint(p: any): string {
+function describeSprint(p: { metrics?: Record<string, number>; seed_index?: number; sprint?: number }): string {
   const m = p.metrics ?? {};
   const ai = m.ai_assisted_matter_pct;
   const rework = m.redline_rework_rate;
@@ -97,7 +91,6 @@ export default function RunProgress({ runId }: Props) {
   const [done, setDone] = useState(0);
   const [total, setTotal] = useState(0);
   const [spend, setSpend] = useState(0);
-  const [latest, setLatest] = useState<Record<string, number>>({});
   const [report, setReport] = useState<string | null>(null);
   const [reportDone, setReportDone] = useState(0);
   const [reportTotal, setReportTotal] = useState(0);
@@ -108,6 +101,7 @@ export default function RunProgress({ runId }: Props) {
   const [optimizing, setOptimizing] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
   const [reportedPPP, setReportedPPP] = useState<number | null>(null);
+  const [sprints, setSprints] = useState<number | null>(null);
   const [provider, setProvider] = useState<string | null>(null);
   const [model, setModel] = useState<string | null>(null);
   const [replayHash, setReplayHash] = useState<string | null>(null);
@@ -180,6 +174,7 @@ export default function RunProgress({ runId }: Props) {
       .then((r) => (r.ok ? r.json() : null))
       .then((cfg) => {
         setReportedPPP(cfg?.firm?.baseline_ppp ?? null);
+        if (cfg?.run?.sprints) setSprints(cfg.run.sprints);
         if (cfg?.run?.model) setModel(cfg.run.model);
       })
       .catch(() => {});
@@ -188,6 +183,7 @@ export default function RunProgress({ runId }: Props) {
   useEffect(() => {
     const es = new EventSource(`${SIM_API_BASE}/runs/${runId}/events`);
     es.onmessage = (e) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- parsed SSE event, not typed
       let ev: any;
       try {
         ev = JSON.parse(e.data);
@@ -210,7 +206,6 @@ export default function RunProgress({ runId }: Props) {
         if (p.spend !== undefined) setSpend(p.spend);
         setLog((l) => [...l, `→ ${STATUS_TEXT[p.status] ?? p.status}${p.total_seeds ? ` (${p.total_seeds} scenarios)` : ''}`]);
       } else if (ev.kind === 'sprint') {
-        setLatest(p.metrics ?? {});
         setLog((l) => [...l, describeSprint(p)]);
       } else if (ev.kind === 'seed') {
         if (p.spend !== undefined) setSpend(p.spend);
@@ -363,23 +358,6 @@ export default function RunProgress({ runId }: Props) {
           )}
         </div>
       )}
-      {Object.keys(latest).length > 0 && (
-        <div style={{ margin: '1rem 0' }}>
-          <p style={{ color: 'var(--text-dim)', fontSize: '0.78rem', margin: '0 0 0.5rem' }}>
-            Where the simulation projects the firm lands — not today&apos;s books: what you keep of
-            what you bill (realization), what each matter pays (margin), whether the bench holds
-            (attrition), and what it nets each partner (profit per partner).
-          </p>
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-            {HEADLINE.filter((m) => latest[m.key] !== undefined).map((m) => (
-              <div key={m.key}>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{m.label}</div>
-                <strong style={{ fontSize: '1.15rem' }}>{m.fmt(latest[m.key])}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       </div>
       <div className={np}>
         <SimulationHero
@@ -387,6 +365,7 @@ export default function RunProgress({ runId }: Props) {
           baseline={baseline}
           recovered={recovered}
           levers={heroLevers}
+          sprints={sprints}
         />
       </div>
       <div className={np}>
