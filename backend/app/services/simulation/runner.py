@@ -258,6 +258,12 @@ async def _execute_run(run_id: str, db, bus) -> None:
     if report:
         bus.publish(run_id, "report_ready", {"report": True})
 
+    # One "Run" produces the whole decision report — not a baseline that asks for a second
+    # click. Automatically follow the baseline with the lever optimization (the recommendation).
+    # The scenario stage stays a manual "re-roll" — it's a repeatable confirmation, not part of
+    # the initial run.
+    await optimize_run(run_id, db, bus)
+
 
 async def optimize_run(run_id: str, db, bus) -> None:
     """Run the adaptive lever optimizer on a completed baseline run and regenerate the
