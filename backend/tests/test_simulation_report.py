@@ -18,7 +18,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from simulation.report import build_report
+from simulation.report import build_report, render_report, load_meta, load_metrics
 
 
 # --- fixtures ---------------------------------------------------------------------
@@ -221,6 +221,20 @@ def test_generic_reference_scenario_is_labeled_when_uncalibrated(searched_report
     assert "generic reference scenario" in searched_report
     # Early waterline, in the portrait, not buried in an appendix.
     assert "none of the dials behind these numbers were set from your own data" in searched_report
+
+
+def test_render_report_reproduces_build_report(tmp_path):
+    """The decoupled renderer (render_report from in-memory inputs) is byte-identical to the
+    disk-backed build_report — so a report regenerated from stored inputs is faithful, and
+    regeneration needs no re-run of the simulation."""
+    exp = {"run": RUN_BLOCK, "optimize": OPTIMIZE, "sensitivity": SENSITIVITY,
+           "stage": "lever_optimization"}
+    run_dir = _write_run(tmp_path)
+    from_disk = build_report(run_dir, exp)
+    from_memory = render_report(load_meta(run_dir), load_metrics(run_dir), exp,
+                                run_label=run_dir.name)
+    assert from_memory == from_disk
+    assert "The recommendation" in from_memory
 
 
 def test_recommendation_is_falsifiable(searched_report):

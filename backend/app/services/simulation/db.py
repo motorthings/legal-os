@@ -198,16 +198,32 @@ class DB:
 
     async def insert_report(self, run_id: str, stage: str, title: str, *,
                             report_markdown: str, lever_set: Optional[list] = None,
-                            payload: Optional[dict] = None) -> str:
+                            payload: Optional[dict] = None,
+                            render_inputs: Optional[dict] = None) -> str:
         """Save a stage's report. Never overwrites — each call is a new saved report, so a
-        scenario simulation can be re-run against the same lever set again and again."""
+        scenario simulation can be re-run against the same lever set again and again.
+
+        `render_inputs` holds {meta, metrics, experiments} — the exact inputs the report was
+        rendered from. Persisting them lets the report be regenerated from stored data
+        without re-running the simulation (see POST /runs/{id}/report/regenerate)."""
         row = await self._pool.fetchrow(
-            """insert into sim_reports (run_id, stage, title, lever_set, payload, report_markdown)
-               values ($1, $2, $3, $4, $5, $6) returning id""",
+            """insert into sim_reports (run_id, stage, title, lever_set, payload,
+               report_markdown, render_inputs)
+               values ($1, $2, $3, $4, $5, $6, $7) returning id""",
             run_id, stage, title, json.dumps(lever_set or []),
             json.dumps(payload) if payload is not None else None, report_markdown,
+            json.dumps(render_inputs) if render_inputs is not None else None,
         )
         return str(row["id"])
+
+    async def fetch_report_render_inputs(self, run_id: str, stage: str) -> Optional[dict]:
+        """The stored render inputs for a stage's latest report, or None if not recorded
+        (pre-regeneration runs have none, so regenerate is a 409 there)."""
+        row = await self._pool.fetchrow(
+            """select render_inputs from sim_reports
+               where run_id = $1 and stage = $2 order by created_at desc limit 1""",
+            run_id, stage)
+        return json.loads(row["render_inputs"]) if row and row["render_inputs"] else None
 
     async def list_reports(self, run_id: str) -> list[dict]:
         """All saved reports for a run, newest first."""
@@ -221,6 +237,12 @@ class DB:
             "report_markdown": r["report_markdown"],
             "created_at": r["created_at"].isoformat(),
         } for r in rows]
+
+    async def update_report_markdown(self, report_id: str, report_markdown: str) -> None:
+        """Replace a saved report's rendered markdown in place (used by regenerate)."""
+        await self._pool.execute(
+            "update sim_reports set report_markdown = $2 where id = $1",
+            report_id, report_markdown)
 
     async def latest_report(self, run_id: str, stage: str) -> Optional[dict]:
         """The most recent report for a run at a given stage, with its stored payload."""

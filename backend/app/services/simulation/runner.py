@@ -229,14 +229,14 @@ async def _execute_run(run_id: str, db, bus) -> None:
         bus.publish(run_id, "status", {"status": "generating_report",
                                        "seeds_completed": completed, "total_seeds": row.total_seeds,
                                        "spend": cumulative})
-        report = await reportgen.generate_report(
+        report, render_inputs = await reportgen.generate_report(
             run_id, primary_dir, rc, cfg, mc,
             progress=lambda msg, done=None, total=None: bus.publish(
                 run_id, "progress", {"message": msg, "done": done, "total": total}),
             stage="baseline", model_variance=model_variance,
         )
     else:
-        report = None
+        report, render_inputs = None, None
 
     final_status = "complete" if completed >= row.total_seeds else "budget_exhausted"
     await db.set_status(run_id, final_status, report=report)
@@ -245,7 +245,7 @@ async def _execute_run(run_id: str, db, bus) -> None:
         # clobber it; the UI shows both, clearly labeled.
         await db.insert_report(
             run_id, "baseline", f"Baseline · {completed} scenarios",
-            report_markdown=report, lever_set=[])
+            report_markdown=report, lever_set=[], render_inputs=render_inputs)
     bus.publish(run_id, "status", {"status": final_status, "seeds_completed": completed,
                                    "total_seeds": row.total_seeds, "spend": cumulative})
     if report:
@@ -289,7 +289,7 @@ async def optimize_run(run_id: str, db, bus) -> None:
 
     bus.publish(run_id, "progress", {"message": "regenerating the report with the recommendation"})
     model_variance = await db.load_model_variance(run_id)
-    report = await reportgen.generate_report(
+    report, render_inputs = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
@@ -302,7 +302,7 @@ async def optimize_run(run_id: str, db, bus) -> None:
     # Simulation can reuse this narrative and only refresh the confidence band.
     await db.insert_report(
         run_id, "lever_optimization", f"Lever Optimization · {_combo_label(combo)}",
-        report_markdown=report, lever_set=combo, payload=opt)
+        report_markdown=report, lever_set=combo, payload=opt, render_inputs=render_inputs)
 
     # Back-test: record the recommendation's headline claim as a falsifiable prediction
     # (point + band, bound to its inputs by the replay hash). A real outcome recorded later
@@ -373,7 +373,7 @@ async def scenario_run(run_id: str, db, bus) -> None:
     opt = {**base_opt, **overlay}
     model_variance = await db.load_model_variance(run_id)
     bus.publish(run_id, "progress", {"message": "writing the scenario report"})
-    report = await reportgen.generate_report(
+    report, render_inputs = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
@@ -385,7 +385,8 @@ async def scenario_run(run_id: str, db, bus) -> None:
     title = f"Scenario Simulation · {_combo_label(combo)}" + (
         f" · {mc_seeds} scenarios" if mc_seeds else "")
     await db.insert_report(run_id, "scenario_simulation", title,
-                           report_markdown=report, lever_set=combo, payload=opt)
+                           report_markdown=report, lever_set=combo, payload=opt,
+                           render_inputs=render_inputs)
     await db.set_status(run_id, "complete", report=report)
     bus.publish(run_id, "status", {"status": "complete", "seeds_completed": row.seeds_completed,
                                    "total_seeds": row.total_seeds, "spend": row.spend})

@@ -13,7 +13,7 @@ import tempfile
 from pathlib import Path
 
 from app.config import settings
-from simulation.report import build_report
+from simulation.report import build_report, load_meta, load_metrics
 from simulation.optimize import LEVERS, build_overrides
 from simulation.src.models.elasticities import DEFAULT_ELASTICITIES, default_profile
 from simulation.src.orchestrator import Orchestrator, SimulationConfig
@@ -161,7 +161,15 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
     }
 
     step("writing the report")
-    return build_report(primary_dir, experiments)
+    markdown = build_report(primary_dir, experiments)
+    # Persist the exact inputs the report was rendered from (incl. the sensitivity bands and
+    # model variance), so it can be regenerated from stored data without re-running the sim.
+    render_inputs = {
+        "meta": load_meta(primary_dir),
+        "metrics": load_metrics(primary_dir),
+        "experiments": experiments,
+    }
+    return markdown, render_inputs
 
 
 def _ci(b: dict) -> float:

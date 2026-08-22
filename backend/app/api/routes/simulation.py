@@ -15,6 +15,7 @@ from app.config import settings
 from app.services.simulation.db import DB, replay_hash
 from app.services.simulation.events import EventBus, sse, sse_comment
 from app.services.simulation import runner
+from simulation.report import render_report
 
 router = APIRouter()
 
@@ -35,6 +36,13 @@ class OutcomeRequest(BaseModel):
     metric: str = Field(default="ppp")
     actual_value: float
     source: str | None = None
+
+
+class RegenerateRequest(BaseModel):
+    stage: str | None = Field(default=None,
+                              description="Which report stage to regenerate (baseline, "
+                                          "lever_optimization, scenario_simulation). Defaults "
+                                          "to the run's latest.")
 
 
 class RunOut(BaseModel):
@@ -200,6 +208,43 @@ async def get_report(run_id: str):
     if not row.report:
         raise HTTPException(409, "report not ready")
     return StreamingResponse(iter([row.report]), media_type="text/markdown")
+
+
+@router.post("/runs/{run_id}/report/regenerate")
+async def regenerate_report(run_id: str, req: RegenerateRequest):
+    """Re-render a saved report from its stored inputs — no re-running the simulation.
+
+    Every report now persists the exact meta/metrics/experiments it was rendered from
+    (including the sensitivity bands and model variance). This endpoint re-runs the report
+    renderer on that stored data, so changing the report's format is instant. Runs created
+    before this feature have no stored inputs and return 409."""
+    if await db.fetch_run(run_id) is None:
+        raise HTTPException(404, "run not found")
+
+    if req.stage:
+        stage = req.stage
+    else:
+        reports = await db.list_reports(run_id)
+        if not reports:
+            raise HTTPException(404, "no reports for this run")
+        stage = reports[0]["stage"]  # newest first
+
+    render_inputs = await db.fetch_report_render_inputs(run_id, stage)
+    if not render_inputs:
+        raise HTTPException(409, "no stored render inputs for this stage — the run predates report regeneration")
+
+    markdown = render_report(
+        render_inputs.get("meta") or {},
+        render_inputs.get("metrics") or {},
+        render_inputs.get("experiments") or {},
+        run_label=run_id,
+    )
+
+    latest = await db.latest_report(run_id, stage)
+    if latest:
+        await db.update_report_markdown(latest["id"], markdown)
+
+    return {"stage": stage, "report_markdown": markdown}
 
 
 @router.get("/runs/{run_id}/events")

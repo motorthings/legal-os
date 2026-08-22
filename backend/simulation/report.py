@@ -1162,9 +1162,11 @@ def _how_to_read(meta: dict, exp: dict) -> list[str]:
     return L
 
 
-def build_report(run_dir: Path, experiments: dict) -> str:
-    meta = load_meta(run_dir)
-    metrics = load_metrics(run_dir)
+def render_report(meta: dict, metrics: dict, experiments: dict, run_label: str = "") -> str:
+    """Render the report from in-memory inputs — no disk. This is the decoupled core, so a
+    report can be regenerated from stored data (render_inputs) without re-running the sim."""
+    meta = meta or {}
+    metrics = metrics or {}
     experiments = experiments or {}
     firm = meta.get("firm_name", "Aldrich & Vale LLP")
 
@@ -1195,11 +1197,18 @@ def build_report(run_dir: Path, experiments: dict) -> str:
              "what the firm does today, or make a set of strategic changes (called \"levers\"). "
              "Every number here is an estimate from the model, not the firm's actual books.")
     blocks = [
-        f"# Firm Simulation — {firm}\n\n**Run:** {run_dir.name}\n\n{intro}\n",
+        f"# Firm Simulation — {firm}\n\n**Run:** {run_label}\n\n{intro}\n",
         "\n".join(body),
         *appendices,
     ]
     return "\n".join(b.rstrip() + "\n" for b in blocks if b.strip())
+
+
+def build_report(run_dir: Path, experiments: dict) -> str:
+    """Disk-backed wrapper: load meta + metrics from a run directory, then render."""
+    meta = load_meta(run_dir)
+    metrics = load_metrics(run_dir)
+    return render_report(meta, metrics, experiments, run_label=run_dir.name)
 
 
 def _bottom_line(meta: dict, metrics: dict, exp: dict, stage: str, searched: bool) -> str:
