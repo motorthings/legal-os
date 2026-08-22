@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { SIM_API_BASE } from '@/lib/simulation-api';
 import {
   FIRM_FIELDS,
   ELASTICITY_DEFS,
@@ -18,7 +19,7 @@ interface Props {
   existing?: FirmConfigJson;
 }
 
-const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, model: 'mock', legalTool: 'mock' };
+const DEFAULT_RUN = { sprints: 16, mattersPerSprint: 30, seed: 42, maxCost: 5.0, seeds: 12, model: 'mock', legalTool: 'mock' };
 const GUARDRAIL_METRICS = [
   { key: 'ppp', label: 'Profit per partner' },
   { key: 'matter_profit_margin', label: 'Matter margin' },
@@ -142,11 +143,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
     setGuardrails((g) => ({ ...g, [key]: { ...g[key], [field]: value } }));
   }
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setBusy(true);
-
+  async function buildAndSave(): Promise<FirmConfigJson | null> {
     const guardrailSpecs = GUARDRAIL_METRICS.flatMap((m) => {
       const { min, max } = guardrails[m.key];
       const specs: string[] = [];
@@ -170,8 +167,7 @@ export default function IntakeForm({ firmId, existing }: Props) {
       config = buildConfig(intake); // validates: weights, guardrails, elasticities, firm
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid config');
-      setBusy(false);
-      return;
+      return null;
     }
 
     try {
@@ -193,8 +189,40 @@ export default function IntakeForm({ firmId, existing }: Props) {
 
       await supabase.from('firms').update({ status: 'ready' }).eq('id', firmId);
       router.refresh();
+      return config;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save config');
+      return null;
+    }
+  }
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    await buildAndSave();
+    setBusy(false);
+  }
+
+  // One kick-off: save the config, launch the full run (baseline + optimization, auto-chained
+  // on the backend), and open the run page in a new window so the progress streams live.
+  async function onRun() {
+    setError(null);
+    setBusy(true);
+    const config = await buildAndSave();
+    if (!config) return setBusy(false);
+    const provider = run.model === 'mock' ? 'mock' : 'deepseek';
+    try {
+      const res = await fetch(`${SIM_API_BASE}/runs`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ config, firm_id: firmId, seeds: run.seeds ?? 12, budget: null, provider }),
+      });
+      if (!res.ok) throw new Error('run launch failed');
+      const { run_id } = await res.json();
+      window.open(`/simulation/firms/${firmId}/runs/${run_id}`, '_blank');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not launch run');
     } finally {
       setBusy(false);
     }
@@ -303,10 +331,14 @@ export default function IntakeForm({ firmId, existing }: Props) {
       {/* Run scale */}
       <section className="card p-5">
         <h3 className="text-[15px] font-bold text-[var(--text)] tracking-tight mb-3">Run scale</h3>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="flex flex-col gap-1">
             <span className="text-[13px] font-semibold text-[var(--text)]">Sprints</span>
             <input className={INPUT_CLS} type="number" value={run.sprints} onChange={(e) => setRun({ ...run, sprints: e.target.valueAsNumber })} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[13px] font-semibold text-[var(--text)]">Seeds</span>
+            <input className={INPUT_CLS} type="number" min={1} value={run.seeds} onChange={(e) => setRun({ ...run, seeds: e.target.valueAsNumber || 1 })} />
           </label>
           <label className="flex flex-col gap-1">
             <span className="text-[13px] font-semibold text-[var(--text)]">Model</span>
@@ -325,12 +357,26 @@ export default function IntakeForm({ firmId, existing }: Props) {
             </select>
           </label>
         </div>
+        <p className="text-[11px] text-[var(--text-muted)] mt-2">
+          One run does the baseline and the recommendation together. A real model (deepseek) is
+          slower and costs tokens; mock is fast and deterministic.
+        </p>
       </section>
 
       {error && <p className="text-sm text-[var(--rose)]">{error}</p>}
-      <button type="submit" disabled={busy} className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed self-start">
-        {busy ? 'Saving…' : 'Save config'}
-      </button>
+      <div className="flex items-center gap-3">
+        <button type="submit" disabled={busy} className="btn-secondary border border-[var(--border)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg text-[13px] font-medium">
+          {busy ? 'Saving…' : 'Save config'}
+        </button>
+        <button
+          type="button"
+          onClick={onRun}
+          disabled={busy}
+          className="btn-primary border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-5 py-2 rounded-lg text-[13px] font-medium"
+        >
+          {busy ? 'Launching…' : 'Save & run simulation'}
+        </button>
+      </div>
     </form>
   );
 }
