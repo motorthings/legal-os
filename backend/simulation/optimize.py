@@ -102,7 +102,8 @@ def parse_guardrails(specs: list[str]) -> list[tuple]:
     return out
 
 
-def blended_score(pulled: set, seeds, sprints, matters, weights: dict) -> float:
+def blended_score(pulled: set, seeds, sprints, matters, weights: dict,
+                  phasing: dict | None = None) -> float:
     """Weighted, unit-normalized objective score. Each component is expressed as
     percentage improvement over the no-lever baseline (direction-signed so bigger is
     always better), then weighted. Normalizing to % makes dollars and percentage-point
@@ -111,16 +112,17 @@ def blended_score(pulled: set, seeds, sprints, matters, weights: dict) -> float:
     for obj_key, w in weights.items():
         metric, direction, _, _ = OBJECTIVES[obj_key]
         base = run_metric(set(), seeds, sprints, matters, metric)
-        val = run_metric(pulled, seeds, sprints, matters, metric)
+        val = run_metric(pulled, seeds, sprints, matters, metric, phasing)
         denom = abs(base) if abs(base) > 1e-9 else 1.0
         total += w * direction * (val - base) / denom
     return total
 
 
-def guardrails_ok(pulled: set, seeds, sprints, matters, guardrails: list) -> bool:
+def guardrails_ok(pulled: set, seeds, sprints, matters, guardrails: list,
+                  phasing: dict | None = None) -> bool:
     """True if the pulled-lever combo satisfies every guardrail (on the seed-mean)."""
     for metric, op, bound in guardrails:
-        val = run_metric(pulled, seeds, sprints, matters, metric)
+        val = run_metric(pulled, seeds, sprints, matters, metric, phasing)
         if op == "<=" and val > bound:
             return False
         if op == ">=" and val < bound:
@@ -143,20 +145,32 @@ def set_base_firm(firm_signature=None, elasticities=None):
     reset_sims_run()
 
 
-def build_overrides(pulled: set) -> dict:
-    """Merge the config for a set of pulled levers, starting from the base firm (or archetype)."""
+def build_overrides(pulled: set, phasing: dict | None = None) -> dict:
+    """Merge the config for a set of pulled levers, starting from the base firm (or archetype).
+
+    `phasing` (optional) maps lever -> 1-indexed start sprint. A phased lever holds the firm at
+    its PRE-CHANGE posture until its start quarter (captured below as pre_lever_*), so it doesn't
+    snap to the lever target from quarter 1. Levers with no phasing entry start at quarter 1 — the
+    pre-phasing behavior."""
     import copy
     sig = copy.deepcopy(_BASE_FIRM) if _BASE_FIRM is not None else FirmSignature()
+    # The firm's posture BEFORE any lever override, so a phased pricing/leverage lever can hold
+    # the firm at its starting state (e.g. hourly billing, leverage 3.5) until it activates.
+    pre_pricing = sig.pricing_posture
+    pre_leverage = sig.leverage_ratio
     if "pricing" in pulled:
         sig.pricing_posture = "afa_native"
     if "leverage" in pulled:
         sig.leverage_ratio = 5.0
-    overrides = {"firm_signature": sig}
+    overrides = {"firm_signature": sig,
+                 "pre_lever_pricing": pre_pricing, "pre_lever_leverage": pre_leverage}
     if _BASE_ELASTICITIES is not None:
         overrides["elasticities"] = _BASE_ELASTICITIES
     overrides["comp_lever_strength"] = 0.9 if "comp" in pulled else 0.0
     overrides["decision_latency_sprints"] = 1 if "latency" in pulled else 5
     overrides["codify_seams"] = "seams" in pulled
+    if phasing:
+        overrides["lever_start_sprints"] = dict(phasing)
     return overrides
 
 
@@ -191,18 +205,26 @@ def _current_provider() -> tuple[str, object]:
             getattr(_provider_state, "model", None))
 
 
-def _simulate(pulled: set, seeds, sprints, matters):
+def _phasing_key(phasing: dict | None) -> tuple:
+    """A stable cache-key component for a phasing plan. A lever at start<=1 is quarter-1 — no
+    delay — so it's dropped, letting an all-from-Q1 plan share the plain optimization's cache."""
+    return tuple(sorted((lv, s) for lv, s in (phasing or {}).items() if s > 1))
+
+
+def _simulate(pulled: set, seeds, sprints, matters, phasing: dict | None = None):
     """Run each seed once; cache and return {metric: [[per-sprint values] per seed]}.
 
     The cache keeps full quarter-by-quarter histories, not just finals, so `run_trials`
     (finals) and `run_trajectory` (mean per-sprint curve) both derive from the same runs
-    without re-simulating. Provider/model are part of the cache key, because a mock result
-    is not interchangeable with a real one."""
+    without re-simulating. Provider/model and the phasing plan are part of the cache key,
+    because a mock result is not interchangeable with a real one, and a different start
+    quarter is a different run."""
     provider, model = _current_provider()
-    key = (frozenset(pulled), tuple(seeds), sprints, matters, provider, model)
+    phasing = {lv: s for lv, s in (phasing or {}).items() if s > 1} or None
+    key = (frozenset(pulled), _phasing_key(phasing), tuple(seeds), sprints, matters, provider, model)
     if key in _TRIAL_CACHE:
         return _TRIAL_CACHE[key]
-    overrides = build_overrides(pulled)
+    overrides = build_overrides(pulled, phasing)
     out = {m: [] for m in _COLLECT}
     _SIMS_RUN[0] += len(seeds)
     for seed in seeds:
@@ -220,27 +242,29 @@ def _simulate(pulled: set, seeds, sprints, matters):
     return out
 
 
-def run_trials(pulled: set, seeds, sprints, matters):
+def run_trials(pulled: set, seeds, sprints, matters, phasing: dict | None = None):
     """Return {metric: [per-seed final values]}, derived from the cached full histories."""
-    histories = _simulate(pulled, seeds, sprints, matters)
+    histories = _simulate(pulled, seeds, sprints, matters, phasing)
     return {m: [series[-1] if series else 0.0 for series in histories[m]]
             for m in _COLLECT}
 
 
-def run_trajectory(pulled: set, seeds, sprints, matters, key: str = "ppp") -> list[float]:
+def run_trajectory(pulled: set, seeds, sprints, matters, key: str = "ppp",
+                   phasing: dict | None = None) -> list[float]:
     """Mean per-sprint trajectory of `key`, aligned across seeds by sprint index.
 
     Returns [q1, q2, …, qN] — the average value at each quarter, across seeds. Reads the
     cached histories, so it's free after the trials run."""
-    histories = _simulate(pulled, seeds, sprints, matters)[key]
+    histories = _simulate(pulled, seeds, sprints, matters, phasing)[key]
     n = max((len(s) for s in histories), default=0)
     if n == 0:
         return []
     return [statistics.mean([s[i] for s in histories if i < len(s)]) for i in range(n)]
 
 
-def run_metric(pulled: set, seeds, sprints, matters, key: str) -> float:
-    return statistics.mean(run_trials(pulled, seeds, sprints, matters)[key])
+def run_metric(pulled: set, seeds, sprints, matters, key: str,
+               phasing: dict | None = None) -> float:
+    return statistics.mean(run_trials(pulled, seeds, sprints, matters, phasing)[key])
 
 
 def run_ppp(pulled: set, seeds, sprints, matters) -> float:
@@ -249,6 +273,132 @@ def run_ppp(pulled: set, seeds, sprints, matters) -> float:
 
 def run_margin(pulled: set, seeds, sprints, matters) -> float:
     return run_metric(pulled, seeds, sprints, matters, "matter_profit_margin")
+
+
+# === The "when" (timing) search ======================================================
+#
+# The lever search answers WHICH changes to make and in what ORDER. This answers WHEN each
+# one pays. Timing is judged on CUMULATIVE profit (the mean across every quarter), not the
+# endpoint: the lever ranking asks how much a change lifts the final number, but timing asks
+# how much of that lift you capture by acting now vs later — and a change made earlier pays
+# for more quarters. On the endpoint alone, the engine is (correctly) almost silent about
+# timing; on the cumulative measure it can separate "act now" from "act later," which is the
+# honest, coarse signal the report can defend. It is a LOCAL search (coordinate ascent), not a
+# proven global optimum — the report says as much.
+
+TIMING_CANDIDATES = (1, 2, 3, 4, 5, 7)   # start quarters worth distinguishing on a ~16-q runway
+
+
+def _cum_mean(histories: list[list[float]]) -> float:
+    """Mean value across ALL quarters and seeds — the cumulative/average-profit measure the
+    timing search ranks by (vs run_metric, which reads only the last quarter)."""
+    flat = [v for series in histories for v in series]
+    return statistics.mean(flat) if flat else 0.0
+
+
+def _simulate_phased(phasing: dict, seeds, sprints, matters):
+    """Simulate a phasing plan: the levers in `phasing` are pulled, each starting at its quarter."""
+    return _simulate(set(phasing), seeds, sprints, matters, phasing)
+
+
+def timing_score(phasing: dict, seeds, sprints, matters, weights: dict) -> float:
+    """A phasing plan's objective on the CUMULATIVE measure — same weights/direction as the
+    lever search, but each metric read as its mean across all quarters instead of the endpoint."""
+    if len(weights) > 1:                       # blend: weighted, unit-normalized cumulative deltas
+        total = 0.0
+        for obj, w in weights.items():
+            metric, direction, *_ = OBJECTIVES[obj]
+            base = _cum_mean(_simulate(set(), seeds, sprints, matters, None)[metric])
+            val = _cum_mean(_simulate_phased(phasing, seeds, sprints, matters)[metric])
+            denom = abs(base) if abs(base) > 1e-9 else 1.0
+            total += w * direction * (val - base) / denom
+        return total
+    obj_key, obj_dir, *_ = OBJECTIVES[next(iter(weights))]
+    return obj_dir * _cum_mean(_simulate_phased(phasing, seeds, sprints, matters)[obj_key])
+
+
+def run_timing_search(best_combo: list, *, seeds, sprints, matters, weights: dict,
+                      guardrails: list, progress=None) -> dict | None:
+    """Find WHEN to make each lever change, judged on CUMULATIVE profit.
+
+    Each lever's best start quarter is found INDEPENDENTLY — hold every other chosen lever at
+    quarter 1 and sweep this one's start. (A joint coordinate-ascent is not used: the levers
+    interact too strongly — comp's sign flips with pricing — so joint ascent finds misleading
+    local optima, e.g. "delay flat fees," which the model does not support.) Each lever's answer
+    is therefore: "if everything else starts now, when does THIS one pay best?" — a clean, honest
+    per-change call that can't conspire with the other levers to delay the foundation.
+
+    Returns a `timing` dict (or None when there's nothing to time): per-lever best start quarter,
+    the dollar cost of waiting on it (cumulative PPP), and whether that cost is inside the model's
+    own seed-to-seed spread (in which case the exact quarter is a range, not a sharp call)."""
+    if not best_combo:
+        return None
+    if progress:
+        progress("timing search — when to make each change", 1, 1)
+
+    # "Everything now" = the lever search's winner, all from quarter 1. `timing_score` reads the
+    # start>=1 as quarter-1 (normalized in _simulate), so this is the all-at-once plan.
+    all_q1 = {lv: 1 for lv in best_combo}
+    base_score = timing_score(all_q1, seeds, sprints, matters, weights)
+    base_ppp = _cum_ppp(all_q1, seeds, sprints, matters)
+    latest = TIMING_CANDIDATES[-1]          # the "left it too late" reference quarter
+
+    # Noise floor: the seed-to-seed spread of cumulative PPP — what a quarter call has to beat.
+    per_seed_cum = [statistics.mean(s) for s in _simulate_phased(all_q1, seeds, sprints, matters)["ppp"] if s]
+    spread_ppp = statistics.pstdev(per_seed_cum) if len(per_seed_cum) > 1 else 0.0
+
+    levers = {}
+    for lv in best_combo:
+        # Others at quarter 1; sweep this lever's start on the objective (weights) ranking.
+        best_q, best_obj = 1, base_score
+        for q in TIMING_CANDIDATES:
+            s = timing_score({**all_q1, lv: q}, seeds, sprints, matters, weights)
+            if s > best_obj + 1e-9:
+                best_q, best_obj = q, s
+        # The dollar cost of leaving this lever until the latest candidate, in cumulative PPP.
+        ppp_now = _cum_ppp({**all_q1, lv: 1}, seeds, sprints, matters)
+        ppp_late = _cum_ppp({**all_q1, lv: latest}, seeds, sprints, matters)
+        cost_of_waiting = ppp_now - ppp_late        # >0: waiting to the end loses money
+        levers[lv] = {
+            "start": best_q,
+            "cost_of_waiting": cost_of_waiting,     # cumulative PPP lost by waiting until the last quarter
+            "within_noise": abs(cost_of_waiting) < abs(spread_ppp),
+        }
+
+    # The joint schedule (each lever at its independent best) and what sequencing captures on the
+    # cumulative measure versus doing it all at once. Informational — per-lever claims are each
+    # guarded by their own within_noise, not this aggregate.
+    schedule = {lv: levers[lv]["start"] for lv in best_combo}
+    schedule_ppp = _cum_ppp(schedule, seeds, sprints, matters)
+    # A lever whose best start is quarter 1 with a clear cost of waiting reads as "act now"; the
+    # schedule line is just the sequencing delta.
+    gain = schedule_ppp - base_ppp
+
+    return {
+        "objective": _objective_label(weights),
+        "metric": "profit earned across all quarters (not just the end)",
+        "horizon_sprints": sprints,
+        "candidates": list(TIMING_CANDIDATES),
+        "spread_ppp": spread_ppp,
+        "gain": gain,
+        "all_q1_ppp": base_ppp,
+        "schedule_ppp": schedule_ppp,
+        "levers": levers,
+    }
+
+
+def _cum_ppp(phasing: dict, seeds, sprints, matters) -> float:
+    """Cumulative (mean-across-quarters, mean-across-seeds) PPP — the dollar measure the report
+    quotes for timing, consistent with the noise floor (also in cumulative PPP)."""
+    return _cum_mean(_simulate_phased(phasing, seeds, sprints, matters)["ppp"])
+
+
+def _objective_label(weights: dict) -> str:
+    """A short human label for the (single or blended) objective."""
+    primary = max(weights, key=weights.get)
+    if len(weights) > 1:
+        return "priority blend"
+    return OBJECTIVES[primary][2]
 
 
 def main():
@@ -434,6 +584,8 @@ def main():
     ppp_spreads = {lv: statistics.stdev(ppp_trials[lv]) if len(ppp_trials[lv]) > 1 else 0.0
                    for lv in LEVERS}
     ppp_base_mc = run_metric(set(), mc_seeds, args.sprints, args.matters, "ppp")
+    timing = run_timing_search(sorted(best), seeds=opt_seeds, sprints=args.sprints,
+                               matters=args.matters, weights=weights, guardrails=guardrails)
     persist_experiment({
         "optimize": {
             "objective": args.objective,
@@ -460,6 +612,7 @@ def main():
             "spread": spread,
             "ci95": ci95,
             "story": story,
+            "timing": timing,
             # The two chart lines (decline vs recovery) so the report's chart renders both.
             "ppp_trajectory": run_trajectory(best, mc_seeds, args.sprints, args.matters, "ppp"),
             "baseline_trajectory": run_trajectory(set(), mc_seeds, args.sprints, args.matters, "ppp"),
@@ -607,6 +760,13 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
                    for lv in LEVERS}
     ppp_base_mc = run_metric(set(), mc_list, sprints, matters, "ppp")
 
+    # When to make each change — a timing pass over the winner, judged on cumulative profit.
+    # Runs on the same (mock by default) search provider and seeds; cheap.
+    r5 = make_stage(1)
+    r5("Timing — when to make each change")
+    timing = run_timing_search(sorted(best), seeds=opt_seeds, sprints=sprints, matters=matters,
+                               weights=weights, guardrails=guardrails)
+
     movers = ", ".join(sorted(best)) or "(no lever reliably helps this objective)"
     story = f"[objective: {obj_label}] Pull {movers} (reliable movers). " + (
         "Then comp — it only helps AFTER AFA (under hourly it costs you)." if comp_under_afa > 0
@@ -641,6 +801,9 @@ def run_optimization(rc: dict, *, sprints: int, matters: int, round_seeds: int =
             "spread": spread,
             "ci95": ci95,
             "story": story,
+            # When to make each change — the timing pass over the winner. Renders as the
+            # "When to make each change" block in the report; None when no lever was worth pulling.
+            "timing": timing,
             # The two chart lines, apples-to-apples across the same seeds: the decline if
             # nothing changes vs the recovery under the recommended lever set. The lever-
             # optimization report's chart needs these just like the scenario report does,

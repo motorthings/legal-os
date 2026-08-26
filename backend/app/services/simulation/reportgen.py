@@ -14,7 +14,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from app.config import settings
-from simulation.report import render_report, load_meta, load_metrics
+from simulation.report import render_report, render_decision_onepager, load_meta, load_metrics
 from simulation.optimize import LEVERS, build_overrides
 from simulation.run_config import build_firm
 from simulation.src.models.elasticities import DEFAULT_ELASTICITIES, default_profile
@@ -47,7 +47,10 @@ def _build_meta(rc: dict, cfg, model_variance=None) -> dict:
     run = rc.get("run") or {}
     firm = build_firm(rc.get("firm") or {})
     return {
-        "firm_name": rc.get("firm_name") or rc.get("name") or "Aldrich & Vale LLP",
+        # The run's own `name` is a label for the run, not the firm — it must never leak into the
+        # report as the firm name. Firm name comes only from an explicit firm_name, else the
+        # archetype reference firm.
+        "firm_name": rc.get("firm_name") or "Aldrich & Vale LLP",
         "sprints": cfg.sprints or run.get("sprints"),
         "matters_per_sprint": cfg.matters_per_sprint or run.get("matters_per_sprint"),
         "provider": cfg.llm_provider,
@@ -198,10 +201,14 @@ async def generate_report(run_id: str, primary_dir: Path, rc: dict, cfg, mc: dic
     meta = {**_build_meta(rc, cfg, model_variance), **disk_meta}
     metrics = load_metrics(primary_dir) or fallback_metrics or {}
     markdown = render_report(meta, metrics, experiments, run_label=run_id)
+    # The 90-second decision doc — a separate artifact from the full report, rendered from the
+    # same meta/experiments (it needs no metrics). Persisted so it regenerates from render_inputs
+    # too. Only meaningful once a lever optimization has run; the runner stores it at that stage.
+    onepager = render_decision_onepager(meta, experiments)
     # Persist the exact inputs the report was rendered from (incl. the sensitivity bands and
     # model variance), so it can be regenerated from stored data without re-running the sim.
     render_inputs = {"meta": meta, "metrics": metrics, "experiments": experiments}
-    return markdown, render_inputs
+    return markdown, render_inputs, onepager
 
 
 def _ci(b: dict) -> float:

@@ -104,7 +104,7 @@ def build_sim_config(rc: dict, *, provider: str, output_dir: str, **overrides) -
         llm_provider=provider,
         llm_model=run["model"],
         legal_tool=run["legal_tool"],
-        firm_name=rc.get("firm_name") or rc.get("name", "Aldrich & Vale LLP"),
+        firm_name=rc.get("firm_name") or "Aldrich & Vale LLP",
         firm_signature=firm,
         elasticities=build_elasticities(rc),
         output_dir=output_dir,

@@ -18,7 +18,7 @@ from app.services.simulation.db import DB, replay_hash
 from app.services.simulation.events import EventBus, sse, sse_comment
 from app.services.simulation import runner
 from app.services.simulation.reportgen import _build_meta
-from simulation.report import render_report
+from simulation.report import render_report, render_decision_onepager
 from simulation.run_config import build_sim_config
 
 router = APIRouter()
@@ -214,6 +214,19 @@ async def get_report(run_id: str):
     return StreamingResponse(iter([row.report]), media_type="text/markdown")
 
 
+@router.get("/runs/{run_id}/onepager")
+async def get_onepager(run_id: str):
+    """The 90-second decision doc, served as its own page. Rendered only once a lever
+    optimization has run (a baseline has no recommendation to decide on)."""
+    row = await db.fetch_run(run_id)
+    if row is None:
+        raise HTTPException(404, "run not found")
+    report = await db.latest_report(run_id, "decision_onepager")
+    if report is None or not report.get("report_markdown"):
+        raise HTTPException(409, "decision one-pager not ready — run the lever optimization first")
+    return StreamingResponse(iter([report["report_markdown"]]), media_type="text/markdown")
+
+
 @router.post("/runs/{run_id}/report/regenerate")
 async def regenerate_report(run_id: str, req: RegenerateRequest):
     """Re-render a saved report from its stored inputs — no re-running the simulation.
@@ -257,12 +270,18 @@ async def regenerate_report(run_id: str, req: RegenerateRequest):
             metrics = {m: {i + 1: v for i, v in enumerate(vals)} for m, vals in db_metrics.items()}
             render_inputs["metrics"] = metrics
 
-    markdown = render_report(
-        meta,
-        metrics,
-        render_inputs.get("experiments") or {},
-        run_label=run_id,
-    )
+    # The one-pager is a different renderer (decision doc, no metrics); branch on stage so a
+    # regenerate of either the full report or the decision page re-renders from stored inputs.
+    if stage == "decision_onepager":
+        markdown = render_decision_onepager(
+            meta, render_inputs.get("experiments") or {})
+    else:
+        markdown = render_report(
+            meta,
+            metrics,
+            render_inputs.get("experiments") or {},
+            run_label=run_id,
+        )
 
     latest = await db.latest_report(run_id, stage)
     if latest:

@@ -227,14 +227,43 @@ def _pct_change(first, last) -> str:
     return f" ({pct:+.0f}%)"
 
 
-# Plain-English glossary for the narrative — one line per lever, no jargon.
-LEVER_GLOSS = {
-    "pricing":  "stop billing by the hour and charge a flat fee per matter",
-    "comp":     "pay partners a bonus for actually using AI",
-    "leverage": "change how many junior lawyers sit under each partner (the pyramid)",
-    "seams":    "write down the know-how that lives in senior lawyers' heads, so work "
-                "doesn't get garbled when it passes from one person to the next",
-    "latency":  "flag the matters that need a decision and act on them within the same week",
+# Plain-English description of each move — the mechanism, in a partner's words, with the cost
+# and the dependency where there is one. This is the single source of truth for move copy
+# (see docs/move-description-guide.md). Each line traces to the engine's real mechanism
+# (_adoption_rate / _collect_metrics / models/elasticities.py) — nothing invented.
+_LEVER_DESCRIPTIONS = {
+    "pricing": ("Under your current hourly billing, an hour AI saves is an hour you don't bill. "
+                "Under a flat fee, that saved hour becomes profit. This switch sets the direction "
+                "for everything after it."),
+    "seams": ("Your real value lives in your senior lawyers' heads: the partner's redlines, the "
+              "settlement call, who gets staffed, which bill a client will actually pay. When that "
+              "work passes from one person to the next without being written down, it arrives "
+              "not-quite-right and gets redone. Codifying it means writing the know-how down so the "
+              "hand-off is clean. It takes senior hours and a few quarters, but it's what stops the "
+              "rework."),
+    "comp": ("A bonus that pays partners to use AI only works when a saved hour becomes profit. "
+             "Under hourly billing it does the opposite: you're paying people to bill fewer hours. "
+             "Under a flat fee, adoption lets each partner carry more work and the bonus pays for "
+             "itself. So it belongs after the fee switch, not before."),
+    "latency": ("Close the loop between spotting a matter that needs a decision and acting on it. "
+                "The speed of that loop decides how fast the firm adopts AI. Speed it up and the "
+                "recovery lands sooner; leave it slow and adoption lags for the whole runway."),
+    "leverage": ("Change how many junior lawyers sit under each partner. More juniors means more "
+                 "billable hours exposed to AI doing the work faster, and that trims how much of "
+                 "that time actually gets billed. It reshapes the base of the firm, and it's best "
+                 "timed after the other changes land."),
+}
+
+
+# Compact, one-clause reason per move for the one-pager (the 90-second decision doc). The full
+# mechanism copy lives in _LEVER_DESCRIPTIONS for the full report; here each move is a clause so
+# the page stays one page. Same grounding — each traces to the engine's real mechanism.
+_ONEPAGER_REASON = {
+    "pricing": "Sets whether every hour AI saves becomes profit or a lost bill.",
+    "seams": "Keeps the know-how from getting garbled as it passes between people.",
+    "comp": "Only pays once a saved hour is profit, so it comes after the fee switch.",
+    "latency": "Gets adoption and the recovery there sooner.",
+    "leverage": "Reshapes the base, trims billable hours, so it's timed after the others.",
 }
 
 
@@ -927,9 +956,9 @@ def _options_on_the_table(exp: dict) -> list[str]:
     L = ["## The changes on the table", "",
          "Five changes could bend that curve. Each is a real decision with a cost on both sides:", ""]
     for lv in _LEVER_ORDER:
-        gloss = LEVER_GLOSS.get(lv)
-        if gloss:
-            L.append(f"- **{_lever_name(lv)}** — {gloss}.")
+        desc = _LEVER_DESCRIPTIONS.get(lv)
+        if desc:
+            L.append(f"- **{_lever_name(lv)}.** {desc}")
     L += ["", "Which ones actually help this firm, and in what order, is what the search settles next.",
           ""]
     return L
@@ -995,6 +1024,182 @@ def _falsifiable(exp: dict, opt: dict, obj_plain: str, best) -> list[str]:
     return L + [""]
 
 
+# The "when" — one grounded reason per change for why it times as it does. These are the engine's
+# own mechanisms (the margin sign under pricing, the codify-one-seam-per-3-quarters cadence, the
+# utilization cut under leverage), not invented sequencing.
+_TIMING_WHY = {
+    "pricing": "under hourly, a saved hour is a lost bill, so every quarter you wait keeps paying that cost",
+    "seams": "codifying a hand-off takes a few quarters, one at a time, so it needs runway to finish inside the horizon",
+    "comp": "the bonus only turns positive once flat fees are in, so it belongs after the switch",
+    "latency": "closing the loop faster pays from the quarter it's on",
+    "leverage": "reshaping the pyramid exposes more juniors to AI's hour-compression, so it trims billable hours — it's best to let the other changes land first",
+}
+
+
+def _timing_phrase(lever: str, d: dict) -> str:
+    """One change's 'when', in coarse bands, from the timing search's own number — never a point
+    call unless the cost of waiting clears the model's run-to-run spread."""
+    name = _cap(_action(lever))
+    start = d.get("start", 1)
+    cost = d.get("cost_of_waiting")
+    noisy = d.get("within_noise", False)
+    why = _TIMING_WHY.get(lever)
+    tail = (f" ({why})" if why else "")
+    if noisy or cost is None:
+        return (f"- **{name}** — the exact quarter is a range, not a sharp call: acting this "
+                f"quarter or next moves the number less than the model's own spread.{tail}")
+    if cost < 0:
+        return (f"- **{name}** — hold off. Waiting earns about {_approx_money(-cost)} more across "
+                f"the runway, so it pays best later in the plan.{tail}")
+    if start <= 1:
+        return (f"- **{name}** — now. Wait until later in the runway and you leave about "
+                f"{_approx_money(cost)} of profit behind.{tail}")
+    if start <= 3:
+        return (f"- **{name}** — start within the next couple of quarters (around quarter {start}). "
+                f"Leave it to the end and about {_approx_money(cost)} stays on the table.{tail}")
+    return (f"- **{name}** — around quarter {start}. Waiting on it costs about "
+            f"{_approx_money(cost)} if you leave it much longer.{tail}")
+
+
+def _timing_section(opt: dict) -> list[str]:
+    """'When to make each change' — coarse sequencing grounded in the timing search, not a point
+    call. The report never asserts a specific quarter unless waiting on that change clears the
+    model's own spread; a within-noise quarter is rendered as a range."""
+    timing = opt.get("timing")
+    if not timing or not timing.get("levers"):
+        return []
+    L = ["**When to make each change.** The plan above is about how much each change lifts the end "
+         "of the runway. Timing is a separate question — how much of that lift you capture by acting "
+         "now rather than later, because a change you make earlier pays for more quarters. On that "
+         "measure:", ""]
+    for lv in _LEVER_ORDER:
+        if lv in timing["levers"]:
+            L.append(_timing_phrase(lv, timing["levers"][lv]))
+    gain = timing.get("gain")
+    spread = timing.get("spread_ppp")
+    if gain is not None and spread is not None and abs(gain) > abs(spread) and gain > 0:
+        L += ["",
+              f"Sequencing the changes this way captures about {_approx_money(gain)} more across "
+              "the runway than starting them all at once. Treat these as ranges — now, soon, "
+              "later — not dates; the model prices the sequence, not the calendar.", ""]
+    elif gain is not None:
+        L += ["",
+              "Sequencing the changes one at a time doesn't add meaningfully over starting them all "
+              "now — the order matters more than the calendar. Treat the quarters above as ranges, "
+              "not dates.", ""]
+    return L
+
+
+def _onepager_when(lv: str, d: dict) -> str:
+    """One move's timing as a single clause, coarse and honest — the 90-second version of
+    _timing_phrase. Never a sharp quarter call unless waiting clears the model's own spread."""
+    name = _cap(_action(lv))
+    start = d.get("start", 1)
+    cost = d.get("cost_of_waiting")
+    noisy = d.get("within_noise", False)
+    if noisy or cost is None:
+        when = "the exact quarter is a range, not a sharp call"
+    elif cost < 0:
+        when = "hold off, it pays best later"
+    elif start <= 1:
+        when = "now"
+    elif start <= 3:
+        when = "within the next couple of quarters"
+    else:
+        when = f"around quarter {start}"
+    line = f"- **{name}** — {when}."
+    if cost is not None and cost > 0 and not noisy:
+        line += f" Waiting costs ~{_approx_money(cost)}."
+    return line
+
+
+def render_decision_onepager(meta: dict, experiments: dict) -> str:
+    """The 90-second decision document — a managing partner's page, not a compressed report.
+
+    Where the full report is the audit trail, this is the decision: the move in order, the one
+    dependency that gates it, the one assumption to go measure, and a falsifiable prediction
+    that gets checked against the firm's real books. It turns the model from a forecast into a
+    forcing function — and it's the anti-hype instrument that survives skeptical partners.
+
+    Renders from the SAME experiments/meta dicts the full report uses (no metrics needed), so
+    it regenerates from stored render_inputs with no re-run."""
+    meta = meta or {}
+    opt = ((experiments or {}).get("optimize") or {})
+    combo = _order_combo(opt.get("best_combo") or [])
+    scale = _scale_phrase(meta.get("sprints", "?"))
+
+    L = ["# The Decision", "", f"**Horizon:** {scale}.", "", "---", ""]
+
+    L += ["## The move, in order", ""]
+    if not combo:
+        L += ["The search ran every combination and none reliably beat standing still for this "
+              "firm as described. That's a finding, not a failure: change an input that's wrong "
+              "and re-run.", ""]
+    else:
+        for i, lv in enumerate(combo, 1):
+            reason = _ONEPAGER_REASON.get(lv)
+            L.append(f"{i}. **{_cap(_action(lv))}.** {reason}")
+        L.append("")
+
+        # The one dependency that gates the plan — only when it's real (comp flips positive under AFA).
+        comp_delta = ((opt.get("interactions") or {}).get("comp_x_pricing") or {}).get("delta")
+        if "comp" in combo and "pricing" in combo and comp_delta and comp_delta > 0:
+            L += ["**The one thing the plan depends on.** The AI-adoption bonus only pays once "
+                  "you're on flat fees. Under hourly billing, paying partners to use AI loses "
+                  "money; a saved hour is a lost bill. The order isn't optional.", ""]
+
+        # When — coarse, from the timing search.
+        timing = opt.get("timing") or {}
+        if timing.get("levers"):
+            L += ["**When.**", ""]
+            for lv in _LEVER_ORDER:
+                if lv in combo and lv in timing["levers"]:
+                    L.append(_onepager_when(lv, timing["levers"][lv]))
+            L.append("")
+
+        # The one thing to verify — the widest sensitivity band's calibration question.
+        widest = _widest_calibration(experiments)
+        if widest:
+            _, _, b, q = widest
+            low, high = b.get("band_low"), b.get("band_high")
+            if q:
+                # A lever measured alone can sweep negative (e.g. comp under hourly billing), so a
+                # sign-stripped "$247,000 to $0" would mislead as a positive range. Positive bands
+                # get the range; a band that crosses or sits below zero gets the honest swing.
+                if low is not None and high is not None and low >= 0:
+                    rng = f"roughly {_approx_money(low)} to {_approx_money(high)}"
+                elif low is not None and high is not None:
+                    swing = abs(high - low)
+                    rng = ("by up to roughly " + _approx_money(swing)
+                           + ", and which direction depends on your answer" if swing else "a lot")
+                else:
+                    rng = "a wide range"
+                L += ["## The one thing to verify before you commit", "",
+                      f"> {q}", "",
+                      f"This one number changes the result {rng}. Go find your own "
+                      "answer from your books, and the whole plan tightens.", ""]
+
+        # The prediction, and the check-in that makes it falsifiable.
+        best = opt.get("best_ppp")
+        band = opt.get("spread", opt.get("ci95"))
+        if best is not None:
+            L += ["## What we're predicting, and what we'll check", ""]
+            if opt.get("baseline_ppp"):
+                L.append(f"- **Left as is:** {fmt(opt['baseline_ppp'], '$')}.")
+            L.append(f"- **With this plan:** **{fmt(best, '$')}**"
+                     + (f", give or take {_approx_money(band)}." if band else "."))
+            L += ["", "We've recorded this as a testable claim. In a few quarters we check it "
+                      "against your real books. If the band holds, the model has earned your "
+                      "trust. If it misses, we learn which assumption was wrong, and that's a "
+                      "finding, not a failure.", ""]
+
+    L += ["---", "",
+          "**What this does not claim.** These are not your P&L numbers. This is a comparison "
+          "engine calibrated to a firm like yours. The dollars are ranges, not quotes. The "
+          "direction and the order are the point.", ""]
+    return "\n".join(l for l in L if l.strip())
+
+
 def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
     """How the levers were optimized — the choice, the order, why, and each change's standing."""
     opt = (exp or {}).get("optimize") or {}
@@ -1053,6 +1258,10 @@ def _recommendation(meta: dict, metrics: dict, exp: dict) -> list[str]:
     for lv in rest:
         L.append(step(f"**{_cap(_action(lv))}** — a finishing touch on top of the rest, not a mover "
                       "on its own."))
+    L += [""]
+
+    # When to make each change — coarse sequencing from the timing search, per-lever and honest.
+    L += _timing_section(opt)
     L += [""]
 
     # Each change's standing — the "how they were determined/optimized" detail, once.
@@ -1197,7 +1406,7 @@ def render_report(meta: dict, metrics: dict, experiments: dict, run_label: str =
              "what the firm does today, or make a set of strategic changes (called \"levers\"). "
              "Every number here is an estimate from the model, not the firm's actual books.")
     blocks = [
-        f"# Firm Simulation — {firm}\n\n**Run:** {run_label}\n\n{intro}\n",
+        f"# Firm Simulation\n\n**Run:** {run_label}\n\n{intro}\n",
         "\n".join(body),
         *appendices,
     ]
@@ -1238,11 +1447,11 @@ def _bottom_line(meta: dict, metrics: dict, exp: dict, stage: str, searched: boo
     base = opt.get("baseline_ppp")
     best = opt.get("best_ppp") if obj == "ppp" else opt.get("best_objective")
     if stated and base and best:
-        lead = (f"**{firm} reports {fmt(stated, '$')} a partner, but the model prices that at "
+        lead = (f"**This report shows {fmt(stated, '$')} a partner, but the model prices that at "
                 f"{fmt(base, '$')} once rework and write-offs are counted. {_cap(_action(combo[0]))} "
                 f"first — plus the changes that make it stick — lifts it back to {fmt(best, '$')}.** ")
     else:
-        lead = (f"**{firm} is leaking value at the hand-offs where its judgment lives — and one "
+        lead = (f"**The firm is leaking value at the hand-offs where its judgment lives — and one "
                 f"change up front, {_action(combo[0])}, turns most of it back.** ")
     line = (lead
             + f"The move: {', then '.join(_action(lv) for lv in combo)} — in that order, {conf}.")

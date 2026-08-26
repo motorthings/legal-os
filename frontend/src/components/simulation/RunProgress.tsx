@@ -84,6 +84,16 @@ function splitReport(md: string): { lead: string; story: string; appendix: strin
   return { lead, story, appendix };
 }
 
+// Report markdown links to the run's own artifacts (metrics.csv, etc.). Those should resolve
+// to the API's file endpoint, not a 404'd relative path — shared by the full report and the
+// one-pager so both render their links the same way.
+function transformRunUrl(runId: string, url: string): string {
+  if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
+    return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
+  }
+  return url;
+}
+
 export default function RunProgress({ runId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -100,6 +110,10 @@ export default function RunProgress({ runId }: Props) {
   const [reconnecting, setReconnecting] = useState(false);
   const [optimizing, setOptimizing] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
+  // The 90-second decision doc (stage "decision_onepager"), toggled against the full report.
+  // `view` defaults to the one-pager once it's available; the user can switch back to "full".
+  const [onepager, setOnepager] = useState<string | null>(null);
+  const [view, setView] = useState<'onepager' | 'full'>('onepager');
   const [reportedPPP, setReportedPPP] = useState<number | null>(null);
   const [sprints, setSprints] = useState<number | null>(null);
   const [provider, setProvider] = useState<string | null>(null);
@@ -131,6 +145,18 @@ export default function RunProgress({ runId }: Props) {
   const reportRef = useRef<HTMLDivElement>(null);
 
   // Load every saved report for this run (baseline, lever optimization, scenario sims),
+  // The one-pager is a separate stored report (stage "decision_onepager"), served at its own
+  // endpoint. It appears only after the lever optimization runs, so this may 409 on a
+  // baseline-only run — that's handled: the toggle just doesn't show until it exists. Refreshed
+  // alongside the full reports so the decision page appears as soon as it's ready. Declared before
+  // loadReports, which depends on it.
+  const loadOnepager = useCallback(() => {
+    fetch(`${SIM_API_BASE}/runs/${runId}/onepager`)
+      .then((r) => (r.ok ? r.text() : Promise.reject()))
+      .then((md) => setOnepager(md))
+      .catch(() => setOnepager(null));
+  }, [runId]);
+
   // newest first. This is the source of truth for what's on screen — each stage is its own
   // saved report, so nothing clobbers anything.
   const loadReports = useCallback(() => {
@@ -141,7 +167,8 @@ export default function RunProgress({ runId }: Props) {
         if (rs.length > 0) setReport(rs[0].report_markdown);
       })
       .catch(() => {});
-  }, [runId]);
+    loadOnepager();
+  }, [runId, loadOnepager]);
 
   // Reconcile against the run's actual state on mount. The report used to be reachable
   // ONLY through a live `report_ready` event, so any missed event — a torn-down
@@ -397,16 +424,48 @@ export default function RunProgress({ runId }: Props) {
         <div className="mt-6" ref={reportRef}>
           <div className={`flex items-center justify-between mb-3 ${np}`}>
             <h2 className="text-xl font-bold text-[var(--text)]">Reports</h2>
-            <button
-              onClick={() => setHowOpen(true)}
-              className="flex items-center gap-1.5 text-[13px] text-[var(--text-dim)] hover:text-[var(--text)] cursor-pointer"
-            >
-              <HelpCircle className="w-4 h-4" />
-              How this works
-            </button>
+            <div className="flex items-center gap-3">
+              {onepager && (
+                <div className="flex rounded-lg border border-[var(--border)] overflow-hidden" role="tablist">
+                  <button
+                    role="tab"
+                    aria-selected={view === 'onepager'}
+                    onClick={() => setView('onepager')}
+                    className={`px-3 py-1 text-[12px] font-medium cursor-pointer transition-colors ${view === 'onepager' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-dim)] hover:text-[var(--text)] bg-[var(--surface2)]'}`}
+                  >
+                    One-pager
+                  </button>
+                  <button
+                    role="tab"
+                    aria-selected={view === 'full'}
+                    onClick={() => setView('full')}
+                    className={`px-3 py-1 text-[12px] font-medium cursor-pointer transition-colors ${view === 'full' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-dim)] hover:text-[var(--text)] bg-[var(--surface2)]'}`}
+                  >
+                    Full report
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={() => setHowOpen(true)}
+                className="flex items-center gap-1.5 text-[13px] text-[var(--text-dim)] hover:text-[var(--text)] cursor-pointer"
+              >
+                <HelpCircle className="w-4 h-4" />
+                How this works
+              </button>
+            </div>
           </div>
+          {onepager && view === 'onepager' ? (
+            <div className="report-body border border-[var(--border)] rounded-lg p-6">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                urlTransform={(url) => transformRunUrl(runId, url)}
+              >
+                {onepager}
+              </ReactMarkdown>
+            </div>
+          ) : (
           <div className="space-y-3">
-            {reports.map((r, i) => {
+            {reports.filter((r) => r.stage in STAGE_META).map((r, i) => {
               const meta = STAGE_META[r.stage];
               const { lead, story, appendix } = splitReport(r.report_markdown);
               const ref = r.payload?.best_ppp;
@@ -433,12 +492,7 @@ export default function RunProgress({ runId }: Props) {
                   <div className="report-body px-4 py-4">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
-                      urlTransform={(url) => {
-                        if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
-                          return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
-                        }
-                        return url;
-                      }}
+                      urlTransform={(url) => transformRunUrl(runId, url)}
                     >
                       {lead}
                     </ReactMarkdown>
@@ -450,12 +504,7 @@ export default function RunProgress({ runId }: Props) {
                     />
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
-                      urlTransform={(url) => {
-                        if (/^(metrics\.csv|decisions\.jsonl|trace\.jsonl|state\.json)$/.test(url)) {
-                          return `${SIM_API_BASE}/runs/${runId}/files/${url}`;
-                        }
-                        return url;
-                      }}
+                      urlTransform={(url) => transformRunUrl(runId, url)}
                     >
                       {story}
                     </ReactMarkdown>
@@ -511,6 +560,7 @@ export default function RunProgress({ runId }: Props) {
               );
             })}
           </div>
+          )}
 
           {finished && !optimizing && (
             <div className="no-print flex flex-wrap gap-3 mt-6">

@@ -245,7 +245,9 @@ async def _execute_run(run_id: str, db, bus) -> None:
         bus.publish(run_id, "status", {"status": "generating_report",
                                        "seeds_completed": completed, "total_seeds": row.total_seeds,
                                        "spend": cumulative})
-        report, render_inputs = await reportgen.generate_report(
+        # The one-pager is meaningful only after a lever optimization runs (a baseline has no
+        # recommendation yet), so the baseline stage ignores it; optimize_run stores it.
+        report, render_inputs, _onepager = await reportgen.generate_report(
             run_id, primary_dir, rc, cfg, mc,
             progress=lambda msg, done=None, total=None: bus.publish(
                 run_id, "progress", {"message": msg, "done": done, "total": total}),
@@ -313,7 +315,7 @@ async def optimize_run(run_id: str, db, bus) -> None:
 
     bus.publish(run_id, "progress", {"message": "regenerating the report with the recommendation"})
     model_variance = await db.load_model_variance(run_id)
-    report, render_inputs = await reportgen.generate_report(
+    report, render_inputs, onepager = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
@@ -328,6 +330,11 @@ async def optimize_run(run_id: str, db, bus) -> None:
     await db.insert_report(
         run_id, "lever_optimization", f"Lever Optimization · {_combo_label(combo)}",
         report_markdown=report, lever_set=combo, payload=opt, render_inputs=render_inputs)
+    # Stage 2b — the 90-second decision doc, stored alongside (same render_inputs) so it's served
+    # and regenerable independently of the full audit trail.
+    await db.insert_report(
+        run_id, "decision_onepager", "The decision · one page",
+        report_markdown=onepager, lever_set=combo, render_inputs=render_inputs)
 
     # Back-test: record the recommendation's headline claim as a falsifiable prediction
     # (point + band, bound to its inputs by the replay hash). A real outcome recorded later
@@ -399,7 +406,7 @@ async def scenario_run(run_id: str, db, bus) -> None:
     opt = {**base_opt, **overlay}
     model_variance = await db.load_model_variance(run_id)
     bus.publish(run_id, "progress", {"message": "writing the scenario report"})
-    report, render_inputs = await reportgen.generate_report(
+    report, render_inputs, onepager = await reportgen.generate_report(
         run_id, primary_dir, rc, cfg, mc,
         progress=lambda msg, done=None, total=None: bus.publish(
             run_id, "progress", {"message": msg, "done": done, "total": total}),
@@ -408,6 +415,10 @@ async def scenario_run(run_id: str, db, bus) -> None:
         prior=prior, model_variance=model_variance,
         fallback_metrics=_report_metrics(await db.load_metrics(run_id) or {}),
     )
+    # A scenario re-roll refreshes the band, so the decision page's prediction updates too.
+    await db.insert_report(
+        run_id, "decision_onepager", "The decision · one page",
+        report_markdown=onepager, lever_set=combo, render_inputs=render_inputs)
     mc_seeds = overlay.get("mc_seeds")
     title = f"Scenario Simulation · {_combo_label(combo)}" + (
         f" · {mc_seeds} scenarios" if mc_seeds else "")

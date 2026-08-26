@@ -205,6 +205,18 @@ class SimulationConfig:
     decision_latency_sprints: int = 2           # latency lever: observe->act speed -> adoption ramp
     seam_gap_profile: Optional[str] = None      # CONTEXT: which seams start gappy (tacit/codifiable/mixed)
     codify_seams: bool = False                  # seams lever (intervention): invest to codify tacit seams over the run
+    # --- Phasing (the "when" search) ---
+    # lever -> 1-indexed start sprint. A lever with no entry starts at quarter 1 (from the
+    # start), which is the pre-phasing behavior. The timing search sets these to find WHEN
+    # each change pays, and `_lever_active` gates each lever so it holds the firm at its
+    # pre-change state until its start quarter. See the timing search in optimize.py.
+    lever_start_sprints: dict = field(default_factory=dict)
+    # The firm's PRE-CHANGE posture for the levers that rewrite a signature field (pricing,
+    # leverage). build_overrides captures these BEFORE applying the lever target, so a phased
+    # lever holds the firm at its starting state (e.g. hourly billing, leverage 3.5) until it
+    # activates rather than snapping to the target from quarter 1.
+    pre_lever_pricing: str = "hourly"
+    pre_lever_leverage: float = 3.5
     # Transfer-function coefficients (how strongly levers move the numbers). Defaults
     # reproduce the prior hardcoded literals exactly; vary for sensitivity bands or set
     # from firm calibration. See src/models/elasticities.py.
@@ -330,12 +342,23 @@ class Orchestrator:
 
     # --- run loop ---
 
+    def _lever_active(self, lever: str, sprint: int) -> bool:
+        """Is this lever active at `sprint`? A lever pulled from the start (no phasing entry)
+        is always on; a phased lever turns on at its start quarter and the engine holds the
+        firm at its pre-change state until then. Levers the firm isn't pulling at all are
+        handled by their config being off, not by this gate."""
+        return sprint >= self.config.lever_start_sprints.get(lever, 1)
+
     def _adoption_rate(self, sprint: int) -> float:
         """The firm's AI adoption rate this sprint. Ramps toward a ceiling set by the
         comp lever (partners adopt when compensated); the comp model and latency levers
         modulate how effective and how fast."""
         sig = self.config.firm_signature or FirmSignature()
         comp = self.config.comp_lever_strength
+        # Phasing: before the comp lever activates there is no adoption incentive, so hold at
+        # the search's own "not pulled" state (zero) rather than the target strength.
+        if not self._lever_active("comp", sprint):
+            comp = 0.0
         # comp model: lockstep = collective action (comp bites harder); eat-what-you-kill =
         # individual books (partners resist, comp is blunted); modified in between.
         comp_mult = {"lockstep": 1.2, "modified": 1.0, "eat_what_you_kill": 0.8}[sig.comp_model]
@@ -351,6 +374,10 @@ class Orchestrator:
         ceiling = min(0.95, max(sig.culture.partner_ai_usage,
                                 0.30 + el.get("adoption_comp_gain") * comp * comp_mult * rainmaker_resistance))
         latency = self.config.decision_latency_sprints
+        # Phasing: before the latency lever activates, the observe->act loop is still slow
+        # (the search's own "not pulled" state), so adoption ramps slowly.
+        if not self._lever_active("latency", sprint):
+            latency = 5
         ramp = max(1, 3 + 4 * latency)                     # sprints to reach the ceiling
         return ceiling * min(1.0, sprint / ramp)
 
@@ -398,8 +425,11 @@ class Orchestrator:
                                   "active_events": [e.name for e, _ in world_state.active_events]})
 
             adoption_rate = self._adoption_rate(sprint)
-            # seams lever (intervention): progressively codify gappy tacit seams.
-            if self.config.codify_seams:
+            # seams lever (intervention): progressively codify gappy tacit seams. Phasing:
+            # only codify once the seams lever has activated — a delayed start codifies fewer
+            # hand-offs within the horizon (one every 3 quarters), which is the trade the
+            # timing search is pricing.
+            if self.config.codify_seams and self._lever_active("seams", sprint):
                 self._codify_seams(sprint)
             batch = self._generate_matter_batch(sprint)
             log = await self._process_matter_batch(
@@ -705,11 +735,19 @@ class Orchestrator:
         exc_rate_pct = max(0.0, exc_rate_pct - sig.culture.escalation_design * 10.0)
 
         el = self.config.elasticities or default_profile()
+        # Effective pricing THIS sprint. The signature carries the lever TARGET (afa_native),
+        # but a phased pricing lever holds the firm at its pre-change posture until its start
+        # quarter — so the margin/realization sign of an AI-saved hour flips when the lever
+        # actually lands, not from quarter 1.
+        pm = company.pricing_model
+        if not self._lever_active("pricing", sprint):
+            pm = {"hourly": "hourly", "partial_afa": "hourly", "afa_native": "fixed_fee"}[
+                self.config.pre_lever_pricing]
         realization = base_realization - exc_rate_pct * el.get("realization_exception_penalty") - debt_pct * 0.3
         if company.absorb_vs_pass == "pass":
             realization -= 6.0
         # client AFA pressure: stay hourly while clients demand AFA -> realization leaks.
-        if company.pricing_model == "hourly":
+        if pm == "hourly":
             realization -= sig.client_afa_pressure * el.get("realization_afa_leak")
         # Floor at 55% — a firm under maximum debt + rate pressure genuinely collects ~55%.
         # (Was 64, which sat above the raw value and masked the Tier-1 inputs.)
@@ -720,19 +758,24 @@ class Orchestrator:
         # Centered at the archetype (0.35) so the default firm's margin is unchanged. [SURVEY]
         ptx = max(0.0, min(1.0, sig.practice_mix_transactional))
         margin = base_margin - redline_pct * el.get("margin_redline_penalty") - exc_rate_pct * el.get("margin_exception_penalty")
-        if company.pricing_model == "fixed_fee":
+        if pm == "fixed_fee":
             margin += ai_pct * el.get("margin_ai_afa_gain") * (1.0 + 0.3 * (ptx - 0.35))
-        elif company.pricing_model == "hourly":
+        elif pm == "hourly":
             margin -= ai_pct * el.get("margin_ai_hourly_drag") * (1.0 - 0.6 * (ptx - 0.35))
         # codification investment: the seams lever costs KM staff + precedent-library build [ASSUMPTION].
-        if self.config.codify_seams:
+        # Phasing: the investment is only paid while the seams lever is active — a delayed start
+        # defers the cost (and the codification benefit) together.
+        if self.config.codify_seams and self._lever_active("seams", sprint):
             margin -= 1.0
         margin = max(5.0, margin)
 
         # Leverage lever: a steeper pyramid (higher leverage_target) means MORE juniors per
         # partner, so AI's hour-compression cuts utilization harder. Scale the AI cut by the
-        # leverage ratio relative to the archetype baseline (~3.5).
+        # leverage ratio relative to the archetype baseline (~3.5). Phasing: before the leverage
+        # lever activates, hold at the firm's pre-change ratio rather than the 5.0 target.
         leverage = getattr(company, "leverage_target", 3.5)
+        if not self._lever_active("leverage", sprint):
+            leverage = self.config.pre_lever_leverage
         utilization_cut = ai_pct * el.get("utilization_ai_cut") * (leverage / 3.5)
         util_baseline = METRICS["utilization"].baseline
         utilization = max(0.0, util_baseline - utilization_cut)
