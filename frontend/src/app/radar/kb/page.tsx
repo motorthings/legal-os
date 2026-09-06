@@ -129,7 +129,7 @@ export default function RadarKbPage() {
                 </p>
               )}
               {it.why && (
-                <p className="text-[12px] text-[var(--text-muted)] leading-relaxed mb-2.5">
+                <p className="text-[13px] text-[var(--text)] leading-relaxed mb-2">
                   <b className="text-[var(--text-strong)]">Why it&rsquo;s in the KB.</b> {it.why}
                 </p>
               )}
