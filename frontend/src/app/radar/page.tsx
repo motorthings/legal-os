@@ -76,13 +76,13 @@ function Meter({ label, value, seed, hint }: { label: string; value: number; see
   return (
     <div className="flex-1 min-w-[110px]">
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" title={hint}>{label}</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" title={hint}>{label}</span>
         <span className="text-sm font-bold tabular-nums" style={{ color: meterColor(value), fontFamily: "'Fraunces', serif" }}>{value.toFixed(1)}</span>
       </div>
       <div className="h-1.5 rounded-full bg-[var(--surface2)] overflow-hidden">
         <div className="h-full rounded-full" style={{ width: `${value * 10}%`, backgroundColor: meterColor(value) }} />
       </div>
-      <span className="text-[9px] text-[var(--text-muted)] font-mono">seed {seed}</span>
+      <span className="text-xs text-[var(--text-muted)] font-mono">seed {seed}</span>
     </div>
   );
 }
@@ -227,8 +227,8 @@ export default function RadarPage() {
                   {isOpen ? <ChevronDown className="w-4 h-4 mt-0.5 text-[var(--text-muted)]" /> : <ChevronRight className="w-4 h-4 mt-0.5 text-[var(--text-muted)]" />}
                   <div>
                     <p className="text-sm font-semibold text-[var(--text)] leading-tight" style={{ fontFamily: "'Fraunces', serif" }}>{fl.title}</p>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{fl.control}</p>
-                    <p className="text-[10px] text-[var(--text-muted)] mt-1 flex items-center gap-2">{trendGlyph(fl.trend)} · {fl.horizon}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">{fl.control}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-2">{trendGlyph(fl.trend)} · {fl.horizon}</p>
                   </div>
                 </div>
                 <div className="flex gap-4 flex-1">
@@ -237,9 +237,9 @@ export default function RadarPage() {
                   <Meter label="L3 adopt" value={fl.adoption} seed={fl.adoption_seed} hint="Is the control becoming table stakes?" />
                 </div>
                 <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-0.5 md:w-24 flex-shrink-0">
-                  <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">Queue</span>
+                  <span className="text-xs uppercase tracking-wider text-[var(--text-muted)]">Queue</span>
                   <span className="text-2xl font-bold tabular-nums" style={{ color: meterColor(fl.queue), fontFamily: "'Fraunces', serif" }}>{fl.queue.toFixed(1)}</span>
-                  <span className="text-[10px] text-[var(--text-muted)] font-mono">lead: {fl.lead}</span>
+                  <span className="text-xs text-[var(--text-muted)] font-mono">lead: {fl.lead}</span>
                 </div>
               </button>
 
@@ -248,7 +248,7 @@ export default function RadarPage() {
                   <p className="mt-3 text-[var(--text-dim)]"><b className="text-[var(--text)]">Fault line:</b> {fl.vector}</p>
                   <p className="mt-1 text-[var(--text-dim)]"><b className="text-[var(--text)]">Driver:</b> {fl.tech_driver}</p>
                   <p className="mt-1 text-[var(--metric)]"><b>Build now:</b> {fl.build_now}</p>
-                  <p className="mt-1 text-[11px] text-[var(--text-muted)] font-mono">Model Rules: {fl.model_rules.join(' · ')}</p>
+                  <p className="mt-1 text-xs text-[var(--text-muted)] font-mono">Model Rules: {fl.model_rules.join(' · ')}</p>
 
                   <EvidenceBlock title={`L1 capability evidence — weighted low, labeled (not a ruling) · ${fl.n_capability_evidence}`}
                     rows={fl.capability_evidence.map((e) => ({ date: e.date, tag: e.capability, title: e.title, weight: e.weight, empirical: e.empirical }))}
@@ -302,7 +302,7 @@ export default function RadarPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[11px] text-[var(--text-muted)] mt-2">
+          <p className="text-xs text-[var(--text-muted)] mt-2">
             Point-in-time backtest: the engine replays itself {cal.lead_days} days before each event on the evidence available then. Misses are kept honest, not tuned away — the two L1 misses are first-of-kind capabilities with no precursor to call from.
           </p>
         </div>
@@ -350,7 +350,7 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
           <ul className="space-y-1 list-disc pl-4 mb-2">
             {buildNow.slice(0, 3).map((f) => (<li key={f.id}>{f.vector}</li>))}
             {buildNow.length > 3 && (
-              <li>Another {buildNow.length - 3} control{buildNow.length - 3 > 1 ? 's are' : ' is'} crossing the same line.</li>
+              <li>Another {buildNow.length - 3} control{buildNow.length - 3 > 1 ? 's are' : ' is'} in the same corner — the law is moving on {buildNow.length - 3 > 1 ? 'them' : 'it'} and the market is standardizing the fix at the same time. They&apos;re listed in full below.</li>
             )}
           </ul>
           <p>The pattern repeats: an AI capability is outrunning a duty you already owe, and the market is standardizing the fix before the rule is written.</p>
@@ -370,12 +370,12 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-base font-semibold text-[var(--text)]" style={{ fontFamily: "'Fraunces', serif" }}>{f.control}</span>
-                  <span className="text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-full" style={{ backgroundColor: leadColor(f.lead), color: '#fff' }}>{leadLabel(f.lead)}</span>
+                  <span className="text-xs font-mono uppercase tracking-wide px-2 py-0.5 rounded-full" style={{ backgroundColor: leadColor(f.lead), color: '#fff' }}>{leadLabel(f.lead)}</span>
                 </div>
                 <p className="text-xs text-[var(--text-dim)]"><b className="text-[var(--text)]">What to put in place:</b> {f.build_now}</p>
                 <p className="text-xs text-[var(--text-dim)]"><b className="text-[var(--text)]">Why now:</b> {f.vector} {f.tech_driver}</p>
                 <button onClick={() => onPick(f.id)}
-                  className="text-[11px] underline decoration-dotted underline-offset-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+                  className="text-xs underline decoration-dotted underline-offset-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
                   see the evidence →
                 </button>
               </div>
@@ -478,15 +478,15 @@ function RadarMap({ fls, threshold, onPick }: {
         {ranked.map((fl) => (
           <button key={fl.id} onClick={() => onPick(fl.id)}
             className="w-full flex items-center gap-3 text-left py-2.5 px-1 border-b border-[var(--border)]/50 hover:bg-[var(--surface2)] transition-colors">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold flex-shrink-0"
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold flex-shrink-0"
               style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{rank.get(fl.id)}</span>
             <span className="text-sm font-semibold text-[var(--text)] w-48 flex-shrink-0 truncate" style={{ fontFamily: "'Fraunces', serif" }}>{fl.title}</span>
             <span className="text-xs text-[var(--text-dim)] flex-1 min-w-0">{fl.vector}</span>
-            <span className="hidden md:inline font-mono text-[10px] text-[var(--text-muted)] flex-shrink-0 whitespace-nowrap">
+            <span className="hidden md:inline font-mono text-xs text-[var(--text-muted)] flex-shrink-0 whitespace-nowrap">
               cap {fl.capability.toFixed(1)} · rule {fl.pressure.toFixed(1)} · adopt {fl.adoption.toFixed(1)}
             </span>
             <span className="font-mono text-xs font-bold flex-shrink-0 w-16 text-right" style={{ color: meterColor(fl.queue) }}>Q {fl.queue.toFixed(1)}</span>
-            <span className="hidden sm:inline text-[10px] font-mono uppercase px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{leadLabel(fl.lead)}</span>
+            <span className="hidden sm:inline text-xs font-mono uppercase px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{leadLabel(fl.lead)}</span>
           </button>
         ))}
       </div>
@@ -499,21 +499,21 @@ interface Row { date: string; tag: string; title: string; weight: number; empiri
 function EvidenceBlock({ title, rows, empty }: { title: string; rows: Row[]; empty: string }) {
   return (
     <div className="mt-4">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">{title}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">{title}</p>
       <div className="rounded-lg border border-[var(--border)] overflow-hidden">
         {rows.length === 0 ? (
-          <p className="px-3 py-2 text-[11px] text-[var(--text-muted)] italic">{empty}</p>
+          <p className="px-3 py-2 text-xs text-[var(--text-muted)] italic">{empty}</p>
         ) : (
           rows.map((r, i) => (
             <div key={i} className="flex items-start gap-3 px-3 py-2 border-b border-[var(--border)]/40 last:border-0">
-              <span className="font-mono text-[10px] text-[var(--text-muted)] whitespace-nowrap w-20 flex-shrink-0">{r.date}</span>
-              <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-[var(--surface2)] text-[var(--text-dim)] whitespace-nowrap flex-shrink-0">{r.tag}</span>
-              <span className="text-[11px] text-[var(--text-dim)] flex-1">
+              <span className="font-mono text-xs text-[var(--text-muted)] whitespace-nowrap w-20 flex-shrink-0">{r.date}</span>
+              <span className="text-xs font-mono uppercase px-1.5 py-0.5 rounded bg-[var(--surface2)] text-[var(--text-dim)] whitespace-nowrap flex-shrink-0">{r.tag}</span>
+              <span className="text-xs text-[var(--text-dim)] flex-1">
                 {r.title}
-                {r.empirical && <span className="ml-1 text-[9px] text-[var(--metric)]">data</span>}
-                {r.conflict && <span className="ml-1 text-[9px] text-[var(--rose)]">conflict</span>}
-                {r.source && <span className="block text-[9px] text-[var(--text-muted)]">{r.source} · w={r.weight}</span>}
-                {!r.source && <span className="ml-1 text-[9px] text-[var(--text-muted)]">w={r.weight}</span>}
+                {r.empirical && <span className="ml-1 text-xs text-[var(--metric)]">data</span>}
+                {r.conflict && <span className="ml-1 text-xs text-[var(--rose)]">conflict</span>}
+                {r.source && <span className="block text-xs text-[var(--text-muted)]">{r.source} · w={r.weight}</span>}
+                {!r.source && <span className="ml-1 text-xs text-[var(--text-muted)]">w={r.weight}</span>}
               </span>
             </div>
           ))
