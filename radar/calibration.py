@@ -39,6 +39,8 @@ def _knobs():
         "corroboration_step": K.CORROBORATION_STEP,
         "half_life_days": K.HALF_LIFE_DAYS,
         "standing_tiers": sorted(K.STANDING_TIERS),
+        "market_weights": K.MARKET_WEIGHTS,
+        "adoption_seeds": K.ADOPTION_SEEDS,
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
     }
@@ -55,37 +57,69 @@ def load_resolutions():
     return out
 
 
-def _pressure_for(fault_id, as_of):
+# Which meter each order reads. L1 (capability) is the backlog lane — no resolutions yet.
+_METER = {2: "pressure", 3: "adoption"}
+
+
+def _reading_for(fault_id, as_of, order):
+    """Return (value, evidence_count) for the meter that this order predicts."""
     data = score(as_of=as_of)
+    meter = _METER.get(order, "pressure")
+    ev_key = "n_evidence" if meter == "pressure" else "n_adoption_evidence"
     for fl in data["fault_lines"]:
         if fl["id"] == fault_id:
-            return fl["pressure"], fl["trend"], fl["n_evidence"]
-    return None, None, 0
+            return fl.get(meter), fl.get(ev_key, 0)
+    return None, 0
 
 
 def backtest(feed=None):
-    """Replay the engine before each resolution landed. Returns results + hit rate."""
+    """Replay the engine before each resolution landed, reading the meter for that
+    resolution's ORDER. Reports hit rate overall, per order, and the cascade
+    (L3 calls that rest on a called L2 for the same fault line)."""
     results = []
     for r in load_resolutions():
+        order = r.get("order", 2)
         d = _parse_date(r["date"])
         lead_date = d - timedelta(days=LEAD_DAYS)
-        p_lead, trend_lead, n_lead = _pressure_for(r["fault_line"], lead_date.isoformat())
-        p_event, _, _ = _pressure_for(r["fault_line"], r["date"])
-        called = p_lead is not None and p_lead >= CALL_THRESHOLD
+        v_lead, n_lead = _reading_for(r["fault_line"], lead_date.isoformat(), order)
+        v_event, _ = _reading_for(r["fault_line"], r["date"], order)
+        called = v_lead is not None and v_lead >= CALL_THRESHOLD
         results.append({
-            "date": r["date"], "fault_line": r["fault_line"], "title": r["title"],
-            "url": r.get("url", ""),
-            "pressure_at_lead": p_lead, "trend_at_lead": trend_lead, "evidence_at_lead": n_lead,
-            "pressure_at_event": p_event,
+            "date": r["date"], "order": order, "fault_line": r["fault_line"],
+            "title": r["title"], "url": r.get("url", ""),
+            "meter": _METER.get(order, "pressure"),
+            "reading_at_lead": v_lead, "evidence_at_lead": n_lead,
+            "reading_at_event": v_event,
             "lead_days": LEAD_DAYS, "called": called,
         })
-    n = len(results)
-    hits = sum(1 for x in results if x["called"])
+
+    def _rate(rows):
+        n = len(rows); h = sum(1 for x in rows if x["called"])
+        return {"n": n, "hits": h, "hit_rate": round(h / n, 2) if n else None}
+
+    by_order = {o: _rate([x for x in results if x["order"] == o])
+                for o in sorted({x["order"] for x in results})}
+
+    # Cascade: an L3 call only means something if the L2 it sits on held. For each
+    # called L3, check the same fault line has a called L2. Each layer depends on the last.
+    called_l2 = {x["fault_line"] for x in results if x["order"] == 2 and x["called"]}
+    l3 = [x for x in results if x["order"] == 3]
+    l3_called = [x for x in l3 if x["called"]]
+    l3_backed = [x for x in l3_called if x["fault_line"] in called_l2]
+    cascade = {
+        "n_l3_called": len(l3_called),
+        "n_l3_backed_by_l2": len(l3_backed),
+        "backed_rate": round(len(l3_backed) / len(l3_called), 2) if l3_called else None,
+    }
+
+    overall = _rate(results)
     return {
         "resolutions": results,
-        "n_resolutions": n,
-        "hits": hits,
-        "hit_rate": round(hits / n, 2) if n else None,
+        "n_resolutions": overall["n"],
+        "hits": overall["hits"],
+        "hit_rate": overall["hit_rate"],
+        "by_order": by_order,
+        "cascade": cascade,
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
     }
@@ -102,6 +136,8 @@ def snapshot(data):
     existing.append({
         "as_of": as_of,
         "pressures": {fl["id"]: fl["pressure"] for fl in data["fault_lines"]},
+        "adoption": {fl["id"]: fl["adoption"] for fl in data["fault_lines"]},
+        "queue": {fl["id"]: fl["queue"] for fl in data["fault_lines"]},
         "trends": {fl["id"]: fl["trend"] for fl in data["fault_lines"]},
     })
     existing.sort(key=lambda e: e["as_of"])
@@ -139,9 +175,13 @@ def report():
 
 if __name__ == "__main__":
     rep = report()
-    print(f"Hit rate: {rep['hit_rate']} ({rep['hits']}/{rep['n_resolutions']}) "
+    print(f"Overall: {rep['hit_rate']} ({rep['hits']}/{rep['n_resolutions']}) "
           f"@ threshold {rep['call_threshold']}, {rep['lead_days']}d lead")
+    for o, s in rep["by_order"].items():
+        print(f"  L{o} ({K.ORDERS[o]['name']}): {s['hit_rate']} ({s['hits']}/{s['n']})")
+    c = rep["cascade"]
+    print(f"  Cascade: {c['n_l3_backed_by_l2']}/{c['n_l3_called']} L3 calls backed by a called L2")
     for r in rep["resolutions"]:
         mark = "HIT " if r["called"] else "miss"
-        print(f'  {mark} {r["date"]} {r["fault_line"]:<18} '
-              f'lead={r["pressure_at_lead"]} event={r["pressure_at_event"]}  {r["title"]}')
+        print(f'  {mark} L{r["order"]} {r["date"]} {r["fault_line"]:<14} '
+              f'lead={r["reading_at_lead"]} event={r["reading_at_event"]}  {r["title"]}')

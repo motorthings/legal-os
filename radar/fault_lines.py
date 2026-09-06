@@ -34,6 +34,72 @@ STANDING_TIERS = {"T1", "T2"}   # never decays out of the evidence base
 # NOTE: source-reliability (a source earning weight above its tier floor by a proven
 # track record) is a BACKLOG item, not v1. v1 weights are tier-flat.
 
+# --- Three orders of prediction ---------------------------------------------
+# The engine forecasts a CASCADE. Each order depends on the one before it, so we
+# track calibration at each level separately AND conditionally:
+#   L1  Capability / behavior  — AI can now do X in legal work (agentic autonomy,
+#       error rates). This is what CREATES a fault line. (capability lane, backlog #3)
+#   L2  The ruling reacts      — a court/bar/statute moves on that behavior. (the
+#       ruling-pressure meter, shipped.)
+#   L3  The market adopts       — the control becomes table stakes, court or no court.
+#       (the control-adoption meter, below. This is where Harbor lives.)
+# Getting L1 right is necessary but not sufficient: an L3 call is only meaningful if
+# the L2 it rests on held. Calibration reports hit-rate per order and L3-given-L2.
+ORDERS = {
+    1: {"name": "Capability", "q": "Can AI now do the thing that creates the fault line?"},
+    2: {"name": "Ruling",     "q": "Will a court, bar, or statute move on it?"},
+    3: {"name": "Adoption",   "q": "Is the control becoming table stakes?"},
+}
+
+# --- Third-order layer: control-adoption pressure ---------------------------
+# Third-order evidence is a DIFFERENT object than a ruling, so it is weighted by how
+# binding it is ON THE MARKET, not on a court. An insurer changing a renewal form
+# gates money and moves everyone; a pundit's "future of the firm" essay moves nobody.
+# Feed items carrying a `market` class are the adoption evidence; everything else is
+# second-order only. Kept in a separate, clearly-labeled lane so inference never
+# masquerades as a ruling (same discipline as the capability lane, backlog #3).
+MARKET_WEIGHTS = {
+    "insurer": 1.00,          # carriers price the risk — the real market regulator
+    "procurement": 0.85,      # client/RFP attestation requirements
+    "deployment": 0.70,       # Big Law / MSP adoption data (a control going live at scale)
+    "cert": 0.60,             # certification / benchmark standards emerging
+    "process_mandate": 0.55,  # a rule or opinion mandating a *process* control, not just a duty
+    "commentary": 0.20,       # trade press noting the trend
+    "pundit": 0.02,           # speculation. narrative signal only.
+}
+
+# The control each fault line maps to: the operating-model move that neutralizes it.
+# (Short label; the long form lives in each fault line's `build_now`.)
+CONTROLS = {
+    "insurance":          "Governance as an insurable artifact",
+    "disclosure":         "Verification-by-default with an audit trail",
+    "verification":       "Documented verification + trace logs",
+    "agentic":            "Human-decides gates + scope-limiting",
+    "confidentiality":    "Data-flow mapping + vendor attestation",
+    "benchmark":          "Tool-certification benchmark (NERVE)",
+    "competence":         "Firm-wide training + governance program",
+    "fees":               "Value-delivered measurement",
+    "vendor_liability":   "Tool-provenance documentation",
+    "judicial_analytics": "Guardrailed strategy sim (no actor prediction)",
+    "convergence":        "One operating model, to the strictest standard",
+}
+
+# Adoption seed (0-10): how far the market has already moved toward the control being
+# table stakes, before this run's evidence. The evidence then moves it, same as pressure.
+ADOPTION_SEEDS = {
+    "insurance": 7.5, "disclosure": 7.0, "verification": 6.5, "convergence": 7.0,
+    "confidentiality": 6.0, "benchmark": 5.5, "competence": 5.5, "agentic": 5.0,
+    "fees": 3.0, "judicial_analytics": 3.0, "vendor_liability": 2.5,
+}
+
+# Lead time to stand a control up, derived from the fault line's horizon.
+# "now" = you needed this yesterday; the intersection with high pressure is the alarm.
+LEAD_BY_HORIZON = {
+    "near (0-12mo)": "now", "near": "now", "near-mid": "~2 quarters",
+    "mid (1-3yr)": "~1 year", "mid": "~1 year", "mid-far": "~1-2 years",
+    "far (3yr+)": "later",
+}
+
 # --- The fault lines --------------------------------------------------------
 # `signals` are lowercase substrings used to match incoming items deterministically.
 # `pressure_seed` (0-10) and `horizon`/`layer` come from the analyst thesis and are

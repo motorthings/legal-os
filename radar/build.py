@@ -47,46 +47,90 @@ def render(data):
             for e in r["evidence"]
         ) or '<tr><td colspan="3" class="src">No evidence yet — seed thesis only.</td></tr>'
 
+        adopt_rows = "".join(
+            f'<tr><td class="d">{_esc(e["date"])}</td>'
+            f'<td><span class="mkt">{_esc(e["market"])}</span></td>'
+            f'<td>{_esc(e["title"])}<div class="src">w={e["weight"]}</div></td></tr>'
+            for e in r["adoption_evidence"]
+        ) or '<tr><td colspan="3" class="src">No market-adoption signal yet — seed only.</td></tr>'
+
         rules = " · ".join(_esc(m) for m in r["model_rules"])
         rows.append(f"""
         <details class="fl">
           <summary>
             <span class="p" style="background:{_pressure_color(r['pressure'])}">{r['pressure']}</span>
+            <span class="p a" style="background:{_pressure_color(r['adoption'])}">{r['adoption']}</span>
             <span class="t">{_esc(r['title'])}</span>
             <span class="meta">{_trend_glyph(r['trend'])} · {_esc(r['horizon'])} · {_esc(r['layer'])}</span>
           </summary>
           <div class="body">
             <p class="vec"><b>Fault line:</b> {_esc(r['vector'])}</p>
             <p class="vec"><b>Driver:</b> {_esc(r['tech_driver'])}</p>
-            <p class="vec build"><b>Build now:</b> {_esc(r['build_now'])}</p>
-            <p class="vec small">Model Rules: {rules} &nbsp;|&nbsp; seed {r['pressure_seed']} → {r['pressure']}
-               &nbsp;|&nbsp; weighted evidence {r['weighted_evidence']} &nbsp;|&nbsp;
-               corroboration +{r['corroboration']} &nbsp;|&nbsp; {r['n_evidence']} items</p>
-            <table class="ev"><thead><tr><th>Date</th><th>Tier</th><th>Evidence (provenance)</th></tr></thead>
+            <p class="vec build"><b>Control (build now):</b> {_esc(r['control'])} — {_esc(r['build_now'])}</p>
+            <p class="vec small">Model Rules: {rules}
+               &nbsp;|&nbsp; <b>L2 ruling</b> seed {r['pressure_seed']} → {r['pressure']} ({r['n_evidence']} items, w={r['weighted_evidence']})
+               &nbsp;|&nbsp; <b>L3 adoption</b> seed {r['adoption_seed']} → {r['adoption']} ({r['n_adoption_evidence']} signals, w={r['adoption_weighted']})
+               &nbsp;|&nbsp; <b>queue</b> {r['queue']} · lead {_esc(r['lead'])}</p>
+            <table class="ev"><thead><tr><th>Date</th><th>Tier</th><th>L2 ruling evidence (provenance)</th></tr></thead>
               <tbody>{ev_rows}</tbody></table>
+            <table class="ev"><thead><tr><th>Date</th><th>Market</th><th>L3 adoption signal</th></tr></thead>
+              <tbody>{adopt_rows}</tbody></table>
           </div>
         </details>""")
+
+    # --- Operating-model queue: the intersection, sorted by both meters high ---
+    q_sorted = sorted(fls, key=lambda r: r["queue"], reverse=True)
+    q_rows = "".join(
+        f'<tr><td>{_esc(r["control"])}</td>'
+        f'<td class="c">{r["pressure"]}</td><td class="c">{r["adoption"]}</td>'
+        f'<td class="c"><b>{r["queue"]}</b></td><td class="c">{_esc(r["lead"])}</td>'
+        f'<td class="src">{_esc(r["title"])}</td></tr>'
+        for r in q_sorted if r["queue"] > 0
+    )
+    queue_panel = f"""
+    <div class="cal queue">
+      <h2>Operating-model queue <span class="meta">where to build before it's mandatory</span></h2>
+      <p class="small">Two meters per fault line. <b>L2 ruling</b> = will the law move here.
+        <b>L3 adoption</b> = is the control becoming table stakes, court or no court, weighted by how
+        binding the signal is on the market (an insurer changing a renewal form &gt; a pundit essay).
+        <b>Queue</b> is the intersection: both high means the control is urgent <i>and</i> about to be
+        mandatory. That's the third order, where the practice-building work lives.</p>
+      <table class="ev"><thead><tr><th>Control</th><th>L2 rule</th><th>L3 adopt</th>
+        <th>Queue</th><th>Lead</th><th>Fault line</th></tr></thead>
+      <tbody>{q_rows}</tbody></table>
+    </div>"""
 
     cal = calibration.report()
     cal_rows = "".join(
         f'<tr><td class="d">{_esc(r["date"])}</td>'
+        f'<td class="c">L{r["order"]}</td>'
         f'<td>{"<span class=\'hit\'>called</span>" if r["called"] else "<span class=\'miss\'>missed</span>"}</td>'
         f'<td>{_esc(r["fault_line"])}</td>'
-        f'<td>{r["pressure_at_lead"]} → {r["pressure_at_event"]}</td>'
+        f'<td class="c">{r["reading_at_lead"]} → {r["reading_at_event"]}</td>'
         f'<td>{_esc(r["title"])}</td></tr>'
         for r in cal["resolutions"]
-    ) or '<tr><td colspan="5" class="src">No resolutions recorded yet.</td></tr>'
+    ) or '<tr><td colspan="6" class="src">No resolutions recorded yet.</td></tr>'
     hr = "n/a" if cal["hit_rate"] is None else f'{int(cal["hit_rate"]*100)}%'
+    order_line = " &nbsp;·&nbsp; ".join(
+        f'L{o} {calibration.K.ORDERS[o]["name"]} <b>'
+        f'{"n/a" if s["hit_rate"] is None else str(int(s["hit_rate"]*100))+"%"}</b> ({s["hits"]}/{s["n"]})'
+        for o, s in cal["by_order"].items()
+    )
+    csc = cal["cascade"]
     cal_panel = f"""
     <div class="cal">
-      <h2>Calibration <span class="meta">grading the engine, not asserting the future</span></h2>
-      <p class="small">Point-in-time backtest: replay the engine {cal['lead_days']} days before each
-        ruling landed, using only evidence available then. "Called" = the right fault line was already
-        at pressure &ge; {cal['call_threshold']}. Hit rate <b>{hr}</b>
-        ({cal['hits']}/{cal['n_resolutions']}) · {cal['snapshots_recorded']} snapshots on record.
-        Seed set is small; this is the honest track record so far, and it grows every run.</p>
-      <table class="ev"><thead><tr><th>Landed</th><th>Result</th><th>Fault line</th>
-        <th>Pressure (lead→event)</th><th>Resolution</th></tr></thead>
+      <h2>Calibration <span class="meta">grading the engine across three orders, not asserting the future</span></h2>
+      <p class="small">The engine forecasts a cascade: <b>L1 capability</b> (AI can now do it) →
+        <b>L2 ruling</b> (a court/bar moves) → <b>L3 adoption</b> (the control becomes table stakes).
+        Each order depends on the one before it. Point-in-time backtest: replay the engine
+        {cal['lead_days']} days before each event, using only evidence available then; "called" = the
+        right meter was already &ge; {cal['call_threshold']}. Overall <b>{hr}</b>
+        ({cal['hits']}/{cal['n_resolutions']}) · {cal['snapshots_recorded']} snapshots on record.</p>
+      <p class="small">By order: {order_line}. &nbsp; Cascade: <b>{csc['n_l3_backed_by_l2']}/{csc['n_l3_called']}</b>
+        L3 calls rest on a called L2 (an adoption call only counts if the ruling it depends on held).
+        Seed set is small and L1 has no resolutions yet; this is the honest record so far.</p>
+      <table class="ev"><thead><tr><th>Landed</th><th>Order</th><th>Result</th><th>Fault line</th>
+        <th>Reading (lead→event)</th><th>Resolution</th></tr></thead>
       <tbody>{cal_rows}</tbody></table>
     </div>"""
 
@@ -143,13 +187,18 @@ def render(data):
   .cal .small {{ color:var(--dim); font-size:.78rem; margin:.3rem 0 .7rem; }}
   .hit {{ color:#8fd3b0; font-weight:700; }}
   .miss {{ color:#e0a0a0; font-weight:700; }}
+  .p.a {{ background:transparent !important; color:#8fd3b0; border:1px solid #2a4a3a; }}
+  .mkt {{ font-size:.66rem; background:#1f3326; color:#8fd3b0; border-radius:4px; padding:.05rem .35rem; text-transform:uppercase; letter-spacing:.03em; }}
+  td.c {{ text-align:center; white-space:nowrap; color:var(--dim); }}
+  .queue table.ev td {{ vertical-align:middle; }}
 </style></head>
 <body><div class="wrap">
   <h1>Legal-AI Fault-Line Radar</h1>
-  <p class="sub">Forecasting where the next rulings land, weighted by source authority — not volume.</p>
-  <p class="asof">As of {data['as_of']} · {data['n_items']} tracked items · sorted by pressure (0-10)</p>
+  <p class="sub">Forecasting the cascade — capability (L1) → ruling (L2) → control adoption (L3) — weighted by authority, not volume.</p>
+  <p class="asof">As of {data['as_of']} · {data['n_items']} tracked items · each fault line shows L2 ruling / L3 adoption (0-10)</p>
   <div class="legend"><b>Source authority</b> (weight): &nbsp; {tier_legend}
     <br>Volume never moves the forecast. A vendor blog (T5) carries ~1/100 of an ABA opinion (T2) and ~1/125 of a binding ruling (T1).</div>
+  {queue_panel}
   {cal_panel}
   {''.join(rows)}
   <footer>

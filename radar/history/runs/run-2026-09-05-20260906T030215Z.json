@@ -1,5 +1,49 @@
 {
+  "generated_at": "2026-09-06T03:02:15.518111+00:00",
   "as_of": "2026-09-05",
+  "knobs": {
+    "tier_weights": {
+      "T1": 1.0,
+      "T2": 0.8,
+      "T3": 0.6,
+      "T4": 0.35,
+      "T5": 0.008
+    },
+    "conflict_discount": 0.4,
+    "empirical_boost": 1.25,
+    "corroboration_step": 0.15,
+    "half_life_days": 180,
+    "standing_tiers": [
+      "T1",
+      "T2"
+    ],
+    "market_weights": {
+      "insurer": 1.0,
+      "procurement": 0.85,
+      "deployment": 0.7,
+      "cert": 0.6,
+      "process_mandate": 0.55,
+      "commentary": 0.2,
+      "pundit": 0.02
+    },
+    "adoption_seeds": {
+      "insurance": 7.5,
+      "disclosure": 7.0,
+      "verification": 6.5,
+      "convergence": 7.0,
+      "confidentiality": 6.0,
+      "benchmark": 5.5,
+      "competence": 5.5,
+      "agentic": 5.0,
+      "fees": 3.0,
+      "judicial_analytics": 3.0,
+      "vendor_liability": 2.5
+    },
+    "call_threshold": 7.0,
+    "lead_days": 90
+  },
+  "feed_sha256": "fdeb3936873e8b4fd89e4780a1579d5a71d7a2a79959c5a5a3bb247de2b8d1ae",
+  "feed_items": 15,
   "fault_lines": [
     {
       "id": "disclosure",
@@ -845,41 +889,108 @@
       "lead": "later"
     }
   ],
-  "tiers": {
-    "T1": {
-      "label": "Binding / primary",
-      "weight": 1.0,
-      "desc": "Court rulings, sanctions orders, statutes, regulations, rule amendments."
+  "calibration": {
+    "resolutions": [
+      {
+        "date": "2025-12-15",
+        "order": 2,
+        "fault_line": "disclosure",
+        "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
+        "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+        "meter": "pressure",
+        "reading_at_lead": 8.7,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-04-15",
+        "order": 2,
+        "fault_line": "verification",
+        "title": "Nebraska Supreme Court suspension over hallucinated brief",
+        "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
+        "meter": "pressure",
+        "reading_at_lead": 8.9,
+        "evidence_at_lead": 2,
+        "reading_at_event": 9.2,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-01",
+        "order": 2,
+        "fault_line": "convergence",
+        "title": "EU AI Act obligations took effect",
+        "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+        "meter": "pressure",
+        "reading_at_lead": 8.2,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-06-15",
+        "order": 3,
+        "fault_line": "insurance",
+        "title": "CNA makes AI governance a coverage condition (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.5,
+        "evidence_at_lead": 0,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-31",
+        "order": 3,
+        "fault_line": "verification",
+        "title": "Verification duty extended to expert work product (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.3,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.1,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-29",
+        "order": 3,
+        "fault_line": "agentic",
+        "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 5.0,
+        "evidence_at_lead": 0,
+        "reading_at_event": 6.2,
+        "lead_days": 90,
+        "called": false
+      }
+    ],
+    "n_resolutions": 6,
+    "hits": 5,
+    "hit_rate": 0.83,
+    "by_order": {
+      "2": {
+        "n": 3,
+        "hits": 3,
+        "hit_rate": 1.0
+      },
+      "3": {
+        "n": 3,
+        "hits": 2,
+        "hit_rate": 0.67
+      }
     },
-    "T2": {
-      "label": "Regulatory guidance",
-      "weight": 0.8,
-      "desc": "ABA / state bar ethics opinions, judicial standing orders."
+    "cascade": {
+      "n_l3_called": 2,
+      "n_l3_backed_by_l2": 1,
+      "backed_rate": 0.5
     },
-    "T3": {
-      "label": "Empirical / institutional",
-      "weight": 0.6,
-      "desc": "Peer-reviewed research, trackers, insurer/market actions with data."
-    },
-    "T4": {
-      "label": "Professional commentary",
-      "weight": 0.35,
-      "desc": "Firm client alerts, bar magazines, established legal press."
-    },
-    "T5": {
-      "label": "Vendor / marketing / opinion",
-      "weight": 0.008,
-      "desc": "Vendor blogs, SEO content, hot takes. ~1/100 of an ABA opinion. Narrative signal only."
-    }
-  },
-  "market_weights": {
-    "insurer": 1.0,
-    "procurement": 0.85,
-    "deployment": 0.7,
-    "cert": 0.6,
-    "process_mandate": 0.55,
-    "commentary": 0.2,
-    "pundit": 0.02
-  },
-  "n_items": 15
+    "call_threshold": 7.0,
+    "lead_days": 90
+  }
 }
