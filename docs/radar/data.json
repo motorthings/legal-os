@@ -14,12 +14,25 @@
       "tech_driver": "Patchwork of standing orders collapses into a uniform certification.",
       "build_now": "Verification-by-default with an auditable trail, so certification is a byproduct.",
       "pressure_seed": 8.0,
-      "pressure": 9.5,
+      "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 3.91,
+      "weighted_evidence": 6.57,
       "corroboration": 0.3,
-      "n_evidence": 4,
+      "n_evidence": 6,
       "evidence": [
+        {
+          "date": "2026-06-01",
+          "title": "Withers v. Aberdeen \u2014 both sides sanctioned, four lawyers removed for AI hallucinations",
+          "tier": "T1",
+          "source": "N.D. Miss. (court order)",
+          "url": "https://grllp.com/blog/All-lawyers-in-action-removed-from-the-record-for-misuse-of-AI-Withers-v.-Aberdeen-City-896",
+          "weight": 1.25,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
         {
           "date": "2023-06-22",
           "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations",
@@ -39,6 +52,19 @@
           "tier": "T2",
           "source": "California Bar Board of Trustees",
           "url": "https://www.clio.com/blog/ai-legal-compliance/",
+          "weight": 0.8,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2023-12-12",
+          "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges",
+          "tier": "T2",
+          "source": "Courts and Tribunals Judiciary (UK)",
+          "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance/",
           "weight": 0.8,
           "matched": [
             "disclosure"
@@ -93,7 +119,7 @@
           ]
         }
       ],
-      "queue": 7.7,
+      "queue": 7.9,
       "lead": "now"
     },
     {
@@ -109,12 +135,25 @@
       "tech_driver": "Multi-step agentic work no single human fully traces.",
       "build_now": "Logging, trace analysis, evaluation records as the compliance artifact.",
       "pressure_seed": 7.5,
-      "pressure": 9.4,
+      "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 4.5,
+      "weighted_evidence": 7.16,
       "corroboration": 0.3,
-      "n_evidence": 4,
+      "n_evidence": 6,
       "evidence": [
+        {
+          "date": "2026-06-01",
+          "title": "Withers v. Aberdeen \u2014 both sides sanctioned, four lawyers removed for AI hallucinations",
+          "tier": "T1",
+          "source": "N.D. Miss. (court order)",
+          "url": "https://grllp.com/blog/All-lawyers-in-action-removed-from-the-record-for-misuse-of-AI-Withers-v.-Aberdeen-City-896",
+          "weight": 1.25,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
         {
           "date": "2025-12-15",
           "title": "Couvrette v. Wisnovsky \u2014 ~$110K penalty for 15 fake cases, 8 fabricated quotes",
@@ -150,6 +189,19 @@
           "weight": 0.8,
           "matched": [
             "human review"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2023-12-12",
+          "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges",
+          "tier": "T2",
+          "source": "Courts and Tribunals Judiciary (UK)",
+          "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance/",
+          "weight": 0.8,
+          "matched": [
+            "verification"
           ],
           "empirical": false,
           "conflict": false
@@ -199,7 +251,7 @@
           ]
         }
       ],
-      "queue": 7.6,
+      "queue": 7.9,
       "lead": "~2 quarters"
     },
     {
@@ -214,11 +266,11 @@
       "tech_driver": "Mandatory AI CLE spreading; firm-level governance capability expected.",
       "build_now": "Training and enablement at scale (iTrain bet; AI Build Lab proof).",
       "pressure_seed": 6.0,
-      "pressure": 9.3,
+      "pressure": 9.6,
       "trend": "rising",
-      "weighted_evidence": 5.09,
+      "weighted_evidence": 7.17,
       "corroboration": 0.3,
-      "n_evidence": 5,
+      "n_evidence": 7,
       "evidence": [
         {
           "date": "2019-03-23",
@@ -242,6 +294,23 @@
           "weight": 0.8,
           "matched": [
             "competence"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-04-01",
+          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
+          "tier": "T2",
+          "source": "New Jersey Supreme Court",
+          "url": "https://www.lexology.com/library/detail.aspx?g=c65abffb-7123-4c7f-a6a1-89cde8e24945",
+          "weight": 0.8,
+          "matched": [
+            "competence",
+            "cle",
+            "training",
+            "continuing legal education",
+            "technological competence"
           ],
           "empirical": false,
           "conflict": false
@@ -273,6 +342,19 @@
           "conflict": false
         },
         {
+          "date": "2024-01-19",
+          "title": "Florida Bar Ethics Opinion 24-1 \u2014 self-learning AI and client confidentiality",
+          "tier": "T2",
+          "source": "The Florida Bar Board of Governors",
+          "url": "https://www.hinshawlaw.com/en/insights/lawyers-for-the-profession-alert/florida-bar-advisory-opinion-24-1-gives-green-light-to-generative-ai-use-by-lawyers-with-four-ethical-caveats",
+          "weight": 0.8,
+          "matched": [
+            "training"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
           "date": "2026-06-01",
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
           "tier": "T3",
@@ -288,13 +370,13 @@
       ],
       "control": "Firm-wide training + governance program",
       "adoption_seed": 5.5,
-      "adoption": 7.6,
-      "adoption_weighted": 1.23,
+      "adoption": 8.2,
+      "adoption_weighted": 1.86,
       "market_classes": [
         "cert",
         "process_mandate"
       ],
-      "n_adoption_evidence": 2,
+      "n_adoption_evidence": 3,
       "adoption_evidence": [
         {
           "date": "2026-06-01",
@@ -304,6 +386,20 @@
           "weight": 0.518,
           "matched": [
             "competence"
+          ]
+        },
+        {
+          "date": "2025-04-01",
+          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "competence",
+            "cle",
+            "training",
+            "continuing legal education",
+            "technological competence"
           ]
         },
         {
@@ -317,7 +413,7 @@
           ]
         }
       ],
-      "queue": 7.1,
+      "queue": 7.9,
       "lead": "~1 year"
     },
     {
@@ -334,11 +430,11 @@
       "tech_driver": "No-training clauses become an ethical default; vendor attestations required.",
       "build_now": "Data-flow mapping and vendor attestation at tool onboarding.",
       "pressure_seed": 7.0,
-      "pressure": 9.0,
+      "pressure": 9.4,
       "trend": "rising",
-      "weighted_evidence": 3.2,
+      "weighted_evidence": 4.8,
       "corroboration": 0.0,
-      "n_evidence": 4,
+      "n_evidence": 6,
       "evidence": [
         {
           "date": "2026-05-14",
@@ -393,6 +489,35 @@
           ],
           "empirical": false,
           "conflict": false
+        },
+        {
+          "date": "2024-01-19",
+          "title": "Florida Bar Ethics Opinion 24-1 \u2014 self-learning AI and client confidentiality",
+          "tier": "T2",
+          "source": "The Florida Bar Board of Governors",
+          "url": "https://www.hinshawlaw.com/en/insights/lawyers-for-the-profession-alert/florida-bar-advisory-opinion-24-1-gives-green-light-to-generative-ai-use-by-lawyers-with-four-ethical-caveats",
+          "weight": 0.8,
+          "matched": [
+            "confidential",
+            "data governance",
+            "no-training",
+            "training data"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2023-12-12",
+          "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges",
+          "tier": "T2",
+          "source": "Courts and Tribunals Judiciary (UK)",
+          "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance/",
+          "weight": 0.8,
+          "matched": [
+            "confidential"
+          ],
+          "empirical": false,
+          "conflict": false
         }
       ],
       "control": "Data-flow mapping + vendor attestation",
@@ -415,7 +540,111 @@
           ]
         }
       ],
-      "queue": 6.3,
+      "queue": 6.6,
+      "lead": "now"
+    },
+    {
+      "id": "convergence",
+      "title": "Regulatory convergence forces one operating model",
+      "model_rules": [
+        "1.1",
+        "1.6"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Patchwork itself is the pressure: EU + Colorado + 35 bars + 300 judges.",
+      "tech_driver": "Firms adopt one framework calibrated to the strictest standard.",
+      "build_now": "The unifying operating model. This is the whole thesis.",
+      "pressure_seed": 7.5,
+      "pressure": 9.3,
+      "trend": "rising",
+      "weighted_evidence": 4.0,
+      "corroboration": 0.0,
+      "n_evidence": 4,
+      "evidence": [
+        {
+          "date": "2026-08-01",
+          "title": "EU AI Act obligations take effect",
+          "tier": "T1",
+          "source": "European Union (regulation)",
+          "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+          "weight": 1.0,
+          "matched": [
+            "eu ai act",
+            "conformity assessment",
+            "risk management system",
+            "convergence"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-01-01",
+          "title": "Texas Responsible AI Governance Act (TRAIGA) takes effect",
+          "tier": "T1",
+          "source": "Texas (statute)",
+          "url": "https://capitol.texas.gov/BillLookup/History.aspx?LegSess=89R&Bill=HB149",
+          "weight": 1.0,
+          "matched": [
+            "patchwork",
+            "multi-jurisdiction"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-06-01",
+          "title": "Colorado AI Act takes effect",
+          "tier": "T1",
+          "source": "Colorado (statute)",
+          "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+          "weight": 1.0,
+          "matched": [
+            "colorado ai act",
+            "conformity assessment",
+            "risk management system"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-12-08",
+          "title": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
+          "tier": "T1",
+          "source": "European Union (Directive)",
+          "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+          "weight": 1.0,
+          "matched": [
+            "eu ai act"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "One operating model, to the strictest standard",
+      "adoption_seed": 7.0,
+      "adoption": 7.7,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-01",
+          "title": "EU AI Act obligations take effect",
+          "tier": "T1",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "eu ai act",
+            "conformity assessment",
+            "risk management system",
+            "convergence"
+          ]
+        }
+      ],
+      "queue": 7.2,
       "lead": "now"
     },
     {
@@ -488,83 +717,6 @@
       "lead": "now"
     },
     {
-      "id": "convergence",
-      "title": "Regulatory convergence forces one operating model",
-      "model_rules": [
-        "1.1",
-        "1.6"
-      ],
-      "horizon": "near (0-12mo)",
-      "layer": "3b \u2014 operating model",
-      "vector": "Patchwork itself is the pressure: EU + Colorado + 35 bars + 300 judges.",
-      "tech_driver": "Firms adopt one framework calibrated to the strictest standard.",
-      "build_now": "The unifying operating model. This is the whole thesis.",
-      "pressure_seed": 7.5,
-      "pressure": 8.7,
-      "trend": "rising",
-      "weighted_evidence": 2.0,
-      "corroboration": 0.0,
-      "n_evidence": 2,
-      "evidence": [
-        {
-          "date": "2026-08-01",
-          "title": "EU AI Act obligations take effect",
-          "tier": "T1",
-          "source": "European Union (regulation)",
-          "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
-          "weight": 1.0,
-          "matched": [
-            "eu ai act",
-            "conformity assessment",
-            "risk management system",
-            "convergence"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-06-01",
-          "title": "Colorado AI Act takes effect",
-          "tier": "T1",
-          "source": "Colorado (statute)",
-          "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
-          "weight": 1.0,
-          "matched": [
-            "colorado ai act",
-            "conformity assessment",
-            "risk management system"
-          ],
-          "empirical": false,
-          "conflict": false
-        }
-      ],
-      "control": "One operating model, to the strictest standard",
-      "adoption_seed": 7.0,
-      "adoption": 7.7,
-      "adoption_weighted": 0.55,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2026-08-01",
-          "title": "EU AI Act obligations take effect",
-          "tier": "T1",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "eu ai act",
-            "conformity assessment",
-            "risk management system",
-            "convergence"
-          ]
-        }
-      ],
-      "queue": 6.7,
-      "lead": "now"
-    },
-    {
       "id": "benchmark",
       "title": "A tool-certification / benchmark standard emerges",
       "model_rules": [
@@ -578,9 +730,9 @@
       "pressure_seed": 6.0,
       "pressure": 7.2,
       "trend": "rising",
-      "weighted_evidence": 1.06,
+      "weighted_evidence": 1.08,
       "corroboration": 0.0,
-      "n_evidence": 2,
+      "n_evidence": 3,
       "evidence": [
         {
           "date": "2026-06-15",
@@ -602,6 +754,22 @@
           "source": "Stanford (research)",
           "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
           "weight": 0.518,
+          "matched": [
+            "benchmark",
+            "error rate",
+            "hallucination rate",
+            "stanford"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-01-11",
+          "title": "Stanford/Yale 'Large Legal Fictions' \u2014 58\u201388% hallucination rate on legal queries",
+          "tier": "T3",
+          "source": "Dahl, Magesh, Suzgun & Ho (Journal of Legal Analysis)",
+          "url": "https://arxiv.org/abs/2401.01301",
+          "weight": 0.018,
           "matched": [
             "benchmark",
             "error rate",
@@ -715,6 +883,75 @@
       "lead": "~1 year"
     },
     {
+      "id": "fees",
+      "title": "The billable hour cracks under AI",
+      "model_rules": [
+        "1.5"
+      ],
+      "horizon": "mid-far",
+      "layer": "second-order (business model)",
+      "vector": "AI collapses billable time; fee reasonableness under strain.",
+      "tech_driver": "Fee-transparency rules; shift toward value-based billing.",
+      "build_now": "Measure value delivered, not hours saved.",
+      "pressure_seed": 4.5,
+      "pressure": 6.8,
+      "trend": "quiet",
+      "weighted_evidence": 1.6,
+      "corroboration": 0.0,
+      "n_evidence": 2,
+      "evidence": [
+        {
+          "date": "2025-11-24",
+          "title": "Virginia LEO 1901 \u2014 value-based billing need not shrink when AI cuts time",
+          "tier": "T2",
+          "source": "Supreme Court of Virginia / Virginia State Bar",
+          "url": "https://www.vacourts.gov/static/courts/scv/amendments/leo_1901.pdf",
+          "weight": 0.8,
+          "matched": [
+            "value-based billing",
+            "billing"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "source": "ABA Standing Committee on Ethics",
+          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+          "weight": 0.8,
+          "matched": [
+            "reasonable fee"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Value-delivered measurement",
+      "adoption_seed": 3.0,
+      "adoption": 4.7,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "reasonable fee"
+          ]
+        }
+      ],
+      "queue": 3.2,
+      "lead": "~1-2 years"
+    },
+    {
       "id": "judicial_analytics",
       "title": "Judicial / litigation analytics gets regulated",
       "model_rules": [
@@ -762,61 +999,6 @@
       "lead": "~1 year"
     },
     {
-      "id": "fees",
-      "title": "The billable hour cracks under AI",
-      "model_rules": [
-        "1.5"
-      ],
-      "horizon": "mid-far",
-      "layer": "second-order (business model)",
-      "vector": "AI collapses billable time; fee reasonableness under strain.",
-      "tech_driver": "Fee-transparency rules; shift toward value-based billing.",
-      "build_now": "Measure value delivered, not hours saved.",
-      "pressure_seed": 4.5,
-      "pressure": 5.8,
-      "trend": "quiet",
-      "weighted_evidence": 0.8,
-      "corroboration": 0.0,
-      "n_evidence": 1,
-      "evidence": [
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "source": "ABA Standing Committee on Ethics",
-          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
-          "weight": 0.8,
-          "matched": [
-            "reasonable fee"
-          ],
-          "empirical": false,
-          "conflict": false
-        }
-      ],
-      "control": "Value-delivered measurement",
-      "adoption_seed": 3.0,
-      "adoption": 4.7,
-      "adoption_weighted": 0.55,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "reasonable fee"
-          ]
-        }
-      ],
-      "queue": 2.7,
-      "lead": "~1-2 years"
-    },
-    {
       "id": "vendor_liability",
       "title": "Liability shifts partway to vendors",
       "model_rules": [
@@ -828,12 +1010,41 @@
       "tech_driver": "Pressure toward disclosure mandates and certification standards on vendors.",
       "build_now": "Track for a shift; document tool provenance now.",
       "pressure_seed": 3.5,
-      "pressure": 3.5,
+      "pressure": 5.8,
       "trend": "quiet",
-      "weighted_evidence": 0.0,
-      "corroboration": 0.0,
-      "n_evidence": 0,
-      "evidence": [],
+      "weighted_evidence": 1.34,
+      "corroboration": 0.15,
+      "n_evidence": 2,
+      "evidence": [
+        {
+          "date": "2024-12-08",
+          "title": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
+          "tier": "T1",
+          "source": "European Union (Directive)",
+          "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+          "weight": 1.0,
+          "matched": [
+            "vendor liability",
+            "product liability"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-09-29",
+          "title": "AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards",
+          "tier": "T3",
+          "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
+          "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
+          "weight": 0.161,
+          "matched": [
+            "vendor liability",
+            "product liability"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
       "control": "Tool-provenance documentation",
       "adoption_seed": 2.5,
       "adoption": 2.5,
@@ -841,7 +1052,7 @@
       "market_classes": [],
       "n_adoption_evidence": 0,
       "adoption_evidence": [],
-      "queue": 0.9,
+      "queue": 1.4,
       "lead": "later"
     }
   ],
@@ -881,5 +1092,5 @@
     "commentary": 0.2,
     "pundit": 0.02
   },
-  "n_items": 15
+  "n_items": 24
 }
