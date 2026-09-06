@@ -71,9 +71,6 @@ function leadLabel(lead: string): string {
   return `stand up in ${lead}`;
 }
 
-function lc(s: string): string {
-  return s.charAt(0).toLowerCase() + s.slice(1);
-}
 
 function Meter({ label, value, seed, hint }: { label: string; value: number; seed: number; hint: string }) {
   return (
@@ -328,26 +325,35 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
         <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)]">Executive summary — what to do</h2>
       </div>
 
-      <p className="text-sm text-[var(--text-dim)] mb-4">
-        {buildNow.length > 0
-          ? `${buildNow.length} control${buildNow.length > 1 ? 's have' : ' has'} crossed into the build-now corner — the law is moving and the market is standardizing ${buildNow.length > 1 ? 'them' : 'it'} at the same time. Build these, in order:`
-          : 'Nothing has hit the build-now corner yet. Watch the rising lines below and get ahead of them.'}
-      </p>
+      {buildNow.length > 0 ? (
+        <p className="text-sm text-[var(--text-dim)] mb-4 leading-relaxed">
+          <b className="text-[var(--text)]">What&apos;s happening.</b>{' '}
+          {buildNow.slice(0, 3).map((f) => (<span key={f.id}>{f.vector} </span>))}
+          {buildNow.length > 3 && `Another ${buildNow.length - 3} control${buildNow.length - 3 > 1 ? 's are' : ' is'} crossing the same line. `}
+          The pattern repeats: an AI capability is outrunning a duty you already owe, and the market is standardizing the fix before the rule is written. The measures below are what it takes to be ready — build them ahead of the ruling, in this order:
+        </p>
+      ) : (
+        <p className="text-sm text-[var(--text-dim)] mb-4">
+          Nothing has hit the build-now corner yet. Watch the rising lines below and get ahead of them.
+        </p>
+      )}
 
       {buildNow.length > 0 && (
         <ol className="space-y-3 mb-4">
           {buildNow.slice(0, 5).map((f, i) => (
             <li key={f.id} className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
-              <div className="min-w-0">
+              <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-base font-semibold text-[var(--text)]" style={{ fontFamily: "'Fraunces', serif" }}>Build {lc(f.control)}</span>
+                  <span className="text-base font-semibold text-[var(--text)]" style={{ fontFamily: "'Fraunces', serif" }}>{f.control}</span>
                   <span className="text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-full" style={{ backgroundColor: leadColor(f.lead), color: '#fff' }}>{leadLabel(f.lead)}</span>
                 </div>
-                <p className="text-xs text-[var(--text-dim)] mt-1">
-                  The law is moving here (ruling <b className="text-[var(--text)]">{f.pressure.toFixed(1)}</b>) and it&apos;s becoming table stakes (adoption <b className="text-[var(--text)]">{f.adoption.toFixed(1)}</b>). Because both are past the line, expect it to be required soon — build ahead of the rule.{' '}
-                  <FlChip fl={f} onPick={onPick} />
-                </p>
+                <p className="text-xs text-[var(--text-dim)]"><b className="text-[var(--text)]">What to put in place:</b> {f.build_now}</p>
+                <p className="text-xs text-[var(--text-dim)]"><b className="text-[var(--text)]">Why now:</b> {f.vector} {f.tech_driver}</p>
+                <button onClick={() => onPick(f.id)}
+                  className="text-[11px] underline decoration-dotted underline-offset-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+                  see the evidence →
+                </button>
               </div>
             </li>
           ))}
@@ -374,7 +380,8 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
 function RadarMap({ fls, threshold, onPick }: {
   fls: FaultLine[]; threshold: number; onPick: (id: string) => void;
 }) {
-  const W = 560, H = 460, mL = 56, mB = 48, mT = 20, mR = 20;
+  // Wide aspect so it fills page width without towering. Coordinates map value 0-10.
+  const W = 1040, H = 500, mL = 70, mB = 56, mT = 28, mR = 28;
   const pw = W - mL - mR, ph = H - mT - mB;
   const X = (v: number) => mL + (v / 10) * pw;
   const Y = (v: number) => mT + ph - (v / 10) * ph;
@@ -385,73 +392,69 @@ function RadarMap({ fls, threshold, onPick }: {
   ranked.forEach((fl, i) => {
     let x = X(fl.pressure), y = Y(fl.adoption);
     let guard = 0;
-    while (placed.some((p) => Math.abs(p.x - x) < 16 && Math.abs(p.y - y) < 16) && guard < 8) {
-      x += 15; y -= 2; guard++;
+    while (placed.some((p) => Math.abs(p.x - x) < 22 && Math.abs(p.y - y) < 20) && guard < 8) {
+      x += 22; y -= 3; guard++;
     }
     placed.push({ fl, x, y, n: i + 1 });
   });
+  const rank = new Map(placed.map((p) => [p.fl.id, p.n]));
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 mb-6">
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* Map */}
-        <div className="flex-shrink-0">
-          <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[560px] h-auto" role="img"
-            aria-label="Quadrant map of legal-AI fault lines by ruling pressure and adoption pressure">
-            {/* build-now quadrant tint */}
-            <rect x={X(threshold)} y={Y(10)} width={X(10) - X(threshold)} height={Y(threshold) - Y(10)}
-              fill="var(--primary)" opacity="0.09" />
-            <text x={X(10) - 6} y={Y(10) + 16} textAnchor="end" fontSize="11" fontWeight="700"
-              fill="var(--primary)" fontFamily="monospace">BUILD NOW</text>
-            {/* threshold lines */}
-            <line x1={X(threshold)} y1={Y(10)} x2={X(threshold)} y2={Y(0)} stroke="var(--border-bright)" strokeDasharray="4 3" />
-            <line x1={X(0)} y1={Y(threshold)} x2={X(10)} y2={Y(threshold)} stroke="var(--border-bright)" strokeDasharray="4 3" />
-            {/* axes */}
-            <line x1={X(0)} y1={Y(0)} x2={X(10)} y2={Y(0)} stroke="var(--border)" />
-            <line x1={X(0)} y1={Y(0)} x2={X(0)} y2={Y(10)} stroke="var(--border)" />
-            {/* axis labels */}
-            <text x={mL + pw / 2} y={H - 10} textAnchor="middle" fontSize="11" fill="var(--text-dim)" fontFamily="monospace">
-              L2 ruling pressure →  will the law move
-            </text>
-            <text x={16} y={mT + ph / 2} textAnchor="middle" fontSize="11" fill="var(--text-dim)" fontFamily="monospace"
-              transform={`rotate(-90 16 ${mT + ph / 2})`}>
-              L3 adoption →  becoming table stakes
-            </text>
-            {/* dots */}
-            {placed.map(({ fl, x, y, n }) => {
-              const r = 7 + fl.queue * 1.0;
-              const c = leadColor(fl.lead);
-              return (
-                <g key={fl.id} className="cursor-pointer" onClick={() => onPick(fl.id)}>
-                  <circle cx={x} cy={y} r={r} fill={c} opacity="0.22" />
-                  <circle cx={x} cy={y} r={r} fill="none" stroke={c} strokeWidth="1.5" />
-                  <text x={x} y={y + 3.5} textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--text)" fontFamily="monospace">{n}</text>
-                </g>
-              );
-            })}
-          </svg>
-        </div>
+      <p className="text-xs text-[var(--text-dim)] mb-3">
+        <b className="text-[var(--text)]">How to read it.</b> Each dot is a fault line. It moves <b>right</b> as the law
+        gets closer to acting, and <b>up</b> as the market makes the fix table stakes. The <b style={{ color: 'var(--primary)' }}>top-right corner</b> is
+        where you build now — urgent and about to be required. Bigger dot = higher queue; color = lead time
+        (<span style={{ color: 'var(--primary)' }}>now</span>, <span style={{ color: 'var(--amber)' }}>soon</span>, <span style={{ color: 'var(--slate)' }}>later</span>). Click any dot or row to dig in.
+      </p>
 
-        {/* Legend + how to read */}
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-[var(--text-dim)] mb-2">
-            <b className="text-[var(--text)]">How to read it.</b> Each dot is a fault line. It moves <b>right</b> as the law
-            gets closer to acting, and <b>up</b> as the market makes the fix table stakes. The <b style={{ color: 'var(--primary)' }}>top-right corner</b> is
-            where you build now — urgent and about to be required. Bigger dot = higher queue; color = lead time
-            (<span style={{ color: 'var(--primary)' }}>now</span>, <span style={{ color: 'var(--amber)' }}>soon</span>, <span style={{ color: 'var(--slate)' }}>later</span>). Click a dot to dig in.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
-            {placed.map(({ fl, n }) => (
-              <button key={fl.id} onClick={() => onPick(fl.id)}
-                className="flex items-center gap-2 text-left text-[11px] hover:text-[var(--primary)] transition-colors py-0.5">
-                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold flex-shrink-0"
-                  style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{n}</span>
-                <span className="text-[var(--text-dim)] truncate">{fl.title}</span>
-                <span className="ml-auto font-mono text-[var(--text-muted)] flex-shrink-0">Q{fl.queue.toFixed(1)}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Full-width plot */}
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img"
+        aria-label="Quadrant map of legal-AI fault lines by ruling pressure and adoption pressure">
+        <rect x={X(threshold)} y={Y(10)} width={X(10) - X(threshold)} height={Y(threshold) - Y(10)}
+          fill="var(--primary)" opacity="0.09" />
+        <text x={X(10) - 8} y={Y(10) + 18} textAnchor="end" fontSize="13" fontWeight="700"
+          fill="var(--primary)" fontFamily="monospace">BUILD NOW</text>
+        <line x1={X(threshold)} y1={Y(10)} x2={X(threshold)} y2={Y(0)} stroke="var(--border-bright)" strokeDasharray="4 3" />
+        <line x1={X(0)} y1={Y(threshold)} x2={X(10)} y2={Y(threshold)} stroke="var(--border-bright)" strokeDasharray="4 3" />
+        <line x1={X(0)} y1={Y(0)} x2={X(10)} y2={Y(0)} stroke="var(--border)" />
+        <line x1={X(0)} y1={Y(0)} x2={X(0)} y2={Y(10)} stroke="var(--border)" />
+        <text x={mL + pw / 2} y={H - 12} textAnchor="middle" fontSize="13" fill="var(--text-dim)" fontFamily="monospace">
+          L2 ruling pressure →  will the law move
+        </text>
+        <text x={20} y={mT + ph / 2} textAnchor="middle" fontSize="13" fill="var(--text-dim)" fontFamily="monospace"
+          transform={`rotate(-90 20 ${mT + ph / 2})`}>
+          L3 adoption →  becoming table stakes
+        </text>
+        {placed.map(({ fl, x, y, n }) => {
+          const r = 9 + fl.queue * 1.1;
+          const c = leadColor(fl.lead);
+          return (
+            <g key={fl.id} className="cursor-pointer" onClick={() => onPick(fl.id)}>
+              <circle cx={x} cy={y} r={r} fill={c} opacity="0.22" />
+              <circle cx={x} cy={y} r={r} fill="none" stroke={c} strokeWidth="1.5" />
+              <text x={x} y={y + 4} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--text)" fontFamily="monospace">{n}</text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* One row per item, below the plot, with a short explanation */}
+      <div className="mt-4 border-t border-[var(--border)]">
+        {ranked.map((fl) => (
+          <button key={fl.id} onClick={() => onPick(fl.id)}
+            className="w-full flex items-center gap-3 text-left py-2.5 px-1 border-b border-[var(--border)]/50 hover:bg-[var(--surface2)] transition-colors">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold flex-shrink-0"
+              style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{rank.get(fl.id)}</span>
+            <span className="text-sm font-semibold text-[var(--text)] w-48 flex-shrink-0 truncate" style={{ fontFamily: "'Fraunces', serif" }}>{fl.title}</span>
+            <span className="text-xs text-[var(--text-dim)] flex-1 min-w-0">{fl.vector}</span>
+            <span className="hidden md:inline font-mono text-[10px] text-[var(--text-muted)] flex-shrink-0 whitespace-nowrap">
+              cap {fl.capability.toFixed(1)} · rule {fl.pressure.toFixed(1)} · adopt {fl.adoption.toFixed(1)}
+            </span>
+            <span className="font-mono text-xs font-bold flex-shrink-0 w-16 text-right" style={{ color: meterColor(fl.queue) }}>Q {fl.queue.toFixed(1)}</span>
+            <span className="hidden sm:inline text-[10px] font-mono uppercase px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{leadLabel(fl.lead)}</span>
+          </button>
+        ))}
       </div>
     </div>
   );
