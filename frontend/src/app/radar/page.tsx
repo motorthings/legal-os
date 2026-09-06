@@ -167,7 +167,7 @@ export default function RadarPage() {
       <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 mb-6">
         <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-2">New here? Start with this</h2>
         <p className="text-sm text-[var(--text-dim)] mb-3">
-          This radar forecasts where legal-AI rules are heading, so you can build the controls <b className="text-[var(--text)]">before</b> they&apos;re required.
+          This radar forecasts where legal-AI rules are heading, so you can build the controls <b className="text-[var(--text)]">before</b>{' '}they&apos;re required.
           A <b className="text-[var(--text)]">fault line</b> is where something AI can now do collides with a duty lawyers already owe — for example, AI fabricates case citations, which runs into your duty to verify them.
         </p>
         <p className="text-sm text-[var(--text-dim)] mb-1.5">Every fault line moves through three stages. Each gets a 0–10 score from evidence, weighted by how authoritative the source is:</p>
