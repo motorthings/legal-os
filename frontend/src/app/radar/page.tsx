@@ -186,29 +186,6 @@ export default function RadarPage() {
 
       <RadarMap fls={data.fault_lines} threshold={threshold} onPick={openAndScroll} />
 
-      {/* Calibration strip */}
-      {cal && (
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 mb-6">
-          <p className="text-sm text-[var(--text-dim)] mb-2">The engine grades itself, {cal.lead_days}d before each event, at threshold {cal.call_threshold}:</p>
-          <div className="flex flex-wrap items-center gap-2">
-            {Object.entries(cal.by_order).map(([o, s]) => (
-              <span key={o} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)] bg-[var(--surface2)] text-xs font-mono whitespace-nowrap">
-                <span className="text-[var(--text-dim)]">L{o} {ORDER_NAME[o]}</span>
-                <b style={{ color: rateColor(s.hit_rate) }}>{pct(s.hit_rate)}</b>
-                <span className="text-[var(--text-muted)]">({s.hits}/{s.n})</span>
-              </span>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs mt-2 text-[var(--text-muted)] font-mono">
-            <span>P(L2|L1) <b className="text-[var(--text-dim)]">{pct(cal.conditionals.L1_to_L2.rate)}</b> ({cal.conditionals.L1_to_L2.n_backed}/{cal.conditionals.L1_to_L2.n_eligible})</span>
-            <span>P(L3|L2) <b className="text-[var(--text-dim)]">{pct(cal.conditionals.L2_to_L3.rate)}</b> ({cal.conditionals.L2_to_L3.n_backed}/{cal.conditionals.L2_to_L3.n_eligible})</span>
-            {cal.conditionals.L1_to_L2.prior_called_without_post_event.length > 0 && (
-              <span>capability outran the law: {cal.conditionals.L1_to_L2.prior_called_without_post_event.join(', ')}</span>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Operating-model queue */}
       <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1 mt-8">
         Dig deeper — every fault line
@@ -269,9 +246,26 @@ export default function RadarPage() {
       {/* Calibration log */}
       {cal && (
         <div className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">
             Calibration — called before they landed
           </h2>
+          <p className="text-sm text-[var(--text-dim)] mb-3">The engine grades itself, {cal.lead_days} days before each event, at threshold {cal.call_threshold}:</p>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            {Object.entries(cal.by_order).map(([o, s]) => (
+              <span key={o} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)] bg-[var(--surface2)] text-xs font-mono whitespace-nowrap">
+                <span className="text-[var(--text-dim)]">L{o} {ORDER_NAME[o]}</span>
+                <b style={{ color: rateColor(s.hit_rate) }}>{pct(s.hit_rate)}</b>
+                <span className="text-[var(--text-muted)]">({s.hits}/{s.n})</span>
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs mb-3 text-[var(--text-muted)] font-mono">
+            <span>P(L2|L1) <b className="text-[var(--text-dim)]">{pct(cal.conditionals.L1_to_L2.rate)}</b> ({cal.conditionals.L1_to_L2.n_backed}/{cal.conditionals.L1_to_L2.n_eligible})</span>
+            <span>P(L3|L2) <b className="text-[var(--text-dim)]">{pct(cal.conditionals.L2_to_L3.rate)}</b> ({cal.conditionals.L2_to_L3.n_backed}/{cal.conditionals.L2_to_L3.n_eligible})</span>
+            {cal.conditionals.L1_to_L2.prior_called_without_post_event.length > 0 && (
+              <span>capability outran the law: {cal.conditionals.L1_to_L2.prior_called_without_post_event.join(', ')}</span>
+            )}
+          </div>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
             <table className="w-full text-xs">
               <thead>
