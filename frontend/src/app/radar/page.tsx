@@ -163,6 +163,25 @@ export default function RadarPage() {
         As of {data.as_of} · {data.n_items} tracked items · deterministic, replayable scores
       </p>
 
+      {/* Orientation for a first-time reader */}
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 mb-6">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-2">New here? Start with this</h2>
+        <p className="text-sm text-[var(--text-dim)] mb-3">
+          This radar forecasts where legal-AI rules are heading, so you can build the controls <b className="text-[var(--text)]">before</b> they&apos;re required.
+          A <b className="text-[var(--text)]">fault line</b> is where something AI can now do collides with a duty lawyers already owe — for example, AI fabricates case citations, which runs into your duty to verify them.
+        </p>
+        <p className="text-sm text-[var(--text-dim)] mb-1.5">Every fault line moves through three stages. Each gets a 0–10 score from evidence, weighted by how authoritative the source is:</p>
+        <ul className="space-y-1.5 text-sm text-[var(--text-dim)] mb-3">
+          <li><b style={{ color: 'var(--slate)' }}>L1 — Capability.</b> AI can now do the thing that creates the problem (shown by benchmarks and error-rate studies).</li>
+          <li><b style={{ color: 'var(--rose)' }}>L2 — Ruling.</b> A court, bar, or statute reacts and turns it into a rule.</li>
+          <li><b style={{ color: 'var(--metric)' }}>L3 — Adoption.</b> The fix becomes table stakes in the market — insurers, clients, and firms require it, rule or no rule.</li>
+        </ul>
+        <p className="text-sm text-[var(--text-dim)]">
+          When <b style={{ color: 'var(--rose)' }}>L2</b> and <b style={{ color: 'var(--metric)' }}>L3</b> are both high, the fix is urgent <i>and</i> about to be mandatory.
+          That combined score is the <b className="text-[var(--text)]">queue</b> — your build-before-it-lands list.
+        </p>
+      </div>
+
       <ExecSummary queue={queue} cal={cal} threshold={threshold} onPick={openAndScroll} />
 
       <RadarMap fls={data.fault_lines} threshold={threshold} onPick={openAndScroll} />
@@ -326,12 +345,17 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
       </div>
 
       {buildNow.length > 0 ? (
-        <p className="text-sm text-[var(--text-dim)] mb-4 leading-relaxed">
-          <b className="text-[var(--text)]">What&apos;s happening.</b>{' '}
-          {buildNow.slice(0, 3).map((f) => (<span key={f.id}>{f.vector} </span>))}
-          {buildNow.length > 3 && `Another ${buildNow.length - 3} control${buildNow.length - 3 > 1 ? 's are' : ' is'} crossing the same line. `}
-          The pattern repeats: an AI capability is outrunning a duty you already owe, and the market is standardizing the fix before the rule is written. The measures below are what it takes to be ready — build them ahead of the ruling, in this order:
-        </p>
+        <div className="text-sm text-[var(--text-dim)] mb-4">
+          <p className="font-semibold text-[var(--text)] mb-1.5">What&apos;s happening</p>
+          <ul className="space-y-1 list-disc pl-4 mb-2">
+            {buildNow.slice(0, 3).map((f) => (<li key={f.id}>{f.vector}</li>))}
+            {buildNow.length > 3 && (
+              <li>Another {buildNow.length - 3} control{buildNow.length - 3 > 1 ? 's are' : ' is'} crossing the same line.</li>
+            )}
+          </ul>
+          <p>The pattern repeats: an AI capability is outrunning a duty you already owe, and the market is standardizing the fix before the rule is written.</p>
+          <p className="mt-1.5">The measures below are what it takes to be ready — build them ahead of the ruling, in this order:</p>
+        </div>
       ) : (
         <p className="text-sm text-[var(--text-dim)] mb-4">
           Nothing has hit the build-now corner yet. Watch the rising lines below and get ahead of them.
@@ -381,32 +405,43 @@ function RadarMap({ fls, threshold, onPick }: {
   fls: FaultLine[]; threshold: number; onPick: (id: string) => void;
 }) {
   // Wide aspect so it fills page width without towering. Coordinates map value 0-10.
-  const W = 1040, H = 500, mL = 70, mB = 56, mT = 28, mR = 28;
+  const W = 1040, H = 520, mL = 72, mB = 56, mT = 40, mR = 44;
   const pw = W - mL - mR, ph = H - mT - mB;
   const X = (v: number) => mL + (v / 10) * pw;
   const Y = (v: number) => mT + ph - (v / 10) * ph;
+  const rOf = (q: number) => 8 + q * 0.85;
+  const clampX = (x: number, r: number) => Math.max(mL + r, Math.min(mL + pw - r, x));
+  const clampY = (y: number, r: number) => Math.max(mT + r, Math.min(mT + ph - r, y));
 
-  // Number dots by queue rank (1 = most urgent). Nudge near-identical coordinates apart.
+  // Number dots by queue rank (1 = most urgent). Keep every dot (center ± radius)
+  // inside the plot, and de-overlap by nudging toward the interior, not off-edge.
   const ranked = [...fls].sort((a, b) => b.queue - a.queue);
-  const placed: { fl: FaultLine; x: number; y: number; n: number }[] = [];
+  const placed: { fl: FaultLine; x: number; y: number; n: number; r: number }[] = [];
   ranked.forEach((fl, i) => {
-    let x = X(fl.pressure), y = Y(fl.adoption);
+    const r = rOf(fl.queue);
+    let x = clampX(X(fl.pressure), r), y = clampY(Y(fl.adoption), r);
     let guard = 0;
-    while (placed.some((p) => Math.abs(p.x - x) < 22 && Math.abs(p.y - y) < 20) && guard < 8) {
-      x += 22; y -= 3; guard++;
+    while (placed.some((p) => Math.hypot(p.x - x, p.y - y) < p.r + r + 4) && guard < 14) {
+      x = clampX(x - 18, r); y = clampY(y + 15, r); guard++;
     }
-    placed.push({ fl, x, y, n: i + 1 });
+    placed.push({ fl, x, y, n: i + 1, r });
   });
   const rank = new Map(placed.map((p) => [p.fl.id, p.n]));
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 mb-6">
-      <p className="text-xs text-[var(--text-dim)] mb-3">
-        <b className="text-[var(--text)]">How to read it.</b> Each dot is a fault line. It moves <b>right</b> as the law
-        gets closer to acting, and <b>up</b> as the market makes the fix table stakes. The <b style={{ color: 'var(--primary)' }}>top-right corner</b> is
-        where you build now — urgent and about to be required. Bigger dot = higher queue; color = lead time
-        (<span style={{ color: 'var(--primary)' }}>now</span>, <span style={{ color: 'var(--amber)' }}>soon</span>, <span style={{ color: 'var(--slate)' }}>later</span>). Click any dot or row to dig in.
-      </p>
+      <div className="text-xs text-[var(--text-dim)] mb-3">
+        <p className="font-semibold text-[var(--text)] mb-1.5">How to read it</p>
+        <ul className="space-y-1 list-disc pl-4">
+          <li>Each <b>dot</b> is a fault line.</li>
+          <li>It moves <b>right</b> as the law gets closer to acting.</li>
+          <li>It moves <b>up</b> as the market makes the fix table stakes.</li>
+          <li>The <b style={{ color: 'var(--primary)' }}>top-right corner</b> is build-now — urgent and about to be required.</li>
+          <li>Bigger dot = higher queue.</li>
+          <li>Color = lead time: <span style={{ color: 'var(--primary)' }}>now</span>, <span style={{ color: 'var(--amber)' }}>soon</span>, <span style={{ color: 'var(--slate)' }}>later</span>.</li>
+          <li>Click any dot or row to dig in.</li>
+        </ul>
+      </div>
 
       {/* Full-width plot */}
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img"
@@ -426,8 +461,7 @@ function RadarMap({ fls, threshold, onPick }: {
           transform={`rotate(-90 20 ${mT + ph / 2})`}>
           L3 adoption →  becoming table stakes
         </text>
-        {placed.map(({ fl, x, y, n }) => {
-          const r = 9 + fl.queue * 1.1;
+        {placed.map(({ fl, x, y, n, r }) => {
           const c = leadColor(fl.lead);
           return (
             <g key={fl.id} className="cursor-pointer" onClick={() => onPick(fl.id)}>

@@ -161,7 +161,8 @@ FAULT_LINES = [
         "pressure_seed": 8.0,
         "horizon": "near (0-12mo)",
         "layer": "3a — reactive",
-        "vector": "Mata was reactive; 300+ judges now require prospective disclosure.",
+        "vector": "Mata v. Avianca (the first AI-hallucination sanction) was reactive; "
+                  "300+ judges now require prospective disclosure.",
         "tech_driver": "Patchwork of standing orders collapses into a uniform certification.",
         "build_now": "Verification-by-default with an auditable trail, so certification is a byproduct.",
         "signals": ["disclosure", "standing order", "certif", "rule 11", "frcp", "disclose ai",
