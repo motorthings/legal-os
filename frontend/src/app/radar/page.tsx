@@ -1,499 +1,466 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  Radar, RefreshCw, AlertTriangle, ChevronDown, ChevronRight,
-  TrendingUp, ArrowRight, Minus, Zap,
-} from 'lucide-react';
 
-// --- Shapes emitted by radar/build.py (deterministic score) + calibration.report() ---
+/* ------------------------------------------------------------------ types */
+
 interface Evidence {
-  date: string; title: string; tier: string; source?: string;
-  weight: number; empirical?: boolean; conflict?: boolean;
+  date: string;
+  source?: string;
+  title: string;
+  tier: string;
+  url?: string;
+  weight: number;
+  conflict?: boolean;
 }
-interface CapEvidence { date: string; title: string; capability: string; weight: number; empirical?: boolean; }
-interface AdoptEvidence { date: string; title: string; market: string; weight: number; }
 interface FaultLine {
-  id: string; title: string; model_rules: string[]; horizon: string; layer: string;
-  vector: string; tech_driver: string; build_now: string; control: string;
-  capability_seed: number; capability: number; n_capability_evidence: number; capability_evidence: CapEvidence[];
-  pressure_seed: number; pressure: number; trend: string; n_evidence: number; evidence: Evidence[];
-  adoption_seed: number; adoption: number; n_adoption_evidence: number; adoption_evidence: AdoptEvidence[];
-  queue: number; lead: string;
+  id: string;
+  title: string;
+  model_rules: string[];
+  horizon: string;
+  layer?: string;
+  vector: string;
+  tech_driver: string;
+  build_now: string;
+  control: string;
+  capability_seed: number;
+  capability: number;
+  capability_classes: string[];
+  capability_evidence: Evidence[];
+  pressure_seed: number;
+  pressure: number;
+  trend: string;
+  evidence: Evidence[];
+  adoption_seed: number;
+  adoption: number;
+  market_classes: string[];
+  adoption_evidence: Evidence[];
+  queue: number;
+  lead: string;
 }
-interface RadarData { as_of: string; n_items: number; fault_lines: FaultLine[]; }
-interface OrderRate { n: number; hits: number; hit_rate: number | null; }
-interface Conditional {
-  prior: string; post: string; n_eligible: number; n_backed: number;
-  rate: number | null; prior_called_without_post_event: string[];
+interface RadarData {
+  as_of: string;
+  fault_lines: FaultLine[];
+  n_items: number;
+  tiers: Record<string, { label: string; weight: number; desc: string }>;
 }
 interface Resolution {
-  date: string; order: number; fault_line: string; title: string;
-  reading_at_lead: number | null; reading_at_event: number | null; called: boolean;
+  date: string;
+  order: number;
+  fault_line: string;
+  title: string;
+  url?: string;
+  meter: string;
+  reading_at_lead: number;
+  reading_at_event: number;
+  called: boolean;
 }
 interface Calibration {
-  hit_rate: number | null; hits: number; n_resolutions: number;
-  by_order: Record<string, OrderRate>;
-  conditionals: { L1_to_L2: Conditional; L2_to_L3: Conditional };
-  resolutions: Resolution[]; snapshots_recorded: number;
-  call_threshold: number; lead_days: number;
+  resolutions: Resolution[];
+  hits: number;
+  n_resolutions: number;
+  by_order: Record<string, { hit_rate: number; hits: number; n: number }>;
+  call_threshold: number;
+  lead_days: number;
 }
 
-const ORDER_NAME: Record<string, string> = { '1': 'Capability', '2': 'Ruling', '3': 'Adoption' };
+/* -------------------------------------------------------------- constants */
 
-function meterColor(v: number): string {
-  if (v >= 8) return '#e0603a';
-  if (v >= 6.5) return 'var(--amber)';
-  if (v >= 5) return '#c9a227';
-  return 'var(--slate)';
+const THRESH = 7;
+type Lead = 'now' | 'soon' | 'later';
+const LEAD_COLOR: Record<Lead, string> = { now: '#A4093F', soon: '#EFAE42', later: '#8FBFAE' };
+const LEAD_LABEL: Record<Lead, string> = { now: 'now', soon: 'soon', later: 'later' };
+const ORDER_LABEL: Record<string, string> = { '1': 'L1 capability', '2': 'L2 ruling', '3': 'L3 adoption' };
+
+/* ---------------------------------------------------------------- helpers */
+
+function leadBucket(raw: string): Lead {
+  const s = (raw || '').toLowerCase();
+  if (s === 'now') return 'now';
+  if (s.includes('later') || s.includes('1-2') || s.includes('far')) return 'later';
+  return 'soon';
 }
+const dec = (n: number) => n.toFixed(1);
+const whole = (n: number) => Math.round(n).toString();
+const seedQueue = (f: FaultLine) => (f.pressure_seed * f.adoption_seed) / 10;
+const queueDelta = (f: FaultLine) => f.queue - seedQueue(f);
+const signed = (n: number) => (n >= 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 
-function pct(v: number | null): string {
-  return v === null ? 'n/a' : `${Math.round(v * 100)}%`;
-}
+/* ------------------------------------------------------------------- meter */
 
-function rateColor(v: number | null): string {
-  if (v === null) return 'var(--text-muted)';
-  if (v >= 0.8) return 'var(--metric)';
-  if (v >= 0.5) return 'var(--amber)';
-  return 'var(--rose)';
-}
-
-function leadColor(lead: string): string {
-  if (lead === 'now') return 'var(--primary)';
-  if (lead.includes('later')) return 'var(--slate)';
-  return 'var(--amber)';
-}
-
-function leadLabel(lead: string): string {
-  if (lead === 'now') return 'start now';
-  if (lead.includes('later')) return 'watch';
-  return `stand up in ${lead}`;
-}
-
-
-function Meter({ label, value, seed, hint }: { label: string; value: number; seed: number; hint: string }) {
+function Meter({ label, seed, now }: { label: string; seed: number; now: number }) {
+  const pct = (v: number) => `${Math.max(0, Math.min(100, v * 10))}%`;
+  const rose = now >= seed;
   return (
-    <div className="flex-1 min-w-[110px]">
+    <div>
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" title={hint}>{label}</span>
-        <span className="text-sm font-bold tabular-nums" style={{ color: meterColor(value), fontFamily: "'Fraunces', serif" }}>{value.toFixed(1)}</span>
+        <span className="text-[11px] font-semibold text-[var(--text-muted)]">{label}</span>
+        <span className="font-mono text-[11px] text-[var(--text)]">
+          {dec(now)} <span className="text-[var(--text-muted)]">({signed(now - seed)})</span>
+        </span>
       </div>
-      <div className="h-1.5 rounded-full bg-[var(--surface2)] overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${value * 10}%`, backgroundColor: meterColor(value) }} />
+      <div className="relative h-2 rounded-full bg-[var(--sunken)] overflow-hidden">
+        <div className="absolute inset-y-0 left-0 bg-[var(--border-strong)]" style={{ width: pct(Math.min(seed, now)) }} />
+        {rose && (
+          <div className="absolute inset-y-0" style={{ left: pct(seed), width: pct(now - seed), background: 'var(--primary)' }} />
+        )}
+        <div className="absolute inset-y-0 w-px bg-[var(--text-strong)] opacity-50" style={{ left: '70%' }} />
       </div>
-      <span className="text-xs text-[var(--text-muted)] font-mono">seed {seed}</span>
     </div>
   );
 }
 
-function trendGlyph(t: string) {
-  if (t === 'rising') return <span className="inline-flex items-center gap-1 text-[var(--metric)]"><TrendingUp className="w-3 h-3" />rising</span>;
-  if (t === 'steady') return <span className="inline-flex items-center gap-1 text-[var(--text-muted)]"><ArrowRight className="w-3 h-3" />steady</span>;
-  return <span className="inline-flex items-center gap-1 text-[var(--text-muted)]"><Minus className="w-3 h-3" />quiet</span>;
+/* ------------------------------------------------------------------- chart */
+
+function Chart({
+  lines,
+  ranks,
+  hovered,
+  onHover,
+  onPick,
+}: {
+  lines: FaultLine[];
+  ranks: Map<string, number>;
+  hovered: string | null;
+  onHover: (id: string | null) => void;
+  onPick: (id: string) => void;
+}) {
+  const W = 920, H = 520;
+  const ML = 52, MR = 20, TP = 20, BP = 48;
+  const sx = (v: number) => ML + (v / 10) * (W - ML - MR);
+  const sy = (v: number) => TP + (1 - v / 10) * (H - TP - BP);
+  const rOf = (q: number) => 7 + Math.max(0, q) * 1.35;
+  const ticks = [0, 2, 4, 6, 8, 10];
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" style={{ maxHeight: 520 }}>
+      <rect x={sx(THRESH)} y={sy(10)} width={sx(10) - sx(THRESH)} height={sy(THRESH) - sy(10)} fill="var(--brand-tint)" />
+      {ticks.map((t) => (
+        <g key={`g${t}`}>
+          <line x1={sx(t)} y1={TP} x2={sx(t)} y2={H - BP} stroke="var(--border)" strokeWidth={1} />
+          <line x1={ML} y1={sy(t)} x2={W - MR} y2={sy(t)} stroke="var(--border)" strokeWidth={1} />
+          <text x={sx(t)} y={H - BP + 16} textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }}>{t}</text>
+          <text x={ML - 8} y={sy(t) + 3} textAnchor="end" fill="var(--text-muted)" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }}>{t}</text>
+        </g>
+      ))}
+      <line x1={sx(THRESH)} y1={TP} x2={sx(THRESH)} y2={H - BP} stroke="var(--primary)" strokeWidth={1.5} strokeDasharray="5 4" />
+      <line x1={ML} y1={sy(THRESH)} x2={W - MR} y2={sy(THRESH)} stroke="var(--primary)" strokeWidth={1.5} strokeDasharray="5 4" />
+      <text x={sx(THRESH) + 5} y={TP + 12} fill="var(--primary)" style={{ fontSize: 9, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>threshold 7</text>
+      <text x={sx(9.98)} y={sy(9.98) + 2} textAnchor="end" fill="var(--primary)" style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.06em' }}>BUILD NOW</text>
+
+      <text x={(ML + W - MR) / 2} y={H - 6} textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 11 }}>Right = the law is closer to acting →</text>
+      <text x={-((TP + H - BP) / 2)} y={14} transform="rotate(-90)" textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 11 }}>Up = the market made the fix table stakes →</text>
+
+      {lines.map((f) => (
+        <line
+          key={`t${f.id}`}
+          x1={sx(f.pressure_seed)} y1={sy(f.adoption_seed)}
+          x2={sx(f.pressure)} y2={sy(f.adoption)}
+          stroke="var(--border-strong)" strokeWidth={1}
+          opacity={hovered && hovered !== f.id ? 0.08 : 0.4}
+        />
+      ))}
+
+      {lines.map((f) => {
+        const lead = leadBucket(f.lead);
+        const dim = hovered && hovered !== f.id;
+        const r = rOf(f.queue);
+        return (
+          <g
+            key={f.id}
+            style={{ cursor: 'pointer' }}
+            opacity={dim ? 0.2 : 1}
+            onMouseEnter={() => onHover(f.id)}
+            onMouseLeave={() => onHover(null)}
+            onClick={() => onPick(f.id)}
+          >
+            <circle cx={sx(f.pressure)} cy={sy(f.adoption)} r={r} fill={LEAD_COLOR[lead]} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
+            <text x={sx(f.pressure)} y={sy(f.adoption) + 3.5} textAnchor="middle" fill="#fff" style={{ fontSize: 10, fontWeight: 700 }}>{ranks.get(f.id)}</text>
+          </g>
+        );
+      })}
+
+      {hovered && (() => {
+        const f = lines.find((x) => x.id === hovered);
+        if (!f) return null;
+        const tx = Math.min(sx(f.pressure) + 14, W - 250);
+        const ty = Math.max(sy(f.adoption) - 46, TP + 4);
+        return (
+          <g pointerEvents="none">
+            <rect x={tx} y={ty} width={238} height={42} rx={6} fill="#1F1A1C" />
+            <text x={tx + 10} y={ty + 17} fill="#fff" style={{ fontSize: 11, fontWeight: 700 }}>{f.control}</text>
+            <text x={tx + 10} y={ty + 33} fill="#C9C4C2" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }}>
+              L2 {dec(f.pressure)} · L3 {dec(f.adoption)} · queue {dec(f.queue)} ({signed(queueDelta(f))})
+            </text>
+          </g>
+        );
+      })()}
+    </svg>
+  );
 }
+
+/* --------------------------------------------------------------- evidence */
+
+function EvidenceList({ items, empty }: { items: Evidence[]; empty: string }) {
+  if (!items?.length) return <p className="text-[12px] text-[var(--text-muted)] italic">{empty}</p>;
+  return (
+    <ul className="space-y-1.5">
+      {items.slice(0, 6).map((e, i) => (
+        <li key={i} className="text-[12px] leading-snug flex gap-2">
+          <span className="badge badge-low shrink-0 mt-0.5">{e.tier}</span>
+          <span>
+            {e.url ? (
+              <a href={e.url} target="_blank" rel="noreferrer" className="text-[var(--text)] hover:text-[var(--primary)] underline decoration-[var(--border-strong)] underline-offset-2">{e.title}</a>
+            ) : (
+              <span className="text-[var(--text)]">{e.title}</span>
+            )}
+            <span className="text-[var(--text-muted)] font-mono"> · {e.date}{e.source ? ` · ${e.source}` : ''}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* ------------------------------------------------------------------- page */
 
 export default function RadarPage() {
   const [data, setData] = useState<RadarData | null>(null);
   const [cal, setCal] = useState<Calibration | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState<string | null>(null);
+  const [showPrimer, setShowPrimer] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [sort, setSort] = useState<'urgency' | 'move'>('urgency');
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([
-      fetch('/radar/data.json').then((r) => { if (!r.ok) throw new Error('data.json ' + r.status); return r.json(); }),
-      fetch('/radar/calibration.json').then((r) => (r.ok ? r.json() : null)).catch(() => null),
-    ])
-      .then(([d, c]) => { if (!cancelled) { setData(d); setCal(c); } })
-      .catch((e) => { if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load radar'); });
+    (async () => {
+      try {
+        const [d, c] = await Promise.all([
+          fetch('/radar/data.json').then((r) => r.json()),
+          fetch('/radar/calibration.json').then((r) => r.json()),
+        ]);
+        if (!cancelled) { setData(d); setCal(c); }
+      } catch {
+        if (!cancelled) setError('Could not load radar data.');
+      }
+    })();
     return () => { cancelled = true; };
   }, []);
 
-  if (error) {
-    return (
-      <div className="p-8 max-w-2xl">
-        <div className="flex items-center gap-3 p-4 rounded-lg border border-[var(--rose)]/30 bg-[var(--rose)]/5">
-          <AlertTriangle className="w-5 h-5 text-[var(--rose)]" />
-          <div>
-            <p className="text-sm font-medium text-[var(--text)]">Couldn&apos;t load the radar</p>
-            <p className="text-xs text-[var(--text-muted)] font-mono">{error}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">Run <code>python3 radar/build.py</code> to regenerate the feed.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (error) return <div className="p-8 text-[var(--rose)]">{error}</div>;
+  if (!data || !cal) return <div className="p-8 text-[var(--text-muted)] font-mono text-sm">Loading radar…</div>;
 
-  if (!data) {
-    return (
-      <div className="p-8 flex items-center gap-3 text-[var(--text-muted)]">
-        <RefreshCw className="w-4 h-4 animate-spin" /> Loading radar…
-      </div>
-    );
-  }
+  const byQueue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
+  const ranks = new Map(byQueue.map((f, i) => [f.id, i + 1]));
+  const buildNow = byQueue.slice(0, 3);
+  const watch = byQueue.slice(3).filter((f) => leadBucket(f.lead) === 'later');
 
-  const queue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
-  const threshold = cal?.call_threshold ?? 7;
+  const queueRows = [...data.fault_lines].sort((a, b) =>
+    sort === 'urgency' ? b.queue - a.queue : queueDelta(b) - queueDelta(a)
+  );
 
-  const openAndScroll = (id: string) => {
-    setOpen(id);
-    requestAnimationFrame(() =>
-      document.getElementById(`fl-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    );
-  };
+  const pick = (id: string) => setExpanded((cur) => (cur === id ? null : id));
 
   return (
-    <div className="px-4 md:px-6 py-6 max-w-[1400px] mx-auto">
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-2">
-        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--primary)' }}>
-          <Radar className="w-5 h-5 text-white" />
-        </div>
+    <div className="px-4 md:px-8 py-6 max-w-[1400px] mx-auto space-y-8">
+      {/* header */}
+      <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-[var(--text)]" style={{ fontFamily: "'Fraunces', Georgia, serif" }}>
-            Fault-Line Radar
+          <p className="eyebrow">Fault-Line Radar</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight">
+            Where legal-AI rules are heading — and what to build before they land
           </h1>
-          <p className="text-sm text-[var(--text-dim)]">
-            Where legal-AI rules are heading — capability (L1) → ruling (L2) → control adoption (L3), weighted by authority.
+          <p className="font-mono text-[12px] text-[var(--text-muted)] mt-1.5">
+            {data.as_of} · {data.n_items} tracked items · deterministic, replayable
           </p>
         </div>
-      </div>
-      <p className="text-xs text-[var(--text-muted)] font-mono mb-6">
-        As of {data.as_of} · {data.n_items} tracked items · deterministic, replayable scores
-      </p>
+        <div className="flex items-center gap-2">
+          <a href="#calibration" className="card px-3 py-2 flex items-center gap-2 no-underline hover:border-[var(--primary)]">
+            <span className="font-mono text-lg font-extrabold text-[var(--primary)]">{cal.hits}/{cal.n_resolutions}</span>
+            <span className="text-[11px] leading-tight text-[var(--text-muted)]">events called<br />{cal.lead_days} days early</span>
+          </a>
+          <button onClick={() => setShowPrimer((s) => !s)} className="btn-secondary">
+            {showPrimer ? 'Hide' : 'How this works'}
+          </button>
+        </div>
+      </header>
 
-      {/* Orientation for a first-time reader */}
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 mb-6">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-2">New here? Start with this</h2>
-        <p className="text-sm text-[var(--text-dim)] mb-3">
-          This radar forecasts where legal-AI rules are heading, so you can build the controls <b className="text-[var(--text)]">before</b>{' '}they&apos;re required.
-          A <b className="text-[var(--text)]">fault line</b> is where something AI can now do collides with a duty lawyers already owe — for example, AI fabricates case citations, which runs into your duty to verify them.
-        </p>
-        <p className="text-sm text-[var(--text-dim)] mb-1.5">Every fault line moves through three stages. Each gets a 0–10 score from evidence, weighted by how authoritative the source is:</p>
-        <ul className="space-y-1.5 text-sm text-[var(--text-dim)] mb-3">
-          <li><b style={{ color: 'var(--slate)' }}>L1 — Capability.</b> AI can now do the thing that creates the problem (shown by benchmarks and error-rate studies).</li>
-          <li><b style={{ color: 'var(--rose)' }}>L2 — Ruling.</b> A court, bar, or statute reacts and turns it into a rule.</li>
-          <li><b style={{ color: 'var(--metric)' }}>L3 — Adoption.</b> The fix becomes table stakes in the market — insurers, clients, and firms require it, rule or no rule.</li>
-        </ul>
-        <p className="text-sm text-[var(--text-dim)]">
-          When <b style={{ color: 'var(--rose)' }}>L2</b> and <b style={{ color: 'var(--metric)' }}>L3</b> are both high, the fix is urgent <i>and</i> about to be mandatory.
-          That combined score is the <b className="text-[var(--text)]">queue</b> — your build-before-it-lands list.
-        </p>
-      </div>
+      {/* primer */}
+      {showPrimer && (
+        <div className="card p-5 grid md:grid-cols-3 gap-6">
+          <div>
+            <p className="eyebrow mb-1.5">What a fault line is</p>
+            <p className="text-[13px] text-[var(--text)] leading-relaxed">A place where legal-AI capability is outrunning the rules — a rule likely to shift, and the control you should build before it does.</p>
+          </div>
+          <div>
+            <p className="eyebrow mb-1.5">The three stages</p>
+            <ul className="text-[13px] text-[var(--text)] leading-relaxed space-y-1">
+              <li><b>L1 capability</b> — the tech clears a bar (a benchmark, a study).</li>
+              <li><b>L2 ruling</b> — courts and bars start to act.</li>
+              <li><b>L3 adoption</b> — insurers and buyers make the fix table stakes.</li>
+            </ul>
+          </div>
+          <div>
+            <p className="eyebrow mb-1.5">Reading the scores</p>
+            <p className="text-[13px] text-[var(--text)] leading-relaxed">Every meter is 0–10, weighted by source authority not volume. 7 is high. High <b>L2 and L3</b> together is the build-now queue.</p>
+          </div>
+        </div>
+      )}
 
-      <ExecSummary queue={queue} cal={cal} threshold={threshold} onPick={openAndScroll} />
+      {/* chart */}
+      <section className="card p-4 md:p-6">
+        <Chart lines={data.fault_lines} ranks={ranks} hovered={hovered} onHover={setHovered} onPick={pick} />
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3 text-[11px] text-[var(--text-muted)]">
+          <span className="font-semibold text-[var(--text)]">Lead time:</span>
+          {(['now', 'soon', 'later'] as Lead[]).map((l) => (
+            <span key={l} className="inline-flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: LEAD_COLOR[l] }} /> {LEAD_LABEL[l]}
+            </span>
+          ))}
+          <span>Dot size = queue score · number = queue rank · hover to inspect, click to expand</span>
+        </div>
+      </section>
 
-      <RadarMap fls={data.fault_lines} threshold={threshold} onPick={openAndScroll} />
-
-      {/* Operating-model queue */}
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1 mt-8">
-        Dig deeper — every fault line
-      </h2>
-      <p className="text-xs text-[var(--text-muted)] mb-3">The queue, sorted by urgency. Click any row for its three meters and the evidence behind each.</p>
-      <div className="space-y-2">
-        {queue.map((fl) => {
-          const isOpen = open === fl.id;
-          return (
-            <div key={fl.id} id={`fl-${fl.id}`} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden scroll-mt-4">
-              <button
-                onClick={() => setOpen(isOpen ? null : fl.id)}
-                className="w-full text-left p-4 flex flex-col md:flex-row md:items-center gap-4 hover:bg-[var(--surface2)] transition-colors"
-              >
-                <div className="flex items-start gap-2 md:w-64 flex-shrink-0">
-                  {isOpen ? <ChevronDown className="w-4 h-4 mt-0.5 text-[var(--text-muted)]" /> : <ChevronRight className="w-4 h-4 mt-0.5 text-[var(--text-muted)]" />}
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--text)] leading-tight" style={{ fontFamily: "'Fraunces', serif" }}>{fl.title}</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-0.5">{fl.control}</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-2">{trendGlyph(fl.trend)} · {fl.horizon}</p>
-                  </div>
+      {/* build now */}
+      <section>
+        <p className="eyebrow mb-3">Build now — force-ranked</p>
+        <div className="grid md:grid-cols-3 gap-4">
+          {buildNow.map((f) => {
+            const lead = leadBucket(f.lead);
+            return (
+              <div key={f.id} className="card p-4 flex flex-col">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-lg font-extrabold text-[var(--primary)]">#{ranks.get(f.id)}</span>
+                  <span className="pill" style={{ background: LEAD_COLOR[lead], color: lead === 'soon' ? '#1F1A1C' : '#fff' }}>{LEAD_LABEL[lead]}</span>
                 </div>
-                <div className="flex gap-4 flex-1">
-                  <Meter label="L1 cap" value={fl.capability} seed={fl.capability_seed} hint="Can AI already do the thing that creates the fault line?" />
-                  <Meter label="L2 rule" value={fl.pressure} seed={fl.pressure_seed} hint="Will a court, bar, or statute move on it?" />
-                  <Meter label="L3 adopt" value={fl.adoption} seed={fl.adoption_seed} hint="Is the control becoming table stakes?" />
+                <h3 className="text-[15px] font-bold text-[var(--text-strong)] leading-snug mb-1.5">{f.control}</h3>
+                <p className="text-[12px] text-[var(--text)] leading-relaxed line-clamp-3 flex-1">{f.vector}</p>
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border)]">
+                  <span className="font-mono text-[12px] text-[var(--text-muted)]">
+                    L2 {dec(f.pressure)} <span className="text-[var(--primary)]">{signed(f.pressure - f.pressure_seed)}</span> · L3 {dec(f.adoption)} <span className="text-[var(--primary)]">{signed(f.adoption - f.adoption_seed)}</span>
+                  </span>
+                  <button onClick={() => { setExpanded(f.id); document.getElementById(`row-${f.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} className="text-[12px] font-semibold text-[var(--primary)] hover:underline">evidence →</button>
                 </div>
-                <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-0.5 md:w-24 flex-shrink-0">
-                  <span className="text-xs uppercase tracking-wider text-[var(--text-muted)]">Queue</span>
-                  <span className="text-2xl font-bold tabular-nums" style={{ color: meterColor(fl.queue), fontFamily: "'Fraunces', serif" }}>{fl.queue.toFixed(1)}</span>
-                  <span className="text-xs text-[var(--text-muted)] font-mono">lead: {fl.lead}</span>
-                </div>
+              </div>
+            );
+          })}
+        </div>
+        {watch.length > 0 && (
+          <p className="text-[12px] text-[var(--text-muted)] mt-3">
+            <span className="font-semibold text-[var(--text)]">Just watch:</span>{' '}
+            {watch.map((f) => f.control).join(', ')} — real but years out.
+          </p>
+        )}
+      </section>
+
+      {/* full queue */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <p className="eyebrow">The full queue</p>
+          <div className="inline-flex rounded-full border border-[var(--border)] overflow-hidden text-[11px] font-semibold">
+            {(['urgency', 'move'] as const).map((s) => (
+              <button key={s} onClick={() => setSort(s)} className={`px-3 py-1.5 ${sort === s ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
+                {s === 'urgency' ? 'Urgency' : 'Biggest move'}
               </button>
-
-              {isOpen && (
-                <div className="px-4 pb-4 border-t border-[var(--border)] text-sm">
-                  <p className="mt-3 text-[var(--text-dim)]"><b className="text-[var(--text)]">Fault line:</b> {fl.vector}</p>
-                  <p className="mt-1 text-[var(--text-dim)]"><b className="text-[var(--text)]">Driver:</b> {fl.tech_driver}</p>
-                  <p className="mt-1 text-[var(--metric)]"><b>Build now:</b> {fl.build_now}</p>
-                  <p className="mt-1 text-xs text-[var(--text-muted)] font-mono">Model Rules: {fl.model_rules.join(' · ')}</p>
-
-                  <EvidenceBlock title={`L1 capability evidence — weighted low, labeled (not a ruling) · ${fl.n_capability_evidence}`}
-                    rows={fl.capability_evidence.map((e) => ({ date: e.date, tag: e.capability, title: e.title, weight: e.weight, empirical: e.empirical }))}
-                    empty="No capability demonstration on record — seed only." />
-                  <EvidenceBlock title={`L2 ruling evidence (provenance) · ${fl.n_evidence}`}
-                    rows={fl.evidence.map((e) => ({ date: e.date, tag: e.tier, title: e.title, weight: e.weight, empirical: e.empirical, conflict: e.conflict, source: e.source }))}
-                    empty="No evidence yet — seed thesis only." />
-                  <EvidenceBlock title={`L3 adoption signals · ${fl.n_adoption_evidence}`}
-                    rows={fl.adoption_evidence.map((e) => ({ date: e.date, tag: e.market, title: e.title, weight: e.weight }))}
-                    empty="No market-adoption signal yet — seed only." />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Calibration log */}
-      {cal && (
-        <div className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">
-            Calibration — called before they landed
-          </h2>
-          <p className="text-sm text-[var(--text-dim)] mb-3">The engine grades itself, {cal.lead_days} days before each event, at threshold {cal.call_threshold}:</p>
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            {Object.entries(cal.by_order).map(([o, s]) => (
-              <span key={o} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)] bg-[var(--surface2)] text-xs font-mono whitespace-nowrap">
-                <span className="text-[var(--text-dim)]">L{o} {ORDER_NAME[o]}</span>
-                <b style={{ color: rateColor(s.hit_rate) }}>{pct(s.hit_rate)}</b>
-                <span className="text-[var(--text-muted)]">({s.hits}/{s.n})</span>
-              </span>
             ))}
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs mb-3 text-[var(--text-muted)] font-mono">
-            <span>P(L2|L1) <b className="text-[var(--text-dim)]">{pct(cal.conditionals.L1_to_L2.rate)}</b> ({cal.conditionals.L1_to_L2.n_backed}/{cal.conditionals.L1_to_L2.n_eligible})</span>
-            <span>P(L3|L2) <b className="text-[var(--text-dim)]">{pct(cal.conditionals.L2_to_L3.rate)}</b> ({cal.conditionals.L2_to_L3.n_backed}/{cal.conditionals.L2_to_L3.n_eligible})</span>
-            {cal.conditionals.L1_to_L2.prior_called_without_post_event.length > 0 && (
-              <span>capability outran the law: {cal.conditionals.L1_to_L2.prior_called_without_post_event.join(', ')}</span>
-            )}
-          </div>
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-[var(--text-muted)] border-b border-[var(--border)]">
-                  <th className="text-left font-semibold px-3 py-2">Landed</th>
-                  <th className="text-left font-semibold px-3 py-2">Order</th>
-                  <th className="text-left font-semibold px-3 py-2">Result</th>
-                  <th className="text-left font-semibold px-3 py-2">Fault line</th>
-                  <th className="text-left font-semibold px-3 py-2">Lead → event</th>
-                  <th className="text-left font-semibold px-3 py-2">Resolution</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cal.resolutions.map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--border)]/50">
-                    <td className="px-3 py-2 font-mono text-[var(--text-muted)] whitespace-nowrap">{r.date}</td>
-                    <td className="px-3 py-2 font-mono text-[var(--text-dim)]">L{r.order}</td>
-                    <td className="px-3 py-2">
-                      <span className="font-semibold" style={{ color: r.called ? 'var(--metric)' : 'var(--rose)' }}>
-                        {r.called ? '● called' : '○ missed'}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-[var(--text-dim)]">{r.fault_line}</td>
-                    <td className="px-3 py-2 font-mono text-[var(--text-muted)] whitespace-nowrap">{r.reading_at_lead} → {r.reading_at_event}</td>
-                    <td className="px-3 py-2 text-[var(--text-dim)]">{r.title}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="text-xs text-[var(--text-muted)] mt-2">
-            Point-in-time backtest: the engine replays itself {cal.lead_days} days before each event on the evidence available then. Misses are kept honest, not tuned away — the two L1 misses are first-of-kind capabilities with no precursor to call from.
-          </p>
         </div>
-      )}
-    </div>
-  );
-}
-
-function FlChip({ fl, onPick }: { fl: FaultLine; onPick: (id: string) => void }) {
-  return (
-    <button onClick={() => onPick(fl.id)}
-      className="underline decoration-dotted underline-offset-2 hover:text-[var(--primary)] transition-colors">
-      {fl.title}
-    </button>
-  );
-}
-
-// --- Executive summary: the biggest things going on, at a glance ---
-function ExecSummary({ queue, cal, threshold, onPick }: {
-  queue: FaultLine[]; cal: Calibration | null; threshold: number; onPick: (id: string) => void;
-}) {
-  const buildNow = queue.filter((f) => f.pressure >= threshold && f.adoption >= threshold);
-  const rising = queue.filter((f) => f.trend === 'rising');
-  const prepare = rising.filter((f) => !buildNow.includes(f));
-  const byId = (id: string) => queue.find((f) => f.id === id);
-  const watch = (cal?.conditionals.L1_to_L2.prior_called_without_post_event ?? [])
-    .map(byId).filter(Boolean) as FaultLine[];
-
-  const list = (fls: FaultLine[]) =>
-    fls.map((f, i) => (
-      <span key={f.id}>{i > 0 && ', '}<FlChip fl={f} onPick={onPick} /></span>
-    ));
-
-  return (
-    <div className="rounded-xl border p-5 mb-6"
-      style={{ borderColor: 'var(--primary)', backgroundColor: 'var(--primary-dim)' }}>
-      <div className="flex items-center gap-2 mb-2">
-        <Zap className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)]">Executive summary — what to do</h2>
-      </div>
-
-      {buildNow.length > 0 ? (
-        <div className="text-sm text-[var(--text-dim)] mb-4">
-          <p className="font-semibold text-[var(--text)] mb-1.5">What&apos;s happening</p>
-          <ul className="space-y-1 list-disc pl-4 mb-2">
-            {buildNow.slice(0, 3).map((f) => (<li key={f.id}>{f.vector}</li>))}
-            {buildNow.length > 3 && (
-              <li>Another {buildNow.length - 3} control{buildNow.length - 3 > 1 ? 's are' : ' is'} in the same corner — the law is moving on {buildNow.length - 3 > 1 ? 'them' : 'it'} and the market is standardizing the fix at the same time. They&apos;re listed in full below.</li>
-            )}
-          </ul>
-          <p>The pattern repeats: an AI capability is outrunning a duty you already owe, and the market is standardizing the fix before the rule is written.</p>
-          <p className="mt-1.5">The measures below are what it takes to be ready — build them ahead of the ruling, in this order:</p>
-        </div>
-      ) : (
-        <p className="text-sm text-[var(--text-dim)] mb-4">
-          Nothing has hit the build-now corner yet. Watch the rising lines below and get ahead of them.
-        </p>
-      )}
-
-      {buildNow.length > 0 && (
-        <ol className="space-y-3 mb-4">
-          {buildNow.slice(0, 5).map((f, i) => (
-            <li key={f.id} className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
-              <div className="min-w-0 space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-base font-semibold text-[var(--text)]" style={{ fontFamily: "'Fraunces', serif" }}>{f.control}</span>
-                  <span className="text-xs font-mono uppercase tracking-wide px-2 py-0.5 rounded-full" style={{ backgroundColor: leadColor(f.lead), color: '#fff' }}>{leadLabel(f.lead)}</span>
-                </div>
-                <p className="text-xs text-[var(--text-dim)]"><b className="text-[var(--text)]">What to put in place:</b> {f.build_now}</p>
-                <p className="text-xs text-[var(--text-dim)]"><b className="text-[var(--text)]">Why now:</b> {f.vector} {f.tech_driver}</p>
-                <button onClick={() => onPick(f.id)}
-                  className="text-xs underline decoration-dotted underline-offset-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                  see the evidence →
+        <div className="card overflow-hidden">
+          <div className="grid grid-cols-[2rem_1fr_5rem_6rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <span>#</span><span>Control · fault line</span><span>Lead</span><span>L1·L2·L3</span><span>Queue</span>
+          </div>
+          {queueRows.map((f) => {
+            const lead = leadBucket(f.lead);
+            const open = expanded === f.id;
+            return (
+              <div key={f.id} id={`row-${f.id}`} className={`border-b border-[var(--border)] last:border-0 ${hovered === f.id ? 'bg-[var(--brand-tint)]' : ''}`}>
+                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_6rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
+                  <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{ranks.get(f.id)}</span>
+                  <span>
+                    <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
+                    <span className="block text-[11px] text-[var(--text-muted)]">{f.title}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[12px]">
+                    <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
+                  </span>
+                  <span className="font-mono text-[13px] text-[var(--text)]">{whole(f.capability)}·{whole(f.pressure)}·{whole(f.adoption)}</span>
+                  <span className="font-mono text-[13px] font-bold text-[var(--text-strong)]">
+                    {whole(f.queue)} <span className="text-[10px] text-[var(--primary)]">{signed(queueDelta(f))}</span>
+                  </span>
                 </button>
+                {open && (
+                  <div className="px-4 pb-5 pt-1 grid md:grid-cols-2 gap-5 bg-[var(--sunken)]">
+                    <div className="space-y-3">
+                      <Meter label="L1 capability" seed={f.capability_seed} now={f.capability} />
+                      <Meter label="L2 ruling pressure" seed={f.pressure_seed} now={f.pressure} />
+                      <Meter label="L3 adoption" seed={f.adoption_seed} now={f.adoption} />
+                      <div className="pt-1">
+                        <p className="eyebrow mb-1">Why now</p>
+                        <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.vector}</p>
+                      </div>
+                      <div>
+                        <p className="eyebrow mb-1">What to put in place</p>
+                        <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.build_now}</p>
+                        <p className="text-[11px] text-[var(--text-muted)] mt-1">Model rules: {f.model_rules.join(', ')}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="eyebrow mb-1.5">L2 ruling evidence</p>
+                        <EvidenceList items={f.evidence} empty="No ruling evidence yet." />
+                      </div>
+                      <div>
+                        <p className="eyebrow mb-1.5">L3 adoption evidence</p>
+                        <EvidenceList items={f.adoption_evidence} empty="Not scored yet — no market signal recorded." />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </li>
-          ))}
-        </ol>
-      )}
+            );
+          })}
+        </div>
+      </section>
 
-      <div className="space-y-1.5 text-xs text-[var(--text-dim)] border-t border-[var(--primary)]/20 pt-3">
-        {prepare.length > 0 && (
-          <p><b className="text-[var(--text)]">Prepare next:</b> {list(prepare.slice(0, 4))} — pressure is rising but not mandatory yet. Scope the work now so you&apos;re not caught flat.</p>
-        )}
-        {watch.length > 0 && (
-          <p><b className="text-[var(--text)]">Just watch:</b> {list(watch)} — the capability is proven but no rule has landed. Don&apos;t build yet; don&apos;t be surprised when it moves.</p>
-        )}
-        {cal && (
-          <p className="text-[var(--text-muted)]">Why trust this: the engine called {cal.hits} of {cal.n_resolutions} real events {cal.lead_days} days before they landed. Its record is in the calibration log below.</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// --- The radar map: the clear picture. Every fault line placed by the two pressures
-//     that make a control mandatory; top-right corner = build now. Dig deeper by click. ---
-function RadarMap({ fls, threshold, onPick }: {
-  fls: FaultLine[]; threshold: number; onPick: (id: string) => void;
-}) {
-  // Wide aspect so it fills page width without towering. Coordinates map value 0-10.
-  const W = 1040, H = 520, mL = 72, mB = 56, mT = 40, mR = 44;
-  const pw = W - mL - mR, ph = H - mT - mB;
-  const X = (v: number) => mL + (v / 10) * pw;
-  const Y = (v: number) => mT + ph - (v / 10) * ph;
-  const rOf = (q: number) => 8 + q * 0.85;
-  const clampX = (x: number, r: number) => Math.max(mL + r, Math.min(mL + pw - r, x));
-  const clampY = (y: number, r: number) => Math.max(mT + r, Math.min(mT + ph - r, y));
-
-  // Number dots by queue rank (1 = most urgent). Keep every dot (center ± radius)
-  // inside the plot, and de-overlap by nudging toward the interior, not off-edge.
-  const ranked = [...fls].sort((a, b) => b.queue - a.queue);
-  const placed: { fl: FaultLine; x: number; y: number; n: number; r: number }[] = [];
-  ranked.forEach((fl, i) => {
-    const r = rOf(fl.queue);
-    let x = clampX(X(fl.pressure), r), y = clampY(Y(fl.adoption), r);
-    let guard = 0;
-    while (placed.some((p) => Math.hypot(p.x - x, p.y - y) < p.r + r + 4) && guard < 14) {
-      x = clampX(x - 18, r); y = clampY(y + 15, r); guard++;
-    }
-    placed.push({ fl, x, y, n: i + 1, r });
-  });
-
-  return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 mb-6">
-      <div className="text-xs text-[var(--text-dim)] mb-3">
-        <p className="font-semibold text-[var(--text)] mb-1.5">How to read it</p>
-        <ul className="space-y-1 list-disc pl-4">
-          <li>Each <b>dot</b> is a fault line.</li>
-          <li>It moves <b>right</b> as the law gets closer to acting.</li>
-          <li>It moves <b>up</b> as the market makes the fix table stakes.</li>
-          <li>The <b style={{ color: 'var(--primary)' }}>top-right corner</b> is build-now — urgent and about to be required.</li>
-          <li>Bigger dot = higher queue.</li>
-          <li>Color = lead time: <span style={{ color: 'var(--primary)' }}>now</span>, <span style={{ color: 'var(--amber)' }}>soon</span>, <span style={{ color: 'var(--slate)' }}>later</span>.</li>
-          <li>Click any dot or row to dig in.</li>
-        </ul>
-      </div>
-
-      {/* Full-width plot */}
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img"
-        aria-label="Quadrant map of legal-AI fault lines by ruling pressure and adoption pressure">
-        <rect x={X(threshold)} y={Y(10)} width={X(10) - X(threshold)} height={Y(threshold) - Y(10)}
-          fill="var(--primary)" opacity="0.09" />
-        <text x={X(10) - 8} y={Y(10) + 18} textAnchor="end" fontSize="13" fontWeight="700"
-          fill="var(--primary)" fontFamily="monospace">BUILD NOW</text>
-        <line x1={X(threshold)} y1={Y(10)} x2={X(threshold)} y2={Y(0)} stroke="var(--border-bright)" strokeDasharray="4 3" />
-        <line x1={X(0)} y1={Y(threshold)} x2={X(10)} y2={Y(threshold)} stroke="var(--border-bright)" strokeDasharray="4 3" />
-        <line x1={X(0)} y1={Y(0)} x2={X(10)} y2={Y(0)} stroke="var(--border)" />
-        <line x1={X(0)} y1={Y(0)} x2={X(0)} y2={Y(10)} stroke="var(--border)" />
-        <text x={mL + pw / 2} y={H - 12} textAnchor="middle" fontSize="13" fill="var(--text-dim)" fontFamily="monospace">
-          L2 ruling pressure →  will the law move
-        </text>
-        <text x={20} y={mT + ph / 2} textAnchor="middle" fontSize="13" fill="var(--text-dim)" fontFamily="monospace"
-          transform={`rotate(-90 20 ${mT + ph / 2})`}>
-          L3 adoption →  becoming table stakes
-        </text>
-        {placed.map(({ fl, x, y, n, r }) => {
-          const c = leadColor(fl.lead);
-          return (
-            <g key={fl.id} className="cursor-pointer" onClick={() => onPick(fl.id)}>
-              <circle cx={x} cy={y} r={r} fill={c} opacity="0.22" />
-              <circle cx={x} cy={y} r={r} fill="none" stroke={c} strokeWidth="1.5" />
-              <text x={x} y={y + 4} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--text)" fontFamily="monospace">{n}</text>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
-interface Row { date: string; tag: string; title: string; weight: number; empirical?: boolean; conflict?: boolean; source?: string; }
-
-function EvidenceBlock({ title, rows, empty }: { title: string; rows: Row[]; empty: string }) {
-  return (
-    <div className="mt-4">
-      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">{title}</p>
-      <div className="rounded-lg border border-[var(--border)] overflow-hidden">
-        {rows.length === 0 ? (
-          <p className="px-3 py-2 text-xs text-[var(--text-muted)] italic">{empty}</p>
-        ) : (
-          rows.map((r, i) => (
-            <div key={i} className="flex items-start gap-3 px-3 py-2 border-b border-[var(--border)]/40 last:border-0">
-              <span className="font-mono text-xs text-[var(--text-muted)] whitespace-nowrap w-20 flex-shrink-0">{r.date}</span>
-              <span className="text-xs font-mono uppercase px-1.5 py-0.5 rounded bg-[var(--surface2)] text-[var(--text-dim)] whitespace-nowrap flex-shrink-0">{r.tag}</span>
-              <span className="text-xs text-[var(--text-dim)] flex-1">
-                {r.title}
-                {r.empirical && <span className="ml-1 text-xs text-[var(--metric)]">data</span>}
-                {r.conflict && <span className="ml-1 text-xs text-[var(--rose)]">conflict</span>}
-                {r.source && <span className="block text-xs text-[var(--text-muted)]">{r.source} · w={r.weight}</span>}
-                {!r.source && <span className="ml-1 text-xs text-[var(--text-muted)]">w={r.weight}</span>}
+      {/* calibration */}
+      <section id="calibration">
+        <p className="eyebrow mb-1">Calibration</p>
+        <p className="text-[13px] text-[var(--text)] mb-4">The engine grades itself: {cal.lead_days} days before each event, at threshold {cal.call_threshold}. Called {cal.hits} of {cal.n_resolutions} real events before they landed.</p>
+        <div className="grid grid-cols-3 gap-3 mb-5">
+          {['2', '3', '1'].map((o) => {
+            const b = cal.by_order[o];
+            return (
+              <div key={o} className="card p-4 text-center">
+                <p className="font-mono text-2xl font-extrabold text-[var(--text-strong)]">{Math.round(b.hit_rate * 100)}%</p>
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{ORDER_LABEL[o]} · {b.hits}/{b.n}</p>
+              </div>
+            );
+          })}
+        </div>
+        <div className="card overflow-hidden">
+          <div className="grid grid-cols-[6rem_5rem_1fr_9rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <span>Landed</span><span>Stage</span><span>Event</span><span>At call → today</span>
+          </div>
+          {[...cal.resolutions].sort((a, b) => a.date.localeCompare(b.date)).map((r, i) => (
+            <div key={i} className="grid grid-cols-[6rem_5rem_1fr_9rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0">
+              <span className="font-mono text-[12px] text-[var(--text-muted)]">{r.date}</span>
+              <span className="font-mono text-[11px] text-[var(--text)]">L{r.order}</span>
+              <span className="text-[12px] text-[var(--text)]">
+                {r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="hover:text-[var(--primary)] underline decoration-[var(--border-strong)] underline-offset-2">{r.title}</a> : r.title}
+              </span>
+              <span className="flex items-center gap-2 font-mono text-[12px]">
+                <span className={`pill ${r.called ? 'pill-success' : 'pill-warn'}`}>{r.called ? 'CALLED' : 'MISSED'}</span>
+                <span className="text-[var(--text-muted)]">{dec(r.reading_at_lead)}→{dec(r.reading_at_event)}</span>
               </span>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-[var(--text-muted)] leading-relaxed mt-3">
+          The L1 misses are honest: they were first-of-kind capability jumps with no precursor to call from. The engine reports them as misses rather than tuning them away.
+        </p>
+      </section>
     </div>
   );
 }

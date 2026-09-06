@@ -153,10 +153,10 @@ export default function Sidebar() {
     pathname === href || pathname.startsWith(href + '/');
 
   const navLinkClass = (active: boolean) =>
-    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors no-underline ${
+    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors no-underline border-l-[3px] ${
       active
-        ? 'text-white'
-        : 'text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--text)]'
+        ? 'border-[var(--primary)] bg-[var(--brand-tint)] text-[var(--primary)] font-bold'
+        : 'border-transparent text-[var(--text-dim)] font-medium hover:bg-[var(--sunken)] hover:text-[var(--text-strong)]'
     }`;
 
   const renderLink = (item: NavItem) => {
@@ -167,7 +167,6 @@ export default function Sidebar() {
         key={item.href}
         href={item.href}
         className={navLinkClass(active)}
-        style={active ? { backgroundColor: 'var(--primary)' } : undefined}
       >
         <Icon className="w-4 h-4" />
         {item.label}
@@ -255,7 +254,6 @@ export default function Sidebar() {
           <Link
             href="/guides"
             className={navLinkClass(isActive('/guides'))}
-            style={isActive('/guides') ? { backgroundColor: 'var(--primary)' } : undefined}
           >
             <BookOpen className="w-4 h-4" />
             Guides & Diagrams

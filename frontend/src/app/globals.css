@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 @import "tailwindcss";
 
@@ -10,136 +10,177 @@
   --color-secondary: var(--secondary);
   --color-metric: var(--metric);
   --color-border: var(--border);
-  --font-sans: 'Fraunces', Georgia, serif;
-  --font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
-  /* Halved radius scale — tighter panels app-wide (rounded-full unaffected). */
-  --radius-sm: 0.125rem;
-  --radius-md: 0.1875rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.375rem;
-  --radius-2xl: 0.5rem;
-  --radius-3xl: 0.75rem;
+  --font-sans: 'Mulish', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, Menlo, 'SF Mono', Consolas, monospace;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.6875rem;
+  --radius-3xl: 0.875rem;
 }
 
 :root {
-  /* Gulf Stream Racing — Light */
-  --bg: #eef4f9;
-  --surface: #ffffff;
-  --surface2: #f5f8fc;
-  --border: #c8daea;
-  --border-bright: #a0bedb;
-  --text: #0a1628;
-  --text-dim: #3d5a7a;
-  --text-muted: #7a9ab8;
-  --primary: #e8621a;
-  --primary-dim: rgba(232, 98, 26, 0.08);
-  --secondary: #4a90c4;
-  --secondary-dim: rgba(74, 144, 196, 0.08);
-  --metric: #0f766e;
-  --metric-dim: rgba(15, 118, 110, 0.06);
-  --amber: #b45309;
-  --rose: #e11d48;
-  --violet: #7c3aed;
-  --slate: #475569;
+  /* Warm-paper / maroon house style */
+  --bg: #FAF8F7;
+  --surface: #FFFFFF;
+  --surface2: #F2F0EE;
+  --sunken: #F2F0EE;
+  --border: #E7E4E2;
+  --border-bright: #D6D2D0;
+  --border-strong: #D6D2D0;
+  --text-strong: #1F1A1C;
+  --text: #4A4547;      /* body — darker than spec muted for 4.5:1+ */
+  --text-dim: #76716F;
+  --text-muted: #938E8C;
+  --primary: #A4093F;
+  --primary-hover: #8F0B39;
+  --primary-active: #7A0A30;
+  --primary-dim: #FCF3F6;
+  --brand-tint: #FCF3F6;
+  --brand-tint2: #F7E4EB;
+  --secondary: #8FBFAE;
+  --secondary-dim: rgba(143, 191, 174, 0.14);
+  --metric: #4A7A3D;
+  --metric-dim: #EAF2E6;
+  --amber: #C9821B;
+  --amber-dim: #FBF0DB;
+  --rose: #B3261E;
+  --violet: #7A0A30;
+  --slate: #76716F;
 }
 
 .dark {
-  --bg: #0a1628;
-  --surface: #132240;
-  --surface2: #1a2d52;
-  --border: #1a2d52;
-  --border-bright: #2d4570;
-  --text: #e8edf5;
-  --text-dim: #9bb0d4;
-  --text-muted: #5e7aa3;
-  --primary: #f37021;
-  --primary-dim: rgba(243, 112, 33, 0.12);
-  --secondary: #6cace4;
-  --secondary-dim: rgba(108, 172, 228, 0.12);
-  --metric: #2dd4bf;
-  --metric-dim: rgba(45, 212, 191, 0.08);
-  --amber: #f59e0b;
-  --rose: #fb7185;
-  --violet: #a78bfa;
-  --slate: #94a3b8;
+  --bg: #17131A;
+  --surface: #211B24;
+  --surface2: #2A222E;
+  --sunken: #2A222E;
+  --border: #352C39;
+  --border-bright: #473B4C;
+  --border-strong: #473B4C;
+  --text-strong: #F5F0F2;
+  --text: #D8D0D4;
+  --text-dim: #A79FA3;
+  --text-muted: #857D82;
+  --primary: #E0537F;
+  --primary-hover: #EC6B92;
+  --primary-active: #F08AA9;
+  --primary-dim: rgba(224, 83, 127, 0.12);
+  --brand-tint: rgba(224, 83, 127, 0.10);
+  --brand-tint2: rgba(224, 83, 127, 0.16);
+  --secondary: #8FBFAE;
+  --secondary-dim: rgba(143, 191, 174, 0.12);
+  --metric: #7FB56F;
+  --metric-dim: rgba(127, 181, 111, 0.12);
+  --amber: #E0A94A;
+  --amber-dim: rgba(224, 169, 74, 0.14);
+  --rose: #E8756D;
+  --violet: #E0537F;
+  --slate: #A79FA3;
 }
 
 body {
   background: var(--bg);
-  background-image:
-    radial-gradient(ellipse at 80% 0%, var(--primary-dim) 0%, transparent 50%),
-    radial-gradient(ellipse at 20% 60%, var(--secondary-dim) 0%, transparent 40%);
   color: var(--text);
   font-family: var(--font-sans);
   min-height: 100vh;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
+
+h1, h2, h3, h4 {
+  color: var(--text-strong);
+  letter-spacing: -0.02em;
+}
+
+/* Section eyebrow */
+.eyebrow {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #B7B2B0;
+}
+
+/* Pills — fully rounded */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 9999px;
+  line-height: 1.4;
+}
+.pill-success { background: var(--metric-dim); color: var(--metric); }
+.pill-warn { background: var(--amber-dim); color: var(--amber); }
+.pill-brand { background: var(--brand-tint); color: var(--primary); }
 
 /* Layout components */
 .nav-blur {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
   border-bottom: 1px solid var(--border);
 }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  transition: border-color 0.15s, background 0.15s;
+  border-radius: 11px;
+  box-shadow: 0 1px 2px rgba(31, 26, 28, 0.03);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 .card:hover {
-  border-color: var(--secondary);
+  border-color: var(--border-bright);
 }
 
 .btn-primary {
   background: var(--primary);
   color: white;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-family: var(--font-mono);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: opacity 0.15s;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: background 0.15s;
 }
-.btn-primary:hover { opacity: 0.9; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { background: var(--primary-active); }
 
 .btn-secondary {
   background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-family: var(--font-mono);
+  border: 1px solid var(--border-strong);
+  color: var(--text-strong);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: border-color 0.15s;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: border-color 0.15s, background 0.15s;
 }
-.btn-secondary:hover { border-color: var(--secondary); }
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
 
 .report-body { color: var(--text); line-height: 1.6; font-size: 14px; }
-.report-body h1 { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.75rem; line-height: 1.2; }
-.report-body h2 { font-size: 1.2rem; font-weight: 700; margin: 1.25rem 0 0.5rem; line-height: 1.25; }
-.report-body h3 { font-size: 1.05rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+.report-body h1 { font-size: 1.5rem; font-weight: 800; margin: 1.5rem 0 0.75rem; line-height: 1.2; }
+.report-body h2 { font-size: 1.2rem; font-weight: 800; margin: 1.25rem 0 0.5rem; line-height: 1.25; }
+.report-body h3 { font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.5rem; }
 .report-body p { margin: 0.5rem 0; }
 .report-body ul { list-style: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
 .report-body ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
 .report-body li { margin: 0.25rem 0; }
-.report-body strong { color: var(--text); }
+.report-body strong { color: var(--text-strong); }
 .report-body table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 13px; }
-.report-body th { text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600; }
+.report-body th { text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 700; }
 .report-body td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
 
-/* Print / Save-as-PDF: isolate one report + its charts, drop all app chrome.
-   Native Cmd+P uses these rules; the "Download PDF" button just opens that dialog.
-   When printing, body gets .printing and the run view is marked .print-root; the
-   chosen report card stays, everything else in the app is hidden. */
 @media print {
-  /* Hide app chrome and everything tagged .no-print; the target report + charts remain
-     in normal flow so long reports paginate correctly. */
   .no-print { display: none !important; }
   body.printing aside,
   body.printing .theme-toggle-slot { display: none !important; }
@@ -154,26 +195,26 @@ body {
 .badge {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 3px;
+  padding: 2px 7px;
+  border-radius: 9999px;
 }
 
 .badge-built { background: var(--metric-dim); color: var(--metric); }
-.badge-roadmap { background: var(--amber-dim, rgba(180,83,9,0.08)); color: var(--amber, #b45309); }
-.badge-critical { background: rgba(225,29,72,0.1); color: #e11d48; }
-.badge-high { background: rgba(232,98,26,0.1); color: var(--primary); }
-.badge-medium { background: rgba(180,83,9,0.1); color: var(--amber, #b45309); }
-.badge-low { background: rgba(71,85,105,0.1); color: var(--slate, #475569); }
+.badge-roadmap { background: var(--amber-dim); color: var(--amber); }
+.badge-critical { background: var(--brand-tint2); color: var(--primary); }
+.badge-high { background: var(--brand-tint); color: var(--primary); }
+.badge-medium { background: var(--amber-dim); color: var(--amber); }
+.badge-low { background: var(--sunken); color: var(--text-dim); }
 
 input, textarea, select {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 10px 14px;
-  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 9px 13px;
+  color: var(--text-strong);
   font-family: var(--font-sans);
   font-size: 14px;
   width: 100%;
@@ -181,7 +222,7 @@ input, textarea, select {
 }
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--secondary);
+  border-color: var(--primary);
 }
 
 input[type="range"] {
@@ -192,6 +233,6 @@ input[type="range"] {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 9999px; }
