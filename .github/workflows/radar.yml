@@ -1,0 +1,35 @@
+name: Fault-Line Radar
+
+# Regenerates the Legal-AI Fault-Line Radar page on a schedule and commits it.
+# Zero infra: a scheduled script writes a static page; GitHub Pages serves docs/radar/.
+# v1 scores the curated feed.jsonl deterministically. Ingestion (Voyage) is opt-in.
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"      # Mondays 05:17 UTC
+  workflow_dispatch: {}         # manual trigger from the Actions tab
+
+permissions:
+  contents: write               # allow committing the regenerated page
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regenerate radar
+        run: python radar/run.py
+      - name: Commit if changed
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add docs/radar/index.html docs/radar/data.json
+          if git diff --cached --quiet; then
+            echo "No change in radar output."
+          else
+            git commit -m "radar: regenerate fault-line page [skip ci]"
+            git push
+          fi
