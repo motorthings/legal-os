@@ -426,7 +426,6 @@ function RadarMap({ fls, threshold, onPick }: {
     }
     placed.push({ fl, x, y, n: i + 1, r });
   });
-  const rank = new Map(placed.map((p) => [p.fl.id, p.n]));
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 mb-6">
@@ -472,24 +471,6 @@ function RadarMap({ fls, threshold, onPick }: {
           );
         })}
       </svg>
-
-      {/* One row per item, below the plot, with a short explanation */}
-      <div className="mt-4 border-t border-[var(--border)]">
-        {ranked.map((fl) => (
-          <button key={fl.id} onClick={() => onPick(fl.id)}
-            className="w-full flex items-center gap-3 text-left py-2.5 px-1 border-b border-[var(--border)]/50 hover:bg-[var(--surface2)] transition-colors">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold flex-shrink-0"
-              style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{rank.get(fl.id)}</span>
-            <span className="text-sm font-semibold text-[var(--text)] w-48 flex-shrink-0 truncate" style={{ fontFamily: "'Fraunces', serif" }}>{fl.title}</span>
-            <span className="text-xs text-[var(--text-dim)] flex-1 min-w-0">{fl.vector}</span>
-            <span className="hidden md:inline font-mono text-xs text-[var(--text-muted)] flex-shrink-0 whitespace-nowrap">
-              cap {fl.capability.toFixed(1)} · rule {fl.pressure.toFixed(1)} · adopt {fl.adoption.toFixed(1)}
-            </span>
-            <span className="font-mono text-xs font-bold flex-shrink-0 w-16 text-right" style={{ color: meterColor(fl.queue) }}>Q {fl.queue.toFixed(1)}</span>
-            <span className="hidden sm:inline text-xs font-mono uppercase px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: leadColor(fl.lead), color: '#fff' }}>{leadLabel(fl.lead)}</span>
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
