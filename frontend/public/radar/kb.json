@@ -1,0 +1,691 @@
+{
+  "n_items": 25,
+  "items": [
+    {
+      "date": "2023-06-22",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations",
+      "source": "S.D.N.Y. (Judge Castel)",
+      "url": "https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Attorney sanctioned $5,000 under Federal Rule of Civil Procedure 11 for filing a brief citing six nonexistent cases fabricated by ChatGPT. First mainstream AI hallucination sanction. Candor to the tribunal and duty to verify authority.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize, 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-07-29",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+      "source": "ABA Standing Committee on Ethics",
+      "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "process_mandate",
+      "order": null,
+      "what": "Maps existing Model Rules onto generative AI: competence, confidentiality, communication, supervision, meritorious claims, candor to the tribunal, reasonable fees. Lawyers must have a reasonable understanding of the tool's capabilities and limitations and must review output. Human review required.",
+      "role": [
+        "L2 ruling",
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Competence becomes an affirmative governance duty, 'A human reviewed it' stops being enough, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
+    },
+    {
+      "date": "2025-02-01",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Texas Ethics Opinion 705 on generative AI",
+      "source": "Texas State Bar Professional Ethics Committee",
+      "url": "https://brief.steno.com/legal-ai-rules-by-state",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "State-level ethics guidance on lawyers' use of generative AI, echoing competence, confidentiality, and supervision duties.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Competence becomes an affirmative governance duty, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-06-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Colorado AI Act takes effect",
+      "source": "Colorado (statute)",
+      "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Colorado AI Act creates legal requirements for high-risk AI: risk management systems, conformity assessments, human oversight mechanisms. Formalized AI policy moves from best practice to compliance obligation.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-12-15",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Couvrette v. Wisnovsky \u2014 ~$110K penalty for 15 fake cases, 8 fabricated quotes",
+      "source": "Court order",
+      "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Largest known US AI-citation penalty: ~$110,204 across orders Dec 2025 and March 2026 against attorneys whose briefs contained 15 nonexistent cases and 8 fabricated quotations. Verify citation duty; candor.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough, Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-02-15",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "New York Formal Opinion 2025-6 \u2014 recording/transcribing client meetings with AI",
+      "source": "New York State Bar",
+      "url": "https://brief.steno.com/legal-ai-rules-by-state",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Guidance on AI recording and transcription of client meetings, emphasizing confidentiality and informed consent. Client data governance.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-04-01",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "AI sanction wave: ~$145K in Q1 2026 penalties",
+      "source": "EDRM / ComplexDiscovery",
+      "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Courts imposed roughly $145,000 in AI fake-citation sanctions in Q1 2026, including a record Oregon penalty and the first substantial federal appellate fine tied to AI-tainted briefs. 300+ judges now require AI disclosure in filings. Reasonable inquiry and verification.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Disclosure & certification standardize, 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-04-15",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Nebraska Supreme Court suspends attorney over hallucinated appeal brief",
+      "source": "Nebraska Supreme Court",
+      "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Attorney suspended after an appeal brief contained 57 of 63 defective citations including 20 hallucinated cases; disciplinary investigation ordered. Supervision and candor. The cover-up drew the harsher response across cases.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough, Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-05-14",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "California updated Practical Guidance for Generative AI",
+      "source": "California Bar Board of Trustees",
+      "url": "https://www.clio.com/blog/ai-legal-compliance/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Board approved updated practical guidance for the use of generative AI in the practice of law. Confidentiality, competence, disclosure.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Disclosure & certification standardize, Competence becomes an affirmative governance duty, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-06-01",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
+      "source": "Stanford (research)",
+      "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+      "empirical": true,
+      "conflict": false,
+      "capability": "benchmark",
+      "market": "cert",
+      "order": null,
+      "what": "Stanford research documented hallucination/error rates of 34% for Westlaw AI-Assisted Research and 17% for Lexis+ AI. Hallucination rate becomes a measurable liability input for tool selection and a benchmark question. Competence in tool choice.",
+      "role": [
+        "L1 capability",
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-06-15",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+      "source": "CNA (largest US legal malpractice carrier)",
+      "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": "insurer",
+      "order": null,
+      "what": "CNA introduced supplemental AI-usage questionnaires at renewal; firms unable to demonstrate AI governance face higher premiums or coverage restrictions. AXA XL offers an AI endorsement ~5-15% above base premium. An uncertified AI system trends toward uninsurable and therefore unusable. Insurers act as continuous private regulators.",
+      "role": [
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "insurance",
+          "title": "Insurance becomes the real regulator"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Insurance becomes the real regulator. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-08-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "EU AI Act obligations take effect",
+      "source": "European Union (regulation)",
+      "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "process_mandate",
+      "order": null,
+      "what": "EU AI Act obligations for high-risk AI: conformity assessments, risk management systems, operational human oversight. Cross-jurisdiction convergence pressure on multinational legal departments.",
+      "role": [
+        "L2 ruling",
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
+    },
+    {
+      "date": "2026-08-29",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
+      "source": "Federal legislation (proposed) / Reg Review",
+      "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "process_mandate",
+      "order": null,
+      "what": "Proposed AI AGENT Act would require covered AI agents to operate under transparent, documented, scope-limited, revocable user authorization and to keep records of their actions. Agentic supervision and UPL-by-proxy concerns.",
+      "role": [
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
+    },
+    {
+      "date": "2026-08-31",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Federal court excludes expert for AI-hallucinated citations",
+      "source": "Federal court / WSBA",
+      "url": "https://nwsidebar.wsba.org/2026/08/31/federal-court-excludes-expert-for-ai-hallucinated-citations/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": "process_mandate",
+      "order": null,
+      "what": "Court excluded an expert witness whose report contained AI-hallucinated citations, extending exposure beyond attorney briefs to expert work product. Verification duty broadens.",
+      "role": [
+        "L2 ruling",
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2019-03-23",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "France criminalizes judicial profiling (Justice Reform Act, Art. 33)",
+      "source": "France (statute)",
+      "url": "https://brief.steno.com/legal-ai-rules-by-state",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "France's Justice Reform Act Article 33 prohibits the use of analytics to predict or profile the decisions of individual named judges, with criminal penalties. First national ban on judicial analytics / judicial profiling; signals a regulatory direction for litigation outcome prediction and judge simulation.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "judicial_analytics",
+          "title": "Judicial / litigation analytics gets regulated"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Judicial / litigation analytics gets regulated. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2023-12-12",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges",
+      "source": "Courts and Tribunals Judiciary (UK)",
+      "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "First guidance of its kind to judicial office holders, issued with the Lady Chief Justice and Master of the Rolls. Permits AI as a 'secondary tool' but says legal research and analysis is 'not recommended'; prohibits entering confidential or private information into public AI chatbots; requires independent verification of all AI output. Extends the disclosure and verification duty to a major common-law jurisdiction.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Disclosure & certification standardize, 'A human reviewed it' stops being enough, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-01-11",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Stanford/Yale 'Large Legal Fictions' \u2014 58\u201388% hallucination rate on legal queries",
+      "source": "Dahl, Magesh, Suzgun & Ho (Journal of Legal Analysis)",
+      "url": "https://arxiv.org/abs/2401.01301",
+      "empirical": true,
+      "conflict": false,
+      "capability": "benchmark",
+      "market": null,
+      "order": 1,
+      "what": "Tested general-purpose LLMs against 15,000 federal court cases: hallucination rates of 58% (GPT-4) to 88% (Llama 2) on verifiable legal questions, rising with complexity and accompanied by systematic overconfidence. Foundational capability evidence that makes the error rate a measurable input to tool choice and the benchmark a compliance instrument.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-01-19",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Florida Bar Ethics Opinion 24-1 \u2014 self-learning AI and client confidentiality",
+      "source": "The Florida Bar Board of Governors",
+      "url": "https://www.hinshawlaw.com/en/insights/lawyers-for-the-profession-alert/florida-bar-advisory-opinion-24-1-gives-green-light-to-generative-ai-use-by-lawyers-with-four-ethical-caveats",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "One of the first state ethics opinions on generative AI. Requires due diligence into whether a tool is 'self-learning' (retains inputs for training data), informed client consent before disclosing confidential information to a third-party tool, and treats AI like a non-lawyer assistant for supervision. Anchors the no-training clause as an ethical default and confidentiality as a data governance question.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-12-08",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
+      "source": "European Union (Directive)",
+      "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "In force December 8, 2024. Broadens 'product' to include software and AI systems regardless of supply mode, making AI providers subject to strict product liability as manufacturers. Non-compliance with the EU AI Act directly informs a finding of defectiveness; rebuttable presumptions of defect/causation ease the claimant's burden. A rare concrete shift of vendor liability onto AI suppliers rather than only the deploying lawyer.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        },
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Liability shifts partway to vendors, Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-04-01",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
+      "source": "New Jersey Supreme Court",
+      "url": "https://www.lexology.com/library/detail.aspx?g=c65abffb-7123-4c7f-a6a1-89cde8e24945",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "process_mandate",
+      "order": 3,
+      "what": "Approved April 2025; effective January 1, 2027. Mandates one technology-related continuing legal education credit every two years, explicitly including developments in AI. Converts technological competence from an aspirational duty into a standing training requirement, foreshadowing broader mandatory AI CLE.",
+      "role": [
+        "L2 ruling",
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
+    },
+    {
+      "date": "2025-09-29",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards",
+      "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
+      "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "Introduced September 29, 2025. Would create federal product liability causes of action for AI systems \u2014 defective design, failure to warn, breach of express warranty, strict liability \u2014 while barring Section 230 immunity and waiver clauses. A legislative push to place vendor liability and accountability on AI developers, not only on the deploying professional.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-11-24",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Virginia LEO 1901 \u2014 value-based billing need not shrink when AI cuts time",
+      "source": "Supreme Court of Virginia / Virginia State Bar",
+      "url": "https://www.vacourts.gov/static/courts/scv/amendments/leo_1901.pdf",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "Approved November 24, 2025. Holds that a lawyer is not ethically required to reduce a non-hourly, value-based billing fee merely because generative AI reduced the time spent. Diverges from ABA Formal Opinion 512's suggestion that charging the same flat fee may be unreasonable; efficiency gains, specialized AI skill, and professional judgment support fee reasonableness. Hourly billing must still reflect actual time. First state opinion squarely on AI and fee reasonableness.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "fees",
+          "title": "The billable hour cracks under AI"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the The billable hour cracks under AI. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-01-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Texas Responsible AI Governance Act (TRAIGA) takes effect",
+      "source": "Texas (statute)",
+      "url": "https://capitol.texas.gov/BillLookup/History.aspx?LegSess=89R&Bill=HB149",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "Effective January 1, 2026. Comprehensive state AI law: intent-based prohibitions on discriminatory or manipulative AI, AG enforcement with $10,000\u2013$200,000 penalties and a 60-day cure period, no private right of action, plus a regulatory sandbox and safe harbor. Deepens the patchwork of state AI regulation that forces multi-jurisdiction firms toward one operating model.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-06-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Withers v. Aberdeen \u2014 both sides sanctioned, four lawyers removed for AI hallucinations",
+      "source": "N.D. Miss. (court order)",
+      "url": "https://grllp.com/blog/All-lawyers-in-action-removed-from-the-record-for-misuse-of-AI-Withers-v.-Aberdeen-City-896",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": 2,
+      "what": "Attorneys for both parties filed submissions containing hallucinated citations. The court revoked two pro hac vice admissions (two-year bar) and disqualified two local counsel, fining them; one attorney's claim of not knowing AI could hallucinate was found 'incredulous.' The underlying dispute concerned reasonable attorney fees. Hardens verification and disclosure duties and rejects ignorance as a defense.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough, Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-05-23",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
+      "source": "Magesh, Surani, Dahl, Suzgun, Manning & Ho (Stanford RegLab)",
+      "url": "https://arxiv.org/abs/2405.20362",
+      "empirical": true,
+      "conflict": false,
+      "capability": "benchmark",
+      "market": null,
+      "order": 1,
+      "what": "First preregistered empirical benchmark of purpose-built, retrieval-augmented legal AI tools (Lexis+ AI, Westlaw AI-Assisted Research, Ask Practical Law): each hallucinated on 17% to 34% of queries despite vendor 'hallucination-free' marketing. Confident, well-cited but wrong answers are the dominant failure mode. The authors conclude responsible use demands careful human review and independent verification of every AI output \u2014 attestation that 'a human reviewed it' is insufficient when the error is a plausible fabricated citation. Establishes both the error-rate benchmark and the verification duty as measurable capability facts.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges, 'A human reviewed it' stops being enough. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    }
+  ]
+}

@@ -9,6 +9,7 @@ from pathlib import Path
 
 from score import score
 import calibration
+import kb
 
 OUT_DIR = Path(__file__).resolve().parents[1] / "docs" / "radar"
 # Second output: the app serves the radar as a static asset (Vercel deploys only
@@ -242,17 +243,21 @@ def render(data):
 
 def build(as_of=None):
     data = score(as_of=as_of)
+    kbd = kb.compose()  # the full source library: what + derived why, per doc
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "data.json").write_text(json.dumps(data, indent=2))
     (OUT_DIR / "index.html").write_text(render(data))
+    (OUT_DIR / "kb.json").write_text(json.dumps(kbd, indent=2))
 
     # Mirror the machine-readable outputs into the app's public dir so the in-app
-    # /radar page can render the same deterministic scores + calibration.
+    # /radar page can render the same deterministic scores + calibration + KB.
     if FRONTEND_DIR.parent.exists():  # only when the frontend is present
         FRONTEND_DIR.mkdir(parents=True, exist_ok=True)
         (FRONTEND_DIR / "data.json").write_text(json.dumps(data, indent=2))
         (FRONTEND_DIR / "calibration.json").write_text(
             json.dumps(calibration.report(), indent=2))
+        (FRONTEND_DIR / "kb.json").write_text(json.dumps(kbd, indent=2))
     return data
 
 

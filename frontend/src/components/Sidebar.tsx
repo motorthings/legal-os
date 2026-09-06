@@ -9,7 +9,7 @@ import {
   FileText, LogOut, Scale, Search, Shield,
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
-  LayoutDashboard, FileCheck2, Radar,
+  LayoutDashboard, FileCheck2, Radar, Database,
 } from 'lucide-react';
 
 type Persona = 'attorney' | 'leader' | 'tour';
@@ -18,6 +18,8 @@ interface NavItem {
   href: string;
   label: string;
   icon: typeof Scale;
+  /** Match only the exact path, not nested routes (e.g. /radar vs /radar/kb). */
+  exact?: boolean;
 }
 
 interface NavGroup {
@@ -42,7 +44,8 @@ const ALL_FUNCTIONS: NavItem[] = [
   { href: '/km', label: 'KM Intelligence', icon: BarChart3 },
   { href: '/reporting', label: 'Value Reporting', icon: Scale3D },
   { href: '/simulation', label: 'Firm Simulation', icon: Building2 },
-  { href: '/radar', label: 'Fault-Line Radar', icon: Radar },
+  { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
+  { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
 ];
 
 const NAV: Record<Persona, NavGroup[]> = {
@@ -80,7 +83,13 @@ const NAV: Record<Persona, NavGroup[]> = {
       items: [
         { href: '/reporting', label: 'Value Reporting', icon: Scale3D },
         { href: '/simulation', label: 'Firm Simulation', icon: Building2 },
-        { href: '/radar', label: 'Fault-Line Radar', icon: Radar },
+      ],
+    },
+    {
+      label: 'Predict',
+      items: [
+        { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
+        { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
       ],
     },
   ],
@@ -149,8 +158,8 @@ export default function Sidebar() {
 
   const selectPersona = (next: Persona) => setPersonaStored(next);
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href: string, exact?: boolean) =>
+    exact ? pathname === href : pathname === href || pathname.startsWith(href + '/');
 
   const navLinkClass = (active: boolean) =>
     `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors no-underline border-l-[3px] ${
@@ -161,7 +170,7 @@ export default function Sidebar() {
 
   const renderLink = (item: NavItem) => {
     const Icon = item.icon;
-    const active = isActive(item.href);
+    const active = isActive(item.href, item.exact);
     return (
       <Link
         key={item.href}
