@@ -1,0 +1,996 @@
+{
+  "generated_at": "2026-09-06T03:02:15.518111+00:00",
+  "as_of": "2026-09-05",
+  "knobs": {
+    "tier_weights": {
+      "T1": 1.0,
+      "T2": 0.8,
+      "T3": 0.6,
+      "T4": 0.35,
+      "T5": 0.008
+    },
+    "conflict_discount": 0.4,
+    "empirical_boost": 1.25,
+    "corroboration_step": 0.15,
+    "half_life_days": 180,
+    "standing_tiers": [
+      "T1",
+      "T2"
+    ],
+    "market_weights": {
+      "insurer": 1.0,
+      "procurement": 0.85,
+      "deployment": 0.7,
+      "cert": 0.6,
+      "process_mandate": 0.55,
+      "commentary": 0.2,
+      "pundit": 0.02
+    },
+    "adoption_seeds": {
+      "insurance": 7.5,
+      "disclosure": 7.0,
+      "verification": 6.5,
+      "convergence": 7.0,
+      "confidentiality": 6.0,
+      "benchmark": 5.5,
+      "competence": 5.5,
+      "agentic": 5.0,
+      "fees": 3.0,
+      "judicial_analytics": 3.0,
+      "vendor_liability": 2.5
+    },
+    "call_threshold": 7.0,
+    "lead_days": 90
+  },
+  "feed_sha256": "fdeb3936873e8b4fd89e4780a1579d5a71d7a2a79959c5a5a3bb247de2b8d1ae",
+  "feed_items": 15,
+  "fault_lines": [
+    {
+      "id": "disclosure",
+      "title": "Disclosure & certification standardize",
+      "model_rules": [
+        "3.3",
+        "Rule 11"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3a \u2014 reactive",
+      "vector": "Mata was reactive; 300+ judges now require prospective disclosure.",
+      "tech_driver": "Patchwork of standing orders collapses into a uniform certification.",
+      "build_now": "Verification-by-default with an auditable trail, so certification is a byproduct.",
+      "pressure_seed": 8.0,
+      "pressure": 9.5,
+      "trend": "rising",
+      "weighted_evidence": 3.91,
+      "corroboration": 0.3,
+      "n_evidence": 4,
+      "evidence": [
+        {
+          "date": "2023-06-22",
+          "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations",
+          "tier": "T1",
+          "source": "S.D.N.Y. (Judge Castel)",
+          "url": "https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/",
+          "weight": 1.25,
+          "matched": [
+            "rule 11"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-05-14",
+          "title": "California updated Practical Guidance for Generative AI",
+          "tier": "T2",
+          "source": "California Bar Board of Trustees",
+          "url": "https://www.clio.com/blog/ai-legal-compliance/",
+          "weight": 0.8,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "source": "CNA (largest US legal malpractice carrier)",
+          "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
+          "weight": 0.547,
+          "matched": [
+            "certif"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-04-01",
+          "title": "AI sanction wave: ~$145K in Q1 2026 penalties",
+          "tier": "T3",
+          "source": "EDRM / ComplexDiscovery",
+          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+          "weight": 0.41,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": true,
+          "conflict": false
+        }
+      ],
+      "control": "Verification-by-default with an audit trail",
+      "adoption_seed": 7.0,
+      "adoption": 8.1,
+      "adoption_weighted": 0.91,
+      "market_classes": [
+        "insurer"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "market": "insurer",
+          "weight": 0.912,
+          "matched": [
+            "certif"
+          ]
+        }
+      ],
+      "queue": 7.7,
+      "lead": "now"
+    },
+    {
+      "id": "verification",
+      "title": "'A human reviewed it' stops being enough",
+      "model_rules": [
+        "5.1",
+        "5.3"
+      ],
+      "horizon": "near-mid",
+      "layer": "3b \u2014 operating model",
+      "vector": "Attestation gives way to a documented verification process.",
+      "tech_driver": "Multi-step agentic work no single human fully traces.",
+      "build_now": "Logging, trace analysis, evaluation records as the compliance artifact.",
+      "pressure_seed": 7.5,
+      "pressure": 9.4,
+      "trend": "rising",
+      "weighted_evidence": 4.5,
+      "corroboration": 0.3,
+      "n_evidence": 4,
+      "evidence": [
+        {
+          "date": "2025-12-15",
+          "title": "Couvrette v. Wisnovsky \u2014 ~$110K penalty for 15 fake cases, 8 fabricated quotes",
+          "tier": "T1",
+          "source": "Court order",
+          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+          "weight": 1.25,
+          "matched": [
+            "verify citation"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-08-31",
+          "title": "Federal court excludes expert for AI-hallucinated citations",
+          "tier": "T2",
+          "source": "Federal court / WSBA",
+          "url": "https://nwsidebar.wsba.org/2026/08/31/federal-court-excludes-expert-for-ai-hallucinated-citations/",
+          "weight": 1.0,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "source": "ABA Standing Committee on Ethics",
+          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+          "weight": 0.8,
+          "matched": [
+            "human review"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-04-01",
+          "title": "AI sanction wave: ~$145K in Q1 2026 penalties",
+          "tier": "T3",
+          "source": "EDRM / ComplexDiscovery",
+          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+          "weight": 0.41,
+          "matched": [
+            "verification",
+            "reasonable inquiry"
+          ],
+          "empirical": true,
+          "conflict": false
+        }
+      ],
+      "control": "Documented verification + trace logs",
+      "adoption_seed": 6.5,
+      "adoption": 8.1,
+      "adoption_weighted": 1.24,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 2,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-31",
+          "title": "Federal court excludes expert for AI-hallucinated citations",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.688,
+          "matched": [
+            "verification"
+          ]
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "human review"
+          ]
+        }
+      ],
+      "queue": 7.6,
+      "lead": "~2 quarters"
+    },
+    {
+      "id": "competence",
+      "title": "Competence becomes an affirmative governance duty",
+      "model_rules": [
+        "1.1"
+      ],
+      "horizon": "mid (1-3yr)",
+      "layer": "3a \u2014 reactive",
+      "vector": "Duty shifts from 'understand the tool' to 'have a program'.",
+      "tech_driver": "Mandatory AI CLE spreading; firm-level governance capability expected.",
+      "build_now": "Training and enablement at scale (iTrain bet; AI Build Lab proof).",
+      "pressure_seed": 6.0,
+      "pressure": 9.3,
+      "trend": "rising",
+      "weighted_evidence": 5.09,
+      "corroboration": 0.3,
+      "n_evidence": 5,
+      "evidence": [
+        {
+          "date": "2019-03-23",
+          "title": "France criminalizes judicial profiling (Justice Reform Act, Art. 33)",
+          "tier": "T1",
+          "source": "France (statute)",
+          "url": "https://brief.steno.com/legal-ai-rules-by-state",
+          "weight": 1.0,
+          "matched": [
+            "cle"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-05-14",
+          "title": "California updated Practical Guidance for Generative AI",
+          "tier": "T2",
+          "source": "California Bar Board of Trustees",
+          "url": "https://www.clio.com/blog/ai-legal-compliance/",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-02-01",
+          "title": "Texas Ethics Opinion 705 on generative AI",
+          "tier": "T2",
+          "source": "Texas State Bar Professional Ethics Committee",
+          "url": "https://brief.steno.com/legal-ai-rules-by-state",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "source": "ABA Standing Committee on Ethics",
+          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-06-01",
+          "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
+          "tier": "T3",
+          "source": "Stanford (research)",
+          "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+          "weight": 0.518,
+          "matched": [
+            "competence"
+          ],
+          "empirical": true,
+          "conflict": false
+        }
+      ],
+      "control": "Firm-wide training + governance program",
+      "adoption_seed": 5.5,
+      "adoption": 7.6,
+      "adoption_weighted": 1.23,
+      "market_classes": [
+        "cert",
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 2,
+      "adoption_evidence": [
+        {
+          "date": "2026-06-01",
+          "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
+          "tier": "T3",
+          "market": "cert",
+          "weight": 0.518,
+          "matched": [
+            "competence"
+          ]
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "competence"
+          ]
+        }
+      ],
+      "queue": 7.1,
+      "lead": "~1 year"
+    },
+    {
+      "id": "confidentiality",
+      "title": "Confidentiality hardens into data governance",
+      "model_rules": [
+        "1.6",
+        "1.7",
+        "1.9"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Self-learning tools and cross-matter contamination stress 1.6.",
+      "tech_driver": "No-training clauses become an ethical default; vendor attestations required.",
+      "build_now": "Data-flow mapping and vendor attestation at tool onboarding.",
+      "pressure_seed": 7.0,
+      "pressure": 9.0,
+      "trend": "rising",
+      "weighted_evidence": 3.2,
+      "corroboration": 0.0,
+      "n_evidence": 4,
+      "evidence": [
+        {
+          "date": "2026-05-14",
+          "title": "California updated Practical Guidance for Generative AI",
+          "tier": "T2",
+          "source": "California Bar Board of Trustees",
+          "url": "https://www.clio.com/blog/ai-legal-compliance/",
+          "weight": 0.8,
+          "matched": [
+            "confidential"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-02-15",
+          "title": "New York Formal Opinion 2025-6 \u2014 recording/transcribing client meetings with AI",
+          "tier": "T2",
+          "source": "New York State Bar",
+          "url": "https://brief.steno.com/legal-ai-rules-by-state",
+          "weight": 0.8,
+          "matched": [
+            "confidential",
+            "data governance",
+            "client data"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-02-01",
+          "title": "Texas Ethics Opinion 705 on generative AI",
+          "tier": "T2",
+          "source": "Texas State Bar Professional Ethics Committee",
+          "url": "https://brief.steno.com/legal-ai-rules-by-state",
+          "weight": 0.8,
+          "matched": [
+            "confidential"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "source": "ABA Standing Committee on Ethics",
+          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+          "weight": 0.8,
+          "matched": [
+            "confidential"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Data-flow mapping + vendor attestation",
+      "adoption_seed": 6.0,
+      "adoption": 7.0,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "confidential"
+          ]
+        }
+      ],
+      "queue": 6.3,
+      "lead": "now"
+    },
+    {
+      "id": "insurance",
+      "title": "Insurance becomes the real regulator",
+      "model_rules": [
+        "1.1",
+        "5.1",
+        "5.3"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Carriers price AI risk faster than bars write rules.",
+      "tech_driver": "Uninsurable == unusable. Governance becomes a coverage condition.",
+      "build_now": "The governance program as an insurable artifact: model inventory, approval process, oversight documentation, measurement.",
+      "pressure_seed": 8.5,
+      "pressure": 8.8,
+      "trend": "steady",
+      "weighted_evidence": 0.55,
+      "corroboration": 0.0,
+      "n_evidence": 1,
+      "evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "source": "CNA (largest US legal malpractice carrier)",
+          "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
+          "weight": 0.547,
+          "matched": [
+            "insurer",
+            "premium",
+            "coverage",
+            "cna",
+            "axa",
+            "endorsement",
+            "uninsurable"
+          ],
+          "empirical": true,
+          "conflict": false
+        }
+      ],
+      "control": "Governance as an insurable artifact",
+      "adoption_seed": 7.5,
+      "adoption": 8.4,
+      "adoption_weighted": 0.91,
+      "market_classes": [
+        "insurer"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "market": "insurer",
+          "weight": 0.912,
+          "matched": [
+            "insurer",
+            "premium",
+            "coverage",
+            "cna",
+            "axa",
+            "endorsement",
+            "uninsurable"
+          ]
+        }
+      ],
+      "queue": 7.4,
+      "lead": "now"
+    },
+    {
+      "id": "convergence",
+      "title": "Regulatory convergence forces one operating model",
+      "model_rules": [
+        "1.1",
+        "1.6"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Patchwork itself is the pressure: EU + Colorado + 35 bars + 300 judges.",
+      "tech_driver": "Firms adopt one framework calibrated to the strictest standard.",
+      "build_now": "The unifying operating model. This is the whole thesis.",
+      "pressure_seed": 7.5,
+      "pressure": 8.7,
+      "trend": "rising",
+      "weighted_evidence": 2.0,
+      "corroboration": 0.0,
+      "n_evidence": 2,
+      "evidence": [
+        {
+          "date": "2026-08-01",
+          "title": "EU AI Act obligations take effect",
+          "tier": "T1",
+          "source": "European Union (regulation)",
+          "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+          "weight": 1.0,
+          "matched": [
+            "eu ai act",
+            "conformity assessment",
+            "risk management system",
+            "convergence"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-06-01",
+          "title": "Colorado AI Act takes effect",
+          "tier": "T1",
+          "source": "Colorado (statute)",
+          "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+          "weight": 1.0,
+          "matched": [
+            "colorado ai act",
+            "conformity assessment",
+            "risk management system"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "One operating model, to the strictest standard",
+      "adoption_seed": 7.0,
+      "adoption": 7.7,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-01",
+          "title": "EU AI Act obligations take effect",
+          "tier": "T1",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "eu ai act",
+            "conformity assessment",
+            "risk management system",
+            "convergence"
+          ]
+        }
+      ],
+      "queue": 6.7,
+      "lead": "now"
+    },
+    {
+      "id": "benchmark",
+      "title": "A tool-certification / benchmark standard emerges",
+      "model_rules": [
+        "1.1"
+      ],
+      "horizon": "mid (1-3yr)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Public error rates make tool choice a competence exercise.",
+      "tech_driver": "'Lex-TruthfulQA'-style minimum-competence benchmarks proposed.",
+      "build_now": "You already built one: NERVE. A benchmark is a compliance instrument.",
+      "pressure_seed": 6.0,
+      "pressure": 7.2,
+      "trend": "rising",
+      "weighted_evidence": 1.06,
+      "corroboration": 0.0,
+      "n_evidence": 2,
+      "evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "source": "CNA (largest US legal malpractice carrier)",
+          "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
+          "weight": 0.547,
+          "matched": [
+            "certif"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-06-01",
+          "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
+          "tier": "T3",
+          "source": "Stanford (research)",
+          "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+          "weight": 0.518,
+          "matched": [
+            "benchmark",
+            "error rate",
+            "hallucination rate",
+            "stanford"
+          ],
+          "empirical": true,
+          "conflict": false
+        }
+      ],
+      "control": "Tool-certification benchmark (NERVE)",
+      "adoption_seed": 5.5,
+      "adoption": 8.0,
+      "adoption_weighted": 1.64,
+      "market_classes": [
+        "cert",
+        "insurer"
+      ],
+      "n_adoption_evidence": 2,
+      "adoption_evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "market": "insurer",
+          "weight": 0.912,
+          "matched": [
+            "certif"
+          ]
+        },
+        {
+          "date": "2026-06-01",
+          "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
+          "tier": "T3",
+          "market": "cert",
+          "weight": 0.518,
+          "matched": [
+            "benchmark",
+            "error rate",
+            "hallucination rate",
+            "stanford"
+          ]
+        }
+      ],
+      "queue": 5.8,
+      "lead": "~1 year"
+    },
+    {
+      "id": "agentic",
+      "title": "Agentic autonomy reopens supervision & UPL",
+      "model_rules": [
+        "5.1",
+        "5.3",
+        "5.5"
+      ],
+      "horizon": "mid (1-3yr)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Agents that act, not just draft, break 'review the output'.",
+      "tech_driver": "Autonomous multi-step agents; AI AGENT Act; UPL-by-proxy scholarship.",
+      "build_now": "Human-decides gates and scope-limiting by design.",
+      "pressure_seed": 6.5,
+      "pressure": 7.1,
+      "trend": "steady",
+      "weighted_evidence": 0.58,
+      "corroboration": 0.0,
+      "n_evidence": 1,
+      "evidence": [
+        {
+          "date": "2026-08-29",
+          "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
+          "tier": "T3",
+          "source": "Federal legislation (proposed) / Reg Review",
+          "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
+          "weight": 0.584,
+          "matched": [
+            "agentic",
+            "ai agent act",
+            "upl",
+            "scope-limited",
+            "revocable"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Human-decides gates + scope-limiting",
+      "adoption_seed": 5.0,
+      "adoption": 6.2,
+      "adoption_weighted": 0.54,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-29",
+          "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
+          "tier": "T3",
+          "market": "process_mandate",
+          "weight": 0.535,
+          "matched": [
+            "agentic",
+            "ai agent act",
+            "upl",
+            "scope-limited",
+            "revocable"
+          ]
+        }
+      ],
+      "queue": 4.4,
+      "lead": "~1 year"
+    },
+    {
+      "id": "judicial_analytics",
+      "title": "Judicial / litigation analytics gets regulated",
+      "model_rules": [
+        "3.5",
+        "8.4",
+        "\u2014"
+      ],
+      "horizon": "mid (1-3yr)",
+      "layer": "first-order (new duty)",
+      "vector": "Predicting a named judge's rulings shifts from analytics to profiling.",
+      "tech_driver": "Judge/jury/opposing-counsel persona simulation and Monte Carlo strategy engines make specific-actor prediction cheap.",
+      "build_now": "Strategy stress-testing with human-reviewed, explicitly-uncertain priors; never sell 'predict the judge'. Persona models are low-confidence parameters, never determinative. (France already criminalized judicial profiling; US direction is toward rules.)",
+      "pressure_seed": 5.0,
+      "pressure": 6.4,
+      "trend": "quiet",
+      "weighted_evidence": 1.0,
+      "corroboration": 0.0,
+      "n_evidence": 1,
+      "evidence": [
+        {
+          "date": "2019-03-23",
+          "title": "France criminalizes judicial profiling (Justice Reform Act, Art. 33)",
+          "tier": "T1",
+          "source": "France (statute)",
+          "url": "https://brief.steno.com/legal-ai-rules-by-state",
+          "weight": 1.0,
+          "matched": [
+            "judicial analytics",
+            "judicial profiling",
+            "outcome prediction",
+            "article 33"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Guardrailed strategy sim (no actor prediction)",
+      "adoption_seed": 3.0,
+      "adoption": 3.0,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
+      "queue": 1.9,
+      "lead": "~1 year"
+    },
+    {
+      "id": "fees",
+      "title": "The billable hour cracks under AI",
+      "model_rules": [
+        "1.5"
+      ],
+      "horizon": "mid-far",
+      "layer": "second-order (business model)",
+      "vector": "AI collapses billable time; fee reasonableness under strain.",
+      "tech_driver": "Fee-transparency rules; shift toward value-based billing.",
+      "build_now": "Measure value delivered, not hours saved.",
+      "pressure_seed": 4.5,
+      "pressure": 5.8,
+      "trend": "quiet",
+      "weighted_evidence": 0.8,
+      "corroboration": 0.0,
+      "n_evidence": 1,
+      "evidence": [
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "source": "ABA Standing Committee on Ethics",
+          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+          "weight": 0.8,
+          "matched": [
+            "reasonable fee"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Value-delivered measurement",
+      "adoption_seed": 3.0,
+      "adoption": 4.7,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "reasonable fee"
+          ]
+        }
+      ],
+      "queue": 2.7,
+      "lead": "~1-2 years"
+    },
+    {
+      "id": "vendor_liability",
+      "title": "Liability shifts partway to vendors",
+      "model_rules": [
+        "\u2014"
+      ],
+      "horizon": "far (3yr+)",
+      "layer": "first-order (who bears risk)",
+      "vector": "Lawyer bears all risk today; tort law has no home for agent harm.",
+      "tech_driver": "Pressure toward disclosure mandates and certification standards on vendors.",
+      "build_now": "Track for a shift; document tool provenance now.",
+      "pressure_seed": 3.5,
+      "pressure": 3.5,
+      "trend": "quiet",
+      "weighted_evidence": 0.0,
+      "corroboration": 0.0,
+      "n_evidence": 0,
+      "evidence": [],
+      "control": "Tool-provenance documentation",
+      "adoption_seed": 2.5,
+      "adoption": 2.5,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
+      "queue": 0.9,
+      "lead": "later"
+    }
+  ],
+  "calibration": {
+    "resolutions": [
+      {
+        "date": "2025-12-15",
+        "order": 2,
+        "fault_line": "disclosure",
+        "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
+        "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+        "meter": "pressure",
+        "reading_at_lead": 8.7,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-04-15",
+        "order": 2,
+        "fault_line": "verification",
+        "title": "Nebraska Supreme Court suspension over hallucinated brief",
+        "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
+        "meter": "pressure",
+        "reading_at_lead": 8.9,
+        "evidence_at_lead": 2,
+        "reading_at_event": 9.2,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-01",
+        "order": 2,
+        "fault_line": "convergence",
+        "title": "EU AI Act obligations took effect",
+        "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+        "meter": "pressure",
+        "reading_at_lead": 8.2,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-06-15",
+        "order": 3,
+        "fault_line": "insurance",
+        "title": "CNA makes AI governance a coverage condition (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.5,
+        "evidence_at_lead": 0,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-31",
+        "order": 3,
+        "fault_line": "verification",
+        "title": "Verification duty extended to expert work product (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.3,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.1,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-29",
+        "order": 3,
+        "fault_line": "agentic",
+        "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 5.0,
+        "evidence_at_lead": 0,
+        "reading_at_event": 6.2,
+        "lead_days": 90,
+        "called": false
+      }
+    ],
+    "n_resolutions": 6,
+    "hits": 5,
+    "hit_rate": 0.83,
+    "by_order": {
+      "2": {
+        "n": 3,
+        "hits": 3,
+        "hit_rate": 1.0
+      },
+      "3": {
+        "n": 3,
+        "hits": 2,
+        "hit_rate": 0.67
+      }
+    },
+    "cascade": {
+      "n_l3_called": 2,
+      "n_l3_backed_by_l2": 1,
+      "backed_rate": 0.5
+    },
+    "call_threshold": 7.0,
+    "lead_days": 90
+  }
+}
