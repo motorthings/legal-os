@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Radar, RefreshCw, AlertTriangle, ChevronDown, ChevronRight,
-  TrendingUp, ArrowRight, Minus, Zap, Hammer, Clock,
+  TrendingUp, ArrowRight, Minus, Zap,
 } from 'lucide-react';
 
 // --- Shapes emitted by radar/build.py (deterministic score) + calibration.report() ---
@@ -63,6 +63,16 @@ function leadColor(lead: string): string {
   if (lead === 'now') return 'var(--primary)';
   if (lead.includes('later')) return 'var(--slate)';
   return 'var(--amber)';
+}
+
+function leadLabel(lead: string): string {
+  if (lead === 'now') return 'start now';
+  if (lead.includes('later')) return 'watch';
+  return `stand up in ${lead}`;
+}
+
+function lc(s: string): string {
+  return s.charAt(0).toLowerCase() + s.slice(1);
 }
 
 function Meter({ label, value, seed, hint }: { label: string; value: number; seed: number; hint: string }) {
@@ -137,7 +147,7 @@ export default function RadarPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-5xl mx-auto">
+    <div className="px-4 md:px-6 py-6 max-w-[1400px] mx-auto">
       {/* Header */}
       <div className="flex items-start gap-3 mb-2">
         <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--primary)' }}>
@@ -300,11 +310,10 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
 }) {
   const buildNow = queue.filter((f) => f.pressure >= threshold && f.adoption >= threshold);
   const rising = queue.filter((f) => f.trend === 'rising');
-  const nowLead = buildNow.filter((f) => f.lead === 'now');
+  const prepare = rising.filter((f) => !buildNow.includes(f));
   const byId = (id: string) => queue.find((f) => f.id === id);
-  const capOutran = (cal?.conditionals.L1_to_L2.prior_called_without_post_event ?? [])
+  const watch = (cal?.conditionals.L1_to_L2.prior_called_without_post_event ?? [])
     .map(byId).filter(Boolean) as FaultLine[];
-  const top = queue[0];
 
   const list = (fls: FaultLine[]) =>
     fls.map((f, i) => (
@@ -314,57 +323,48 @@ function ExecSummary({ queue, cal, threshold, onPick }: {
   return (
     <div className="rounded-xl border p-5 mb-6"
       style={{ borderColor: 'var(--primary)', backgroundColor: 'var(--primary-dim)' }}>
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-2">
         <Zap className="w-4 h-4" style={{ color: 'var(--primary)' }} />
-        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)]">Executive summary</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text)]">Executive summary — what to do</h2>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-        <Stat icon={<Hammer className="w-4 h-4" />} value={buildNow.length} label="controls in the build-now corner" tone="var(--primary)" />
-        <Stat icon={<TrendingUp className="w-4 h-4" />} value={rising.length} label="fault lines rising this cycle" tone="var(--metric)" />
-        <Stat icon={<Clock className="w-4 h-4" />} value={nowLead.length} label={`need it now (lead: now)`} tone="var(--amber)" />
-      </div>
+      <p className="text-sm text-[var(--text-dim)] mb-4">
+        {buildNow.length > 0
+          ? `${buildNow.length} control${buildNow.length > 1 ? 's have' : ' has'} crossed into the build-now corner — the law is moving and the market is standardizing ${buildNow.length > 1 ? 'them' : 'it'} at the same time. Build these, in order:`
+          : 'Nothing has hit the build-now corner yet. Watch the rising lines below and get ahead of them.'}
+      </p>
 
-      <ul className="space-y-1.5 text-sm text-[var(--text-dim)]">
-        {top && (
-          <li>
-            <b className="text-[var(--text)]">Top priority:</b>{' '}
-            <FlChip fl={top} onPick={onPick} /> — build <span className="text-[var(--metric)]">{top.control}</span>{' '}
-            (queue {top.queue.toFixed(1)}, lead {top.lead}).
-          </li>
+      {buildNow.length > 0 && (
+        <ol className="space-y-3 mb-4">
+          {buildNow.slice(0, 5).map((f, i) => (
+            <li key={f.id} className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-base font-semibold text-[var(--text)]" style={{ fontFamily: "'Fraunces', serif" }}>Build {lc(f.control)}</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-full" style={{ backgroundColor: leadColor(f.lead), color: '#fff' }}>{leadLabel(f.lead)}</span>
+                </div>
+                <p className="text-xs text-[var(--text-dim)] mt-1">
+                  The law is moving here (ruling <b className="text-[var(--text)]">{f.pressure.toFixed(1)}</b>) and it&apos;s becoming table stakes (adoption <b className="text-[var(--text)]">{f.adoption.toFixed(1)}</b>). Because both are past the line, expect it to be required soon — build ahead of the rule.{' '}
+                  <FlChip fl={f} onPick={onPick} />
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      <div className="space-y-1.5 text-xs text-[var(--text-dim)] border-t border-[var(--primary)]/20 pt-3">
+        {prepare.length > 0 && (
+          <p><b className="text-[var(--text)]">Prepare next:</b> {list(prepare.slice(0, 4))} — pressure is rising but not mandatory yet. Scope the work now so you&apos;re not caught flat.</p>
         )}
-        {buildNow.length > 0 && (
-          <li>
-            <b className="text-[var(--text)]">Build now</b> (ruling &amp; adoption both past {threshold}): {list(buildNow.slice(0, 4))}
-            {buildNow.length > 4 && ` +${buildNow.length - 4} more`}.
-          </li>
-        )}
-        {rising.length > 0 && (
-          <li><b className="text-[var(--text)]">Gaining momentum:</b> {list(rising.slice(0, 4))}.</li>
-        )}
-        {capOutran.length > 0 && (
-          <li>
-            <b className="text-[var(--text)]">Capability outran the law:</b> {list(capOutran)} — the capability is proven, no ruling has landed yet. Watch this space.
-          </li>
+        {watch.length > 0 && (
+          <p><b className="text-[var(--text)]">Just watch:</b> {list(watch)} — the capability is proven but no rule has landed. Don&apos;t build yet; don&apos;t be surprised when it moves.</p>
         )}
         {cal && (
-          <li className="text-[var(--text-muted)]">
-            Engine&apos;s own record: called {cal.hits}/{cal.n_resolutions} events {cal.lead_days}d out — see the calibration log below.
-          </li>
+          <p className="text-[var(--text-muted)]">Why trust this: the engine called {cal.hits} of {cal.n_resolutions} real events {cal.lead_days} days before they landed. Its record is in the calibration log below.</p>
         )}
-      </ul>
-    </div>
-  );
-}
-
-function Stat({ icon, value, label, tone }: { icon: ReactNode; value: number; label: string; tone: string }) {
-  return (
-    <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2.5">
-      <div className="flex items-center gap-1.5" style={{ color: tone }}>
-        {icon}
-        <span className="text-2xl font-bold tabular-nums" style={{ fontFamily: "'Fraunces', serif" }}>{value}</span>
       </div>
-      <p className="text-[11px] text-[var(--text-muted)] leading-tight mt-0.5">{label}</p>
     </div>
   );
 }
