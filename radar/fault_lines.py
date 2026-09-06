@@ -38,17 +38,52 @@ STANDING_TIERS = {"T1", "T2"}   # never decays out of the evidence base
 # The engine forecasts a CASCADE. Each order depends on the one before it, so we
 # track calibration at each level separately AND conditionally:
 #   L1  Capability / behavior  — AI can now do X in legal work (agentic autonomy,
-#       error rates). This is what CREATES a fault line. (capability lane, backlog #3)
+#       error rates). This is what CREATES a fault line. (capability lane, below.)
 #   L2  The ruling reacts      — a court/bar/statute moves on that behavior. (the
 #       ruling-pressure meter, shipped.)
 #   L3  The market adopts       — the control becomes table stakes, court or no court.
 #       (the control-adoption meter, below. This is where Harbor lives.)
-# Getting L1 right is necessary but not sufficient: an L3 call is only meaningful if
-# the L2 it rests on held. Calibration reports hit-rate per order and L3-given-L2.
+# Getting L1 right is necessary but not sufficient: an L2 call is only meaningful if
+# the capability it reacts to actually arrived, and an L3 call is only meaningful if
+# the L2 it rests on held. Calibration reports hit-rate per order plus the two
+# conditionals: P(L2 called | L1 called) and P(L3 called | L2 called).
 ORDERS = {
     1: {"name": "Capability", "q": "Can AI now do the thing that creates the fault line?"},
     2: {"name": "Ruling",     "q": "Will a court, bar, or statute move on it?"},
     3: {"name": "Adoption",   "q": "Is the control becoming table stakes?"},
+}
+
+# --- First-order layer: capability pressure ---------------------------------
+# L1 evidence is a DIFFERENT object than a ruling or a market signal: it is a claim
+# that AI can now DO the thing that stresses a duty. It is weighted by how HARD the
+# demonstration is — a reproducible benchmark with published error rates outranks a
+# vendor's "our agent can do discovery now" a hundredfold. The whole lane is held
+# deliberately LOW (see CAP_DIVISOR in score.py) and clearly labeled "capability
+# forming," so a capability that has arrived never reads as a ruling that has landed.
+# Speculation (`hype`) is narrative signal only. Items carrying a `capability` class
+# are the L1 evidence; everything else is second/third-order only.
+#
+# Capability, once demonstrated, does not un-happen — so L1 evidence does NOT decay
+# (a proven capability persists, unlike ruling momentum). Kept in its own labeled
+# lane so inference never masquerades as a ruling (same discipline as the L3 lane).
+CAPABILITY_WEIGHTS = {
+    "benchmark":  1.00,   # a reproducible benchmark / measured error-rate study
+    "study":      0.80,   # peer-reviewed capability research (no public leaderboard)
+    "deployment": 0.50,   # capability demonstrated at production scale (usage data)
+    "release":    0.35,   # a model/agent release claiming the capability
+    "demo":       0.12,   # demo / anecdote — a capability shown once, not measured
+    "hype":       0.02,   # speculation. narrative signal only.
+}
+
+# Capability seed (0-10): how far the capability that CREATES this fault line has
+# already been demonstrated, before this run's evidence. Deliberately mostly below
+# the call threshold so the meter is EVIDENCE-driven, not seed-driven — a capability
+# call has to be earned by a demonstration on record. Fault lines whose driver is a
+# downstream market/regulatory reaction (insurance, convergence, fees, vendor
+# liability, competence) have no direct capability of their own → default low.
+CAPABILITY_SEEDS = {
+    "benchmark": 6.5, "disclosure": 5.5, "verification": 5.5,
+    "confidentiality": 4.5, "agentic": 4.0, "judicial_analytics": 4.0,
 }
 
 # --- Third-order layer: control-adoption pressure ---------------------------

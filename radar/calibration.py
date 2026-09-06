@@ -41,6 +41,8 @@ def _knobs():
         "standing_tiers": sorted(K.STANDING_TIERS),
         "market_weights": K.MARKET_WEIGHTS,
         "adoption_seeds": K.ADOPTION_SEEDS,
+        "capability_weights": K.CAPABILITY_WEIGHTS,
+        "capability_seeds": K.CAPABILITY_SEEDS,
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
     }
@@ -57,15 +59,17 @@ def load_resolutions():
     return out
 
 
-# Which meter each order reads. L1 (capability) is the backlog lane — no resolutions yet.
-_METER = {2: "pressure", 3: "adoption"}
+# Which meter each order reads. Each order is graded against the lane it predicts.
+_METER = {1: "capability", 2: "pressure", 3: "adoption"}
+_EV_KEY = {"capability": "n_capability_evidence", "pressure": "n_evidence",
+           "adoption": "n_adoption_evidence"}
 
 
 def _reading_for(fault_id, as_of, order):
     """Return (value, evidence_count) for the meter that this order predicts."""
     data = score(as_of=as_of)
     meter = _METER.get(order, "pressure")
-    ev_key = "n_evidence" if meter == "pressure" else "n_adoption_evidence"
+    ev_key = _EV_KEY.get(meter, "n_evidence")
     for fl in data["fault_lines"]:
         if fl["id"] == fault_id:
             return fl.get(meter), fl.get(ev_key, 0)
@@ -100,16 +104,40 @@ def backtest(feed=None):
     by_order = {o: _rate([x for x in results if x["order"] == o])
                 for o in sorted({x["order"] for x in results})}
 
-    # Cascade: an L3 call only means something if the L2 it sits on held. For each
-    # called L3, check the same fault line has a called L2. Each layer depends on the last.
-    called_l2 = {x["fault_line"] for x in results if x["order"] == 2 and x["called"]}
-    l3 = [x for x in results if x["order"] == 3]
-    l3_called = [x for x in l3 if x["called"]]
-    l3_backed = [x for x in l3_called if x["fault_line"] in called_l2]
+    # Cascade conditionals. Each layer only counts if the one it depends on held, so we
+    # score the two links directly, per fault line (not across fault lines):
+    #   P(L2 called | L1 called) — did the capability call precede the ruling that
+    #     reacted to it? Only defined where the fault line has BOTH an L1 and an L2
+    #     resolution on record; a called L1 with no L2 event yet means the law hasn't
+    #     moved (capability outran the ruling) and is reported separately, not as a fail.
+    #   P(L3 called | L2 called) — an adoption call only means something if the ruling
+    #     it rests on held. (This is the shipped cascade check, unchanged in spirit.)
+    def _conditional(prior_order, post_order):
+        called_prior = {x["fault_line"] for x in results
+                        if x["order"] == prior_order and x["called"]}
+        post = [x for x in results if x["order"] == post_order]
+        post_ids = {x["fault_line"] for x in post}
+        # denominator: fault lines with a called prior AND a post event to condition on
+        eligible = [x for x in post if x["fault_line"] in called_prior]
+        backed = [x for x in eligible if x["called"]]
+        # called priors that have no post event yet (the "outran" set)
+        outran = sorted(called_prior - post_ids)
+        return {
+            "prior": f"L{prior_order}", "post": f"L{post_order}",
+            "n_eligible": len(eligible),
+            "n_backed": len(backed),
+            "rate": round(len(backed) / len(eligible), 2) if eligible else None,
+            "prior_called_without_post_event": outran,
+        }
+
+    l1_to_l2 = _conditional(1, 2)   # P(L2 called | L1 called)
+    l2_to_l3 = _conditional(2, 3)   # P(L3 called | L2 called)
+
+    # Back-compat cascade block (same numbers the page/artifact already read).
     cascade = {
-        "n_l3_called": len(l3_called),
-        "n_l3_backed_by_l2": len(l3_backed),
-        "backed_rate": round(len(l3_backed) / len(l3_called), 2) if l3_called else None,
+        "n_l3_called": len([x for x in results if x["order"] == 3 and x["called"]]),
+        "n_l3_backed_by_l2": l2_to_l3["n_backed"],
+        "backed_rate": l2_to_l3["rate"],
     }
 
     overall = _rate(results)
@@ -120,6 +148,7 @@ def backtest(feed=None):
         "hit_rate": overall["hit_rate"],
         "by_order": by_order,
         "cascade": cascade,
+        "conditionals": {"L1_to_L2": l1_to_l2, "L2_to_L3": l2_to_l3},
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
     }
@@ -179,8 +208,15 @@ if __name__ == "__main__":
           f"@ threshold {rep['call_threshold']}, {rep['lead_days']}d lead")
     for o, s in rep["by_order"].items():
         print(f"  L{o} ({K.ORDERS[o]['name']}): {s['hit_rate']} ({s['hits']}/{s['n']})")
-    c = rep["cascade"]
-    print(f"  Cascade: {c['n_l3_backed_by_l2']}/{c['n_l3_called']} L3 calls backed by a called L2")
+    for key in ("L1_to_L2", "L2_to_L3"):
+        cd = rep["conditionals"][key]
+        rate = "n/a" if cd["rate"] is None else f"{int(cd['rate']*100)}%"
+        line = (f"  P({cd['post']} called | {cd['prior']} called): {rate} "
+                f"({cd['n_backed']}/{cd['n_eligible']})")
+        if cd["prior_called_without_post_event"]:
+            line += (f"  · {cd['prior']} called w/ no {cd['post']} event yet: "
+                     f"{', '.join(cd['prior_called_without_post_event'])}")
+        print(line)
     for r in rep["resolutions"]:
         mark = "HIT " if r["called"] else "miss"
         print(f'  {mark} L{r["order"]} {r["date"]} {r["fault_line"]:<14} '

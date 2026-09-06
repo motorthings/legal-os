@@ -1,5 +1,49 @@
 {
+  "generated_at": "2026-09-06T03:29:42.893315+00:00",
   "as_of": "2026-09-05",
+  "knobs": {
+    "tier_weights": {
+      "T1": 1.0,
+      "T2": 0.8,
+      "T3": 0.6,
+      "T4": 0.35,
+      "T5": 0.008
+    },
+    "conflict_discount": 0.4,
+    "empirical_boost": 1.25,
+    "corroboration_step": 0.15,
+    "half_life_days": 180,
+    "standing_tiers": [
+      "T1",
+      "T2"
+    ],
+    "market_weights": {
+      "insurer": 1.0,
+      "procurement": 0.85,
+      "deployment": 0.7,
+      "cert": 0.6,
+      "process_mandate": 0.55,
+      "commentary": 0.2,
+      "pundit": 0.02
+    },
+    "adoption_seeds": {
+      "insurance": 7.5,
+      "disclosure": 7.0,
+      "verification": 6.5,
+      "convergence": 7.0,
+      "confidentiality": 6.0,
+      "benchmark": 5.5,
+      "competence": 5.5,
+      "agentic": 5.0,
+      "fees": 3.0,
+      "judicial_analytics": 3.0,
+      "vendor_liability": 2.5
+    },
+    "call_threshold": 7.0,
+    "lead_days": 90
+  },
+  "feed_sha256": "3409966c1786a71d525050f1b834a848a8b0fedd2e052714892425ee89438228",
+  "feed_items": 24,
   "fault_lines": [
     {
       "id": "disclosure",
@@ -13,32 +57,12 @@
       "vector": "Mata was reactive; 300+ judges now require prospective disclosure.",
       "tech_driver": "Patchwork of standing orders collapses into a uniform certification.",
       "build_now": "Verification-by-default with an auditable trail, so certification is a byproduct.",
-      "capability_seed": 5.5,
-      "capability": 6.7,
-      "capability_weighted": 1.25,
-      "capability_classes": [
-        "benchmark"
-      ],
-      "n_capability_evidence": 1,
-      "capability_evidence": [
-        {
-          "date": "2024-05-23",
-          "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
-          "tier": "T3",
-          "capability": "benchmark",
-          "weight": 1.25,
-          "matched": [
-            "attestation"
-          ],
-          "empirical": true
-        }
-      ],
       "pressure_seed": 8.0,
       "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 6.61,
+      "weighted_evidence": 6.57,
       "corroboration": 0.3,
-      "n_evidence": 7,
+      "n_evidence": 6,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -117,19 +141,6 @@
           ],
           "empirical": true,
           "conflict": false
-        },
-        {
-          "date": "2024-05-23",
-          "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
-          "tier": "T3",
-          "source": "Magesh, Surani, Dahl, Suzgun, Manning & Ho (Stanford RegLab)",
-          "url": "https://arxiv.org/abs/2405.20362",
-          "weight": 0.03,
-          "matched": [
-            "attestation"
-          ],
-          "empirical": true,
-          "conflict": false
         }
       ],
       "control": "Verification-by-default with an audit trail",
@@ -167,33 +178,12 @@
       "vector": "Attestation gives way to a documented verification process.",
       "tech_driver": "Multi-step agentic work no single human fully traces.",
       "build_now": "Logging, trace analysis, evaluation records as the compliance artifact.",
-      "capability_seed": 5.5,
-      "capability": 6.7,
-      "capability_weighted": 1.25,
-      "capability_classes": [
-        "benchmark"
-      ],
-      "n_capability_evidence": 1,
-      "capability_evidence": [
-        {
-          "date": "2024-05-23",
-          "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
-          "tier": "T3",
-          "capability": "benchmark",
-          "weight": 1.25,
-          "matched": [
-            "verification",
-            "human review"
-          ],
-          "empirical": true
-        }
-      ],
       "pressure_seed": 7.5,
       "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 7.2,
+      "weighted_evidence": 7.16,
       "corroboration": 0.3,
-      "n_evidence": 7,
+      "n_evidence": 6,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -273,20 +263,6 @@
           ],
           "empirical": true,
           "conflict": false
-        },
-        {
-          "date": "2024-05-23",
-          "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
-          "tier": "T3",
-          "source": "Magesh, Surani, Dahl, Suzgun, Manning & Ho (Stanford RegLab)",
-          "url": "https://arxiv.org/abs/2405.20362",
-          "weight": 0.03,
-          "matched": [
-            "verification",
-            "human review"
-          ],
-          "empirical": true,
-          "conflict": false
         }
       ],
       "control": "Documented verification + trace logs",
@@ -333,26 +309,6 @@
       "vector": "Duty shifts from 'understand the tool' to 'have a program'.",
       "tech_driver": "Mandatory AI CLE spreading; firm-level governance capability expected.",
       "build_now": "Training and enablement at scale (iTrain bet; AI Build Lab proof).",
-      "capability_seed": 2.5,
-      "capability": 4.5,
-      "capability_weighted": 1.25,
-      "capability_classes": [
-        "benchmark"
-      ],
-      "n_capability_evidence": 1,
-      "capability_evidence": [
-        {
-          "date": "2026-06-01",
-          "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
-          "tier": "T3",
-          "capability": "benchmark",
-          "weight": 1.25,
-          "matched": [
-            "competence"
-          ],
-          "empirical": true
-        }
-      ],
       "pressure_seed": 6.0,
       "pressure": 9.6,
       "trend": "rising",
@@ -517,12 +473,6 @@
       "vector": "Self-learning tools and cross-matter contamination stress 1.6.",
       "tech_driver": "No-training clauses become an ethical default; vendor attestations required.",
       "build_now": "Data-flow mapping and vendor attestation at tool onboarding.",
-      "capability_seed": 4.5,
-      "capability": 4.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 7.0,
       "pressure": 9.4,
       "trend": "rising",
@@ -649,12 +599,6 @@
       "vector": "Patchwork itself is the pressure: EU + Colorado + 35 bars + 300 judges.",
       "tech_driver": "Firms adopt one framework calibrated to the strictest standard.",
       "build_now": "The unifying operating model. This is the whole thesis.",
-      "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 7.5,
       "pressure": 9.3,
       "trend": "rising",
@@ -760,12 +704,6 @@
       "vector": "Carriers price AI risk faster than bars write rules.",
       "tech_driver": "Uninsurable == unusable. Governance becomes a coverage condition.",
       "build_now": "The governance program as an insurable artifact: model inventory, approval process, oversight documentation, measurement.",
-      "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 8.5,
       "pressure": 8.8,
       "trend": "steady",
@@ -833,61 +771,12 @@
       "vector": "Public error rates make tool choice a competence exercise.",
       "tech_driver": "'Lex-TruthfulQA'-style minimum-competence benchmarks proposed.",
       "build_now": "You already built one: NERVE. A benchmark is a compliance instrument.",
-      "capability_seed": 6.5,
-      "capability": 8.6,
-      "capability_weighted": 3.75,
-      "capability_classes": [
-        "benchmark"
-      ],
-      "n_capability_evidence": 3,
-      "capability_evidence": [
-        {
-          "date": "2026-06-01",
-          "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
-          "tier": "T3",
-          "capability": "benchmark",
-          "weight": 1.25,
-          "matched": [
-            "benchmark",
-            "error rate",
-            "hallucination rate",
-            "stanford"
-          ],
-          "empirical": true
-        },
-        {
-          "date": "2024-05-23",
-          "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
-          "tier": "T3",
-          "capability": "benchmark",
-          "weight": 1.25,
-          "matched": [
-            "benchmark",
-            "stanford"
-          ],
-          "empirical": true
-        },
-        {
-          "date": "2024-01-11",
-          "title": "Stanford/Yale 'Large Legal Fictions' \u2014 58\u201388% hallucination rate on legal queries",
-          "tier": "T3",
-          "capability": "benchmark",
-          "weight": 1.25,
-          "matched": [
-            "benchmark",
-            "error rate",
-            "hallucination rate",
-            "stanford"
-          ],
-          "empirical": true
-        }
-      ],
       "pressure_seed": 6.0,
       "pressure": 7.2,
       "trend": "rising",
-      "weighted_evidence": 1.11,
+      "weighted_evidence": 1.08,
       "corroboration": 0.0,
-      "n_evidence": 4,
+      "n_evidence": 3,
       "evidence": [
         {
           "date": "2026-06-15",
@@ -913,20 +802,6 @@
             "benchmark",
             "error rate",
             "hallucination rate",
-            "stanford"
-          ],
-          "empirical": true,
-          "conflict": false
-        },
-        {
-          "date": "2024-05-23",
-          "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
-          "tier": "T3",
-          "source": "Magesh, Surani, Dahl, Suzgun, Manning & Ho (Stanford RegLab)",
-          "url": "https://arxiv.org/abs/2405.20362",
-          "weight": 0.03,
-          "matched": [
-            "benchmark",
             "stanford"
           ],
           "empirical": true,
@@ -999,12 +874,6 @@
       "vector": "Agents that act, not just draft, break 'review the output'.",
       "tech_driver": "Autonomous multi-step agents; AI AGENT Act; UPL-by-proxy scholarship.",
       "build_now": "Human-decides gates and scope-limiting by design.",
-      "capability_seed": 4.0,
-      "capability": 4.0,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 6.5,
       "pressure": 7.1,
       "trend": "steady",
@@ -1068,12 +937,6 @@
       "vector": "AI collapses billable time; fee reasonableness under strain.",
       "tech_driver": "Fee-transparency rules; shift toward value-based billing.",
       "build_now": "Measure value delivered, not hours saved.",
-      "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 4.5,
       "pressure": 6.8,
       "trend": "quiet",
@@ -1145,12 +1008,6 @@
       "vector": "Predicting a named judge's rulings shifts from analytics to profiling.",
       "tech_driver": "Judge/jury/opposing-counsel persona simulation and Monte Carlo strategy engines make specific-actor prediction cheap.",
       "build_now": "Strategy stress-testing with human-reviewed, explicitly-uncertain priors; never sell 'predict the judge'. Persona models are low-confidence parameters, never determinative. (France already criminalized judicial profiling; US direction is toward rules.)",
-      "capability_seed": 4.0,
-      "capability": 4.0,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 5.0,
       "pressure": 6.4,
       "trend": "quiet",
@@ -1196,12 +1053,6 @@
       "vector": "Lawyer bears all risk today; tort law has no home for agent harm.",
       "tech_driver": "Pressure toward disclosure mandates and certification standards on vendors.",
       "build_now": "Track for a shift; document tool provenance now.",
-      "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
       "pressure_seed": 3.5,
       "pressure": 5.8,
       "trend": "quiet",
@@ -1249,41 +1100,108 @@
       "lead": "later"
     }
   ],
-  "tiers": {
-    "T1": {
-      "label": "Binding / primary",
-      "weight": 1.0,
-      "desc": "Court rulings, sanctions orders, statutes, regulations, rule amendments."
+  "calibration": {
+    "resolutions": [
+      {
+        "date": "2025-12-15",
+        "order": 2,
+        "fault_line": "disclosure",
+        "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
+        "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+        "meter": "pressure",
+        "reading_at_lead": 9.1,
+        "evidence_at_lead": 2,
+        "reading_at_event": 9.1,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-04-15",
+        "order": 2,
+        "fault_line": "verification",
+        "title": "Nebraska Supreme Court suspension over hallucinated brief",
+        "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
+        "meter": "pressure",
+        "reading_at_lead": 9.2,
+        "evidence_at_lead": 3,
+        "reading_at_event": 9.5,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-01",
+        "order": 2,
+        "fault_line": "convergence",
+        "title": "EU AI Act obligations took effect",
+        "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+        "meter": "pressure",
+        "reading_at_lead": 9.1,
+        "evidence_at_lead": 3,
+        "reading_at_event": 9.3,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-06-15",
+        "order": 3,
+        "fault_line": "insurance",
+        "title": "CNA makes AI governance a coverage condition (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.5,
+        "evidence_at_lead": 0,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-31",
+        "order": 3,
+        "fault_line": "verification",
+        "title": "Verification duty extended to expert work product (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.3,
+        "evidence_at_lead": 1,
+        "reading_at_event": 8.1,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-29",
+        "order": 3,
+        "fault_line": "agentic",
+        "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 5.0,
+        "evidence_at_lead": 0,
+        "reading_at_event": 6.2,
+        "lead_days": 90,
+        "called": false
+      }
+    ],
+    "n_resolutions": 6,
+    "hits": 5,
+    "hit_rate": 0.83,
+    "by_order": {
+      "2": {
+        "n": 3,
+        "hits": 3,
+        "hit_rate": 1.0
+      },
+      "3": {
+        "n": 3,
+        "hits": 2,
+        "hit_rate": 0.67
+      }
     },
-    "T2": {
-      "label": "Regulatory guidance",
-      "weight": 0.8,
-      "desc": "ABA / state bar ethics opinions, judicial standing orders."
+    "cascade": {
+      "n_l3_called": 2,
+      "n_l3_backed_by_l2": 1,
+      "backed_rate": 0.5
     },
-    "T3": {
-      "label": "Empirical / institutional",
-      "weight": 0.6,
-      "desc": "Peer-reviewed research, trackers, insurer/market actions with data."
-    },
-    "T4": {
-      "label": "Professional commentary",
-      "weight": 0.35,
-      "desc": "Firm client alerts, bar magazines, established legal press."
-    },
-    "T5": {
-      "label": "Vendor / marketing / opinion",
-      "weight": 0.008,
-      "desc": "Vendor blogs, SEO content, hot takes. ~1/100 of an ABA opinion. Narrative signal only."
-    }
-  },
-  "market_weights": {
-    "insurer": 1.0,
-    "procurement": 0.85,
-    "deployment": 0.7,
-    "cert": 0.6,
-    "process_mandate": 0.55,
-    "commentary": 0.2,
-    "pundit": 0.02
-  },
-  "n_items": 25
+    "call_threshold": 7.0,
+    "lead_days": 90
+  }
 }

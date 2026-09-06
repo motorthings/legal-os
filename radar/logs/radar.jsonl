@@ -2,3 +2,5 @@
 {"ts": "2026-09-06T00:47:42.598158+00:00", "event": "built", "n_items": 15, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6}
 {"ts": "2026-09-06T00:54:13.485506+00:00", "event": "built", "n_items": 15, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 1.0, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T005413Z.json"}
 {"ts": "2026-09-06T03:02:15.518422+00:00", "event": "built", "n_items": 15, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.83, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T030215Z.json"}
+{"ts": "2026-09-06T03:29:42.893548+00:00", "event": "built", "n_items": 24, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.83, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T032942Z.json"}
+{"ts": "2026-09-06T03:36:44.909352+00:00", "event": "built", "n_items": 25, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.67, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T033644Z.json"}
