@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-06",
+  "as_of": "2026-09-07",
   "fault_lines": [
     {
       "id": "disclosure",
@@ -36,7 +36,7 @@
       "pressure_seed": 8.0,
       "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 6.61,
+      "weighted_evidence": 6.6,
       "corroboration": 0.3,
       "n_evidence": 7,
       "evidence": [
@@ -98,7 +98,7 @@
           "tier": "T3",
           "source": "CNA (largest US legal malpractice carrier)",
           "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.545,
+          "weight": 0.543,
           "matched": [
             "certif"
           ],
@@ -111,7 +111,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.408,
+          "weight": 0.407,
           "matched": [
             "disclosure"
           ],
@@ -146,7 +146,7 @@
           "title": "CNA adds AI-governance questionnaires to malpractice renewals",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.908,
+          "weight": 0.905,
           "matched": [
             "certif"
           ]
@@ -266,7 +266,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.408,
+          "weight": 0.407,
           "matched": [
             "verification",
             "reasonable inquiry"
@@ -448,7 +448,7 @@
           "tier": "T3",
           "source": "Stanford (research)",
           "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
-          "weight": 0.516,
+          "weight": 0.514,
           "matched": [
             "competence"
           ],
@@ -471,7 +471,7 @@
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
           "tier": "T3",
           "market": "cert",
-          "weight": 0.516,
+          "weight": 0.514,
           "matched": [
             "competence"
           ]
@@ -769,7 +769,7 @@
       "pressure_seed": 8.5,
       "pressure": 8.7,
       "trend": "steady",
-      "weighted_evidence": 0.55,
+      "weighted_evidence": 0.54,
       "corroboration": 0.0,
       "n_evidence": 1,
       "evidence": [
@@ -779,7 +779,7 @@
           "tier": "T3",
           "source": "CNA (largest US legal malpractice carrier)",
           "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.545,
+          "weight": 0.543,
           "matched": [
             "insurer",
             "premium",
@@ -807,7 +807,7 @@
           "title": "CNA adds AI-governance questionnaires to malpractice renewals",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.908,
+          "weight": 0.905,
           "matched": [
             "insurer",
             "premium",
@@ -885,7 +885,7 @@
       "pressure_seed": 6.0,
       "pressure": 7.2,
       "trend": "rising",
-      "weighted_evidence": 1.11,
+      "weighted_evidence": 1.1,
       "corroboration": 0.0,
       "n_evidence": 4,
       "evidence": [
@@ -895,7 +895,7 @@
           "tier": "T3",
           "source": "CNA (largest US legal malpractice carrier)",
           "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.545,
+          "weight": 0.543,
           "matched": [
             "certif"
           ],
@@ -908,7 +908,7 @@
           "tier": "T3",
           "source": "Stanford (research)",
           "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
-          "weight": 0.516,
+          "weight": 0.514,
           "matched": [
             "benchmark",
             "error rate",
@@ -952,7 +952,7 @@
       "control": "Tool-certification benchmark (NERVE)",
       "adoption_seed": 5.5,
       "adoption": 8.0,
-      "adoption_weighted": 1.64,
+      "adoption_weighted": 1.63,
       "market_classes": [
         "cert",
         "insurer"
@@ -964,7 +964,7 @@
           "title": "CNA adds AI-governance questionnaires to malpractice renewals",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.908,
+          "weight": 0.905,
           "matched": [
             "certif"
           ]
@@ -974,7 +974,7 @@
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
           "tier": "T3",
           "market": "cert",
-          "weight": 0.516,
+          "weight": 0.514,
           "matched": [
             "benchmark",
             "error rate",
@@ -1018,7 +1018,7 @@
           "tier": "T3",
           "source": "Federal legislation (proposed) / Reg Review",
           "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
-          "weight": 0.582,
+          "weight": 0.58,
           "matched": [
             "agentic",
             "ai agent act",
@@ -1044,7 +1044,7 @@
           "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
           "tier": "T3",
           "market": "process_mandate",
-          "weight": 0.533,
+          "weight": 0.531,
           "matched": [
             "agentic",
             "ai agent act",
@@ -1205,7 +1205,7 @@
       "pressure_seed": 3.5,
       "pressure": 5.8,
       "trend": "quiet",
-      "weighted_evidence": 1.34,
+      "weighted_evidence": 1.33,
       "corroboration": 0.15,
       "n_evidence": 2,
       "evidence": [
@@ -1229,7 +1229,7 @@
           "tier": "T3",
           "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
           "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
-          "weight": 0.161,
+          "weight": 0.16,
           "matched": [
             "vendor liability",
             "product liability"
