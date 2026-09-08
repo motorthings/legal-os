@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Corroboration board — reference implementation</title>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { margin:0; background:#FAF8F7; color:#76716F;
+         font-family:'Mulish','Avenir Next',system-ui,sans-serif; }
+  .wrap { max-width:1240px; margin:0 auto; padding:56px 40px 80px; }
+  .eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#938E8C; }
+  h1 { font-size:56px; font-weight:300; line-height:1.1; letter-spacing:-.02em; color:#1F1A1C; margin:12px 0 0; }
+  .deck { font-size:18px; line-height:1.65; color:#5A5658; max-width:680px; margin:16px 0 0; }
+  .axis { display:flex; justify-content:space-between; gap:24px; margin:48px 0 8px;
+          padding-bottom:12px; border-bottom:1px solid #E7E4E2; }
+  .axis > div { flex:0 0 auto; white-space:nowrap; }
+  .legend { display:flex; flex-wrap:wrap; gap:32px; align-items:center; margin-top:8px;
+            padding-top:20px; border-top:1px solid #E7E4E2; font-size:13px; line-height:1.6; }
+  .swatches { display:inline-flex; gap:2px; }
+  .swatches span { width:9px; height:16px; }
+  @media (max-width:720px) { .wrap { padding:32px 20px 48px; } h1 { font-size:36px; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Legal AI OS · prediction engine</div>
+    <h1>The streams</h1>
+    <p class="deck">Four streams of evidence feed eleven fault-line predictions. The more streams that point at the same fault line, the stronger the call — so a prediction's bar is built out of its streams. One colour means one source agrees. Four colours means the engine is sure.</p>
+
+    <div class="axis">
+      <div class="eyebrow">sources · 76 items</div>
+      <div class="eyebrow">ranked by queue</div>
+    </div>
+
+    <div id="chart"></div>
+
+    <div class="legend">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="swatches"><span style="background:#A4093F"></span><span style="background:#7F8C30"></span><span style="background:#8FBFAE"></span><span style="background:#EFAE42"></span></span>
+        <span>bar length = queue (0–10) · each colour band = one stream's share of that call</span>
+      </div>
+      <div>pips = corroboration, out of four streams</div>
+      <div>ribbon width is an item's mass split across the calls it serves — not a head-count</div>
+    </div>
+  </div>
+
+<script type="module">
+  import { renderStreamsChart } from './streams-chart.js';
+  renderStreamsChart(document.getElementById('chart'));
+</script>
+</body>
+</html>
