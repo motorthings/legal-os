@@ -1,5 +1,5 @@
 {
-  "n_items": 25,
+  "n_items": 30,
   "items": [
     {
       "date": "2023-06-22",
@@ -94,19 +94,19 @@
       "why": "Regulatory guidance authority (weight 0.80). It evidences the Competence becomes an affirmative governance duty, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     },
     {
-      "date": "2025-06-01",
+      "date": "2026-05-14",
       "tier": "T1",
       "tier_label": "Binding / primary",
       "tier_weight": 1.0,
-      "title": "Colorado AI Act takes effect",
+      "title": "Colorado repeals and replaces its AI Act (SB 26-189) \u2014 narrower transparency law",
       "source": "Colorado (statute)",
-      "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
+      "url": "https://www.dwt.com/blogs/privacy--security-law-blog/2026/05/colorado-ai-act-repeal-new-transparency-law",
       "empirical": false,
       "conflict": false,
       "capability": null,
       "market": null,
       "order": null,
-      "what": "Colorado AI Act creates legal requirements for high-risk AI: risk management systems, conformity assessments, human oversight mechanisms. Formalized AI policy moves from best practice to compliance obligation.",
+      "what": "Colorado's landmark risk-based AI Act (SB 24-205) was repealed before its risk-management and impact-assessment duties ever took effect, and replaced by SB 26-189, a narrower automated-decisionmaking disclosure and consumer-rights law effective January 2027. The EU-style risk-based model retreats; the patchwork of state AI rules continues but tilts toward transparency. Colorado stays part of the multi-jurisdiction patchwork a firm must reconcile.",
       "role": [
         "L2 ruling"
       ],
@@ -117,6 +117,43 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-07-18",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "California Rule of Court 10.430 \u2014 courts must adopt generative-AI policies",
+      "source": "Judicial Council of California",
+      "url": "https://courts.ca.gov/system/files/rules-court/2025-07-18-rules-effective-09-01-2025.pdf",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "The first statewide court rule on generative AI requires California courts to adopt AI-use policies covering confidentiality, accuracy, bias, disclosure, and human review of AI output, with no autonomous AI decisions. It spreads documented verification and disclosure discipline to the judiciary's own AI use, widening the governance patchwork courts and firms must reconcile.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        },
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model, Disclosure & certification standardize, 'A human reviewed it' stops being enough, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     },
     {
       "date": "2025-12-15",
@@ -686,6 +723,106 @@
         }
       ],
       "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges, 'A human reviewed it' stops being enough. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-04-07",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
+      "source": "Artificial Lawyer (deployment reporting)",
+      "url": "https://www.artificiallawyer.com/2025/04/07/ao-shearman-to-profit-share-with-harvey-on-agentic-tools/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "A major global firm deployed agentic AI agents at production scale across antitrust, cyber, fund formation and loan review, licensing the tools to clients and rival firms under a revenue-share with Harvey. Multi-step autonomous agent work on live matters shows scope-limited agentic deployment is available and being adopted at scale today, not just promised.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-05-05",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "PLI launches the first legal-AI competency framework",
+      "source": "Practising Law Institute",
+      "url": "https://www.globenewswire.com/fr/news-release/2026/05/05/3288064/0/en/PLI-Introduces-Industry-First-AI-Competency-Framework.html",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Practising Law Institute launched the first industry AI competency framework (May 2026), giving firms and lawyers a defined standard to train against and measure AI competence. A usable competency standard firms can build their training and governance program on is now on the shelf.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-09-01",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "E-discovery and contract review are the most mature, most-trusted legal-AI uses, now at scale",
+      "source": "Lighthouse / FTI Consulting (adoption reporting)",
+      "url": "https://www.lighthouseglobal.com/ai-in-ediscovery-report-2025",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "E-discovery and contract review are the two most mature legal-AI uses and among the most trusted (roughly 95% report trusting e-discovery AI; contract-review adoption growing fast). Reliable, verifiable review runs at production scale inside firms, so the verification-and-audit controls around AI work product can be stood up with proven tooling.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-06-01",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Enterprise legal-AI vendors bind no-training and ship data-governance / attestation controls",
+      "source": "CaseClerk / Baker McKenzie (vendor data-governance practice)",
+      "url": "https://caseclerk.ai/blog/is-harvey-ai-safe-for-law-firms-confidentiality-data-retention-and-admin-controls-for-2025",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Enterprise legal-AI vendors contractually bind no-training on client data and offer deployable data-governance, retention, and vendor-attestation controls. The confidentiality control (data-flow mapping + vendor attestation) can be stood up by buying from vendors who already meet the bar.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }

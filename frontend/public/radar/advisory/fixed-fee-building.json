@@ -1,0 +1,308 @@
+{
+  "as_of": "2026-09-07",
+  "firm": {
+    "name": "Fixed-fee, building capacity",
+    "pricing": "fixed_fee",
+    "refill": 0.35,
+    "enablement": 2.0,
+    "rate": 550.0,
+    "hours": 1800.0,
+    "addressable": 0.35,
+    "compression": 0.4,
+    "ai_cost": 6000.0,
+    "lawyers": 900,
+    "pass_through": 0.25
+  },
+  "economic_gate": {
+    "delta_per_lawyer": 7860,
+    "firm_delta": 7074000,
+    "hourly_full_capture": -96090,
+    "mode": "fixed_fee",
+    "refill": 0.35,
+    "source": "AI Profit Paradox (legal-sim/pricing)"
+  },
+  "thresholds": {
+    "mandatory_pressure": 7.0,
+    "mandatory_adoption": 7.0,
+    "opportune_capability": 6.5,
+    "ready_enablement": 6.0
+  },
+  "pricing_model_source": false,
+  "verdict_counts": {
+    "govern": {
+      "build-capacity-first": 8,
+      "no-mandate": 3
+    },
+    "deploy": {
+      "deploy-now": 4,
+      "defer": 2,
+      "watch": 1
+    }
+  },
+  "rows": [
+    {
+      "fault_line": "verification",
+      "title": "'A human reviewed it' stops being enough",
+      "control": "Documented verification + trace logs",
+      "horizon": "near-mid",
+      "lead": "~2 quarters",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "deploy-now",
+      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
+      "orders": {
+        "1_capability": 6.7,
+        "2_enablement": 2.0,
+        "2_market_enable": 8.1,
+        "3_pressure": 10.0,
+        "3_adoption": 8.1,
+        "4_gate_full": 7860,
+        "4_gate_eff": 3286
+      }
+    },
+    {
+      "fault_line": "disclosure",
+      "title": "Disclosure & certification standardize",
+      "control": "Verification-by-default with an audit trail",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "deploy-now",
+      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
+      "orders": {
+        "1_capability": 5.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 6.0,
+        "3_pressure": 9.9,
+        "3_adoption": 7.0,
+        "4_gate_full": 7860,
+        "4_gate_eff": 1623
+      }
+    },
+    {
+      "fault_line": "confidentiality",
+      "title": "Confidentiality hardens into data governance",
+      "control": "Data-flow mapping + vendor attestation",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "deploy-now",
+      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
+      "orders": {
+        "1_capability": 4.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 6.7,
+        "3_pressure": 9.8,
+        "3_adoption": 7.0,
+        "4_gate_full": 7860,
+        "4_gate_eff": 237
+      }
+    },
+    {
+      "fault_line": "convergence",
+      "title": "Regulatory convergence forces one operating model",
+      "control": "One operating model, to the strictest standard",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 4.0,
+        "3_pressure": 9.5,
+        "3_adoption": 7.7,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
+      }
+    },
+    {
+      "fault_line": "competence",
+      "title": "Competence becomes an affirmative governance duty",
+      "control": "Firm-wide training + governance program",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "defer",
+      "deploy_note": "AI can't yet capture this work profitably (seam=codifiable, capability=2.5)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 7.4,
+        "3_pressure": 9.0,
+        "3_adoption": 7.4,
+        "4_gate_full": 7860,
+        "4_gate_eff": -2535
+      }
+    },
+    {
+      "fault_line": "insurance",
+      "title": "Insurance becomes the real regulator",
+      "control": "Governance as an insurable artifact",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 6.9,
+        "3_pressure": 8.7,
+        "3_adoption": 8.4,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
+      }
+    },
+    {
+      "fault_line": "agentic",
+      "title": "Agentic autonomy reopens supervision & UPL",
+      "control": "Human-decides gates + scope-limiting",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "mixed",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "defer",
+      "deploy_note": "AI can't yet capture this work profitably (seam=mixed, capability=4.0)",
+      "orders": {
+        "1_capability": 4.0,
+        "2_enablement": 2.0,
+        "2_market_enable": 6.5,
+        "3_pressure": 7.2,
+        "3_adoption": 6.2,
+        "4_gate_full": 7860,
+        "4_gate_eff": -2674
+      }
+    },
+    {
+      "fault_line": "benchmark",
+      "title": "A tool-certification / benchmark standard emerges",
+      "control": "Tool-certification benchmark (NERVE)",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "capability",
+      "required": false,
+      "opportunistic": true,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "deploy-now",
+      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
+      "orders": {
+        "1_capability": 8.6,
+        "2_enablement": 2.0,
+        "2_market_enable": 8.3,
+        "3_pressure": 6.7,
+        "3_adoption": 6.5,
+        "4_gate_full": 7860,
+        "4_gate_eff": 5920
+      }
+    },
+    {
+      "fault_line": "judicial_analytics",
+      "title": "Judicial / litigation analytics gets regulated",
+      "control": "Guardrailed strategy sim (no actor prediction)",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "tacit",
+      "driver": "capability",
+      "required": false,
+      "opportunistic": false,
+      "govern": "no-mandate",
+      "govern_note": "not yet required or open \u2014 nothing forces it now",
+      "deploy": "watch",
+      "deploy_note": "no deploy case yet \u2014 not required or opportunistic",
+      "orders": {
+        "1_capability": 4.0,
+        "2_enablement": 2.0,
+        "2_market_enable": 3.0,
+        "3_pressure": 6.4,
+        "3_adoption": 3.0,
+        "4_gate_full": 7860,
+        "4_gate_eff": -4020
+      }
+    },
+    {
+      "fault_line": "fees",
+      "title": "The billable hour cracks under AI",
+      "control": "Value-delivered measurement",
+      "horizon": "mid-far",
+      "lead": "~1-2 years",
+      "seam": "tacit",
+      "driver": "market",
+      "required": false,
+      "opportunistic": false,
+      "govern": "no-mandate",
+      "govern_note": "not yet required or open \u2014 nothing forces it now",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 3.5,
+        "3_pressure": 5.8,
+        "3_adoption": 3.0,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
+      }
+    },
+    {
+      "fault_line": "vendor_liability",
+      "title": "Liability shifts partway to vendors",
+      "control": "Tool-provenance documentation",
+      "horizon": "far (3yr+)",
+      "lead": "later",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": false,
+      "opportunistic": false,
+      "govern": "no-mandate",
+      "govern_note": "not yet required or open \u2014 nothing forces it now",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 3.0,
+        "3_pressure": 5.8,
+        "3_adoption": 2.5,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
+      }
+    }
+  ]
+}

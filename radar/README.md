@@ -1,5 +1,9 @@
 # Fault-Line Radar
 
+> **Canonical design doc:** `docs/radar-design.md` is the single source of truth for the
+> engine's design intent, as-built v1, known gaps, and planned confluence model. This README
+> is the run + backlog log.
+
 Forecasts *where the next legal-AI rulings land* by tracking **fault lines** — the
 places where an AI capability stresses an existing legal duty. It scores each fault
 line's pressure from evidence weighted by **source authority, not volume**, so the
@@ -16,6 +20,18 @@ python radar/run.py            # one pass: score curated feed -> regenerate page
 python radar/run.py --watch 30 # local background: repeat every 30 min
 python radar/run.py --ingest   # also run harvester + admission gate (phase 2)
 ```
+
+**Advisory seam** (`advisory.py` — returns TWO verdicts per fault line: GOVERN = stand up the
+control, DEPLOY = put AI on the work; E gates DEPLOY, never GOVERN. Design: `docs/radar-design.md`
+§8. Four effect-orders mapped against firm posture.)
+
+```bash
+python radar/advisory.py --pricing fixed_fee --enablement 7 --name "Your firm"  # GOVERN + DEPLOY
+python radar/advisory.py --pricing hourly  --refill 0.15 --enablement 4          # hourly case
+```
+
+The seam also powers the in-app view: `build.py` writes demo postures to `frontend/public/radar/advisory/`
+(rendered at `/radar/advisory`).
 
 Output: `docs/radar/index.html` (self-contained, GitHub Pages serves it) +
 `docs/radar/data.json`. CI regenerates weekly via `.github/workflows/radar.yml`.

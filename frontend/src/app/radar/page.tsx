@@ -35,8 +35,15 @@ interface FaultLine {
   adoption: number;
   market_classes: string[];
   adoption_evidence: Evidence[];
+  enable_seed: number;
+  enable: number;
+  enable_classes: string[];
+  n_enable_evidence: number;
+  enable_evidence: Evidence[];
   queue: number;
   lead: string;
+  seam?: string;
+  driver?: string;
 }
 interface RadarData {
   as_of: string;
@@ -368,15 +375,15 @@ export default function RadarPage() {
           </div>
         </div>
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-[2rem_1fr_5rem_6rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>#</span><span>Control · fault line</span><span>Lead</span><span>L1·L2·L3</span><span>Queue</span>
+          <div className="grid grid-cols-[2rem_1fr_5rem_9rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <span>#</span><span>Control · fault line</span><span>Lead</span><span>L1·L2·L3·E</span><span>Queue</span>
           </div>
           {queueRows.map((f) => {
             const lead = leadBucket(f.lead);
             const open = expanded === f.id;
             return (
               <div key={f.id} id={`row-${f.id}`} className={`border-b border-[var(--border)] last:border-0 ${hovered === f.id ? 'bg-[var(--brand-tint)]' : ''}`}>
-                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_6rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
+                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_9rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
                   <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{ranks.get(f.id)}</span>
                   <span>
                     <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
@@ -385,7 +392,7 @@ export default function RadarPage() {
                   <span className="inline-flex items-center gap-1.5 text-[12px]">
                     <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
                   </span>
-                  <span className="font-mono text-[13px] text-[var(--text)]">{whole(f.capability)}·{whole(f.pressure)}·{whole(f.adoption)}</span>
+                  <span className="font-mono text-[13px] text-[var(--text)]">{whole(f.capability)}·{whole(f.pressure)}·{whole(f.adoption)}·{whole(f.enable ?? f.enable_seed ?? 0)}</span>
                   <span className="font-mono text-[13px] font-bold text-[var(--text-strong)]">
                     {whole(f.queue)} <span className="text-[10px] text-[var(--primary)]">{signed(queueDelta(f))}</span>
                   </span>
@@ -396,6 +403,7 @@ export default function RadarPage() {
                       <Meter label="L1 capability" seed={f.capability_seed} now={f.capability} />
                       <Meter label="L2 ruling pressure" seed={f.pressure_seed} now={f.pressure} />
                       <Meter label="L3 adoption" seed={f.adoption_seed} now={f.adoption} />
+                      <Meter label="E market enablement" seed={f.enable_seed ?? 0} now={f.enable ?? f.enable_seed ?? 0} />
                       <div className="pt-1">
                         <p className="eyebrow mb-1">Why now</p>
                         <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.vector}</p>

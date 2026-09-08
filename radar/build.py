@@ -10,6 +10,7 @@ from pathlib import Path
 from score import score
 import calibration
 import kb
+import advisory
 
 OUT_DIR = Path(__file__).resolve().parents[1] / "docs" / "radar"
 # Second output: the app serves the radar as a static asset (Vercel deploys only
@@ -85,6 +86,7 @@ def render(data):
                &nbsp;|&nbsp; <b>L1 capability</b> seed {r['capability_seed']} → {r['capability']} ({r['n_capability_evidence']} demos, w={r['capability_weighted']})
                &nbsp;|&nbsp; <b>L2 ruling</b> seed {r['pressure_seed']} → {r['pressure']} ({r['n_evidence']} items, w={r['weighted_evidence']})
                &nbsp;|&nbsp; <b>L3 adoption</b> seed {r['adoption_seed']} → {r['adoption']} ({r['n_adoption_evidence']} signals, w={r['adoption_weighted']})
+               &nbsp;|&nbsp; <b>E enablement</b> seed {r['enable_seed']} → {r['enable']} ({r['n_enable_evidence']} items, w={r['enable_weighted']})
                &nbsp;|&nbsp; <b>queue</b> {r['queue']} · lead {_esc(r['lead'])}</p>
             <table class="ev"><thead><tr><th>Date</th><th>Demo</th><th>L1 capability evidence (weighted low, labeled — not a ruling)</th></tr></thead>
               <tbody>{cap_rows}</tbody></table>
@@ -258,6 +260,10 @@ def build(as_of=None):
         (FRONTEND_DIR / "calibration.json").write_text(
             json.dumps(calibration.report(), indent=2))
         (FRONTEND_DIR / "kb.json").write_text(json.dumps(kbd, indent=2))
+        try:
+            advisory.write_demos()   # in-app /radar/advisory demo postures
+        except Exception as e:       # never let a demo-generation hiccup fail the build
+            print(f"advisory demo write skipped: {e}")
     return data
 
 

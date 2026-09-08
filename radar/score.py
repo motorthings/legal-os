@@ -16,7 +16,8 @@ from fault_lines import (
     FAULT_LINES, SOURCE_TIERS, CONFLICT_DISCOUNT, EMPIRICAL_BOOST,
     CORROBORATION_STEP, HALF_LIFE_DAYS, STANDING_TIERS,
     MARKET_WEIGHTS, CONTROLS, ADOPTION_SEEDS, LEAD_BY_HORIZON,
-    CAPABILITY_WEIGHTS, CAPABILITY_SEEDS,
+    CAPABILITY_WEIGHTS, CAPABILITY_SEEDS, FAULT_ANNOTATIONS,
+    ENABLE_WEIGHTS, ENABLE_SEEDS,
 )
 
 # Saturation divisors: how fast each meter's evidence saturates toward 10. Larger =
@@ -25,6 +26,7 @@ from fault_lines import (
 RULING_DIVISOR = 3.0
 ADOPTION_DIVISOR = 2.0
 CAP_DIVISOR = 4.0
+ENABLE_DIVISOR = 2.0   # market enablement (E), same conservative saturating shape as adoption
 
 FEED_PATH = Path(__file__).parent / "sources" / "feed.jsonl"
 TIER_RANK = {"T1": 5, "T2": 4, "T3": 3, "T4": 2, "T5": 1}
@@ -70,6 +72,17 @@ def _matches(item, fault_line):
     return [s for s in fault_line["signals"] if s in hay]
 
 
+def _attributes_to(item, fault_line):
+    """Attribution gate: an item evidences a fault line iff its curated `fault_lines` lists
+    it. Signal matching falls back only for uncurated items. Attribution by curation (not
+    substring signals) lets one cross-cutting item evidence many lines cleanly and stops
+    signal-word leakage (e.g. the signal 'certif' matching 'uncertified')."""
+    curated = item.get("fault_lines")
+    if curated:
+        return fault_line["id"] in curated
+    return bool(_matches(item, fault_line))
+
+
 def _market_weight(item, as_of):
     """Third-order weight: how binding the item is ON THE MARKET, not on a court.
     Only items carrying a `market` class count toward control-adoption pressure."""
@@ -81,6 +94,23 @@ def _market_weight(item, as_of):
         w *= EMPIRICAL_BOOST
     # Market momentum decays for non-standing tiers, same as ruling evidence.
     w *= _decay(_parse_date(item["date"]), as_of, item["tier"])
+    return w, cls
+
+
+def _enable_weight(item, as_of=None):
+    """Market-enablement weight (E): can a firm actually stand the control up from what the
+    market offers now? Only items carrying an `enable` class count toward E.
+
+    Unlike ruling/adoption momentum, enable evidence is a PERSISTENT supply fact: once a tool
+    is proven at scale, a standard exists, or a provider category matures, it does not un-happen
+    a year later. So enable evidence does NOT decay (same logic as capability). Class weights
+    already separate a lasting deploy-at-scale (1.00) from a passing launch (0.30)."""
+    cls = item.get("enable")
+    if cls not in ENABLE_WEIGHTS:
+        return 0.0, None
+    w = ENABLE_WEIGHTS[cls]
+    if item.get("empirical"):
+        w *= EMPIRICAL_BOOST
     return w, cls
 
 
@@ -115,14 +145,16 @@ def score(feed=None, as_of=None):
         market_classes = set()
         capability_evidence = []
         capability_classes = set()
+        enable_evidence = []
+        enable_classes = set()
         for item in feed:
             # Point-in-time: only evidence available on/before as_of counts.
             # This is what makes backtesting (calibration) honest.
             if _parse_date(item["date"]) > as_of:
                 continue
-            hits = _matches(item, fl)
-            if not hits:
+            if not _attributes_to(item, fl):
                 continue
+            hits = _matches(item, fl)  # provenance strings only; may be empty under curation
             w = _item_weight(item, as_of)
             evidence.append({
                 "date": item["date"], "title": item["title"], "tier": item["tier"],
@@ -152,6 +184,17 @@ def score(feed=None, as_of=None):
                     "market": cls, "weight": round(mw, 3), "matched": hits,
                 })
                 market_classes.add(cls)
+
+            # Enablement (E): does this item also show the market can supply the means
+            # to stand the control up (deploy_scale, standard, provider ...)?
+            ew, ecls = _enable_weight(item, as_of)
+            if ecls:
+                enable_evidence.append({
+                    "date": item["date"], "title": item["title"], "tier": item["tier"],
+                    "enable": ecls, "weight": round(ew, 3), "matched": hits,
+                    "empirical": bool(item.get("empirical")),
+                })
+                enable_classes.add(ecls)
 
         # Corroboration: reward agreement across distinct tiers (independence).
         corroboration = max(0, len(tiers_seen) - 1) * CORROBORATION_STEP
@@ -185,6 +228,16 @@ def score(feed=None, as_of=None):
         adoption_evidence.sort(key=lambda e: (MARKET_WEIGHTS[e["market"]], e["date"]),
                                reverse=True)
 
+        # E — market enablement: same shape, enable-weighted evidence only, corroborated
+        # across distinct enable classes. Part B (T-market): never a backtested call.
+        e_corr = max(0, len(enable_classes) - 1) * CORROBORATION_STEP
+        e_weighted = sum(e["weight"] for e in enable_evidence) * (1 + e_corr)
+        e_seed = ENABLE_SEEDS.get(fl["id"], 3.0)
+        e_lift = (10 - e_seed) * (1 - math.exp(-e_weighted / ENABLE_DIVISOR))
+        enable = round(min(10.0, e_seed + e_lift), 1)
+        enable_evidence.sort(key=lambda e: (ENABLE_WEIGHTS[e["enable"]], e["date"]),
+                             reverse=True)
+
         # The Harbor cell: both meters high == the control is urgent AND about to be
         # mandatory. Product (scaled 0-10) so a low reading on either pulls it down.
         queue = round((pressure / 10.0) * (adoption / 10.0) * 10.0, 1)
@@ -215,12 +268,21 @@ def score(feed=None, as_of=None):
             "evidence": evidence,
             # --- third-order (L3) control-adoption layer ---
             "control": CONTROLS.get(fl["id"], ""),
+            "seam": FAULT_ANNOTATIONS.get(fl["id"], {}).get("seam", "codifiable"),
+            "driver": FAULT_ANNOTATIONS.get(fl["id"], {}).get("driver", "market"),
             "adoption_seed": a_seed,
             "adoption": adoption,
             "adoption_weighted": round(a_weighted, 2),
             "market_classes": sorted(market_classes),
             "n_adoption_evidence": len(adoption_evidence),
             "adoption_evidence": adoption_evidence,
+            # --- enablement (E) — market deployability (Part B) ---
+            "enable_seed": e_seed,
+            "enable": enable,
+            "enable_weighted": round(e_weighted, 2),
+            "enable_classes": sorted(enable_classes),
+            "n_enable_evidence": len(enable_evidence),
+            "enable_evidence": enable_evidence,
             "queue": queue,
             "lead": lead,
         })
@@ -228,14 +290,15 @@ def score(feed=None, as_of=None):
     results.sort(key=lambda r: r["pressure"], reverse=True)
     return {"as_of": as_of.isoformat(), "fault_lines": results,
             "tiers": SOURCE_TIERS, "market_weights": MARKET_WEIGHTS,
+            "enable_weights": ENABLE_WEIGHTS, "enable_seeds": ENABLE_SEEDS,
             "n_items": len(feed)}
 
 
 if __name__ == "__main__":
     out = score()
-    print(f'{"CAP":>4} {"RULE":>5} {"ADOPT":>6} {"QUEUE":>6}  {"LEAD":<12} FAULT LINE')
+    print(f'{"CAP":>4} {"RULE":>5} {"ADOPT":>6} {"ENABLE":>7} {"QUEUE":>6}  {"LEAD":<12} FAULT LINE')
     for r in sorted(out["fault_lines"], key=lambda r: r["queue"], reverse=True):
-        print(f'{r["capability"]:>4} {r["pressure"]:>5} {r["adoption"]:>6} {r["queue"]:>6}  '
-              f'{r["lead"]:<12} {r["title"]}  '
+        print(f'{r["capability"]:>4} {r["pressure"]:>5} {r["adoption"]:>6} {r["enable"]:>7} '
+              f'{r["queue"]:>6}  {r["lead"]:<12} {r["title"]}  '
               f'[{r["control"]}]  (L1:{r["n_capability_evidence"]}ev '
-              f'L2:{r["n_evidence"]}ev L3:{r["n_adoption_evidence"]}ev)')
+              f'L2:{r["n_evidence"]}ev L3:{r["n_adoption_evidence"]}ev E:{r["n_enable_evidence"]}ev)')

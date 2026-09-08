@@ -249,11 +249,11 @@ are the content Layer B's enablement axis must eventually carry:
 ### 5.3 Data-currency corrections (for the feed, not the logic)
 
 - **Colorado weakened in 2026.** Colorado's 2024 comprehensive AI law was repealed/replaced in
-  May 2026 by a lighter transparency regime effective Jan 2027. The feed still carries the
-  original as a live T1 and the convergence line leans on it. Verify currency before relying on
-  it as convergence evidence.
-- **Cal. Rule of Court 10.430** (adopted July 2025) is a real governance event absent from the
-  feed.
+  May 2026 by a lighter transparency regime effective Jan 2027. **Resolved 2026-09-07:** the feed
+  item asserting the risk-based regime never took effect was corrected to the actual 2026-05-14
+  repeal/replacement (SB 26-189).
+- **Cal. Rule of Court 10.430** (adopted July 2025) was a real governance event absent from the
+  feed. **Resolved 2026-09-07:** added as a T1 item mapping to convergence/disclosure/verification.
 
 ## 6. Logic gaps in v1 (recorded so each fix is traceable)
 
@@ -266,7 +266,7 @@ are the content Layer B's enablement axis must eventually carry:
   software they have" has no meter. It is folded into L3 as one weight (`deployment: 0.70`)
   beside insurer/cert/process_mandate, conflating "the governance fix is table stakes" with
   "the enabling tool is deployable." The history validation in §5.2 confirms this is the gap
-  that matters.
+  that matters. **(Resolved 2026-09-07: the E market-enablement axis, §9, is that meter.)**
 - **G3 — The causal model cannot represent tool-deployment → rule.** The cascade is strictly
   capability → ruling → adoption, and calibration grades only L1→L2 and L2→L3. But the richest
   lines (disclosure, verification) were provoked by firms *deploying* tools in filings — a
@@ -333,22 +333,30 @@ leg.
   run artifacts, seeded feed, scheduled regen. See §4.
 - **Existing, separate (Part C):** law-firm-sim and legal-sim (shared engine, `FirmSignature`,
   Monte Carlo/Bayesian, AI Profit Paradox).
-- **Shipped (2026-09-07, seam v0):** `radar/advisory.py` — maps the four effect-orders into a
-  per-fault-line verdict, composing the radar landscape (Orders 1 + 3) with firm posture
-  (Orders 2 + 4). Reuses the AI Profit Paradox gate from legal-sim as the Order 4 source. See §8.
-- **Planned:** the Part A fixes (§7, per-line drivers, L2 isolation), the rest of Part B (§7, the
-  public enablement axis + two readouts), and the deeper Part C integration (§7, world-shock
-  feed-forward, seam modeling). Recorded here first so the canonical intent outpaces the
-  implementation.
+- **Shipped 2026-09-07 (seam, two-verdict):** `radar/advisory.py` maps the four effect-orders into a
+  **GOVERN/DEPLOY** verdict per fault line — GOVERN (stand up the control: required + readiness,
+  economics never block it) and DEPLOY (put AI on the work: pricing + capture + market E). Composes
+  the radar landscape (Orders 1 + 3) with firm posture (Orders 2 + 4). See §8.
+- **Shipped 2026-09-07 (enablement axis E):** fourth per-fault-line meter (market deployability),
+  non-decaying enable evidence on six lines, and E as a hard gate on the DEPLOY axis only. See §9.
+- **Shipped 2026-09-07 (curation-first attribution):** each item evidences only the fault lines in
+  its curated `fault_lines` field (signal match = fallback), killing signal-word leakage between
+  lanes.
+- **Shipped 2026-09-07 (app):** /radar shows E; new /radar/advisory renders GOVERN/DEPLOY from
+  precomputed posture JSONs. Build-verified.
+- **Planned:** isolate the L2 ruling meter to actual rulings (G5); the two-readout build (compliance
+  alarm = governance × adoption, opportunity envelope = supply × enablement); deeper Part C
+  integration (world-shock feed-forward to the sim). Recorded here first so the canonical intent
+  outpaces the implementation.
 
 ---
 
 ## 8. How the effects fit together: the advisory seam
 
 Everything this system tracks can be grouped into four layers of effect, running from what the
-technology can do down to whether one specific firm can act on it. The seam stacks the four and
-turns each issue the radar watches into one plain answer: build it now, fix your pricing first,
-get the tools first, or wait.
+technology can do down to whether one specific firm can act on it. The seam stacks the four and,
+for each issue the radar watches, answers the two questions a firm actually faces separately:
+**stand up the control** (governance) and **put AI on the work** (economics).
 
 No single layer is enough on its own. A firm that only watches the technology over-invests. A
 firm that only watches the rulings under-prepares. The right call for any one organization lives
@@ -372,38 +380,51 @@ whether a single firm can deploy and profit is not something anyone can predict 
 You supply them. That is the honesty boundary: it reports what is knowable and asks you for the
 rest.
 
-### The verdict, in plain steps
+### Two questions, not one
 
-For each issue, the seam asks four questions in order and stops at the first one that blocks.
+Each issue forces two different decisions, and the seam keeps them separate rather than mashing
+them into one answer. The mistake the single-verdict model made was treating "stand up this
+control" and "put AI on this work" as the same call — which told a ready firm to delay required
+governance because the AI economics were not there yet. They are different questions, answered by
+different evidence, for different people.
 
-1. **Is this worth acting on now?** It is if the law has already moved, or if the capability is
-   ready in a window before the rules arrive. If neither, the answer is **wait**.
-2. **Would acting make us money under how we bill?** This is where pricing decides. On hourly
-   billing, more AI means fewer billed hours, so the answer is usually no. If it is no, the answer
-   is **fix your pricing first**, because no other step pays until this one is solved.
-3. **If it would pay, are we equipped to run it?** If your tools, skills, and data are not ready,
-   the answer is **build that capacity first**.
-4. **If it is urgent, pays, and you are ready**, the answer is **do it now**.
+**GOVERN — stand up the control?**
+Is this control required of us now, and can we meet it? Driven by whether the law has moved (or the
+fix is becoming table stakes) and by the firm's readiness. The AI economics never block it: a
+required competence program or data-governance is not deferred because the billable hour makes AI
+less profitable. Answers: **stand up now · build capacity first · no mandate yet**.
 
-The order of the questions matters. Pricing is checked before readiness, because buying tools you
-cannot afford to use is wasted money. An issue that is useless to you at step 2 cannot be rescued
-by being ready for it at step 3.
+**DEPLOY — put AI on the work?**
+Is this the moment to put AI on the underlying work the control governs? Driven by how the firm
+bills (the pricing paradox) and whether the AI can capture the work yet (the seam). A rule
+requiring verification does not force you to scale AI. Answers: **deploy now · fix pricing first ·
+defer · watch**. Only asked where AI does the billable work; market-driven controls (insure your
+governance, unify your operating model) have no deploy question.
 
-### One example, two firms
+The two answers land in different hands. GOVERN feeds the compliance calendar — what we must stand
+up, and by when. DEPLOY feeds the build-and-buy budget — where AI effort and tooling actually pays.
+Keeping them separate is what stops the engine from giving a ready firm bad advice about required
+governance.
 
-Take one live issue: verification, the requirement that firms prove their AI work was checked.
-The law has already moved here, so the issue is urgent for both firms. The only difference is the
-firm.
+### One issue, two firms, two answers each
 
-An hourly-billing firm runs the numbers and loses roughly $124,000 per lawyer a year from putting
-AI to work, because the hours it saves are hours it stops billing. The seam's answer: fix the
-pricing model first, because every control on the board loses money until that changes.
+Take verification, the requirement that firms prove their AI work was checked. The law has already
+moved, so both firms are required to stand the control up now.
 
-A fixed-fee firm, same issue, same urgency, runs the same numbers and gains roughly $7,900 per
-lawyer a year, because the hours AI saves are pure cost taken out. The seam's answer: do it now.
+An hourly firm is required to stand it up and is ready, so **GOVERN says stand up now** — nothing
+about the billable hour lets you skip required verification. But running the deploy economics it
+loses roughly $124,000 per lawyer a year from putting AI to work, because the hours it saves are
+hours it stops billing. **DEPLOY says fix pricing first** — stand up the control, but don't scale
+the AI that feeds it until pricing changes.
 
-Same rule, opposite instruction. The law did not change. What changed is layer 4, and layer 4 is
-the one only the firm can answer. That is the whole reason the seam exists.
+A fixed-fee firm is also required and ready, so **GOVERN says stand up now** too. And its deploy
+economics are the mirror image: it gains roughly $7,900 per lawyer a year, because the hours AI
+saves are pure cost taken out. **DEPLOY says deploy now.**
+
+Same rule, same governance answer for both — a requirement is a requirement regardless of billing.
+What differs is the deploy answer, because layer 4 is the one only the firm can answer. That split
+is the whole reason the seam exists: governance is not the economics, and the engine no longer
+conflates them.
 
 ### What it does not do
 
@@ -417,6 +438,106 @@ Running it for a firm:
 ```bash
 python radar/advisory.py --pricing fixed_fee --enablement 7 --name "Your firm"
 ```
+
+## 9. Part B spec — the market enablement axis (E)
+
+The structural gap §5.2 proved: the radar measures what the rules demand (governance) and what
+the AI can do (capability), but not whether the market actually lets a firm stand the fix up.
+This spec defines that missing axis. It is Part B, so it is evidence-traced (T-market), never
+graded as a call, and it never touches Part A's meters or calibration.
+
+**Status 2026-09-07:** implemented in the scorer — attribution is now curation-first (each item
+evidences the fault lines in its curated `fault_lines`, signal matching only as a fallback), which
+fixes signal-word leakage between lanes. The E meter lives in `fault_lines.py` (`ENABLE_WEIGHTS`,
+`ENABLE_SEEDS`) and `score.py`, surfaced in `data.json`, the CLI table, and the radar page detail
+line. Calibration is unaffected (E is Part B).
+
+**Enable evidence is ingested and persistent.** `enable` evidence now covers six lines (feed = 30
+items): benchmark (standard, Stanford), insurance (playbook, CNA), competence (standard, PLI),
+agentic (deploy_scale, A&O+Harvey), verification (deploy_scale, e-discovery/contract-review
+maturity), confidentiality (provider, no-training/data-governance). Enable evidence deliberately does
+NOT decay — unlike ruling/adoption momentum, "the market can supply X" is a persistent fact once a
+tool is proven at scale or a standard exists (same logic as capability). Readings now differentiate:
+benchmark 8.3, verification 8.1, competence 7.4, insurance 6.9, confidentiality 6.7, agentic 6.5,
+disclosure 6.0 (seed), others at seed.
+
+**E is a hard gate on the deploy axis.** The seam's deploy verdict cannot be deploy-now unless
+market enablement E ≥ 6.0; if E is below that, deploy becomes defer ("the market can't supply mature
+tooling for this yet"). The gate sits on the DEPLOY axis only — it never touches GOVERN, so a
+required control is never deferred on market-supply grounds. Currently all deploy-eligible lines have
+E ≥ 6 by evidence or seed, so the gate is latent-but-correct: it binds only if a control's market
+supply drops below threshold.
+
+### Why it is separate from L3 adoption
+
+L3 adoption and enablement are the demand and supply halves of the same question, and L3 currently
+conflates them. L3 asks "is the *control* becoming required or table stakes" (insurers gating,
+process mandates, procurement requiring it). Enablement asks "even if it is required, can a firm
+actually *build it* with what the market offers right now" (a usable tool, a certification to aim
+at, a provider to buy from, a playbook to follow). A control can be mandatory yet undeployable:
+supervision rules for agents arrived before mature agent tooling. Splitting them lets the system
+say "required AND you can build it" versus "required but nothing good exists to build with yet."
+
+### The E meter
+
+A fourth reading per fault line, 0–10, the same shape as the others.
+
+- **Question:** can a firm that wants to stand this control up do it, from what the market
+  offers today?
+- **Scoring:** same saturated-curve machinery as adoption — a seed lifted by weighted `enable`
+  evidence, corroborated across distinct enable classes, decayed like market momentum (standing
+  T1/T2 exempt; reuse the existing half-life). Divisor ≈ 2.0 (adoption's).
+- **Sources:** feed items carry a new class key `enable`. A single item can be `market` (L3), and
+  `enable`, and `capability` — they are three different questions about the same event.
+
+### Enable signal classes and weights
+
+| class | weight | a market item proving the ecosystem can support building the control now |
+|---|---|---|
+| deploy_scale | 1.00 | operational at production scale at major firms (firm-wide deployment, usage data) |
+| standard | 0.90 | a concrete certification / benchmark / minimum standard to build against (bar cert, NERVE) |
+| playbook | 0.75 | a defined process / playbook / insurer form a firm can follow (not just a duty) |
+| provider | 0.65 | a maturing vendor/provider category to buy from (dedicated tools, capital, M&A) |
+| client_pull | 0.55 | clients / RFPs actively requiring the tool or control |
+| launch | 0.30 | a tool / offer launched but not yet proven at scale |
+| pundit | 0.02 | narrative only |
+
+Analyst seed proposal (baseline ecosystem readiness before evidence): verification 6.5,
+benchmark 7.0 (NERVE exists), disclosure 6.0, competence 6.0, confidentiality 5.5, insurance 5.0,
+convergence 4.0, fees 3.5, agentic 3.5 (immature tooling), judicial_analytics 3.0,
+vendor_liability 3.0.
+
+### How E reaches the seam (Order 2's market half)
+
+Order 2 in the advisory seam is two-sided: the *market* can support it (E, public) **and** the
+*firm* can run it (private readiness). E is read from each fault line's meter and carried on the
+row (`orders.2_market_enable`).
+
+**E is a hard gate on the deploy axis only.** The deploy verdict cannot be deploy-now unless
+market enablement E ≥ 6.0; below that it defers ("the market can't supply mature tooling for this
+yet"). E belongs on the deploy axis, never the govern axis — govern is requirement + readiness and
+must never be deferred on market-supply grounds. (An early attempt gated E before enable evidence
+existed, so seed noise wrongly deferred required governance; that is why the gate is deploy-only and
+waited for real enable evidence.) With enable evidence now ingested and non-decaying, E readings are
+evidence-backed, and the deploy gate is honest: currently every deploy-eligible line is ≥ 6 by
+evidence or seed, so it is latent-but-correct rather than firing on noise.
+
+### Evidence backlog (what to ingest once the axis ships)
+
+From §5.2: tool-landscape consolidation and funding (Harvey, Clio/vLex, TR/Casetext) as
+`provider`; firm-wide deployment at scale (one global firm on 5,000 lawyers) as `deploy_scale`;
+procurement RFP pull (~8%→34%) as `client_pull`; e-discovery / contract-review maturity as
+`deploy_scale` on the relevant lines; any bar adoption of a tool certification or benchmark as
+`standard`; ABS / sandbox licensing as `playbook`/`provider` on the delivery-channel side. These
+are not fault lines themselves (recorded as scope calls in §5.2); they are enable evidence the E
+meter reads.
+
+### Guardrail
+
+E is T-market: an evidence-weighted trajectory, never a backtested call, never in Part A's
+calibration. It cannot decide "the rules will move"; it only reports "the means to comply exist
+and are maturing." The two-readout build (§7) becomes meaningful once E exists: compliance alarm =
+governance × adoption, opportunity envelope = capability × E.
 
 ---
 

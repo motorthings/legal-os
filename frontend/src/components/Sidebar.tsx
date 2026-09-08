@@ -9,7 +9,7 @@ import {
   FileText, LogOut, Scale, Search, Shield,
   Briefcase, BarChart3, Target, Scale3D,
   Building2, ChevronRight, Gavel, BookOpen,
-  LayoutDashboard, FileCheck2, Radar, Database,
+  LayoutDashboard, FileCheck2, Radar, Database, ClipboardCheck,
 } from 'lucide-react';
 
 type Persona = 'attorney' | 'leader' | 'tour';
@@ -46,6 +46,7 @@ const ALL_FUNCTIONS: NavItem[] = [
   { href: '/simulation', label: 'Firm Simulation', icon: Building2 },
   { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
   { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
+  { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
 ];
 
 const NAV: Record<Persona, NavGroup[]> = {
@@ -90,6 +91,7 @@ const NAV: Record<Persona, NavGroup[]> = {
       items: [
         { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
         { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
+        { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
       ],
     },
   ],

@@ -7,9 +7,9 @@
       "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
       "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
       "meter": "pressure",
-      "reading_at_lead": 9.2,
+      "reading_at_lead": 9.4,
       "evidence_at_lead": 3,
-      "reading_at_event": 9.2,
+      "reading_at_event": 9.6,
       "lead_days": 90,
       "called": true
     },
@@ -20,9 +20,9 @@
       "title": "Nebraska Supreme Court suspension over hallucinated brief",
       "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
       "meter": "pressure",
-      "reading_at_lead": 9.3,
-      "evidence_at_lead": 4,
-      "reading_at_event": 9.5,
+      "reading_at_lead": 9.8,
+      "evidence_at_lead": 7,
+      "reading_at_event": 9.9,
       "lead_days": 90,
       "called": true
     },
@@ -35,7 +35,7 @@
       "meter": "pressure",
       "reading_at_lead": 9.1,
       "evidence_at_lead": 3,
-      "reading_at_event": 9.3,
+      "reading_at_event": 9.5,
       "lead_days": 90,
       "called": true
     },

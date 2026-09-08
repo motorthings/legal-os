@@ -119,12 +119,66 @@ CONTROLS = {
     "convergence":        "One operating model, to the strictest standard",
 }
 
+# --- Advisory annotations (Part B lens; do not move the forecast meters) ------
+# These two per-line facts let the advisory seam give DIFFERENT, correct advice per
+# control instead of stamping one uniform answer. They describe how a firm should act,
+# not what the law will do, so they sit beside the forecast but never enter its meters.
+#
+# `seam`   — how capturable the underlying work is by current AI. Only meaningful where AI
+#            does the work (capability-/deployment-driven lines).
+#            codifiable = AI can do it well now · mixed = partially · tacit = partner-judgment
+#            residue, not yet capturable.
+# `driver` — why the control exists for a firm:
+#            capability   the fault is the AI tool doing something (benchmark, agentic, analytics)
+#            deployment   the control exists because the firm USES AI (disclosure, verification,
+#                         confidentiality, competence)
+#            market       the control exists from market/regulatory pressure, AI use or not
+#                         (insurance, convergence, fees, vendor_liability)
+FAULT_ANNOTATIONS = {
+    "insurance":          {"seam": "codifiable", "driver": "market"},
+    "disclosure":         {"seam": "codifiable", "driver": "deployment"},
+    "verification":       {"seam": "codifiable", "driver": "deployment"},
+    "confidentiality":    {"seam": "codifiable", "driver": "deployment"},
+    "convergence":        {"seam": "codifiable", "driver": "market"},
+    "agentic":            {"seam": "mixed",      "driver": "capability"},
+    "benchmark":          {"seam": "codifiable", "driver": "capability"},
+    "competence":         {"seam": "codifiable", "driver": "deployment"},
+    "fees":               {"seam": "tacit",      "driver": "market"},
+    "judicial_analytics": {"seam": "tacit",      "driver": "capability"},
+    "vendor_liability":   {"seam": "codifiable", "driver": "market"},
+}
+
 # Adoption seed (0-10): how far the market has already moved toward the control being
 # table stakes, before this run's evidence. The evidence then moves it, same as pressure.
 ADOPTION_SEEDS = {
     "insurance": 7.5, "disclosure": 7.0, "verification": 6.5, "convergence": 7.0,
     "confidentiality": 6.0, "benchmark": 5.5, "competence": 5.5, "agentic": 5.0,
     "fees": 3.0, "judicial_analytics": 3.0, "vendor_liability": 2.5,
+}
+
+# --- Enablement lane (E, market) — Part B (see docs/radar-design.md §9) ------
+# A fourth reading per fault line: not "is the control required" (L3 adoption,
+# demand) but "can a firm actually stand it up with what the market offers right
+# now" (supply: a usable tool, a certification to aim at, a provider, a playbook).
+# L3 and E are the demand and supply halves of the same question; L3 conflates
+# them today, which is why a control can be mandatory yet undeployable (agent
+# supervision rules before mature agent tooling). E is evidence-traced (T-market),
+# never a backtested call, never in Part A's calibration.
+ENABLE_WEIGHTS = {
+    "deploy_scale": 1.00,   # operational at production scale at major firms
+    "standard":     0.90,   # a concrete certification / benchmark / minimum standard to build against
+    "playbook":     0.75,   # a defined process / playbook / insurer form to follow (not just a duty)
+    "provider":     0.65,   # a maturing vendor/provider category to buy from
+    "client_pull":  0.55,   # clients / RFPs actively requiring the tool or control
+    "launch":       0.30,   # a tool / offer launched but not yet proven at scale
+    "pundit":       0.02,   # narrative only
+}
+
+# Enablement seed (0-10): baseline ecosystem readiness before this run's evidence.
+ENABLE_SEEDS = {
+    "benchmark": 7.0, "verification": 6.5, "disclosure": 6.0, "competence": 6.0,
+    "confidentiality": 5.5, "insurance": 5.0, "convergence": 4.0, "fees": 3.5,
+    "agentic": 3.5, "judicial_analytics": 3.0, "vendor_liability": 3.0,
 }
 
 # Lead time to stand a control up, derived from the fault line's horizon.
