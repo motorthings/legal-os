@@ -153,6 +153,18 @@ def _capability_weight(item):
     return w, cls
 
 
+def _two_sided_pressure(net, seed, divisor):
+    """Two-sided saturating pressure for the ruling (L2) meter.
+
+    Positive net lifts the seed toward 10 (the existing behavior); negative net drags
+    it toward 0, because a counter-ruling (e.g. a court saying disclosure is NOT
+    required) genuinely weakens the analyst thesis rather than merely offsetting the
+    lift. Symmetric and deterministic, so score replay stays exact."""
+    if net >= 0:
+        return seed + (10 - seed) * (1 - math.exp(-net / divisor))
+    return seed * math.exp(net / divisor)
+
+
 def score(feed=None, as_of=None):
     """Return a list of scored fault lines with full provenance."""
     if feed is None:
@@ -166,6 +178,7 @@ def score(feed=None, as_of=None):
     for fl in FAULT_LINES:
         evidence = []
         tiers_seen = set()
+        neg_tiers_seen = set()
         adoption_evidence = []
         market_classes = set()
         capability_evidence = []
@@ -183,14 +196,22 @@ def score(feed=None, as_of=None):
                 continue
             hits = _matches(item, fl)  # provenance strings only; may be empty under curation
             w = _item_weight(item, as_of)
+            # Negative evidence: an item can COUNTER a fault line (e.g. a court holding
+            # that disclosure is NOT required). `negative_fault_lines` lists the lines the
+            # item argues against; its weight is subtracted there and added everywhere else.
+            negative = fl["id"] in item.get("negative_fault_lines", [])
             evidence.append({
                 "date": item["date"], "title": item["title"], "tier": item["tier"],
                 "source": item.get("source", ""), "url": item.get("url", ""),
-                "weight": round(w, 3), "matched": hits,
+                "weight": round(-w if negative else w, 3), "matched": hits,
                 "empirical": bool(item.get("empirical")),
                 "conflict": bool(item.get("conflict")),
+                "negative": negative,
             })
-            tiers_seen.add(item["tier"])
+            if negative:
+                neg_tiers_seen.add(item["tier"])
+            else:
+                tiers_seen.add(item["tier"])
 
             # First-order (L1): does this item demonstrate the capability that CREATES
             # the fault line? (benchmark, study, release ...) Non-decaying.
@@ -235,9 +256,15 @@ def score(feed=None, as_of=None):
                 })
                 software_classes.add(scls)
 
-        # Corroboration: reward agreement across distinct tiers (independence).
-        corroboration = max(0, len(tiers_seen) - 1) * CORROBORATION_STEP
-        weighted = sum(e["weight"] for e in evidence) * (1 + corroboration)
+        # Corroboration: reward agreement across distinct tiers (independence), computed
+        # separately for positive and negative evidence so a counter-ruling is not
+        # "corroborated" into a larger drag by sharing tiers with supporting evidence.
+        pos_corr = max(0, len(tiers_seen) - 1) * CORROBORATION_STEP
+        neg_corr = max(0, len(neg_tiers_seen) - 1) * CORROBORATION_STEP
+        pos_weighted = sum(e["weight"] for e in evidence if e["weight"] > 0) * (1 + pos_corr)
+        neg_weighted = -sum(e["weight"] for e in evidence if e["weight"] < 0) * (1 + neg_corr)
+        weighted = pos_weighted - neg_weighted   # net signed evidence
+        n_negative = sum(1 for e in evidence if e["negative"])
 
         # L1 — capability pressure: same saturating shape, capability-weighted evidence
         # only, corroborated across distinct demonstration classes. Held deliberately
@@ -251,11 +278,11 @@ def score(feed=None, as_of=None):
         capability_evidence.sort(
             key=lambda e: (CAPABILITY_WEIGHTS[e["capability"]], e["date"]), reverse=True)
 
-        # L2 — ruling pressure: move the seed toward 10 as weighted evidence
-        # accumulates (saturating). Unchanged; this is the shipped meter.
+        # L2 — ruling pressure: two-sided saturating. Positive evidence lifts the seed
+        # toward 10; negative evidence drags it toward 0 (below the seed), because a
+        # counter-ruling weakens the thesis, it does not merely offset the lift.
         seed = fl["pressure_seed"]
-        lift = (10 - seed) * (1 - math.exp(-weighted / RULING_DIVISOR))
-        pressure = round(min(10.0, seed + lift), 1)
+        pressure = round(_two_sided_pressure(weighted, seed, RULING_DIVISOR), 1)
 
         # L3 — control-adoption pressure: same shape, market-weighted evidence only,
         # corroborated across distinct market classes (insurer + RFP + deployment ...).
@@ -292,10 +319,11 @@ def score(feed=None, as_of=None):
         queue = round((pressure / 10.0) * (adoption / 10.0) * 10.0, 1)
         lead = LEAD_BY_HORIZON.get(fl["horizon"], "~1 year")
 
-        # Trend arrow from recent (<=120d) weighted momentum vs standing base.
+        # Trend arrow from recent (<=120d) weighted momentum vs standing base. Signed:
+        # a recent counter-ruling can pull the trend to "quiet", not just "steady".
         recent = sum(e["weight"] for e in evidence
                      if (as_of - _parse_date(e["date"])).days <= 120)
-        trend = "rising" if recent >= 0.8 else ("steady" if recent > 0 else "quiet")
+        trend = "rising" if recent >= 0.8 else ("steady" if recent > -0.8 else "quiet")
 
         evidence.sort(key=lambda e: (TIER_RANK[e["tier"]], e["date"]), reverse=True)
         results.append({
@@ -312,8 +340,12 @@ def score(feed=None, as_of=None):
             "pressure": pressure,
             "trend": trend,
             "weighted_evidence": round(weighted, 2),
-            "corroboration": round(corroboration, 2),
+            "weighted_positive": round(pos_weighted, 2),
+            "weighted_negative": round(neg_weighted, 2),
+            "corroboration": round(pos_corr, 2),
+            "neg_corroboration": round(neg_corr, 2),
             "n_evidence": len(evidence),
+            "n_negative": n_negative,
             "evidence": evidence,
             # --- third-order (L3) control-adoption layer ---
             "control": CONTROLS.get(fl["id"], ""),

@@ -539,6 +539,67 @@ calibration. It cannot decide "the rules will move"; it only reports "the means 
 and are maturing." The two-readout build (§7) becomes meaningful once E exists: compliance alarm =
 governance × adoption, opportunity envelope = capability × E.
 
+## 10. Part B spec — the software-capability lane (S), the vendor trajectory
+
+Enablement is not one axis; it is a three-layer supply stack, and the engine only modeled two of
+the layers until now:
+
+| Layer | Name | Question | Engine lane |
+|---|---|---|---|
+| 1 | AI capability | can the underlying AI do the legal thing | L1 `capability` (shipped) |
+| 2 | Software capability | can legal-AI software vendors build a tool for it | **S `software` (this spec)** |
+| 3 | Method | does the playbook/standard exist to adopt it | E `enable` (shipped) |
+
+Each layer enables the next — model → software → method → firm — and each has different drivers and
+different clocks. Collapsing them into one "enablement" bucket loses the difference between "the
+model can do it but no vendor has built it" and "vendors built it but no method exists to adopt
+it": different predictions, different lead times.
+
+### What S is
+
+A forward momentum signal for the middle layer: what vendors are **enabled to build next**, driven
+by the movements behind the current state. Evidence class `software`, weights:
+
+- `capital` 1.00 — a funding round / valuation step that funds future build
+- `model_access` 0.90 — a frontier model unlock vendors can now build on
+- `acquisition` 0.85 — M&A consolidating build capacity / incumbency
+- `regulatory_room` 0.70 — a law/ruling opening or constraining what vendors may ship
+- `ship` 0.55 — a vendor shipping a major product
+
+S **decays** (`SOFTWARE_HALF_LIFE = 120` days): it is momentum, so a round two years ago does not
+signal today's build — unlike E, which is a persistent supply fact and does not decay.
+
+### Calibration — S is graded against its own milestones
+
+A forward signal that cannot be graded is just a vibe. So S has its own point-in-time backtest
+(`calibration.software_backtest`), replaying the engine 90 days before each dated build milestone
+(funding round, acquisition, shipment) using only prior evidence. Threshold 6.0.
+
+**First result (4 milestones, 2023-2026): 1/4, and each miss is a different, defensible limit.**
+
+| Milestone | Result | What it reveals |
+|---|---|---|
+| Harvey → \$8B (Nov 2025) | **called** | escalating capital (\$3B→\$5B) pointed at the decacorn — the one clean momentum continuation |
+| Agentic tools ship at scale (Apr 2025) | missed | the funding that drove it landed ~2 months before the ship; S tracks *funding* momentum, not shipment timing |
+| Clio acquires vLex (Nov 2025) | missed | M&A into a new area (practice-management) is a direction shift, not a continuation |
+| TR acquires Casetext (Aug 2023) | missed | first-of-kind — the trajectory had not started, nothing prior to predict from |
+
+The honest finding: **S predicts trajectory *continuation* (who keeps building faster), and it is
+transparent that *origination* (first vendor into an area) and *direction shift* (M&A into new
+territory) are outside its reach.** That boundary is the calibration doing its job — the same
+first-of-kind honesty the L1 capability lane already carries.
+
+### Forward tweaks (what the backtest says to tune next)
+
+1. **Grade S against funding/momentum milestones, not shipments.** The agentic "miss" was a
+   shipment graded against a funding signal — re-anchor the milestone set on the capital events
+   (the thing S actually tracks) and the lane reports its real hit rate.
+2. **Do not chase origination or direction shifts.** First-of-kind and M&A-into-new-territory are
+   low-signal by nature; flag them separately rather than folding them into a momentum call.
+3. **Extend the milestone set forward.** As the vendor build continues, each new dated funding /
+   acquisition / ship event is another resolution the lane earns or misses, which is the ongoing
+   calibration loop the whole engine is built on.
+
 ---
 
 *Canonical. Edit this file, not the generated `docs/radar/` output, when the design changes.*

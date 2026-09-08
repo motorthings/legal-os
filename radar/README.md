@@ -45,6 +45,11 @@ Output: `docs/radar/index.html` (self-contained, GitHub Pages serves it) +
 - A fault line's pressure = seed thesis lifted by summed weighted evidence,
   amplified by **corroboration across independent tiers**. Ten vendor posts can't
   outweigh one ruling.
+- **Negative evidence** (optional `negative_fault_lines` on an item): an item can
+  COUNTER a line (e.g. a court holding disclosure is NOT required). Its weight is
+  subtracted on the listed lines and added everywhere else; the ruling meter is
+  two-sided, so counter-evidence drags pressure below the seed, not just offsets the
+  lift. Provenance keeps the sign per item.
 - All knobs live in `fault_lines.py` so scores replay exactly.
 
 ## Two curves (the mental model)

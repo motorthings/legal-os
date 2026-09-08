@@ -57,9 +57,9 @@
       "orders": {
         "1_capability": 8.4,
         "2_enablement": 2.0,
-        "2_market_enable": 8.1,
+        "2_market_enable": 9.0,
         "3_pressure": 10.0,
-        "3_adoption": 8.1,
+        "3_adoption": 8.6,
         "4_gate_full": 7860,
         "4_gate_eff": 5642
       }
@@ -81,9 +81,9 @@
       "orders": {
         "1_capability": 5.5,
         "2_enablement": 2.0,
-        "2_market_enable": 6.0,
+        "2_market_enable": 7.4,
         "3_pressure": 9.9,
-        "3_adoption": 7.0,
+        "3_adoption": 7.7,
         "4_gate_full": 7860,
         "4_gate_eff": 1623
       }
@@ -106,10 +106,34 @@
         "1_capability": 4.5,
         "2_enablement": 2.0,
         "2_market_enable": 6.7,
-        "3_pressure": 9.8,
+        "3_pressure": 9.9,
         "3_adoption": 7.0,
         "4_gate_full": 7860,
         "4_gate_eff": 237
+      }
+    },
+    {
+      "fault_line": "competence",
+      "title": "Competence becomes an affirmative governance duty",
+      "control": "Firm-wide training + governance program",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": "deploy-now",
+      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
+      "orders": {
+        "1_capability": 6.6,
+        "2_enablement": 2.0,
+        "2_market_enable": 8.4,
+        "3_pressure": 9.9,
+        "3_adoption": 8.0,
+        "4_gate_full": 7860,
+        "4_gate_eff": 3148
       }
     },
     {
@@ -161,54 +185,6 @@
       }
     },
     {
-      "fault_line": "competence",
-      "title": "Competence becomes an affirmative governance duty",
-      "control": "Firm-wide training + governance program",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "codifiable",
-      "driver": "deployment",
-      "required": true,
-      "opportunistic": false,
-      "govern": "build-capacity-first",
-      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
-      "deploy": "deploy-now",
-      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
-      "orders": {
-        "1_capability": 6.6,
-        "2_enablement": 2.0,
-        "2_market_enable": 7.4,
-        "3_pressure": 9.2,
-        "3_adoption": 7.4,
-        "4_gate_full": 7860,
-        "4_gate_eff": 3148
-      }
-    },
-    {
-      "fault_line": "insurance",
-      "title": "Insurance becomes the real regulator",
-      "control": "Governance as an insurable artifact",
-      "horizon": "near (0-12mo)",
-      "lead": "now",
-      "seam": "codifiable",
-      "driver": "market",
-      "required": true,
-      "opportunistic": false,
-      "govern": "build-capacity-first",
-      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
-      "deploy": null,
-      "deploy_note": "not an AI-deployment question (market-driven governance control)",
-      "orders": {
-        "1_capability": 2.5,
-        "2_enablement": 2.0,
-        "2_market_enable": 6.9,
-        "3_pressure": 8.7,
-        "3_adoption": 8.4,
-        "4_gate_full": 7860,
-        "4_gate_eff": 7860
-      }
-    },
-    {
       "fault_line": "benchmark",
       "title": "A tool-certification / benchmark standard emerges",
       "control": "Tool-certification benchmark (NERVE)",
@@ -225,9 +201,9 @@
       "orders": {
         "1_capability": 9.0,
         "2_enablement": 2.0,
-        "2_market_enable": 8.3,
-        "3_pressure": 8.6,
-        "3_adoption": 6.5,
+        "2_market_enable": 8.9,
+        "3_pressure": 9.1,
+        "3_adoption": 7.6,
         "4_gate_full": 7860,
         "4_gate_eff": 6474
       }
@@ -250,8 +226,32 @@
         "1_capability": 2.5,
         "2_enablement": 2.0,
         "2_market_enable": 3.0,
-        "3_pressure": 8.5,
+        "3_pressure": 9.1,
         "3_adoption": 2.5,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
+      }
+    },
+    {
+      "fault_line": "insurance",
+      "title": "Insurance becomes the real regulator",
+      "control": "Governance as an insurable artifact",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": true,
+      "opportunistic": false,
+      "govern": "build-capacity-first",
+      "govern_note": "required/open but the firm can't meet it yet (Order 2 readiness low)",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 2.0,
+        "2_market_enable": 6.9,
+        "3_pressure": 8.7,
+        "3_adoption": 8.4,
         "4_gate_full": 7860,
         "4_gate_eff": 7860
       }

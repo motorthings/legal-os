@@ -7,9 +7,9 @@
       "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
       "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
       "meter": "pressure",
-      "reading_at_lead": 9.4,
-      "evidence_at_lead": 3,
-      "reading_at_event": 9.6,
+      "reading_at_lead": 9.2,
+      "evidence_at_lead": 4,
+      "reading_at_event": 9.5,
       "lead_days": 90,
       "called": true
     },
@@ -20,9 +20,9 @@
       "title": "Nebraska Supreme Court suspension over hallucinated brief",
       "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
       "meter": "pressure",
-      "reading_at_lead": 9.9,
-      "evidence_at_lead": 11,
-      "reading_at_event": 9.9,
+      "reading_at_lead": 10.0,
+      "evidence_at_lead": 13,
+      "reading_at_event": 10.0,
       "lead_days": 90,
       "called": true
     },
@@ -59,9 +59,9 @@
       "title": "Verification duty extended to expert work product (adoption)",
       "url": "",
       "meter": "adoption",
-      "reading_at_lead": 7.3,
-      "evidence_at_lead": 1,
-      "reading_at_event": 8.1,
+      "reading_at_lead": 8.0,
+      "evidence_at_lead": 2,
+      "reading_at_event": 8.6,
       "lead_days": 90,
       "called": true
     },
@@ -168,5 +168,5 @@
   },
   "call_threshold": 7.0,
   "lead_days": 90,
-  "snapshots_recorded": 1
+  "snapshots_recorded": 2
 }

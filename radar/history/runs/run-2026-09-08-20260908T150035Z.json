@@ -1,6 +1,312 @@
 {
+  "generated_at": "2026-09-08T15:00:35.079710+00:00",
   "as_of": "2026-09-08",
+  "knobs": {
+    "tier_weights": {
+      "T1": 1.0,
+      "T2": 0.8,
+      "T3": 0.6,
+      "T4": 0.35,
+      "T5": 0.008
+    },
+    "conflict_discount": 0.4,
+    "empirical_boost": 1.25,
+    "corroboration_step": 0.15,
+    "half_life_days": 180,
+    "standing_tiers": [
+      "T1",
+      "T2"
+    ],
+    "market_weights": {
+      "insurer": 1.0,
+      "procurement": 0.85,
+      "deployment": 0.7,
+      "cert": 0.6,
+      "process_mandate": 0.55,
+      "commentary": 0.2,
+      "pundit": 0.02
+    },
+    "adoption_seeds": {
+      "insurance": 7.5,
+      "disclosure": 7.0,
+      "verification": 6.5,
+      "convergence": 7.0,
+      "confidentiality": 6.0,
+      "benchmark": 5.5,
+      "competence": 5.5,
+      "agentic": 5.0,
+      "fees": 3.0,
+      "judicial_analytics": 3.0,
+      "vendor_liability": 2.5
+    },
+    "capability_weights": {
+      "benchmark": 1.0,
+      "study": 0.8,
+      "deployment": 0.5,
+      "model_access": 0.45,
+      "release": 0.35,
+      "demo": 0.12,
+      "hype": 0.02
+    },
+    "capability_seeds": {
+      "benchmark": 6.5,
+      "disclosure": 5.5,
+      "verification": 5.5,
+      "confidentiality": 4.5,
+      "agentic": 4.0,
+      "judicial_analytics": 4.0
+    },
+    "enable_weights": {
+      "deploy_scale": 1.0,
+      "standard": 0.9,
+      "playbook": 0.75,
+      "provider": 0.65,
+      "client_pull": 0.55,
+      "launch": 0.3,
+      "pundit": 0.02
+    },
+    "enable_seeds": {
+      "benchmark": 7.0,
+      "verification": 6.5,
+      "disclosure": 6.0,
+      "competence": 6.0,
+      "confidentiality": 5.5,
+      "insurance": 5.0,
+      "convergence": 4.0,
+      "fees": 3.5,
+      "agentic": 3.5,
+      "judicial_analytics": 3.0,
+      "vendor_liability": 3.0
+    },
+    "software_weights": {
+      "capital": 1.0,
+      "acquisition": 0.85,
+      "regulatory_room": 0.7,
+      "ship": 0.55
+    },
+    "software_seeds": {
+      "benchmark": 5.0,
+      "verification": 5.5,
+      "disclosure": 5.5,
+      "confidentiality": 5.5,
+      "competence": 5.0,
+      "convergence": 5.0,
+      "agentic": 5.0,
+      "insurance": 4.0,
+      "fees": 3.0,
+      "judicial_analytics": 3.0,
+      "vendor_liability": 3.5
+    },
+    "software_half_life": 120,
+    "software_flag_multiplier": {
+      "continuation": 1.0,
+      "direction_shift": 0.4,
+      "origination": 0.0
+    },
+    "call_threshold": 7.0,
+    "lead_days": 90
+  },
+  "feed_sha256": "19864fc342c133160fb50143bd40f04e0c8158682e9fe16050c3a1d57353cbdd",
+  "feed_items": 76,
   "fault_lines": [
+    {
+      "id": "disclosure",
+      "title": "Disclosure & certification standardize",
+      "model_rules": [
+        "3.3",
+        "Rule 11"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3a \u2014 reactive",
+      "vector": "Courts first punished fake AI citations after the fact (Mata v. Avianca was the first such sanction). Now more than 300 judges require lawyers to disclose AI use up front, and that patchwork of local orders is converging toward a single certification standard.",
+      "tech_driver": "Patchwork of standing orders collapses into a uniform certification.",
+      "build_now": "Verification-by-default with an auditable trail, so certification is a byproduct.",
+      "capability_seed": 5.5,
+      "capability": 5.5,
+      "capability_weighted": 0.0,
+      "capability_classes": [],
+      "n_capability_evidence": 0,
+      "capability_evidence": [],
+      "pressure_seed": 8.0,
+      "pressure": 10.0,
+      "trend": "rising",
+      "weighted_evidence": 12.49,
+      "corroboration": 0.3,
+      "n_evidence": 10,
+      "evidence": [
+        {
+          "date": "2026-06-01",
+          "title": "Withers v. Aberdeen \u2014 both sides sanctioned, four lawyers removed for AI hallucinations",
+          "tier": "T1",
+          "source": "N.D. Miss. (court order)",
+          "url": "https://grllp.com/blog/All-lawyers-in-action-removed-from-the-record-for-misuse-of-AI-Withers-v.-Aberdeen-City-896",
+          "weight": 1.25,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-04-15",
+          "title": "Nebraska Supreme Court suspends attorney over hallucinated appeal brief",
+          "tier": "T1",
+          "source": "Nebraska Supreme Court",
+          "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
+          "weight": 1.25,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-12-15",
+          "title": "Couvrette v. Wisnovsky \u2014 ~$110K penalty for 15 fake cases, 8 fabricated quotes",
+          "tier": "T1",
+          "source": "Court order",
+          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+          "weight": 1.25,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-07-18",
+          "title": "California Rule of Court 10.430 \u2014 courts must adopt generative-AI policies",
+          "tier": "T1",
+          "source": "Judicial Council of California",
+          "url": "https://courts.ca.gov/system/files/rules-court/2025-07-18-rules-effective-09-01-2025.pdf",
+          "weight": 1.0,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2023-06-22",
+          "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations",
+          "tier": "T1",
+          "source": "S.D.N.Y. (Judge Castel)",
+          "url": "https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/",
+          "weight": 1.25,
+          "matched": [
+            "rule 11"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-05-14",
+          "title": "California updated Practical Guidance for Generative AI",
+          "tier": "T2",
+          "source": "California Bar Board of Trustees",
+          "url": "https://www.clio.com/blog/ai-legal-compliance/",
+          "weight": 0.8,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "source": "California State Bar (COPRAC)",
+          "url": "https://www.calbar.ca.gov",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-01-01",
+          "title": "Illinois Supreme Court AI policy \u2014 disclosure of AI use NOT required in pleadings",
+          "tier": "T2",
+          "source": "Illinois Supreme Court",
+          "url": "https://www.illinoiscourts.gov/News/1485",
+          "weight": 0.8,
+          "matched": [
+            "disclosure",
+            "standing order"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2023-12-12",
+          "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges",
+          "tier": "T2",
+          "source": "Courts and Tribunals Judiciary (UK)",
+          "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance/",
+          "weight": 0.8,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-04-01",
+          "title": "AI sanction wave: ~$145K in Q1 2026 penalties",
+          "tier": "T3",
+          "source": "EDRM / ComplexDiscovery",
+          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+          "weight": 0.405,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": true,
+          "conflict": false
+        }
+      ],
+      "control": "Verification-by-default with an audit trail",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "adoption_seed": 7.0,
+      "adoption": 7.7,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": []
+        }
+      ],
+      "enable_seed": 6.0,
+      "enable": 7.4,
+      "enable_weighted": 0.9,
+      "enable_classes": [
+        "standard"
+      ],
+      "n_enable_evidence": 1,
+      "enable_evidence": [
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "enable": "standard",
+          "weight": 0.9,
+          "matched": [],
+          "empirical": false
+        }
+      ],
+      "software_seed": 5.5,
+      "software": 5.5,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
+      "queue": 7.7,
+      "lead": "now"
+    },
     {
       "id": "verification",
       "title": "'A human reviewed it' stops being enough",
@@ -59,12 +365,8 @@
       "pressure": 10.0,
       "trend": "rising",
       "weighted_evidence": 24.1,
-      "weighted_positive": 24.1,
-      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "neg_corroboration": 0.0,
       "n_evidence": 23,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -77,8 +379,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-04-15",
@@ -89,8 +390,7 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-04-06",
@@ -101,8 +401,7 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-13",
@@ -113,8 +412,7 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-02-09",
@@ -127,8 +425,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-12-15",
@@ -141,8 +438,7 @@
             "verify citation"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-29",
@@ -153,8 +449,7 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-07-18",
@@ -168,8 +463,7 @@
             "human review"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-01-30",
@@ -182,8 +476,7 @@
             "verification"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-06-22",
@@ -194,8 +487,7 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-08-31",
@@ -208,8 +500,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-13",
@@ -220,8 +511,7 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-01",
@@ -232,8 +522,7 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-07-29",
@@ -246,8 +535,7 @@
             "human review"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-12-12",
@@ -260,8 +548,7 @@
             "verification"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-04-01",
@@ -275,8 +562,7 @@
             "reasonable inquiry"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-15",
@@ -289,8 +575,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-09-01",
@@ -303,8 +588,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-01-29",
@@ -317,8 +601,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-05-23",
@@ -332,8 +615,7 @@
             "human review"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-06-26",
@@ -346,8 +628,7 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-15",
@@ -358,8 +639,7 @@
           "weight": 0.006,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-09-26",
@@ -372,8 +652,7 @@
             "verification"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Documented verification + trace logs",
@@ -497,218 +776,6 @@
       "lead": "~2 quarters"
     },
     {
-      "id": "disclosure",
-      "title": "Disclosure & certification standardize",
-      "model_rules": [
-        "3.3",
-        "Rule 11"
-      ],
-      "horizon": "near (0-12mo)",
-      "layer": "3a \u2014 reactive",
-      "vector": "Courts first punished fake AI citations after the fact (Mata v. Avianca was the first such sanction). Now more than 300 judges require lawyers to disclose AI use up front, and that patchwork of local orders is converging toward a single certification standard.",
-      "tech_driver": "Patchwork of standing orders collapses into a uniform certification.",
-      "build_now": "Verification-by-default with an auditable trail, so certification is a byproduct.",
-      "capability_seed": 5.5,
-      "capability": 5.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
-      "pressure_seed": 8.0,
-      "pressure": 9.9,
-      "trend": "rising",
-      "weighted_evidence": 10.65,
-      "weighted_positive": 11.45,
-      "weighted_negative": 0.8,
-      "corroboration": 0.3,
-      "neg_corroboration": 0.0,
-      "n_evidence": 10,
-      "n_negative": 1,
-      "evidence": [
-        {
-          "date": "2026-06-01",
-          "title": "Withers v. Aberdeen \u2014 both sides sanctioned, four lawyers removed for AI hallucinations",
-          "tier": "T1",
-          "source": "N.D. Miss. (court order)",
-          "url": "https://grllp.com/blog/All-lawyers-in-action-removed-from-the-record-for-misuse-of-AI-Withers-v.-Aberdeen-City-896",
-          "weight": 1.25,
-          "matched": [
-            "disclosure"
-          ],
-          "empirical": true,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2026-04-15",
-          "title": "Nebraska Supreme Court suspends attorney over hallucinated appeal brief",
-          "tier": "T1",
-          "source": "Nebraska Supreme Court",
-          "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
-          "weight": 1.25,
-          "matched": [],
-          "empirical": true,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2025-12-15",
-          "title": "Couvrette v. Wisnovsky \u2014 ~$110K penalty for 15 fake cases, 8 fabricated quotes",
-          "tier": "T1",
-          "source": "Court order",
-          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 1.25,
-          "matched": [],
-          "empirical": true,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2025-07-18",
-          "title": "California Rule of Court 10.430 \u2014 courts must adopt generative-AI policies",
-          "tier": "T1",
-          "source": "Judicial Council of California",
-          "url": "https://courts.ca.gov/system/files/rules-court/2025-07-18-rules-effective-09-01-2025.pdf",
-          "weight": 1.0,
-          "matched": [
-            "disclosure"
-          ],
-          "empirical": false,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2023-06-22",
-          "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations",
-          "tier": "T1",
-          "source": "S.D.N.Y. (Judge Castel)",
-          "url": "https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/",
-          "weight": 1.25,
-          "matched": [
-            "rule 11"
-          ],
-          "empirical": true,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2026-05-14",
-          "title": "California updated Practical Guidance for Generative AI",
-          "tier": "T2",
-          "source": "California Bar Board of Trustees",
-          "url": "https://www.clio.com/blog/ai-legal-compliance/",
-          "weight": 0.8,
-          "matched": [
-            "disclosure"
-          ],
-          "empirical": false,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "source": "California State Bar (COPRAC)",
-          "url": "https://www.calbar.ca.gov",
-          "weight": 0.8,
-          "matched": [],
-          "empirical": false,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2025-01-01",
-          "title": "Illinois Supreme Court AI policy \u2014 disclosure of AI use NOT required in pleadings",
-          "tier": "T2",
-          "source": "Illinois Supreme Court",
-          "url": "https://www.illinoiscourts.gov/News/1485",
-          "weight": -0.8,
-          "matched": [
-            "disclosure",
-            "standing order"
-          ],
-          "empirical": false,
-          "conflict": false,
-          "negative": true
-        },
-        {
-          "date": "2023-12-12",
-          "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges",
-          "tier": "T2",
-          "source": "Courts and Tribunals Judiciary (UK)",
-          "url": "https://www.judiciary.uk/guidance-and-resources/artificial-intelligence-ai-judicial-guidance/",
-          "weight": 0.8,
-          "matched": [
-            "disclosure"
-          ],
-          "empirical": false,
-          "conflict": false,
-          "negative": false
-        },
-        {
-          "date": "2026-04-01",
-          "title": "AI sanction wave: ~$145K in Q1 2026 penalties",
-          "tier": "T3",
-          "source": "EDRM / ComplexDiscovery",
-          "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.405,
-          "matched": [
-            "disclosure"
-          ],
-          "empirical": true,
-          "conflict": false,
-          "negative": false
-        }
-      ],
-      "control": "Verification-by-default with an audit trail",
-      "seam": "codifiable",
-      "driver": "deployment",
-      "adoption_seed": 7.0,
-      "adoption": 7.7,
-      "adoption_weighted": 0.55,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": []
-        }
-      ],
-      "enable_seed": 6.0,
-      "enable": 7.4,
-      "enable_weighted": 0.9,
-      "enable_classes": [
-        "standard"
-      ],
-      "n_enable_evidence": 1,
-      "enable_evidence": [
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "enable": "standard",
-          "weight": 0.9,
-          "matched": [],
-          "empirical": false
-        }
-      ],
-      "software_seed": 5.5,
-      "software": 5.5,
-      "software_weighted": 0.0,
-      "software_classes": [],
-      "n_software_evidence": 0,
-      "software_evidence": [],
-      "queue": 7.6,
-      "lead": "now"
-    },
-    {
       "id": "confidentiality",
       "title": "Confidentiality hardens into data governance",
       "model_rules": [
@@ -731,12 +798,8 @@
       "pressure": 9.9,
       "trend": "rising",
       "weighted_evidence": 9.75,
-      "weighted_positive": 9.75,
-      "weighted_negative": 0.0,
       "corroboration": 0.3,
-      "neg_corroboration": 0.0,
       "n_evidence": 10,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2025-07-18",
@@ -749,8 +812,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-14",
@@ -763,8 +825,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-02-15",
@@ -779,8 +840,7 @@
             "client data"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-02-01",
@@ -793,8 +853,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-01-01",
@@ -807,8 +866,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-07-29",
@@ -821,8 +879,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-04-25",
@@ -835,8 +892,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-01-19",
@@ -852,8 +908,7 @@
             "training data"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-12-12",
@@ -866,8 +921,7 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-06-01",
@@ -882,8 +936,7 @@
             "client data"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Data-flow mapping + vendor attestation",
@@ -1009,12 +1062,8 @@
       "pressure": 9.9,
       "trend": "rising",
       "weighted_evidence": 10.26,
-      "weighted_positive": 10.26,
-      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "neg_corroboration": 0.0,
       "n_evidence": 14,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2025-10-29",
@@ -1027,8 +1076,7 @@
             "cle"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-14",
@@ -1041,8 +1089,7 @@
             "competence"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-13",
@@ -1053,8 +1100,7 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-01",
@@ -1065,8 +1111,7 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-04-01",
@@ -1083,8 +1128,7 @@
             "technological competence"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-02-01",
@@ -1097,8 +1141,7 @@
             "competence"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-07-29",
@@ -1111,8 +1154,7 @@
             "competence"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-04-25",
@@ -1125,8 +1167,7 @@
             "competence"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-05",
@@ -1141,8 +1182,7 @@
             "governance program"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-04-02",
@@ -1153,8 +1193,7 @@
           "weight": 0.1,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-13",
@@ -1165,8 +1204,7 @@
           "weight": 0.004,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-08-12",
@@ -1177,8 +1215,7 @@
           "weight": 0.002,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-03-04",
@@ -1189,8 +1226,7 @@
           "weight": 0.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-11-21",
@@ -1201,8 +1237,7 @@
           "weight": 0.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Firm-wide training + governance program",
@@ -1311,12 +1346,8 @@
       "pressure": 9.8,
       "trend": "rising",
       "weighted_evidence": 7.33,
-      "weighted_positive": 7.33,
-      "weighted_negative": 0.0,
       "corroboration": 0.15,
-      "neg_corroboration": 0.0,
       "n_evidence": 8,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-08-01",
@@ -1332,8 +1363,7 @@
             "convergence"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-14",
@@ -1347,8 +1377,7 @@
             "multi-jurisdiction"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-07",
@@ -1359,8 +1388,7 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-01-01",
@@ -1374,8 +1402,7 @@
             "multi-jurisdiction"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-07-18",
@@ -1388,8 +1415,7 @@
             "patchwork"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-12-08",
@@ -1402,8 +1428,7 @@
             "eu ai act"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-11-10",
@@ -1414,8 +1439,7 @@
           "weight": 0.234,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-06-30",
@@ -1426,8 +1450,7 @@
           "weight": 0.14,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "One operating model, to the strictest standard",
@@ -1596,12 +1619,8 @@
       "pressure": 9.4,
       "trend": "rising",
       "weighted_evidence": 5.14,
-      "weighted_positive": 5.14,
-      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "neg_corroboration": 0.0,
       "n_evidence": 19,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-05-19",
@@ -1614,8 +1633,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-08-29",
@@ -1632,8 +1650,7 @@
             "revocable"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-04-15",
@@ -1644,8 +1661,7 @@
           "weight": 0.427,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-25",
@@ -1656,8 +1672,7 @@
           "weight": 0.394,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-10",
@@ -1670,8 +1685,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-30",
@@ -1684,8 +1698,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-29",
@@ -1698,8 +1711,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-06-23",
@@ -1712,8 +1724,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-04-07",
@@ -1728,8 +1739,7 @@
             "scope-limited"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-02-15",
@@ -1742,8 +1752,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-10-08",
@@ -1756,8 +1765,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-07-17",
@@ -1770,8 +1778,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-05-23",
@@ -1784,8 +1791,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-03-11",
@@ -1798,8 +1804,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-08-19",
@@ -1812,8 +1817,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-09",
@@ -1826,8 +1830,7 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-05-22",
@@ -1840,8 +1843,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-02-24",
@@ -1854,8 +1856,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-10-22",
@@ -1868,8 +1869,7 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Human-decides gates + scope-limiting",
@@ -2153,12 +2153,8 @@
       "pressure": 9.1,
       "trend": "steady",
       "weighted_evidence": 4.61,
-      "weighted_positive": 4.61,
-      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "neg_corroboration": 0.0,
       "n_evidence": 20,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-03-13",
@@ -2169,8 +2165,7 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-06-01",
@@ -2186,8 +2181,7 @@
             "stanford"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-25",
@@ -2198,8 +2192,7 @@
           "weight": 0.394,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-03-04",
@@ -2210,8 +2203,7 @@
           "weight": 0.364,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-11-10",
@@ -2222,8 +2214,7 @@
           "weight": 0.234,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-29",
@@ -2234,8 +2225,7 @@
           "weight": 0.224,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-06-30",
@@ -2246,8 +2236,7 @@
           "weight": 0.14,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-06-23",
@@ -2258,8 +2247,7 @@
           "weight": 0.137,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-02-18",
@@ -2270,8 +2258,7 @@
           "weight": 0.084,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-02-15",
@@ -2282,8 +2269,7 @@
           "weight": 0.084,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-01-29",
@@ -2296,8 +2282,7 @@
             "benchmark"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-07-17",
@@ -2308,8 +2293,7 @@
           "weight": 0.037,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-05-23",
@@ -2323,8 +2307,7 @@
             "stanford"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-04-02",
@@ -2335,8 +2318,7 @@
           "weight": 0.024,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-01-11",
@@ -2352,8 +2334,7 @@
             "stanford"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-06-26",
@@ -2366,8 +2347,7 @@
             "benchmark"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2023-10-17",
@@ -2378,8 +2358,7 @@
           "weight": 0.006,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-10-09",
@@ -2390,8 +2369,7 @@
           "weight": 0.003,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-07-29",
@@ -2405,8 +2383,7 @@
             "certif"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-01-03",
@@ -2417,8 +2394,7 @@
           "weight": 0.0,
           "matched": [],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Tool-certification benchmark (NERVE)",
@@ -2676,12 +2652,8 @@
       "pressure": 9.1,
       "trend": "rising",
       "weighted_evidence": 5.85,
-      "weighted_positive": 5.85,
-      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "neg_corroboration": 0.0,
       "n_evidence": 6,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-05-07",
@@ -2692,8 +2664,7 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-04-06",
@@ -2704,8 +2675,7 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2024-12-08",
@@ -2719,8 +2689,7 @@
             "product liability"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2026-05-19",
@@ -2731,8 +2700,7 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-09-29",
@@ -2746,8 +2714,7 @@
             "product liability"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         },
         {
           "date": "2025-08-08",
@@ -2758,8 +2725,7 @@
           "weight": 0.076,
           "matched": [],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Tool-provenance documentation",
@@ -2842,12 +2808,8 @@
       "pressure": 8.7,
       "trend": "steady",
       "weighted_evidence": 0.54,
-      "weighted_positive": 0.54,
-      "weighted_negative": 0.0,
       "corroboration": 0.0,
-      "neg_corroboration": 0.0,
       "n_evidence": 1,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-06-15",
@@ -2866,8 +2828,7 @@
             "uninsurable"
           ],
           "empirical": true,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Governance as an insurable artifact",
@@ -2954,14 +2915,10 @@
       "capability_evidence": [],
       "pressure_seed": 5.0,
       "pressure": 6.4,
-      "trend": "steady",
+      "trend": "quiet",
       "weighted_evidence": 1.0,
-      "weighted_positive": 1.0,
-      "weighted_negative": 0.0,
       "corroboration": 0.0,
-      "neg_corroboration": 0.0,
       "n_evidence": 1,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2019-03-23",
@@ -2977,8 +2934,7 @@
             "article 33"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Guardrailed strategy sim (no actor prediction)",
@@ -3024,14 +2980,10 @@
       "capability_evidence": [],
       "pressure_seed": 4.5,
       "pressure": 5.8,
-      "trend": "steady",
+      "trend": "quiet",
       "weighted_evidence": 0.8,
-      "weighted_positive": 0.8,
-      "weighted_negative": 0.0,
       "corroboration": 0.0,
-      "neg_corroboration": 0.0,
       "n_evidence": 1,
-      "n_negative": 0,
       "evidence": [
         {
           "date": "2025-11-24",
@@ -3045,8 +2997,7 @@
             "billing"
           ],
           "empirical": false,
-          "conflict": false,
-          "negative": false
+          "conflict": false
         }
       ],
       "control": "Value-delivered measurement",
@@ -3074,87 +3025,175 @@
       "lead": "~1-2 years"
     }
   ],
-  "tiers": {
-    "T1": {
-      "label": "Binding / primary",
-      "weight": 1.0,
-      "desc": "Court rulings, sanctions orders, statutes, regulations, rule amendments."
+  "calibration": {
+    "resolutions": [
+      {
+        "date": "2025-12-15",
+        "order": 2,
+        "fault_line": "disclosure",
+        "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
+        "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
+        "meter": "pressure",
+        "reading_at_lead": 9.5,
+        "evidence_at_lead": 4,
+        "reading_at_event": 9.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-04-15",
+        "order": 2,
+        "fault_line": "verification",
+        "title": "Nebraska Supreme Court suspension over hallucinated brief",
+        "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
+        "meter": "pressure",
+        "reading_at_lead": 10.0,
+        "evidence_at_lead": 13,
+        "reading_at_event": 10.0,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-01",
+        "order": 2,
+        "fault_line": "convergence",
+        "title": "EU AI Act obligations took effect",
+        "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
+        "meter": "pressure",
+        "reading_at_lead": 9.4,
+        "evidence_at_lead": 5,
+        "reading_at_event": 9.8,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-06-15",
+        "order": 3,
+        "fault_line": "insurance",
+        "title": "CNA makes AI governance a coverage condition (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 7.5,
+        "evidence_at_lead": 0,
+        "reading_at_event": 8.7,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-31",
+        "order": 3,
+        "fault_line": "verification",
+        "title": "Verification duty extended to expert work product (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 8.0,
+        "evidence_at_lead": 2,
+        "reading_at_event": 8.6,
+        "lead_days": 90,
+        "called": true
+      },
+      {
+        "date": "2026-08-29",
+        "order": 3,
+        "fault_line": "agentic",
+        "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
+        "url": "",
+        "meter": "adoption",
+        "reading_at_lead": 5.0,
+        "evidence_at_lead": 0,
+        "reading_at_event": 6.2,
+        "lead_days": 90,
+        "called": false
+      },
+      {
+        "date": "2024-01-11",
+        "order": 1,
+        "fault_line": "benchmark",
+        "title": "Legal LLM hallucination capability demonstrated at scale (Stanford/Yale, 58-88%)",
+        "url": "https://arxiv.org/abs/2401.01301",
+        "meter": "capability",
+        "reading_at_lead": 6.5,
+        "evidence_at_lead": 0,
+        "reading_at_event": 7.4,
+        "lead_days": 90,
+        "called": false
+      },
+      {
+        "date": "2024-05-23",
+        "order": 1,
+        "fault_line": "verification",
+        "title": "'A human reviewed it' shown insufficient \u2014 RAG legal tools produce confident wrong cites",
+        "url": "https://arxiv.org/abs/2405.20362",
+        "meter": "capability",
+        "reading_at_lead": 5.5,
+        "evidence_at_lead": 0,
+        "reading_at_event": 6.7,
+        "lead_days": 90,
+        "called": false
+      },
+      {
+        "date": "2026-06-01",
+        "order": 1,
+        "fault_line": "benchmark",
+        "title": "Purpose-built legal AI tools quantified at 17-34% error (Westlaw/Lexis)",
+        "url": "https://arxiv.org/abs/2405.20362",
+        "meter": "capability",
+        "reading_at_lead": 8.6,
+        "evidence_at_lead": 3,
+        "reading_at_event": 9.0,
+        "lead_days": 90,
+        "called": true
+      }
+    ],
+    "n_resolutions": 9,
+    "hits": 6,
+    "hit_rate": 0.67,
+    "by_order": {
+      "1": {
+        "n": 3,
+        "hits": 1,
+        "hit_rate": 0.33
+      },
+      "2": {
+        "n": 3,
+        "hits": 3,
+        "hit_rate": 1.0
+      },
+      "3": {
+        "n": 3,
+        "hits": 2,
+        "hit_rate": 0.67
+      }
     },
-    "T2": {
-      "label": "Regulatory guidance",
-      "weight": 0.8,
-      "desc": "ABA / state bar ethics opinions, judicial standing orders."
+    "cascade": {
+      "n_l3_called": 2,
+      "n_l3_backed_by_l2": 1,
+      "backed_rate": 1.0
     },
-    "T3": {
-      "label": "Empirical / institutional",
-      "weight": 0.6,
-      "desc": "Peer-reviewed research, trackers, insurer/market actions with data."
+    "conditionals": {
+      "L1_to_L2": {
+        "prior": "L1",
+        "post": "L2",
+        "n_eligible": 0,
+        "n_backed": 0,
+        "rate": null,
+        "prior_called_without_post_event": [
+          "benchmark"
+        ]
+      },
+      "L2_to_L3": {
+        "prior": "L2",
+        "post": "L3",
+        "n_eligible": 1,
+        "n_backed": 1,
+        "rate": 1.0,
+        "prior_called_without_post_event": [
+          "convergence",
+          "disclosure"
+        ]
+      }
     },
-    "T4": {
-      "label": "Professional commentary",
-      "weight": 0.35,
-      "desc": "Firm client alerts, bar magazines, established legal press."
-    },
-    "T5": {
-      "label": "Vendor / marketing / opinion",
-      "weight": 0.008,
-      "desc": "Vendor blogs, SEO content, hot takes. ~1/100 of an ABA opinion. Narrative signal only."
-    }
-  },
-  "market_weights": {
-    "insurer": 1.0,
-    "procurement": 0.85,
-    "deployment": 0.7,
-    "cert": 0.6,
-    "process_mandate": 0.55,
-    "commentary": 0.2,
-    "pundit": 0.02
-  },
-  "enable_weights": {
-    "deploy_scale": 1.0,
-    "standard": 0.9,
-    "playbook": 0.75,
-    "provider": 0.65,
-    "client_pull": 0.55,
-    "launch": 0.3,
-    "pundit": 0.02
-  },
-  "enable_seeds": {
-    "benchmark": 7.0,
-    "verification": 6.5,
-    "disclosure": 6.0,
-    "competence": 6.0,
-    "confidentiality": 5.5,
-    "insurance": 5.0,
-    "convergence": 4.0,
-    "fees": 3.5,
-    "agentic": 3.5,
-    "judicial_analytics": 3.0,
-    "vendor_liability": 3.0
-  },
-  "software_weights": {
-    "capital": 1.0,
-    "acquisition": 0.85,
-    "regulatory_room": 0.7,
-    "ship": 0.55
-  },
-  "software_seeds": {
-    "benchmark": 5.0,
-    "verification": 5.5,
-    "disclosure": 5.5,
-    "confidentiality": 5.5,
-    "competence": 5.0,
-    "convergence": 5.0,
-    "agentic": 5.0,
-    "insurance": 4.0,
-    "fees": 3.0,
-    "judicial_analytics": 3.0,
-    "vendor_liability": 3.5
-  },
-  "software_flag_multiplier": {
-    "continuation": 1.0,
-    "direction_shift": 0.4,
-    "origination": 0.0
-  },
-  "n_items": 76
+    "call_threshold": 7.0,
+    "lead_days": 90
+  }
 }

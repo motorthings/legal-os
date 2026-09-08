@@ -1,5 +1,5 @@
 {
-  "n_items": 67,
+  "n_items": 76,
   "items": [
     {
       "date": "2023-06-22",
@@ -1796,6 +1796,264 @@
         }
       ],
       "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-01-30",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Park v. Kim (2d Cir.) \u2014 referral for AI-produced nonexistent case",
+      "source": "Second Circuit (91 F.4th 610)",
+      "url": "",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Second Circuit referred attorney Jae S. Lee to its Grievance Panel under Local Rule 46.2 for citing a nonexistent AI-produced case (Matter of Bourguignon v. Coordinated Behavioral Health Servs., 114 A.D.3d 947) that she admitted did not exist. Earliest circuit-level AI-citation referral in the set; verification duty extends to appellate practice.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-04-25",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Missouri Informal Opinion 2024-11 \u2014 pre-ABA generative-AI guidance",
+      "source": "Office of Legal Ethics Counsel, Supreme Court of Missouri",
+      "url": "https://www.mo-legal-ethics.org",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Non-binding advisory guidance issued three months ahead of ABA Op 512, mapping generative AI onto existing rules: competence (4-1.1, self-education and verifying AI output before reliance), confidentiality (4-1.6, reviewing platform terms and input handling), candor (4-3.3), and supervision of nonlawyer assistants (4-5.3).",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Competence becomes an affirmative governance duty, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-01-01",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Illinois Supreme Court AI policy \u2014 disclosure of AI use NOT required in pleadings",
+      "source": "Illinois Supreme Court",
+      "url": "https://www.illinoiscourts.gov/News/1485",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Statewide policy holding professional-conduct rules fully apply to AI use, users must review AI content for accuracy before submission, AI must not compromise confidential information, and disclosure of AI use is deliberately NOT required in pleadings to avoid a chilling effect. A disclosure-fault-line counterpoint showing the patchwork has not converged; some individual circuit judges later issued contrary standing orders.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Disclosure & certification standardize, Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-10-29",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Mezu v. Mezu (Md. App.) \u2014 AGC referral for non-lawyer clerk AI delegation",
+      "source": "Appellate Court of Maryland (No. 361 Sept. Term 2025)",
+      "url": "https://www.courtlistener.com/opinion/10714052/mezu-v-mezu",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "First-time Maryland appellate treatment of attorney AI misuse: court referred appellee's attorney to the Attorney Grievance Commission for a brief replete with citation irregularities including fabricated ChatGPT cases (11 irregular among 27; four nonexistent), publishing as a warning to others. The failure mode was delegation \u2014 the attorney's non-lawyer clerk used ChatGPT for research and the attorney relied on the clerk's summaries without reading the cited cases.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough, Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-02-09",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Amarsingh v. Frontier Airlines (10th Cir.) \u2014 $1,000 FRAP 38 + bar referral",
+      "source": "Tenth Circuit (No. 24-01391)",
+      "url": "https://www.ca10.uscourts.gov",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Tenth Circuit sanctioned a Maryland-licensed pro se lawyer $1,000 under FRAP 38 for an appellate brief with seven fabricated ChatGPT-generated citations, and referred the order to Maryland disciplinary authorities. Federal sanction coupled with bar referral; verification duty hardening at the circuit level.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-03-01",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Alabama State Bar Public Reprimand of Matthew Reeves (Butler Snow)",
+      "source": "Alabama State Bar Disciplinary Commission",
+      "url": "https://www.alabar.org/assets/2026/03/ASBlawyerWinter26_web.pdf",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "First resolved state-bar disciplinary outcome tied to the Manasco N.D. Ala. federal sanction: Public Reprimand with General Publication for using ChatGPT to draft two motions containing fabricated citations he failed to verify (RPC 1.1, 3.3, 8.4(d), 8.4(g)). Bar discipline closes the loop the federal sanction opened.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Competence becomes an affirmative governance duty, 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-03-13",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Whiting v. City of Athens (6th Cir.) \u2014 two lawyers $15k each + double costs + referral",
+      "source": "Sixth Circuit (Nos. 24-5918/5919, 25-5424)",
+      "url": "https://www.courtlistener.com/opinion/10808584",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Two Tennessee lawyers sanctioned for a brief that repeatedly misrepresented the record and cited non-existent cases; each fined $15,000, jointly ordered to pay double costs and reimburse the appellees' full appellate fees, and referred to disciplinary proceedings.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-03-13",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+      "source": "California State Bar (COPRAC)",
+      "url": "https://www.calbar.ca.gov",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "process_mandate",
+      "order": null,
+      "what": "COPRAC approved a package converting advisory guidance into enforceable Rules of Professional Conduct by weaving AI obligations into six rules (1.1, 1.4, 1.6, 3.3, 5.1, 5.3): independently review and verify ANY AI output, disclose on significant risk or material effect on scope/cost, and verify cited authorities are not fabricated or taken out of context. First state bar to propose enforceable (not merely advisory) AI-specific rules; in a second comment round as of Sept 2026, not final.",
+      "role": [
+        "L2 ruling",
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        },
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the 'A human reviewed it' stops being enough, Disclosure & certification standardize, Competence becomes an affirmative governance duty, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
+    },
+    {
+      "date": "2026-04-06",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Gamez v. County of Fresno (E.D. Cal.) \u2014 OSC names legal-AI product OpenCase",
+      "source": "E.D. Cal. (1:26-cv-00297, Mag. Judge Grosjean)",
+      "url": "https://www.law360.com/newyork/articles/2462536",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Magistrate judge issued an order to show cause after an opposition brief cited nonexistent authority and fabricated quotes, stating it suggests the attorney relied on generative artificial intelligence. The attorney attributed the false citations to the named legal-AI product OpenCase, used to refine and cite-check a general-AI draft. First OSC naming a specific legal-AI product as the source of fabricated citations \u2014 the first vendor-liability datapoint in the docket feed.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        },
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough, Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }

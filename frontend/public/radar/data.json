@@ -58,9 +58,13 @@
       "pressure_seed": 7.5,
       "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 13.8,
+      "weighted_evidence": 24.1,
+      "weighted_positive": 24.1,
+      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "n_evidence": 16,
+      "neg_corroboration": 0.0,
+      "n_evidence": 23,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -73,7 +77,8 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-04-15",
@@ -84,7 +89,46 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-04-06",
+          "title": "Gamez v. County of Fresno (E.D. Cal.) \u2014 OSC names legal-AI product OpenCase",
+          "tier": "T1",
+          "source": "E.D. Cal. (1:26-cv-00297, Mag. Judge Grosjean)",
+          "url": "https://www.law360.com/newyork/articles/2462536",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Whiting v. City of Athens (6th Cir.) \u2014 two lawyers $15k each + double costs + referral",
+          "tier": "T1",
+          "source": "Sixth Circuit (Nos. 24-5918/5919, 25-5424)",
+          "url": "https://www.courtlistener.com/opinion/10808584",
+          "weight": 1.25,
+          "matched": [],
+          "empirical": true,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-02-09",
+          "title": "Amarsingh v. Frontier Airlines (10th Cir.) \u2014 $1,000 FRAP 38 + bar referral",
+          "tier": "T1",
+          "source": "Tenth Circuit (No. 24-01391)",
+          "url": "https://www.ca10.uscourts.gov",
+          "weight": 1.25,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-12-15",
@@ -97,7 +141,20 @@
             "verify citation"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-10-29",
+          "title": "Mezu v. Mezu (Md. App.) \u2014 AGC referral for non-lawyer clerk AI delegation",
+          "tier": "T1",
+          "source": "Appellate Court of Maryland (No. 361 Sept. Term 2025)",
+          "url": "https://www.courtlistener.com/opinion/10714052/mezu-v-mezu",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-07-18",
@@ -111,7 +168,22 @@
             "human review"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2024-01-30",
+          "title": "Park v. Kim (2d Cir.) \u2014 referral for AI-produced nonexistent case",
+          "tier": "T1",
+          "source": "Second Circuit (91 F.4th 610)",
+          "url": "",
+          "weight": 1.0,
+          "matched": [
+            "verification"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-06-22",
@@ -122,7 +194,8 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-08-31",
@@ -135,7 +208,32 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "source": "California State Bar (COPRAC)",
+          "url": "https://www.calbar.ca.gov",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-01",
+          "title": "Alabama State Bar Public Reprimand of Matthew Reeves (Butler Snow)",
+          "tier": "T2",
+          "source": "Alabama State Bar Disciplinary Commission",
+          "url": "https://www.alabar.org/assets/2026/03/ASBlawyerWinter26_web.pdf",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-07-29",
@@ -148,7 +246,8 @@
             "human review"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-12-12",
@@ -161,7 +260,8 @@
             "verification"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-04-01",
@@ -175,7 +275,8 @@
             "reasonable inquiry"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-10-15",
@@ -188,7 +289,8 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-09-01",
@@ -201,7 +303,8 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-01-29",
@@ -214,7 +317,8 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-05-23",
@@ -228,7 +332,8 @@
             "human review"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-06-26",
@@ -241,7 +346,8 @@
             "verification"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-05-15",
@@ -252,7 +358,8 @@
           "weight": 0.006,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-09-26",
@@ -265,19 +372,20 @@
             "verification"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Documented verification + trace logs",
       "seam": "codifiable",
       "driver": "deployment",
       "adoption_seed": 6.5,
-      "adoption": 8.1,
-      "adoption_weighted": 1.24,
+      "adoption": 8.6,
+      "adoption_weighted": 1.79,
       "market_classes": [
         "process_mandate"
       ],
-      "n_adoption_evidence": 2,
+      "n_adoption_evidence": 3,
       "adoption_evidence": [
         {
           "date": "2026-08-31",
@@ -288,6 +396,14 @@
           "matched": [
             "verification"
           ]
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": []
         },
         {
           "date": "2024-07-29",
@@ -301,12 +417,13 @@
         }
       ],
       "enable_seed": 6.5,
-      "enable": 8.1,
-      "enable_weighted": 1.25,
+      "enable": 9.0,
+      "enable_weighted": 2.47,
       "enable_classes": [
-        "deploy_scale"
+        "deploy_scale",
+        "standard"
       ],
-      "n_enable_evidence": 1,
+      "n_enable_evidence": 2,
       "enable_evidence": [
         {
           "date": "2025-09-01",
@@ -318,6 +435,15 @@
             "verification"
           ],
           "empirical": true
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "enable": "standard",
+          "weight": 0.9,
+          "matched": [],
+          "empirical": false
         }
       ],
       "software_seed": 5.5,
@@ -367,7 +493,7 @@
           "flag": "origination"
         }
       ],
-      "queue": 8.1,
+      "queue": 8.6,
       "lead": "~2 quarters"
     },
     {
@@ -391,9 +517,13 @@
       "pressure_seed": 8.0,
       "pressure": 9.9,
       "trend": "rising",
-      "weighted_evidence": 10.41,
+      "weighted_evidence": 10.65,
+      "weighted_positive": 11.45,
+      "weighted_negative": 0.8,
       "corroboration": 0.3,
-      "n_evidence": 8,
+      "neg_corroboration": 0.0,
+      "n_evidence": 10,
+      "n_negative": 1,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -406,7 +536,8 @@
             "disclosure"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-04-15",
@@ -417,7 +548,8 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-12-15",
@@ -428,7 +560,8 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-07-18",
@@ -441,7 +574,8 @@
             "disclosure"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-06-22",
@@ -454,7 +588,8 @@
             "rule 11"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-05-14",
@@ -467,7 +602,35 @@
             "disclosure"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "source": "California State Bar (COPRAC)",
+          "url": "https://www.calbar.ca.gov",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-01-01",
+          "title": "Illinois Supreme Court AI policy \u2014 disclosure of AI use NOT required in pleadings",
+          "tier": "T2",
+          "source": "Illinois Supreme Court",
+          "url": "https://www.illinoiscourts.gov/News/1485",
+          "weight": -0.8,
+          "matched": [
+            "disclosure",
+            "standing order"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": true
         },
         {
           "date": "2023-12-12",
@@ -480,7 +643,8 @@
             "disclosure"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-04-01",
@@ -493,31 +657,55 @@
             "disclosure"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Verification-by-default with an audit trail",
       "seam": "codifiable",
       "driver": "deployment",
       "adoption_seed": 7.0,
-      "adoption": 7.0,
-      "adoption_weighted": 0.0,
-      "market_classes": [],
-      "n_adoption_evidence": 0,
-      "adoption_evidence": [],
+      "adoption": 7.7,
+      "adoption_weighted": 0.55,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": []
+        }
+      ],
       "enable_seed": 6.0,
-      "enable": 6.0,
-      "enable_weighted": 0.0,
-      "enable_classes": [],
-      "n_enable_evidence": 0,
-      "enable_evidence": [],
+      "enable": 7.4,
+      "enable_weighted": 0.9,
+      "enable_classes": [
+        "standard"
+      ],
+      "n_enable_evidence": 1,
+      "enable_evidence": [
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "enable": "standard",
+          "weight": 0.9,
+          "matched": [],
+          "empirical": false
+        }
+      ],
       "software_seed": 5.5,
       "software": 5.5,
       "software_weighted": 0.0,
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 6.9,
+      "queue": 7.6,
       "lead": "now"
     },
     {
@@ -540,11 +728,15 @@
       "n_capability_evidence": 0,
       "capability_evidence": [],
       "pressure_seed": 7.0,
-      "pressure": 9.8,
+      "pressure": 9.9,
       "trend": "rising",
-      "weighted_evidence": 7.67,
+      "weighted_evidence": 9.75,
+      "weighted_positive": 9.75,
+      "weighted_negative": 0.0,
       "corroboration": 0.3,
-      "n_evidence": 8,
+      "neg_corroboration": 0.0,
+      "n_evidence": 10,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2025-07-18",
@@ -557,7 +749,8 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-05-14",
@@ -570,7 +763,8 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-02-15",
@@ -585,7 +779,8 @@
             "client data"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-02-01",
@@ -598,7 +793,22 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-01-01",
+          "title": "Illinois Supreme Court AI policy \u2014 disclosure of AI use NOT required in pleadings",
+          "tier": "T2",
+          "source": "Illinois Supreme Court",
+          "url": "https://www.illinoiscourts.gov/News/1485",
+          "weight": 0.8,
+          "matched": [
+            "confidential"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-07-29",
@@ -611,7 +821,22 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2024-04-25",
+          "title": "Missouri Informal Opinion 2024-11 \u2014 pre-ABA generative-AI guidance",
+          "tier": "T2",
+          "source": "Office of Legal Ethics Counsel, Supreme Court of Missouri",
+          "url": "https://www.mo-legal-ethics.org",
+          "weight": 0.8,
+          "matched": [
+            "confidential"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-01-19",
@@ -627,7 +852,8 @@
             "training data"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-12-12",
@@ -640,7 +866,8 @@
             "confidential"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-06-01",
@@ -655,7 +882,8 @@
             "client data"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Data-flow mapping + vendor attestation",
@@ -712,6 +940,356 @@
       "lead": "now"
     },
     {
+      "id": "competence",
+      "title": "Competence becomes an affirmative governance duty",
+      "model_rules": [
+        "1.1"
+      ],
+      "horizon": "mid (1-3yr)",
+      "layer": "3a \u2014 reactive",
+      "vector": "The duty is shifting from 'understand the tool you use' to 'run a governance program' \u2014 training, written policies, and oversight \u2014 with mandatory AI continuing-education requirements spreading state by state.",
+      "tech_driver": "Mandatory AI CLE spreading; firm-level governance capability expected.",
+      "build_now": "Training and enablement at scale (iTrain bet; AI Build Lab proof).",
+      "capability_seed": 2.5,
+      "capability": 6.6,
+      "capability_weighted": 3.22,
+      "capability_classes": [
+        "model_access",
+        "study"
+      ],
+      "n_capability_evidence": 5,
+      "capability_evidence": [
+        {
+          "date": "2025-04-02",
+          "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
+          "tier": "T3",
+          "capability": "study",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": true
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        },
+        {
+          "date": "2025-08-12",
+          "title": "Claude 1M-token context public beta (Sonnet 4)",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        },
+        {
+          "date": "2024-03-04",
+          "title": "Claude 3: first Claude vision/document input",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        },
+        {
+          "date": "2023-11-21",
+          "title": "Claude 2.1: 200K context + beta tool use",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        }
+      ],
+      "pressure_seed": 6.0,
+      "pressure": 9.9,
+      "trend": "rising",
+      "weighted_evidence": 10.26,
+      "weighted_positive": 10.26,
+      "weighted_negative": 0.0,
+      "corroboration": 0.45,
+      "neg_corroboration": 0.0,
+      "n_evidence": 14,
+      "n_negative": 0,
+      "evidence": [
+        {
+          "date": "2025-10-29",
+          "title": "Mezu v. Mezu (Md. App.) \u2014 AGC referral for non-lawyer clerk AI delegation",
+          "tier": "T1",
+          "source": "Appellate Court of Maryland (No. 361 Sept. Term 2025)",
+          "url": "https://www.courtlistener.com/opinion/10714052/mezu-v-mezu",
+          "weight": 1.0,
+          "matched": [
+            "cle"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-05-14",
+          "title": "California updated Practical Guidance for Generative AI",
+          "tier": "T2",
+          "source": "California Bar Board of Trustees",
+          "url": "https://www.clio.com/blog/ai-legal-compliance/",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "source": "California State Bar (COPRAC)",
+          "url": "https://www.calbar.ca.gov",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-01",
+          "title": "Alabama State Bar Public Reprimand of Matthew Reeves (Butler Snow)",
+          "tier": "T2",
+          "source": "Alabama State Bar Disciplinary Commission",
+          "url": "https://www.alabar.org/assets/2026/03/ASBlawyerWinter26_web.pdf",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-04-01",
+          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
+          "tier": "T2",
+          "source": "New Jersey Supreme Court",
+          "url": "https://www.lexology.com/library/detail.aspx?g=c65abffb-7123-4c7f-a6a1-89cde8e24945",
+          "weight": 0.8,
+          "matched": [
+            "competence",
+            "cle",
+            "training",
+            "continuing legal education",
+            "technological competence"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-02-01",
+          "title": "Texas Ethics Opinion 705 on generative AI",
+          "tier": "T2",
+          "source": "Texas State Bar Professional Ethics Committee",
+          "url": "https://brief.steno.com/legal-ai-rules-by-state",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "source": "ABA Standing Committee on Ethics",
+          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2024-04-25",
+          "title": "Missouri Informal Opinion 2024-11 \u2014 pre-ABA generative-AI guidance",
+          "tier": "T2",
+          "source": "Office of Legal Ethics Counsel, Supreme Court of Missouri",
+          "url": "https://www.mo-legal-ethics.org",
+          "weight": 0.8,
+          "matched": [
+            "competence"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-05-05",
+          "title": "PLI launches the first legal-AI competency framework",
+          "tier": "T3",
+          "source": "Practising Law Institute",
+          "url": "https://www.globenewswire.com/fr/news-release/2026/05/05/3288064/0/en/PLI-Introduces-Industry-First-AI-Competency-Framework.html",
+          "weight": 0.369,
+          "matched": [
+            "competence",
+            "training",
+            "governance program"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-04-02",
+          "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
+          "tier": "T3",
+          "source": "arXiv 2504.01840",
+          "url": "https://ar5iv.labs.arxiv.org/html/2504.01840",
+          "weight": 0.1,
+          "matched": [],
+          "empirical": true,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://claude.com/blog/1m-context-ga",
+          "weight": 0.004,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2025-08-12",
+          "title": "Claude 1M-token context public beta (Sonnet 4)",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://claude.com/blog/1m-context",
+          "weight": 0.002,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2024-03-04",
+          "title": "Claude 3: first Claude vision/document input",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://www.anthropic.com/news/claude-3-family",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2023-11-21",
+          "title": "Claude 2.1: 200K context + beta tool use",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://www.anthropic.com/news/claude-2-1",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        }
+      ],
+      "control": "Firm-wide training + governance program",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "adoption_seed": 5.5,
+      "adoption": 8.0,
+      "adoption_weighted": 1.65,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 3,
+      "adoption_evidence": [
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": []
+        },
+        {
+          "date": "2025-04-01",
+          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "competence",
+            "cle",
+            "training",
+            "continuing legal education",
+            "technological competence"
+          ]
+        },
+        {
+          "date": "2024-07-29",
+          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": [
+            "competence"
+          ]
+        }
+      ],
+      "enable_seed": 6.0,
+      "enable": 8.4,
+      "enable_weighted": 1.8,
+      "enable_classes": [
+        "standard"
+      ],
+      "n_enable_evidence": 2,
+      "enable_evidence": [
+        {
+          "date": "2026-05-05",
+          "title": "PLI launches the first legal-AI competency framework",
+          "tier": "T3",
+          "enable": "standard",
+          "weight": 0.9,
+          "matched": [
+            "competence",
+            "training",
+            "governance program"
+          ],
+          "empirical": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "enable": "standard",
+          "weight": 0.9,
+          "matched": [],
+          "empirical": false
+        }
+      ],
+      "software_seed": 5.0,
+      "software": 5.0,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
+      "queue": 7.9,
+      "lead": "~1 year"
+    },
+    {
       "id": "convergence",
       "title": "Regulatory convergence forces one operating model",
       "model_rules": [
@@ -733,8 +1311,12 @@
       "pressure": 9.8,
       "trend": "rising",
       "weighted_evidence": 7.33,
+      "weighted_positive": 7.33,
+      "weighted_negative": 0.0,
       "corroboration": 0.15,
+      "neg_corroboration": 0.0,
       "n_evidence": 8,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-08-01",
@@ -750,7 +1332,8 @@
             "convergence"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-05-14",
@@ -764,7 +1347,8 @@
             "multi-jurisdiction"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-05-07",
@@ -775,7 +1359,8 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-01-01",
@@ -789,7 +1374,8 @@
             "multi-jurisdiction"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-07-18",
@@ -802,7 +1388,8 @@
             "patchwork"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-12-08",
@@ -815,7 +1402,8 @@
             "eu ai act"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-11-10",
@@ -826,7 +1414,8 @@
           "weight": 0.234,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-06-30",
@@ -837,7 +1426,8 @@
           "weight": 0.14,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "One operating model, to the strictest standard",
@@ -1006,8 +1596,12 @@
       "pressure": 9.4,
       "trend": "rising",
       "weighted_evidence": 5.14,
+      "weighted_positive": 5.14,
+      "weighted_negative": 0.0,
       "corroboration": 0.45,
+      "neg_corroboration": 0.0,
       "n_evidence": 19,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-05-19",
@@ -1020,7 +1614,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-08-29",
@@ -1037,7 +1632,8 @@
             "revocable"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-04-15",
@@ -1048,7 +1644,8 @@
           "weight": 0.427,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-03-25",
@@ -1059,7 +1656,8 @@
           "weight": 0.394,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-03-10",
@@ -1072,7 +1670,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-10-30",
@@ -1085,7 +1684,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-10-29",
@@ -1098,7 +1698,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-06-23",
@@ -1111,7 +1712,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-04-07",
@@ -1126,7 +1728,8 @@
             "scope-limited"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-02-15",
@@ -1139,7 +1742,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-10-08",
@@ -1152,7 +1756,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-07-17",
@@ -1165,7 +1770,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-05-23",
@@ -1178,7 +1784,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-03-11",
@@ -1191,7 +1798,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-08-19",
@@ -1204,7 +1812,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-10-09",
@@ -1217,7 +1826,8 @@
             "agentic"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-05-22",
@@ -1230,7 +1840,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-02-24",
@@ -1243,7 +1854,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-10-22",
@@ -1256,7 +1868,8 @@
             "agentic"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Human-decides gates + scope-limiting",
@@ -1465,382 +2078,6 @@
       "lead": "~1 year"
     },
     {
-      "id": "competence",
-      "title": "Competence becomes an affirmative governance duty",
-      "model_rules": [
-        "1.1"
-      ],
-      "horizon": "mid (1-3yr)",
-      "layer": "3a \u2014 reactive",
-      "vector": "The duty is shifting from 'understand the tool you use' to 'run a governance program' \u2014 training, written policies, and oversight \u2014 with mandatory AI continuing-education requirements spreading state by state.",
-      "tech_driver": "Mandatory AI CLE spreading; firm-level governance capability expected.",
-      "build_now": "Training and enablement at scale (iTrain bet; AI Build Lab proof).",
-      "capability_seed": 2.5,
-      "capability": 6.6,
-      "capability_weighted": 3.22,
-      "capability_classes": [
-        "model_access",
-        "study"
-      ],
-      "n_capability_evidence": 5,
-      "capability_evidence": [
-        {
-          "date": "2025-04-02",
-          "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
-          "tier": "T3",
-          "capability": "study",
-          "weight": 1.0,
-          "matched": [],
-          "empirical": true
-        },
-        {
-          "date": "2026-03-13",
-          "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
-          "tier": "T5",
-          "capability": "model_access",
-          "weight": 0.45,
-          "matched": [],
-          "empirical": false
-        },
-        {
-          "date": "2025-08-12",
-          "title": "Claude 1M-token context public beta (Sonnet 4)",
-          "tier": "T5",
-          "capability": "model_access",
-          "weight": 0.45,
-          "matched": [],
-          "empirical": false
-        },
-        {
-          "date": "2024-03-04",
-          "title": "Claude 3: first Claude vision/document input",
-          "tier": "T5",
-          "capability": "model_access",
-          "weight": 0.45,
-          "matched": [],
-          "empirical": false
-        },
-        {
-          "date": "2023-11-21",
-          "title": "Claude 2.1: 200K context + beta tool use",
-          "tier": "T5",
-          "capability": "model_access",
-          "weight": 0.45,
-          "matched": [],
-          "empirical": false
-        }
-      ],
-      "pressure_seed": 6.0,
-      "pressure": 9.2,
-      "trend": "rising",
-      "weighted_evidence": 4.78,
-      "corroboration": 0.3,
-      "n_evidence": 10,
-      "evidence": [
-        {
-          "date": "2026-05-14",
-          "title": "California updated Practical Guidance for Generative AI",
-          "tier": "T2",
-          "source": "California Bar Board of Trustees",
-          "url": "https://www.clio.com/blog/ai-legal-compliance/",
-          "weight": 0.8,
-          "matched": [
-            "competence"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-04-01",
-          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
-          "tier": "T2",
-          "source": "New Jersey Supreme Court",
-          "url": "https://www.lexology.com/library/detail.aspx?g=c65abffb-7123-4c7f-a6a1-89cde8e24945",
-          "weight": 0.8,
-          "matched": [
-            "competence",
-            "cle",
-            "training",
-            "continuing legal education",
-            "technological competence"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-02-01",
-          "title": "Texas Ethics Opinion 705 on generative AI",
-          "tier": "T2",
-          "source": "Texas State Bar Professional Ethics Committee",
-          "url": "https://brief.steno.com/legal-ai-rules-by-state",
-          "weight": 0.8,
-          "matched": [
-            "competence"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "source": "ABA Standing Committee on Ethics",
-          "url": "https://library.law.unc.edu/2025/02/aba-formal-opinion-512-the-paradigm-for-generative-ai-in-legal-practice/",
-          "weight": 0.8,
-          "matched": [
-            "competence"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2026-05-05",
-          "title": "PLI launches the first legal-AI competency framework",
-          "tier": "T3",
-          "source": "Practising Law Institute",
-          "url": "https://www.globenewswire.com/fr/news-release/2026/05/05/3288064/0/en/PLI-Introduces-Industry-First-AI-Competency-Framework.html",
-          "weight": 0.369,
-          "matched": [
-            "competence",
-            "training",
-            "governance program"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-04-02",
-          "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
-          "tier": "T3",
-          "source": "arXiv 2504.01840",
-          "url": "https://ar5iv.labs.arxiv.org/html/2504.01840",
-          "weight": 0.1,
-          "matched": [],
-          "empirical": true,
-          "conflict": false
-        },
-        {
-          "date": "2026-03-13",
-          "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
-          "tier": "T5",
-          "source": "Anthropic",
-          "url": "https://claude.com/blog/1m-context-ga",
-          "weight": 0.004,
-          "matched": [],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-08-12",
-          "title": "Claude 1M-token context public beta (Sonnet 4)",
-          "tier": "T5",
-          "source": "Anthropic",
-          "url": "https://claude.com/blog/1m-context",
-          "weight": 0.002,
-          "matched": [],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2024-03-04",
-          "title": "Claude 3: first Claude vision/document input",
-          "tier": "T5",
-          "source": "Anthropic",
-          "url": "https://www.anthropic.com/news/claude-3-family",
-          "weight": 0.0,
-          "matched": [],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2023-11-21",
-          "title": "Claude 2.1: 200K context + beta tool use",
-          "tier": "T5",
-          "source": "Anthropic",
-          "url": "https://www.anthropic.com/news/claude-2-1",
-          "weight": 0.0,
-          "matched": [],
-          "empirical": false,
-          "conflict": false
-        }
-      ],
-      "control": "Firm-wide training + governance program",
-      "seam": "codifiable",
-      "driver": "deployment",
-      "adoption_seed": 5.5,
-      "adoption": 7.4,
-      "adoption_weighted": 1.1,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 2,
-      "adoption_evidence": [
-        {
-          "date": "2025-04-01",
-          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "competence",
-            "cle",
-            "training",
-            "continuing legal education",
-            "technological competence"
-          ]
-        },
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "competence"
-          ]
-        }
-      ],
-      "enable_seed": 6.0,
-      "enable": 7.4,
-      "enable_weighted": 0.9,
-      "enable_classes": [
-        "standard"
-      ],
-      "n_enable_evidence": 1,
-      "enable_evidence": [
-        {
-          "date": "2026-05-05",
-          "title": "PLI launches the first legal-AI competency framework",
-          "tier": "T3",
-          "enable": "standard",
-          "weight": 0.9,
-          "matched": [
-            "competence",
-            "training",
-            "governance program"
-          ],
-          "empirical": false
-        }
-      ],
-      "software_seed": 5.0,
-      "software": 5.0,
-      "software_weighted": 0.0,
-      "software_classes": [],
-      "n_software_evidence": 0,
-      "software_evidence": [],
-      "queue": 6.8,
-      "lead": "~1 year"
-    },
-    {
-      "id": "insurance",
-      "title": "Insurance becomes the real regulator",
-      "model_rules": [
-        "1.1",
-        "5.1",
-        "5.3"
-      ],
-      "horizon": "near (0-12mo)",
-      "layer": "3b \u2014 operating model",
-      "vector": "Malpractice insurers are adding AI-governance questions to policy renewals and pricing coverage on the answers. They move faster than bar regulators, so insurance, not the rules, becomes the real gatekeeper for whether a firm can use AI at all.",
-      "tech_driver": "Uninsurable == unusable. Governance becomes a coverage condition.",
-      "build_now": "The governance program as an insurable artifact: model inventory, approval process, oversight documentation, measurement.",
-      "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
-      "pressure_seed": 8.5,
-      "pressure": 8.7,
-      "trend": "steady",
-      "weighted_evidence": 0.54,
-      "corroboration": 0.0,
-      "n_evidence": 1,
-      "evidence": [
-        {
-          "date": "2026-06-15",
-          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
-          "tier": "T3",
-          "source": "CNA (largest US legal malpractice carrier)",
-          "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.541,
-          "matched": [
-            "insurer",
-            "premium",
-            "coverage",
-            "cna",
-            "axa",
-            "endorsement",
-            "uninsurable"
-          ],
-          "empirical": true,
-          "conflict": false
-        }
-      ],
-      "control": "Governance as an insurable artifact",
-      "seam": "codifiable",
-      "driver": "market",
-      "adoption_seed": 7.5,
-      "adoption": 8.4,
-      "adoption_weighted": 0.9,
-      "market_classes": [
-        "insurer"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2026-06-15",
-          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
-          "tier": "T3",
-          "market": "insurer",
-          "weight": 0.901,
-          "matched": [
-            "insurer",
-            "premium",
-            "coverage",
-            "cna",
-            "axa",
-            "endorsement",
-            "uninsurable"
-          ]
-        }
-      ],
-      "enable_seed": 5.0,
-      "enable": 6.9,
-      "enable_weighted": 0.94,
-      "enable_classes": [
-        "playbook"
-      ],
-      "n_enable_evidence": 1,
-      "enable_evidence": [
-        {
-          "date": "2026-06-15",
-          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
-          "tier": "T3",
-          "enable": "playbook",
-          "weight": 0.938,
-          "matched": [
-            "insurer",
-            "premium",
-            "coverage",
-            "cna",
-            "axa",
-            "endorsement",
-            "uninsurable"
-          ],
-          "empirical": true
-        }
-      ],
-      "software_seed": 4.0,
-      "software": 4.0,
-      "software_weighted": 0.0,
-      "software_classes": [],
-      "n_software_evidence": 0,
-      "software_evidence": [],
-      "queue": 7.3,
-      "lead": "now"
-    },
-    {
       "id": "benchmark",
       "title": "A tool-certification / benchmark standard emerges",
       "model_rules": [
@@ -1913,12 +2150,28 @@
         }
       ],
       "pressure_seed": 6.0,
-      "pressure": 8.6,
+      "pressure": 9.1,
       "trend": "steady",
-      "weighted_evidence": 3.09,
-      "corroboration": 0.3,
-      "n_evidence": 19,
+      "weighted_evidence": 4.61,
+      "weighted_positive": 4.61,
+      "weighted_negative": 0.0,
+      "corroboration": 0.45,
+      "neg_corroboration": 0.0,
+      "n_evidence": 20,
+      "n_negative": 0,
       "evidence": [
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "source": "California State Bar (COPRAC)",
+          "url": "https://www.calbar.ca.gov",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
+        },
         {
           "date": "2026-06-01",
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
@@ -1933,7 +2186,8 @@
             "stanford"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-03-25",
@@ -1944,7 +2198,8 @@
           "weight": 0.394,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-03-04",
@@ -1955,7 +2210,8 @@
           "weight": 0.364,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-11-10",
@@ -1966,7 +2222,8 @@
           "weight": 0.234,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-10-29",
@@ -1977,7 +2234,8 @@
           "weight": 0.224,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-06-30",
@@ -1988,7 +2246,8 @@
           "weight": 0.14,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-06-23",
@@ -1999,7 +2258,8 @@
           "weight": 0.137,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-02-18",
@@ -2010,7 +2270,8 @@
           "weight": 0.084,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-02-15",
@@ -2021,7 +2282,8 @@
           "weight": 0.084,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-01-29",
@@ -2034,7 +2296,8 @@
             "benchmark"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-07-17",
@@ -2045,7 +2308,8 @@
           "weight": 0.037,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-05-23",
@@ -2059,7 +2323,8 @@
             "stanford"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-04-02",
@@ -2070,7 +2335,8 @@
           "weight": 0.024,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-01-11",
@@ -2086,7 +2352,8 @@
             "stanford"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-06-26",
@@ -2099,7 +2366,8 @@
             "benchmark"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2023-10-17",
@@ -2110,7 +2378,8 @@
           "weight": 0.006,
           "matched": [],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-10-09",
@@ -2121,7 +2390,8 @@
           "weight": 0.003,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-07-29",
@@ -2135,7 +2405,8 @@
             "certif"
           ],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-01-03",
@@ -2146,19 +2417,21 @@
           "weight": 0.0,
           "matched": [],
           "empirical": true,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Tool-certification benchmark (NERVE)",
       "seam": "codifiable",
       "driver": "capability",
       "adoption_seed": 5.5,
-      "adoption": 6.5,
-      "adoption_weighted": 0.51,
+      "adoption": 7.6,
+      "adoption_weighted": 1.22,
       "market_classes": [
-        "cert"
+        "cert",
+        "process_mandate"
       ],
-      "n_adoption_evidence": 1,
+      "n_adoption_evidence": 2,
       "adoption_evidence": [
         {
           "date": "2026-06-01",
@@ -2172,15 +2445,23 @@
             "hallucination rate",
             "stanford"
           ]
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "market": "process_mandate",
+          "weight": 0.55,
+          "matched": []
         }
       ],
       "enable_seed": 7.0,
-      "enable": 8.3,
-      "enable_weighted": 1.12,
+      "enable": 8.9,
+      "enable_weighted": 2.02,
       "enable_classes": [
         "standard"
       ],
-      "n_enable_evidence": 1,
+      "n_enable_evidence": 2,
       "enable_evidence": [
         {
           "date": "2026-06-01",
@@ -2195,6 +2476,15 @@
             "stanford"
           ],
           "empirical": true
+        },
+        {
+          "date": "2026-03-13",
+          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
+          "tier": "T2",
+          "enable": "standard",
+          "weight": 0.9,
+          "matched": [],
+          "empirical": false
         }
       ],
       "software_seed": 5.0,
@@ -2362,7 +2652,7 @@
           "flag": "origination"
         }
       ],
-      "queue": 5.6,
+      "queue": 6.9,
       "lead": "~1 year"
     },
     {
@@ -2383,11 +2673,15 @@
       "n_capability_evidence": 0,
       "capability_evidence": [],
       "pressure_seed": 3.5,
-      "pressure": 8.5,
+      "pressure": 9.1,
       "trend": "rising",
-      "weighted_evidence": 4.4,
+      "weighted_evidence": 5.85,
+      "weighted_positive": 5.85,
+      "weighted_negative": 0.0,
       "corroboration": 0.45,
-      "n_evidence": 5,
+      "neg_corroboration": 0.0,
+      "n_evidence": 6,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2026-05-07",
@@ -2398,7 +2692,20 @@
           "weight": 1.0,
           "matched": [],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
+        },
+        {
+          "date": "2026-04-06",
+          "title": "Gamez v. County of Fresno (E.D. Cal.) \u2014 OSC names legal-AI product OpenCase",
+          "tier": "T1",
+          "source": "E.D. Cal. (1:26-cv-00297, Mag. Judge Grosjean)",
+          "url": "https://www.law360.com/newyork/articles/2462536",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2024-12-08",
@@ -2412,7 +2719,8 @@
             "product liability"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2026-05-19",
@@ -2423,7 +2731,8 @@
           "weight": 0.8,
           "matched": [],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-09-29",
@@ -2437,7 +2746,8 @@
             "product liability"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         },
         {
           "date": "2025-08-08",
@@ -2448,7 +2758,8 @@
           "weight": 0.076,
           "matched": [],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Tool-provenance documentation",
@@ -2505,8 +2816,122 @@
           "flag": "origination"
         }
       ],
-      "queue": 2.1,
+      "queue": 2.3,
       "lead": "later"
+    },
+    {
+      "id": "insurance",
+      "title": "Insurance becomes the real regulator",
+      "model_rules": [
+        "1.1",
+        "5.1",
+        "5.3"
+      ],
+      "horizon": "near (0-12mo)",
+      "layer": "3b \u2014 operating model",
+      "vector": "Malpractice insurers are adding AI-governance questions to policy renewals and pricing coverage on the answers. They move faster than bar regulators, so insurance, not the rules, becomes the real gatekeeper for whether a firm can use AI at all.",
+      "tech_driver": "Uninsurable == unusable. Governance becomes a coverage condition.",
+      "build_now": "The governance program as an insurable artifact: model inventory, approval process, oversight documentation, measurement.",
+      "capability_seed": 2.5,
+      "capability": 2.5,
+      "capability_weighted": 0.0,
+      "capability_classes": [],
+      "n_capability_evidence": 0,
+      "capability_evidence": [],
+      "pressure_seed": 8.5,
+      "pressure": 8.7,
+      "trend": "steady",
+      "weighted_evidence": 0.54,
+      "weighted_positive": 0.54,
+      "weighted_negative": 0.0,
+      "corroboration": 0.0,
+      "neg_corroboration": 0.0,
+      "n_evidence": 1,
+      "n_negative": 0,
+      "evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "source": "CNA (largest US legal malpractice carrier)",
+          "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
+          "weight": 0.541,
+          "matched": [
+            "insurer",
+            "premium",
+            "coverage",
+            "cna",
+            "axa",
+            "endorsement",
+            "uninsurable"
+          ],
+          "empirical": true,
+          "conflict": false,
+          "negative": false
+        }
+      ],
+      "control": "Governance as an insurable artifact",
+      "seam": "codifiable",
+      "driver": "market",
+      "adoption_seed": 7.5,
+      "adoption": 8.4,
+      "adoption_weighted": 0.9,
+      "market_classes": [
+        "insurer"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "market": "insurer",
+          "weight": 0.901,
+          "matched": [
+            "insurer",
+            "premium",
+            "coverage",
+            "cna",
+            "axa",
+            "endorsement",
+            "uninsurable"
+          ]
+        }
+      ],
+      "enable_seed": 5.0,
+      "enable": 6.9,
+      "enable_weighted": 0.94,
+      "enable_classes": [
+        "playbook"
+      ],
+      "n_enable_evidence": 1,
+      "enable_evidence": [
+        {
+          "date": "2026-06-15",
+          "title": "CNA adds AI-governance questionnaires to malpractice renewals",
+          "tier": "T3",
+          "enable": "playbook",
+          "weight": 0.938,
+          "matched": [
+            "insurer",
+            "premium",
+            "coverage",
+            "cna",
+            "axa",
+            "endorsement",
+            "uninsurable"
+          ],
+          "empirical": true
+        }
+      ],
+      "software_seed": 4.0,
+      "software": 4.0,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
+      "queue": 7.3,
+      "lead": "now"
     },
     {
       "id": "judicial_analytics",
@@ -2529,10 +2954,14 @@
       "capability_evidence": [],
       "pressure_seed": 5.0,
       "pressure": 6.4,
-      "trend": "quiet",
+      "trend": "steady",
       "weighted_evidence": 1.0,
+      "weighted_positive": 1.0,
+      "weighted_negative": 0.0,
       "corroboration": 0.0,
+      "neg_corroboration": 0.0,
       "n_evidence": 1,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2019-03-23",
@@ -2548,7 +2977,8 @@
             "article 33"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Guardrailed strategy sim (no actor prediction)",
@@ -2594,10 +3024,14 @@
       "capability_evidence": [],
       "pressure_seed": 4.5,
       "pressure": 5.8,
-      "trend": "quiet",
+      "trend": "steady",
       "weighted_evidence": 0.8,
+      "weighted_positive": 0.8,
+      "weighted_negative": 0.0,
       "corroboration": 0.0,
+      "neg_corroboration": 0.0,
       "n_evidence": 1,
+      "n_negative": 0,
       "evidence": [
         {
           "date": "2025-11-24",
@@ -2611,7 +3045,8 @@
             "billing"
           ],
           "empirical": false,
-          "conflict": false
+          "conflict": false,
+          "negative": false
         }
       ],
       "control": "Value-delivered measurement",
@@ -2721,5 +3156,5 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 67
+  "n_items": 76
 }

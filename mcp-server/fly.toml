@@ -1,0 +1,21 @@
+# Fly.io config for the legal-os MCP server.
+# `fly launch` / `fly deploy` from this directory.
+
+app = "legalos-mcp"
+primary_region = "ewr"
+
+[build]
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 25
+    soft_limit = 20

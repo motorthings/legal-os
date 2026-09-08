@@ -1,0 +1,6 @@
+# MCP Python SDK (includes FastMCP). Pinned <2.0: MCP 2.0 removed the
+# `mcp.server.fastmcp` import path that this server uses. The [cli] extra adds
+# `mcp dev` / `mcp install` for local testing.
+mcp[cli]>=1.28,<2.0
+uvicorn>=0.30
+httpx>=0.27

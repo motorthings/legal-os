@@ -115,3 +115,14 @@ confidentiality 6.7, agentic 6.5, disclosure 6.0 (seed), rest seed. **E is a har
 axis only** (ENABLE_READY=6.0 in advisory.py): deploy-now requires E>=6; GOVERN is never gated on E.
 Currently latent (all deploy-eligible lines E>=6) — correct, binds only if market supply drops.
 Calibration unchanged (0.67).
+
+## Software-capability lane (S) added 2026-09-07 — the vendor trajectory
+Three-layer enablement stack now modeled: AI capability (L1) -> software capability (S, NEW) ->
+method (E). S is a forward momentum signal (capital / model_access / acquisition / regulatory_room /
+ship), DECAYING (120d half-life), graded against its own build milestones via
+calibration.software_backtest (threshold 6.0, 90d lead). First honest result 1/4: Harvey $8B called
+(the capital-escalation continuation); agentic-ship missed (funding landed too close to ship),
+Clio/vLex missed (M&A direction shift), TR/Casetext missed (first-of-kind). Finding: S predicts
+trajectory CONTINUATION, not origination or direction shifts. Forward tweaks: grade against funding
+milestones not shipments; don't chase origination/M&A-shifts; extend the milestone set. Feed now 36
+items (software evidence on benchmark/agentic/verification/convergence/vendor_liability).

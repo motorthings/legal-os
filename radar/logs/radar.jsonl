@@ -4,3 +4,5 @@
 {"ts": "2026-09-06T03:02:15.518422+00:00", "event": "built", "n_items": 15, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.83, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T030215Z.json"}
 {"ts": "2026-09-06T03:29:42.893548+00:00", "event": "built", "n_items": 24, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.83, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T032942Z.json"}
 {"ts": "2026-09-06T03:36:44.909352+00:00", "event": "built", "n_items": 25, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.67, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T033644Z.json"}
+{"ts": "2026-09-08T15:00:35.080182+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-08", "rising": 7, "hit_rate": 0.67, "snapshots": 2, "artifact": "history/runs/run-2026-09-08-20260908T150035Z.json"}
+{"ts": "2026-09-08T15:05:48.171674+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-08", "rising": 7, "hit_rate": 0.67, "snapshots": 2, "artifact": "history/runs/run-2026-09-08-20260908T150548Z.json"}

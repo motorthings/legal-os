@@ -174,3 +174,57 @@ Targeted the five dark vendors + Relativity against independent outlets (no vend
 ### Track status
 
 Vendor-capital evidence stream is complete across four passes: Harvey, Legora, Clio/vLex, Thomson Reuters/Casetext, Robin AI, Spellbook, Relativity (product + Labs), EvenUp, Luminance, Paxton AI, Leya, Ironclad. Residual open items are all forward-looking (Leya/Paxton post-2024 rounds, Luminance real valuation, Ironclad secondary/insider moves) — no unverified *dated* rounds remain.
+
+---
+
+## Stream 5 + 6 (2026-09-08) — docket feed + certification watch
+
+The two leading streams from the upgrade roadmap. 103 agents, 21 sources, 82 claims, 25 verified (24 survived).
+
+### Stream 5 — judicial/regulatory docket feed (enforcement)
+
+Six dated events beyond the four seed cases. Venue-broadening cascade: district → circuit → state-bar discipline.
+
+| date | event | source | tier | fault_line | flag |
+|---|---|---|---|---|---|
+| 2024-01-30 | Park v. Kim (2d Cir.): LR 46.2 referral, nonexistent AI case | courtlistener.com | T1 | verification | origination |
+| 2025-10-29 | Mezu v. Mezu (Md. App.): AGC referral for non-lawyer clerk ChatGPT delegation | courtlistener.com | T1 | verification | origination |
+| 2026-02-09 | Amarsingh (10th Cir.): $1,000 FRAP 38, 7 fake cites + MD bar referral | ca10.uscourts.gov | T1 | verification | continuation |
+| 2026-03-13 | Whiting (6th Cir.): two lawyers $15k each + double costs + referral | courtlistener.com | T1 | verification | continuation |
+| 2026-03 | Alabama Bar Public Reprimand of Matthew Reeves (Butler Snow) | alabar.org | T2 | competence | continuation |
+| 2026-04-06 | Gamez (E.D. Cal.): OSC **naming product OpenCase** | law360.com | T1 | vendor_liability | origination |
+
+**Two origination signals that matter beyond the count:**
+- **Mezu** — the failure mechanism is *delegation to a non-lawyer clerk*, not personal AI use. That's a new `competence`/supervision fault line, distinct from the "lawyer didn't verify" pattern.
+- **Gamez** — first OSC that names a specific legal-AI *product* (OpenCase) as the source of fabricated cites. This is the first `vendor_liability` datapoint in the docket feed, and it's the one your engine should weigh heaviest.
+
+### Stream 6 — certification / benchmark-standard adoption (origination watch)
+
+All confirmed items are ethics opinions and rulemakings, not third-party benchmark or insurer-vendor certifications. That absence is itself a finding.
+
+| date | event | source | tier | fault_line | flag |
+|---|---|---|---|---|---|
+| 2024-04-25 | Missouri Informal Op 2024-11 (pre-ABA GenAI guidance) | mo-legal-ethics.org | T2 | competence | origination |
+| 2024-07-29 | ABA Formal Op 512 "Generative AI Tools" | americanbar.org | T2 | benchmark | origination |
+| 2025-01-01 | Illinois SC policy: disclosure of AI use NOT required | illinoiscourts.gov | T2 | disclosure | origination |
+| 2026-03-13 | California COPRAC: AI duties woven into 6 RPCs | calbar.ca.gov | T2 | benchmark | origination |
+
+**The three things this stream tells the engine:**
+
+1. **Op 512 is the named standard** (Jul 29 2024), and it's the origination of the voluntary→required crossing: it explicitly reserves that lawyers "may eventually have to use [GAI] to competently complete certain tasks." That's a direction-shift signal embedded in a T2 source.
+2. **California COPRAC (Mar 13 2026) is the strongest origination** — first state bar to propose *enforceable* (not advisory) AI-specific rules, weaving verification/disclosure duties into six Rules of Professional Conduct. Still in a second comment round (closed Aug 6 2026), not final. When/if the CA Supreme Court adopts it, that's the conversion event your model is watching for.
+3. **The negative finding:** no insurer has yet made a certified AI tool an LPL renewal condition, and no bar has adopted a named third-party benchmark (LegalBench/ISO/ANSI/NIST). The method layer has not yet crossed from *opinion* to *enforceable certification* — the origination is still open. That's the single most valuable "watch this space" signal in the whole feed.
+
+### Date/source flags
+
+- **Alabama Reeves reprimand** — no published disciplinary date, only Winter/March 2026 newsletter.
+- **Gamez** — date rests on order PDF filename + Law360 "~Apr 6-7."
+- **Whiting** — one secondary said "refund client fees" but the actual order is to reimburse the *opponent* (City), not the lawyer's own client. 2-1 vote.
+- **Killed:** Shawnee County KS "Rule 3.125" AI-disclosure court rule — 1-2, refuted as single-source. Do not feed.
+- **Illinois "disclosure not required"** holds statewide but some individual circuit judges issued contrary standing orders.
+
+### Residual open questions
+
+- Any *final* California Supreme Court action on COPRAC after Aug 6 2026?
+- Any insurer actually conditioning LPL renewal on a certified tool (the Target 2 sub-claim that surfaced nothing)?
+- Disposition of the Mezu/Amarsingh Maryland AGC referrals and the Whiting/Park disciplinary referrals?
