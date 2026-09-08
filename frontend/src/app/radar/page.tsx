@@ -40,6 +40,8 @@ interface FaultLine {
   enable_classes: string[];
   n_enable_evidence: number;
   enable_evidence: Evidence[];
+  software_seed: number;
+  software: number;
   queue: number;
   lead: string;
   seam?: string;
@@ -78,6 +80,14 @@ type Lead = 'now' | 'soon' | 'later';
 const LEAD_COLOR: Record<Lead, string> = { now: '#A4093F', soon: '#EFAE42', later: '#8FBFAE' };
 const LEAD_LABEL: Record<Lead, string> = { now: 'now', soon: 'soon', later: 'later' };
 const ORDER_LABEL: Record<string, string> = { '1': 'L1 capability', '2': 'L2 ruling', '3': 'L3 adoption' };
+type Momentum = 'arriving' | 'building' | 'idle';
+const S_COLOR: Record<Momentum, string> = { arriving: '#A4093F', building: '#EFAE42', idle: '#8FBFAE' };
+const S_LABEL: Record<Momentum, string> = { arriving: 'arriving', building: 'building', idle: 'idle' };
+function sBucket(s: number): Momentum {
+  if (s >= 6.5) return 'arriving';
+  if (s >= 4.5) return 'building';
+  return 'idle';
+}
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -206,6 +216,101 @@ function Chart({
   );
 }
 
+/* ------------------------------------------------------- build-vs-buy chart */
+
+function GapChart({
+  lines,
+  ranks,
+  hovered,
+  onHover,
+  onPick,
+}: {
+  lines: FaultLine[];
+  ranks: Map<string, number>;
+  hovered: string | null;
+  onHover: (id: string | null) => void;
+  onPick: (id: string) => void;
+}) {
+  const W = 920, H = 520;
+  const ML = 52, MR = 20, TP = 20, BP = 48;
+  const sx = (v: number) => ML + (v / 10) * (W - ML - MR);
+  const sy = (v: number) => TP + (1 - v / 10) * (H - TP - BP);
+  const rOf = (q: number) => 7 + Math.max(0, q) * 1.35;
+  const ticks = [0, 2, 4, 6, 8, 10];
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" style={{ maxHeight: 520 }}>
+      {/* consulting gap: table-stakes demand, but not yet buyable (bottom-right) */}
+      <rect x={sx(THRESH)} y={sy(THRESH)} width={sx(10) - sx(THRESH)} height={sy(0) - sy(THRESH)} fill="var(--brand-tint)" />
+      {ticks.map((t) => (
+        <g key={`g${t}`}>
+          <line x1={sx(t)} y1={TP} x2={sx(t)} y2={H - BP} stroke="var(--border)" strokeWidth={1} />
+          <line x1={ML} y1={sy(t)} x2={W - MR} y2={sy(t)} stroke="var(--border)" strokeWidth={1} />
+          <text x={sx(t)} y={H - BP + 16} textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }}>{t}</text>
+          <text x={ML - 8} y={sy(t) + 3} textAnchor="end" fill="var(--text-muted)" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }}>{t}</text>
+        </g>
+      ))}
+      <line x1={sx(THRESH)} y1={TP} x2={sx(THRESH)} y2={H - BP} stroke="var(--primary)" strokeWidth={1.5} strokeDasharray="5 4" />
+      <line x1={ML} y1={sy(THRESH)} x2={W - MR} y2={sy(THRESH)} stroke="var(--primary)" strokeWidth={1.5} strokeDasharray="5 4" />
+      <text x={sx(THRESH) + 5} y={sy(THRESH) - 5} fill="var(--primary)" style={{ fontSize: 9, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>threshold 7</text>
+
+      <text x={sx(10) - 8} y={sy(10) + 14} textAnchor="end" fill="var(--metric)" style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.06em' }}>BUY · integrate</text>
+      <text x={sx(10) - 8} y={H - BP - 8} textAnchor="end" fill="var(--primary)" style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.06em' }}>BUILD · the gap</text>
+      <text x={sx(0) + 6} y={H - BP - 8} textAnchor="start" fill="var(--slate)" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em' }}>later · optional</text>
+
+      <text x={(ML + W - MR) / 2} y={H - 6} textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 11 }}>Right = the market made it table stakes (demand) →</text>
+      <text x={-((TP + H - BP) / 2)} y={14} transform="rotate(-90)" textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 11 }}>Up = you can buy the fix today (supply) →</text>
+
+      {lines.map((f) => (
+        <line
+          key={`t${f.id}`}
+          x1={sx(f.adoption_seed)} y1={sy(f.enable_seed ?? 0)}
+          x2={sx(f.adoption)} y2={sy(f.enable ?? f.enable_seed ?? 0)}
+          stroke="var(--border-strong)" strokeWidth={1}
+          opacity={hovered && hovered !== f.id ? 0.08 : 0.4}
+        />
+      ))}
+
+      {lines.map((f) => {
+        const mom = sBucket(f.software ?? f.software_seed ?? 0);
+        const dim = hovered && hovered !== f.id;
+        const r = rOf(f.queue);
+        const cy = sy(f.enable ?? f.enable_seed ?? 0);
+        return (
+          <g
+            key={f.id}
+            style={{ cursor: 'pointer' }}
+            opacity={dim ? 0.2 : 1}
+            onMouseEnter={() => onHover(f.id)}
+            onMouseLeave={() => onHover(null)}
+            onClick={() => onPick(f.id)}
+          >
+            <circle cx={sx(f.adoption)} cy={cy} r={r} fill={S_COLOR[mom]} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
+            <text x={sx(f.adoption)} y={cy + 3.5} textAnchor="middle" fill="#fff" style={{ fontSize: 10, fontWeight: 700 }}>{ranks.get(f.id)}</text>
+          </g>
+        );
+      })}
+
+      {hovered && (() => {
+        const f = lines.find((x) => x.id === hovered);
+        if (!f) return null;
+        const cy = sy(f.enable ?? f.enable_seed ?? 0);
+        const tx = Math.min(sx(f.adoption) + 14, W - 250);
+        const ty = Math.max(cy - 46, TP + 4);
+        return (
+          <g pointerEvents="none">
+            <rect x={tx} y={ty} width={238} height={42} rx={6} fill="#1F1A1C" />
+            <text x={tx + 10} y={ty + 17} fill="#fff" style={{ fontSize: 11, fontWeight: 700 }}>{f.control}</text>
+            <text x={tx + 10} y={ty + 33} fill="#C9C4C2" style={{ fontSize: 10, fontFamily: 'var(--font-mono)' }}>
+              L3 {dec(f.adoption)} · E {dec(f.enable ?? f.enable_seed ?? 0)} · S {dec(f.software ?? f.software_seed ?? 0)} · queue {dec(f.queue)}
+            </text>
+          </g>
+        );
+      })()}
+    </svg>
+  );
+}
+
 /* --------------------------------------------------------------- evidence */
 
 function EvidenceList({ items, empty }: { items: Evidence[]; empty: string }) {
@@ -239,6 +344,7 @@ export default function RadarPage() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [sort, setSort] = useState<'urgency' | 'move'>('urgency');
+  const [view, setView] = useState<'urgency' | 'gap'>('urgency');
 
   useEffect(() => {
     let cancelled = false;
@@ -267,6 +373,10 @@ export default function RadarPage() {
   const queueRows = [...data.fault_lines].sort((a, b) =>
     sort === 'urgency' ? b.queue - a.queue : queueDelta(b) - queueDelta(a)
   );
+  const gapRows = [...data.fault_lines].sort((a, b) => (b.adoption - b.enable) - (a.adoption - a.enable));
+  const gapRanks = new Map(gapRows.map((f, i) => [f.id, i + 1]));
+  const tableRows = view === 'gap' ? gapRows : queueRows;
+  const rowRanks = view === 'gap' ? gapRanks : ranks;
 
   const pick = (id: string) => setExpanded((cur) => (cur === id ? null : id));
 
@@ -318,14 +428,39 @@ export default function RadarPage() {
 
       {/* chart */}
       <section className="card p-4 md:p-6">
-        <Chart lines={data.fault_lines} ranks={ranks} hovered={hovered} onHover={setHovered} onPick={pick} />
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3 text-[11px] text-[var(--text-muted)]">
-          <span className="font-semibold text-[var(--text)]">Lead time:</span>
-          {(['now', 'soon', 'later'] as Lead[]).map((l) => (
-            <span key={l} className="inline-flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ background: LEAD_COLOR[l] }} /> {LEAD_LABEL[l]}
-            </span>
+        <div className="inline-flex rounded-lg border border-[var(--border)] overflow-hidden text-left mb-3">
+          {(['urgency', 'gap'] as const).map((v) => (
+            <button key={v} onClick={() => setView(v)} className={`px-3 py-1.5 ${view === v ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
+              <span className="block text-[12px] font-bold leading-tight">{v === 'urgency' ? 'For firms' : 'For advisors'}</span>
+              <span className={`block text-[10px] leading-tight ${view === v ? 'text-white opacity-80' : 'text-[var(--text-muted)]'}`}>{v === 'urgency' ? 'Urgency · what to do first' : 'Build vs buy · where the build is'}</span>
+            </button>
           ))}
+        </div>
+        {view === 'urgency' ? (
+          <Chart lines={data.fault_lines} ranks={ranks} hovered={hovered} onHover={setHovered} onPick={pick} />
+        ) : (
+          <GapChart lines={data.fault_lines} ranks={gapRanks} hovered={hovered} onHover={setHovered} onPick={pick} />
+        )}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3 text-[11px] text-[var(--text-muted)]">
+          {view === 'urgency' ? (
+            <>
+              <span className="font-semibold text-[var(--text)]">Lead time:</span>
+              {(['now', 'soon', 'later'] as Lead[]).map((l) => (
+                <span key={l} className="inline-flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: LEAD_COLOR[l] }} /> {LEAD_LABEL[l]}
+                </span>
+              ))}
+            </>
+          ) : (
+            <>
+              <span className="font-semibold text-[var(--text)]">Vendor momentum (S):</span>
+              {(['arriving', 'building', 'idle'] as Momentum[]).map((m) => (
+                <span key={m} className="inline-flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: S_COLOR[m] }} /> {S_LABEL[m]}
+                </span>
+              ))}
+            </>
+          )}
           <span>Dot size = queue score · number = queue rank · hover to inspect, click to expand</span>
         </div>
       </section>
@@ -365,26 +500,30 @@ export default function RadarPage() {
       {/* full queue */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <p className="eyebrow">The full queue</p>
-          <div className="inline-flex rounded-full border border-[var(--border)] overflow-hidden text-[11px] font-semibold">
-            {(['urgency', 'move'] as const).map((s) => (
-              <button key={s} onClick={() => setSort(s)} className={`px-3 py-1.5 ${sort === s ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
-                {s === 'urgency' ? 'Urgency' : 'Biggest move'}
-              </button>
-            ))}
-          </div>
+          <p className="eyebrow">{view === 'gap' ? 'Build vs buy — force-ranked' : 'The full queue'}</p>
+          {view === 'gap' ? (
+            <span className="text-[11px] text-[var(--text-muted)]">sorted by gap (demand − supply)</span>
+          ) : (
+            <div className="inline-flex rounded-full border border-[var(--border)] overflow-hidden text-[11px] font-semibold">
+              {(['urgency', 'move'] as const).map((s) => (
+                <button key={s} onClick={() => setSort(s)} className={`px-3 py-1.5 ${sort === s ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
+                  {s === 'urgency' ? 'Urgency' : 'Biggest move'}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="card overflow-hidden">
           <div className="grid grid-cols-[2rem_1fr_5rem_9rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>#</span><span>Control · fault line</span><span>Lead</span><span>L1·L2·L3·E</span><span>Queue</span>
+            <span>#</span><span>Control · fault line</span><span>Lead</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
           </div>
-          {queueRows.map((f) => {
+          {tableRows.map((f) => {
             const lead = leadBucket(f.lead);
             const open = expanded === f.id;
             return (
               <div key={f.id} id={`row-${f.id}`} className={`border-b border-[var(--border)] last:border-0 ${hovered === f.id ? 'bg-[var(--brand-tint)]' : ''}`}>
                 <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_9rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
-                  <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{ranks.get(f.id)}</span>
+                  <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{rowRanks.get(f.id)}</span>
                   <span>
                     <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
                     <span className="block text-[11px] text-[var(--text-muted)]">{f.title}</span>
@@ -392,9 +531,17 @@ export default function RadarPage() {
                   <span className="inline-flex items-center gap-1.5 text-[12px]">
                     <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
                   </span>
-                  <span className="font-mono text-[13px] text-[var(--text)]">{whole(f.capability)}·{whole(f.pressure)}·{whole(f.adoption)}·{whole(f.enable ?? f.enable_seed ?? 0)}</span>
+                  <span className="font-mono text-[13px] text-[var(--text)]">
+                    {view === 'gap'
+                      ? `${whole(f.adoption)}·${whole(f.enable ?? f.enable_seed ?? 0)}·${whole(f.software ?? f.software_seed ?? 0)}`
+                      : `${whole(f.capability)}·${whole(f.pressure)}·${whole(f.adoption)}·${whole(f.enable ?? f.enable_seed ?? 0)}`}
+                  </span>
                   <span className="font-mono text-[13px] font-bold text-[var(--text-strong)]">
-                    {whole(f.queue)} <span className="text-[10px] text-[var(--primary)]">{signed(queueDelta(f))}</span>
+                    {view === 'gap' ? (
+                      <>{signed(f.adoption - (f.enable ?? f.enable_seed ?? 0))} <span className="text-[10px] text-[var(--primary)]">gap</span></>
+                    ) : (
+                      <>{whole(f.queue)} <span className="text-[10px] text-[var(--primary)]">{signed(queueDelta(f))}</span></>
+                    )}
                   </span>
                 </button>
                 {open && (
