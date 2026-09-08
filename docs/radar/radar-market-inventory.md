@@ -3,7 +3,7 @@
 Dated, source-cited evidence feed for the Fault-Line Radar momentum signal.
 Generated 2026-09-07 via deep-research harness (106 agents, 24 sources, 94 claims, 25 adversarially verified → 20 confirmed → 9 synthesized).
 
-Companion machine feed: `docs/radar-market-inventory.jsonl`
+Companion machine feed: `docs/radar/radar-market-inventory.jsonl`
 
 ## Headline
 

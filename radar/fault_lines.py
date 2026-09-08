@@ -158,7 +158,7 @@ ADOPTION_SEEDS = {
     "fees": 3.0, "judicial_analytics": 3.0, "vendor_liability": 2.5,
 }
 
-# --- Enablement lane (E, market) — Part B (see docs/radar-design.md §9) ------
+# --- Enablement lane (E, market) — Part B (see docs/radar/radar-design.md §9) ------
 # A fourth reading per fault line: not "is the control required" (L3 adoption,
 # demand) but "can a firm actually stand it up with what the market offers right
 # now" (supply: a usable tool, a certification to aim at, a provider, a playbook).

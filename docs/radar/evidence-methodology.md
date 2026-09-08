@@ -1,12 +1,12 @@
 # Evidence Method — how the feed gets fed
 
 **Status:** this document explains how the radar finds evidence, checks it, and decides what is
-worth trusting. It is one of three guides: `docs/build-method.md` explains how the work gets made,
-`docs/radar-design.md` explains how the engine does its scoring, and this one explains how the
+worth trusting. It is one of three guides: `docs/radar/build-method.md` explains how the work gets made,
+`docs/radar/radar-design.md` explains how the engine does its scoring, and this one explains how the
 evidence gets collected.
 **Owner:** Charlie Fuller. **Last updated:** 2026-09-08.
-**Related:** `docs/radar-upgrade-roadmap.md` (what to research next) and the full research notes at
-`docs/radar-market-inventory.{md,jsonl}`.
+**Related:** `docs/radar/radar-upgrade-roadmap.md` (what to research next) and the full research notes at
+`docs/radar/radar-market-inventory.{md,jsonl}`.
 
 ---
 

@@ -1,9 +1,9 @@
 # Build Method — how this work gets made
 
 **Status:** canonical source of truth for the *method* (the how). For the *design* of the
-prediction engine itself (the what), see `docs/radar-design.md`.
+prediction engine itself (the what), see `docs/radar/radar-design.md`.
 **Owner:** Charlie Fuller. **Last updated:** 2026-09-07.
-**Siblings:** `docs/radar-design.md` (engine design), `radar/README.md` (run + backlog log),
+**Siblings:** `docs/radar/radar-design.md` (engine design), `radar/README.md` (run + backlog log),
 the presentation of this method at `diagrams/legal/legal-os-radar-buildlog.html`.
 
 ---

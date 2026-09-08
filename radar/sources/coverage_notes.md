@@ -67,7 +67,7 @@
   review; no autonomous AI decisions). Maps to convergence/disclosure/verification.
 
 ## Enablement (E) lane added 2026-09-07 — next-pass hunting ground
-The E meter (market deployability, docs/radar-design.md §9) is wired but has ZERO `enable`-class
+The E meter (market deployability, docs/radar/radar-design.md §9) is wired but has ZERO `enable`-class
 evidence yet, so every reading equals its seed. **Next pass:** hunt for real deploy_scale (firm-wide
 deployment at scale), standard (a bar adopting a tool certification / benchmark), provider
 (dedicated vendor category with capital/M&A), and client_pull (RFP/GC requirements) items from the

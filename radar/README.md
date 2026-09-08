@@ -1,6 +1,6 @@
 # Fault-Line Radar
 
-> **Canonical design doc:** `docs/radar-design.md` is the single source of truth for the
+> **Canonical design doc:** `docs/radar/radar-design.md` is the single source of truth for the
 > engine's design intent, as-built v1, known gaps, and planned confluence model. This README
 > is the run + backlog log.
 
@@ -22,7 +22,7 @@ python radar/run.py --ingest   # also run harvester + admission gate (phase 2)
 ```
 
 **Advisory seam** (`advisory.py` — returns TWO verdicts per fault line: GOVERN = stand up the
-control, DEPLOY = put AI on the work; E gates DEPLOY, never GOVERN. Design: `docs/radar-design.md`
+control, DEPLOY = put AI on the work; E gates DEPLOY, never GOVERN. Design: `docs/radar/radar-design.md`
 §8. Four effect-orders mapped against firm posture.)
 
 ```bash

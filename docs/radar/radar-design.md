@@ -2,7 +2,7 @@
 
 **Status:** canonical source of truth for the prediction engine (the "Fault-Line Radar").
 **Owner:** Charlie Fuller. **Last updated:** 2026-09-07.
-**Siblings:** `docs/build-method.md` (the canonical *method* — how this work gets made),
+**Siblings:** `docs/radar/build-method.md` (the canonical *method* — how this work gets made),
 `radar/README.md` (run + backlog log), `radar/sources/coverage_notes.md` and
 `radar/sources/review_queue.md` (operational gap lists). The generated page and data live in
 `docs/radar/` and are not edited by hand.

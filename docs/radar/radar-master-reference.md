@@ -108,7 +108,7 @@ A fact does not enter the feed just because someone found it. It enters because 
 This is the step that caught real mistakes: a court rule that only one source mentioned, a
 "disqualification" that was actually a reprimand, a claim about two vendors no source supported.
 
-The full story is in `docs/evidence-methodology.md`.
+The full story is in `docs/radar/evidence-methodology.md`.
 
 ## The six evidence streams
 
@@ -128,8 +128,8 @@ The feed (76 items) draws from six streams, each feeding a different meter:
 6. **Certification watch** — the emergence of a named tool standard (ABA Op 512, California's
    proposed rules). Feeds E and benchmark.
 
-The full cited, dated inventory is in `docs/radar-market-inventory.md` (people) and
-`docs/radar-market-inventory.jsonl` (machine).
+The full cited, dated inventory is in `docs/radar/radar-market-inventory.md` (people) and
+`docs/radar/radar-market-inventory.jsonl` (machine).
 
 ## How to run it
 
@@ -145,7 +145,7 @@ Output lands in `docs/radar/index.html` + `data.json` + `kb.json`, regenerated w
 
 ## What's next
 
-The order, recorded in `docs/radar-upgrade-roadmap.md`:
+The order, recorded in `docs/radar/radar-upgrade-roadmap.md`:
 
 1. **Docket feed** (done) — the leading enforcement signal.
 2. **Certification watch** (done) — the origination the model is waiting for.
@@ -159,9 +159,9 @@ that flips the method layer from voluntary to enforceable.
 
 | If you want… | Read |
 |---|---|
-| The full engine design, scope, and calibration | `docs/radar-design.md` |
-| The process method (how work gets made) | `docs/build-method.md` |
-| How evidence is found and verified | `docs/evidence-methodology.md` |
-| What to research next, and why | `docs/radar-upgrade-roadmap.md` |
-| The full cited evidence (dated, tiered) | `docs/radar-market-inventory.md` / `.jsonl` |
+| The full engine design, scope, and calibration | `docs/radar/radar-design.md` |
+| The process method (how work gets made) | `docs/radar/build-method.md` |
+| How evidence is found and verified | `docs/radar/evidence-methodology.md` |
+| What to research next, and why | `docs/radar/radar-upgrade-roadmap.md` |
+| The full cited evidence (dated, tiered) | `docs/radar/radar-market-inventory.md` / `.jsonl` |
 | Run commands and the backlog log | `radar/README.md` |
