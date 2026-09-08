@@ -18,6 +18,7 @@ from fault_lines import (
     MARKET_WEIGHTS, CONTROLS, ADOPTION_SEEDS, LEAD_BY_HORIZON,
     CAPABILITY_WEIGHTS, CAPABILITY_SEEDS, FAULT_ANNOTATIONS,
     ENABLE_WEIGHTS, ENABLE_SEEDS,
+    SOFTWARE_WEIGHTS, SOFTWARE_SEEDS, SOFTWARE_HALF_LIFE, FLAG_MULTIPLIER,
 )
 
 # Saturation divisors: how fast each meter's evidence saturates toward 10. Larger =
@@ -27,6 +28,7 @@ RULING_DIVISOR = 3.0
 ADOPTION_DIVISOR = 2.0
 CAP_DIVISOR = 4.0
 ENABLE_DIVISOR = 2.0   # market enablement (E), same conservative saturating shape as adoption
+SOFTWARE_DIVISOR = 2.5 # software capability (S), momentum-shaped; slightly slower than adoption
 
 FEED_PATH = Path(__file__).parent / "sources" / "feed.jsonl"
 TIER_RANK = {"T1": 5, "T2": 4, "T3": 3, "T4": 2, "T5": 1}
@@ -114,6 +116,29 @@ def _enable_weight(item, as_of=None):
     return w, cls
 
 
+def _software_weight(item, as_of):
+    """Software-capability weight (S): what are legal-AI software vendors enabled to
+    build next? Only items carrying a `software` class count. Unlike E (a persistent
+    supply fact), S is FORWARD momentum and therefore DECAYS — a funding round from two
+    years ago doesn't signal today's build. Uses its own half-life (SOFTWARE_HALF_LIFE),
+    shorter than the ruling half-life because build momentum is short-lived.
+
+    A `flag` (continuation/direction_shift/origination) scales the weight: a momentum
+    signal can only predict continuation, so a first-of-kind move (origination) earns
+    zero and a re-anchoring M&A (direction_shift) earns a reduced share."""
+    cls = item.get("software")
+    if cls not in SOFTWARE_WEIGHTS:
+        return 0.0, None
+    w = SOFTWARE_WEIGHTS[cls]
+    w *= FLAG_MULTIPLIER.get(item.get("flag"), 1.0)   # missing flag = continuation
+    if item.get("empirical"):
+        w *= EMPIRICAL_BOOST
+    age_days = (as_of - _parse_date(item["date"])).days
+    if age_days > 0:
+        w *= 0.5 ** (age_days / SOFTWARE_HALF_LIFE)
+    return w, cls
+
+
 def _capability_weight(item):
     """First-order weight: how HARD the demonstration is that AI can now do the thing.
     Only items carrying a `capability` class count toward L1. Unlike ruling and market
@@ -147,6 +172,8 @@ def score(feed=None, as_of=None):
         capability_classes = set()
         enable_evidence = []
         enable_classes = set()
+        software_evidence = []
+        software_classes = set()
         for item in feed:
             # Point-in-time: only evidence available on/before as_of counts.
             # This is what makes backtesting (calibration) honest.
@@ -196,6 +223,18 @@ def score(feed=None, as_of=None):
                 })
                 enable_classes.add(ecls)
 
+            # Software capability (S): does this item signal vendors building toward
+            # this control (capital, acquisition, model access, regulatory room)?
+            sw, scls = _software_weight(item, as_of)
+            if scls:
+                software_evidence.append({
+                    "date": item["date"], "title": item["title"], "tier": item["tier"],
+                    "software": scls, "weight": round(sw, 3), "matched": hits,
+                    "empirical": bool(item.get("empirical")),
+                    "flag": item.get("flag"),
+                })
+                software_classes.add(scls)
+
         # Corroboration: reward agreement across distinct tiers (independence).
         corroboration = max(0, len(tiers_seen) - 1) * CORROBORATION_STEP
         weighted = sum(e["weight"] for e in evidence) * (1 + corroboration)
@@ -237,6 +276,16 @@ def score(feed=None, as_of=None):
         enable = round(min(10.0, e_seed + e_lift), 1)
         enable_evidence.sort(key=lambda e: (ENABLE_WEIGHTS[e["enable"]], e["date"]),
                              reverse=True)
+
+        # S — software capability: momentum-shaped, software-weighted evidence only,
+        # corroborated across distinct software classes. Part B (T-market), forward.
+        s_corr = max(0, len(software_classes) - 1) * CORROBORATION_STEP
+        s_weighted = sum(e["weight"] for e in software_evidence) * (1 + s_corr)
+        s_seed = SOFTWARE_SEEDS.get(fl["id"], 3.0)
+        s_lift = (10 - s_seed) * (1 - math.exp(-s_weighted / SOFTWARE_DIVISOR))
+        software = round(min(10.0, s_seed + s_lift), 1)
+        software_evidence.sort(key=lambda e: (SOFTWARE_WEIGHTS[e["software"]], e["date"]),
+                               reverse=True)
 
         # The Harbor cell: both meters high == the control is urgent AND about to be
         # mandatory. Product (scaled 0-10) so a low reading on either pulls it down.
@@ -283,6 +332,13 @@ def score(feed=None, as_of=None):
             "enable_classes": sorted(enable_classes),
             "n_enable_evidence": len(enable_evidence),
             "enable_evidence": enable_evidence,
+            # --- software capability (S) — vendor build trajectory (Part B) ---
+            "software_seed": s_seed,
+            "software": software,
+            "software_weighted": round(s_weighted, 2),
+            "software_classes": sorted(software_classes),
+            "n_software_evidence": len(software_evidence),
+            "software_evidence": software_evidence,
             "queue": queue,
             "lead": lead,
         })
@@ -291,14 +347,16 @@ def score(feed=None, as_of=None):
     return {"as_of": as_of.isoformat(), "fault_lines": results,
             "tiers": SOURCE_TIERS, "market_weights": MARKET_WEIGHTS,
             "enable_weights": ENABLE_WEIGHTS, "enable_seeds": ENABLE_SEEDS,
+            "software_weights": SOFTWARE_WEIGHTS, "software_seeds": SOFTWARE_SEEDS,
+            "software_flag_multiplier": FLAG_MULTIPLIER,
             "n_items": len(feed)}
 
 
 if __name__ == "__main__":
     out = score()
-    print(f'{"CAP":>4} {"RULE":>5} {"ADOPT":>6} {"ENABLE":>7} {"QUEUE":>6}  {"LEAD":<12} FAULT LINE')
+    print(f'{"CAP":>4} {"RULE":>5} {"ADOPT":>6} {"ENABLE":>7} {"SOFT":>5} {"QUEUE":>6}  {"LEAD":<12} FAULT LINE')
     for r in sorted(out["fault_lines"], key=lambda r: r["queue"], reverse=True):
-        print(f'{r["capability"]:>4} {r["pressure"]:>5} {r["adoption"]:>6} {r["enable"]:>7} '
+        print(f'{r["capability"]:>4} {r["pressure"]:>5} {r["adoption"]:>6} {r["enable"]:>7} {r["software"]:>5} '
               f'{r["queue"]:>6}  {r["lead"]:<12} {r["title"]}  '
               f'[{r["control"]}]  (L1:{r["n_capability_evidence"]}ev '
-              f'L2:{r["n_evidence"]}ev L3:{r["n_adoption_evidence"]}ev E:{r["n_enable_evidence"]}ev)')
+              f'L2:{r["n_evidence"]}ev L3:{r["n_adoption_evidence"]}ev E:{r["n_enable_evidence"]}ev S:{r["n_software_evidence"]}ev)')

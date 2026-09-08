@@ -20,8 +20,8 @@
       "title": "Nebraska Supreme Court suspension over hallucinated brief",
       "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
       "meter": "pressure",
-      "reading_at_lead": 9.8,
-      "evidence_at_lead": 7,
+      "reading_at_lead": 9.9,
+      "evidence_at_lead": 11,
       "reading_at_event": 9.9,
       "lead_days": 90,
       "called": true
@@ -33,9 +33,9 @@
       "title": "EU AI Act obligations took effect",
       "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
       "meter": "pressure",
-      "reading_at_lead": 9.1,
-      "evidence_at_lead": 3,
-      "reading_at_event": 9.5,
+      "reading_at_lead": 9.4,
+      "evidence_at_lead": 5,
+      "reading_at_event": 9.8,
       "lead_days": 90,
       "called": true
     },
@@ -111,9 +111,9 @@
       "title": "Purpose-built legal AI tools quantified at 17-34% error (Westlaw/Lexis)",
       "url": "https://arxiv.org/abs/2405.20362",
       "meter": "capability",
-      "reading_at_lead": 8.1,
-      "evidence_at_lead": 2,
-      "reading_at_event": 8.6,
+      "reading_at_lead": 8.6,
+      "evidence_at_lead": 3,
+      "reading_at_event": 9.0,
       "lead_days": 90,
       "called": true
     }

@@ -70,6 +70,8 @@ CAPABILITY_WEIGHTS = {
     "benchmark":  1.00,   # a reproducible benchmark / measured error-rate study
     "study":      0.80,   # peer-reviewed capability research (no public leaderboard)
     "deployment": 0.50,   # capability demonstrated at production scale (usage data)
+    "model_access": 0.45, # a frontier-model unlock (context, agentic SDK, tool-use) that
+                          # legal tooling builds on — the substrate, not a legal demonstration
     "release":    0.35,   # a model/agent release claiming the capability
     "demo":       0.12,   # demo / anecdote — a capability shown once, not measured
     "hype":       0.02,   # speculation. narrative signal only.
@@ -180,6 +182,46 @@ ENABLE_SEEDS = {
     "confidentiality": 5.5, "insurance": 5.0, "convergence": 4.0, "fees": 3.5,
     "agentic": 3.5, "judicial_analytics": 3.0, "vendor_liability": 3.0,
 }
+
+# --- Software-capability lane (S, vendor trajectory) — Part B §10 -------------
+# The middle layer of a three-layer enablement stack:
+#   L1  AI capability   — can the underlying AI do the legal thing (existing `capability`)
+#   S   Software cap.   — can legal-AI software companies build/ship a tool that
+#                         operationalizes it (THIS lane — the vendors)
+#   E   Method          — does the playbook/standard exist to adopt it (existing `enable`)
+# Each layer enables the next: model -> software -> method -> firm.
+#
+# S is a FORWARD momentum signal, not a stock: it tracks what vendors are enabled
+# to build next (capital, M&A, model access, regulatory room), which drives the build
+# trajectory ahead of the actual shipments. Because it is momentum, S DECAYS (unlike
+# E, which is a persistent supply fact and does not decay). It is Part B, T-market,
+# never a backtested *ruling* call — but it IS backtested against its own build
+# milestones (see calibration.py software_backtest), because a forward signal that
+# cannot be graded is just a vibe.
+SOFTWARE_WEIGHTS = {
+    "capital":        1.00,  # a funding round / valuation step that funds future build
+    "acquisition":    0.85,  # M&A consolidating build capacity / incumbency
+    "regulatory_room": 0.70, # a law/ruling opening or constraining what vendors may ship
+    "ship":           0.55,  # a vendor shipping a major product — proof the capability is real
+}
+
+# Momentum flag: what a software-capability event tells us about the *future* trajectory.
+# A momentum signal can only predict CONTINUATION (the same trajectory staying hot). A
+# direction shift re-anchors the trajectory — real, but not visible from prior capital.
+# An origination is first-of-kind — the lane's known blind spot. Flagging keeps the S
+# meter honest: it predicts what it can, and stops pretending otherwise.
+FLAG_MULTIPLIER = {"continuation": 1.0, "direction_shift": 0.4, "origination": 0.0}
+
+# Software-capability seed (0-10): where the vendor build already is, before this
+# run's evidence. Deliberately moderate so momentum evidence has to lift the meter.
+SOFTWARE_SEEDS = {
+    "benchmark": 5.0, "verification": 5.5, "disclosure": 5.5, "confidentiality": 5.5,
+    "competence": 5.0, "convergence": 5.0, "agentic": 5.0, "insurance": 4.0,
+    "fees": 3.0, "judicial_analytics": 3.0, "vendor_liability": 3.5,
+}
+
+# Build momentum is short-lived: a round two years ago doesn't signal today's build.
+SOFTWARE_HALF_LIFE = 120   # days; software evidence decays (momentum), unlike E (stock)
 
 # Lead time to stand a control up, derived from the fault line's horizon.
 # "now" = you needed this yesterday; the intersection with high pressure is the alarm.

@@ -24,10 +24,14 @@ import fault_lines as K
 HISTORY = Path(__file__).parent / "history"
 SNAP_FILE = HISTORY / "snapshots.jsonl"
 RES_FILE = HISTORY / "resolutions.jsonl"
+SWRES_FILE = HISTORY / "software_resolutions.jsonl"
 RUNS_DIR = HISTORY / "runs"
 
 CALL_THRESHOLD = 7.0   # pressure at/above this = the fault line was "flagged"
 LEAD_DAYS = 90         # how far before the event we replay the engine
+
+SOFTWARE_CALL_THRESHOLD = 6.0   # software momentum at/above this = the build move was flagged
+SOFTWARE_LEAD_DAYS = 90         # how far before the build milestone we replay
 
 
 def _knobs():
@@ -43,6 +47,12 @@ def _knobs():
         "adoption_seeds": K.ADOPTION_SEEDS,
         "capability_weights": K.CAPABILITY_WEIGHTS,
         "capability_seeds": K.CAPABILITY_SEEDS,
+        "enable_weights": K.ENABLE_WEIGHTS,
+        "enable_seeds": K.ENABLE_SEEDS,
+        "software_weights": K.SOFTWARE_WEIGHTS,
+        "software_seeds": K.SOFTWARE_SEEDS,
+        "software_half_life": K.SOFTWARE_HALF_LIFE,
+        "software_flag_multiplier": K.FLAG_MULTIPLIER,
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
     }
@@ -152,6 +162,57 @@ def backtest(feed=None):
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
     }
+
+
+def software_backtest(feed=None):
+    """Grade the software-capability lane (S) against its own build milestones.
+
+    The S lane is a forward momentum signal (what vendors are enabled to build next),
+    so it is graded differently from a ruling forecast: for each dated build milestone
+    (a funding round, an acquisition, an agentic-tool shipment), we replay the engine
+    `SOFTWARE_LEAD_DAYS` before it landed and check whether the S meter on the relevant
+    fault line was already elevated. "Called" = the momentum signal pointed the right
+    way early. This is the honest answer to "would it have gotten last year's moves
+    right" — a forward signal that cannot be graded this way is just a vibe.
+    """
+    if not SWRES_FILE.exists():
+        return {"milestones": [], "n": 0, "hits": 0, "hit_rate": None,
+                "threshold": SOFTWARE_CALL_THRESHOLD, "lead_days": SOFTWARE_LEAD_DAYS}
+    rows = []
+    for r in _load_jsonl(SWRES_FILE):
+        d = _parse_date(r["date"])
+        lead_date = d - timedelta(days=SOFTWARE_LEAD_DAYS)
+        v_lead = _software_reading(r["fault_line"], lead_date.isoformat())
+        v_event = _software_reading(r["fault_line"], r["date"])
+        called = v_lead is not None and v_lead >= SOFTWARE_CALL_THRESHOLD
+        rows.append({
+            "date": r["date"], "fault_line": r["fault_line"], "title": r["title"],
+            "url": r.get("url", ""),
+            "reading_at_lead": v_lead, "reading_at_event": v_event,
+            "lead_days": SOFTWARE_LEAD_DAYS, "called": called,
+        })
+    n = len(rows)
+    hits = sum(1 for x in rows if x["called"])
+    return {"milestones": rows, "n": n, "hits": hits,
+            "hit_rate": round(hits / n, 2) if n else None,
+            "threshold": SOFTWARE_CALL_THRESHOLD, "lead_days": SOFTWARE_LEAD_DAYS}
+
+
+def _software_reading(fault_id, as_of):
+    data = score(as_of=as_of)
+    for fl in data["fault_lines"]:
+        if fl["id"] == fault_id:
+            return fl.get("software")
+    return None
+
+
+def _load_jsonl(path):
+    out = []
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if line:
+            out.append(json.loads(line))
+    return out
 
 
 def snapshot(data):

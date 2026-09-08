@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-07",
+  "as_of": "2026-09-08",
   "fault_lines": [
     {
       "id": "verification",
@@ -14,13 +14,23 @@
       "tech_driver": "Multi-step agentic work no single human fully traces.",
       "build_now": "Logging, trace analysis, evaluation records as the compliance artifact.",
       "capability_seed": 5.5,
-      "capability": 6.7,
-      "capability_weighted": 1.25,
+      "capability": 8.4,
+      "capability_weighted": 4.02,
       "capability_classes": [
-        "benchmark"
+        "benchmark",
+        "study"
       ],
-      "n_capability_evidence": 1,
+      "n_capability_evidence": 3,
       "capability_evidence": [
+        {
+          "date": "2026-05-15",
+          "title": "Etymolt trademark-clearance hallucination benchmark",
+          "tier": "T5",
+          "capability": "benchmark",
+          "weight": 1.25,
+          "matched": [],
+          "empirical": true
+        },
         {
           "date": "2024-05-23",
           "title": "Stanford RegLab 'Hallucination-Free?' \u2014 RAG legal research tools still hallucinate 17\u201334%",
@@ -32,14 +42,25 @@
             "human review"
           ],
           "empirical": true
+        },
+        {
+          "date": "2025-10-15",
+          "title": "JURIX 2025: frontier LLMs era-biased and citation-hallucinating (GPT-5 35.29% pre-1881)",
+          "tier": "T3",
+          "capability": "study",
+          "weight": 1.0,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true
         }
       ],
       "pressure_seed": 7.5,
       "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 11.98,
-      "corroboration": 0.3,
-      "n_evidence": 11,
+      "weighted_evidence": 13.8,
+      "corroboration": 0.45,
+      "n_evidence": 16,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -148,10 +169,23 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.407,
+          "weight": 0.405,
           "matched": [
             "verification",
             "reasonable inquiry"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-10-15",
+          "title": "JURIX 2025: frontier LLMs era-biased and citation-hallucinating (GPT-5 35.29% pre-1881)",
+          "tier": "T3",
+          "source": "arXiv 2510.20941",
+          "url": "https://ar5iv.labs.arxiv.org/html/2510.20941",
+          "weight": 0.212,
+          "matched": [
+            "verification"
           ],
           "empirical": true,
           "conflict": false
@@ -162,7 +196,20 @@
           "tier": "T3",
           "source": "Lighthouse / FTI Consulting (adoption reporting)",
           "url": "https://www.lighthouseglobal.com/ai-in-ediscovery-report-2025",
-          "weight": 0.18,
+          "weight": 0.179,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-01-29",
+          "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
+          "tier": "T3",
+          "source": "legaltechnology.com",
+          "url": "https://legaltechnology.com/genai-legal-assistant-paxton-raises-22m-series-a/",
+          "weight": 0.078,
           "matched": [
             "verification"
           ],
@@ -181,6 +228,43 @@
             "human review"
           ],
           "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2023-06-26",
+          "title": "Thomson Reuters agrees to acquire Casetext $650M cash (closed 2023-08-17)",
+          "tier": "T3",
+          "source": "Thomson Reuters",
+          "url": "https://www.thomsonreuters.com/en/press-releases/2023/june/thomson-reuters-corporation-signs-definitive-agreement-to-acquire-casetext",
+          "weight": 0.008,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-05-15",
+          "title": "Etymolt trademark-clearance hallucination benchmark",
+          "tier": "T5",
+          "source": "Etymolt (GitHub)",
+          "url": "https://github.com/etymolt/llm-hallucination-benchmark/blob/main/ABSTRACT.md",
+          "weight": 0.006,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-09-26",
+          "title": "Relativity aiR for Review GA (genAI e-discovery)",
+          "tier": "T5",
+          "source": "EDRM",
+          "url": "https://edrm.net/2024/09/26/relativity-announces-general-availability-of-relativity-air-for-review/",
+          "weight": 0.001,
+          "matched": [
+            "verification"
+          ],
+          "empirical": false,
           "conflict": false
         }
       ],
@@ -234,6 +318,53 @@
             "verification"
           ],
           "empirical": true
+        }
+      ],
+      "software_seed": 5.5,
+      "software": 5.6,
+      "software_weighted": 0.05,
+      "software_classes": [
+        "acquisition",
+        "capital",
+        "ship"
+      ],
+      "n_software_evidence": 3,
+      "software_evidence": [
+        {
+          "date": "2025-01-29",
+          "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.042,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2023-06-26",
+          "title": "Thomson Reuters agrees to acquire Casetext $650M cash (closed 2023-08-17)",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.0,
+          "matched": [
+            "verification"
+          ],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2024-09-26",
+          "title": "Relativity aiR for Review GA (genAI e-discovery)",
+          "tier": "T5",
+          "software": "ship",
+          "weight": 0.0,
+          "matched": [
+            "verification"
+          ],
+          "empirical": false,
+          "flag": "origination"
         }
       ],
       "queue": 8.1,
@@ -357,7 +488,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.407,
+          "weight": 0.405,
           "matched": [
             "disclosure"
           ],
@@ -380,6 +511,12 @@
       "enable_classes": [],
       "n_enable_evidence": 0,
       "enable_evidence": [],
+      "software_seed": 5.5,
+      "software": 5.5,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
       "queue": 6.9,
       "lead": "now"
     },
@@ -511,7 +648,7 @@
           "tier": "T3",
           "source": "CaseClerk / Baker McKenzie (vendor data-governance practice)",
           "url": "https://caseclerk.ai/blog/is-harvey-ai-safe-for-law-firms-confidentiality-data-retention-and-admin-controls-for-2025",
-          "weight": 0.101,
+          "weight": 0.1,
           "matched": [
             "confidential",
             "no-training",
@@ -565,6 +702,12 @@
           "empirical": false
         }
       ],
+      "software_seed": 5.5,
+      "software": 5.5,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
       "queue": 6.9,
       "lead": "now"
     },
@@ -587,11 +730,11 @@
       "n_capability_evidence": 0,
       "capability_evidence": [],
       "pressure_seed": 7.5,
-      "pressure": 9.5,
+      "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 5.0,
-      "corroboration": 0.0,
-      "n_evidence": 5,
+      "weighted_evidence": 7.33,
+      "corroboration": 0.15,
+      "n_evidence": 8,
       "evidence": [
         {
           "date": "2026-08-01",
@@ -620,6 +763,17 @@
             "patchwork",
             "multi-jurisdiction"
           ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-05-07",
+          "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
+          "tier": "T1",
+          "source": "EU (licentium.io)",
+          "url": "https://www.licentium.io/post/eu-lawmakers-agree-to-delay-ai-act-high-risk-obligations-2026-05-08",
+          "weight": 1.0,
+          "matched": [],
           "empirical": false,
           "conflict": false
         },
@@ -662,6 +816,28 @@
           ],
           "empirical": false,
           "conflict": false
+        },
+        {
+          "date": "2025-11-10",
+          "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
+          "tier": "T3",
+          "source": "ABA Journal",
+          "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
+          "weight": 0.234,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-06-30",
+          "title": "Clio signs definitive agreement to acquire vLex ($1B)",
+          "tier": "T3",
+          "source": "Clio",
+          "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
+          "weight": 0.14,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
         }
       ],
       "control": "One operating model, to the strictest standard",
@@ -695,8 +871,598 @@
       "enable_classes": [],
       "n_enable_evidence": 0,
       "enable_evidence": [],
-      "queue": 7.3,
+      "software_seed": 5.0,
+      "software": 5.5,
+      "software_weighted": 0.28,
+      "software_classes": [
+        "acquisition",
+        "regulatory_room"
+      ],
+      "n_software_evidence": 3,
+      "software_evidence": [
+        {
+          "date": "2025-11-10",
+          "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.074,
+          "matched": [],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2025-06-30",
+          "title": "Clio signs definitive agreement to acquire vLex ($1B)",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.034,
+          "matched": [],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2026-05-07",
+          "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
+          "tier": "T1",
+          "software": "regulatory_room",
+          "weight": 0.137,
+          "matched": [],
+          "empirical": false,
+          "flag": "direction_shift"
+        }
+      ],
+      "queue": 7.5,
       "lead": "now"
+    },
+    {
+      "id": "agentic",
+      "title": "Agentic autonomy reopens supervision & UPL",
+      "model_rules": [
+        "5.1",
+        "5.3",
+        "5.5"
+      ],
+      "horizon": "mid (1-3yr)",
+      "layer": "3b \u2014 operating model",
+      "vector": "AI is shifting from drafting text to taking actions on its own across multiple steps (so-called agents). 'Just review the final output' breaks down when no single person saw every step, reopening old duties around supervision and the unauthorized practice of law.",
+      "tech_driver": "Autonomous multi-step agents; AI AGENT Act; UPL-by-proxy scholarship.",
+      "build_now": "Human-decides gates and scope-limiting by design.",
+      "capability_seed": 4.0,
+      "capability": 6.9,
+      "capability_weighted": 2.7,
+      "capability_classes": [
+        "model_access"
+      ],
+      "n_capability_evidence": 6,
+      "capability_evidence": [
+        {
+          "date": "2026-08-19",
+          "title": "Claude computer-use + browser-use GA (toolsets 20260801)",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false
+        },
+        {
+          "date": "2025-05-23",
+          "title": "OpenAI Operator upgraded to o3, global research preview",
+          "tier": "T4",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false
+        },
+        {
+          "date": "2025-05-22",
+          "title": "Claude Code GA (1.0.0)",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false
+        },
+        {
+          "date": "2025-03-11",
+          "title": "OpenAI Responses API + Agents SDK: third-party agentic/computer-use",
+          "tier": "T4",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false
+        },
+        {
+          "date": "2025-02-24",
+          "title": "Claude 3.7 Sonnet hybrid reasoning + Claude Code preview",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false
+        },
+        {
+          "date": "2024-10-22",
+          "title": "Claude 3.5 Sonnet: first frontier computer-use public beta",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false
+        }
+      ],
+      "pressure_seed": 6.5,
+      "pressure": 9.4,
+      "trend": "rising",
+      "weighted_evidence": 5.14,
+      "corroboration": 0.45,
+      "n_evidence": 19,
+      "evidence": [
+        {
+          "date": "2026-05-19",
+          "title": "EU Commission draft: agentic/coordinating systems = single high-risk system (anti-splitting)",
+          "tier": "T2",
+          "source": "arthurcox.com",
+          "url": "https://www.arthurcox.com/knowledge/eu-ai-act-commission-draft-guidelines-high-risk-ai-systems/",
+          "weight": 0.8,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-08-29",
+          "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
+          "tier": "T3",
+          "source": "Federal legislation (proposed) / Reg Review",
+          "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
+          "weight": 0.577,
+          "matched": [
+            "agentic",
+            "ai agent act",
+            "upl",
+            "scope-limited",
+            "revocable"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-04-15",
+          "title": "Legora ~$50M extension (Nvidia NVentures+Atlassian) + 5 acquisitions",
+          "tier": "T3",
+          "source": "tech.eu/Bloomberg",
+          "url": "",
+          "weight": 0.427,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-03-25",
+          "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
+          "tier": "T3",
+          "source": "Bloomberg/CNBC/GIC",
+          "url": "",
+          "weight": 0.394,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-03-10",
+          "title": "Legora Series D $550M at $5.55B, Accel-led",
+          "tier": "T3",
+          "source": "CNBC/Crunchbase",
+          "url": "",
+          "weight": 0.372,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-10-30",
+          "title": "Legora Series C $150M at $1.8B",
+          "tier": "T3",
+          "source": "BusinessWire/Sifted",
+          "url": "",
+          "weight": 0.225,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-10-29",
+          "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
+          "tier": "T3",
+          "source": "Bloomberg/Forbes",
+          "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
+          "weight": 0.224,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-06-23",
+          "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
+          "tier": "T3",
+          "source": "Fortune / verified",
+          "url": "",
+          "weight": 0.137,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-04-07",
+          "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
+          "tier": "T3",
+          "source": "Artificial Lawyer (deployment reporting)",
+          "url": "https://www.artificiallawyer.com/2025/04/07/ao-shearman-to-profit-share-with-harvey-on-agentic-tools/",
+          "weight": 0.102,
+          "matched": [
+            "agentic",
+            "autonomous agent",
+            "scope-limited"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-02-15",
+          "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
+          "tier": "T3",
+          "source": "Harvey / verified",
+          "url": "https://www.harvey.ai/blog",
+          "weight": 0.084,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-10-08",
+          "title": "EvenUp $135M Series D, Bain Capital Ventures, $1B+ unicorn (PI claims)",
+          "tier": "T3",
+          "source": "Crunchbase News",
+          "url": "https://news.crunchbase.com/venture/ai-legal-tech-evenup-unicorn-bain/",
+          "weight": 0.051,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-07-17",
+          "title": "Leya $25M Series A, Redpoint-led (agentic research)",
+          "tier": "T3",
+          "source": "siliconangle.com",
+          "url": "https://siliconangle.com/2024/07/17/legal-ai-startup-leya-ab-raises-25m-help-lawyers-boost-productivity/",
+          "weight": 0.037,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-05-23",
+          "title": "OpenAI Operator upgraded to o3, global research preview",
+          "tier": "T4",
+          "source": "VentureBeat",
+          "url": "https://venturebeat.com/ai/openai-updates-operator-to-o3-making-its-200-monthly-chatgpt-subscription-more-enticing",
+          "weight": 0.057,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-03-11",
+          "title": "OpenAI Responses API + Agents SDK: third-party agentic/computer-use",
+          "tier": "T4",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2025/03/11/openai-launches-new-tools-to-help-businesses-build-ai-agents/",
+          "weight": 0.043,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-08-19",
+          "title": "Claude computer-use + browser-use GA (toolsets 20260801)",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview",
+          "weight": 0.007,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-10-09",
+          "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
+          "tier": "T5",
+          "source": "Spellbook",
+          "url": "https://www.spellbook.legal/blog/series-b",
+          "weight": 0.003,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-05-22",
+          "title": "Claude Code GA (1.0.0)",
+          "tier": "T5",
+          "source": "Anthropic (GitHub)",
+          "url": "https://github.com/anthropics/claude-code",
+          "weight": 0.001,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-02-24",
+          "title": "Claude 3.7 Sonnet hybrid reasoning + Claude Code preview",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+          "weight": 0.001,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-10-22",
+          "title": "Claude 3.5 Sonnet: first frontier computer-use public beta",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://www.anthropic.com/news/claude-3-5-models-and-computer-use",
+          "weight": 0.001,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Human-decides gates + scope-limiting",
+      "seam": "mixed",
+      "driver": "capability",
+      "adoption_seed": 5.0,
+      "adoption": 6.2,
+      "adoption_weighted": 0.53,
+      "market_classes": [
+        "process_mandate"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-29",
+          "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
+          "tier": "T3",
+          "market": "process_mandate",
+          "weight": 0.529,
+          "matched": [
+            "agentic",
+            "ai agent act",
+            "upl",
+            "scope-limited",
+            "revocable"
+          ]
+        }
+      ],
+      "enable_seed": 3.5,
+      "enable": 6.5,
+      "enable_weighted": 1.25,
+      "enable_classes": [
+        "deploy_scale"
+      ],
+      "n_enable_evidence": 1,
+      "enable_evidence": [
+        {
+          "date": "2025-04-07",
+          "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
+          "tier": "T3",
+          "enable": "deploy_scale",
+          "weight": 1.25,
+          "matched": [
+            "agentic",
+            "autonomous agent",
+            "scope-limited"
+          ],
+          "empirical": true
+        }
+      ],
+      "software_seed": 5.0,
+      "software": 8.3,
+      "software_weighted": 2.72,
+      "software_classes": [
+        "acquisition",
+        "capital",
+        "regulatory_room",
+        "ship"
+      ],
+      "n_software_evidence": 12,
+      "software_evidence": [
+        {
+          "date": "2026-03-25",
+          "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.476,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2026-03-10",
+          "title": "Legora Series D $550M at $5.55B, Accel-led",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.437,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-10-30",
+          "title": "Legora Series C $150M at $1.8B",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.205,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-10-29",
+          "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.204,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-10-09",
+          "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
+          "tier": "T5",
+          "software": "capital",
+          "weight": 0.182,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-06-23",
+          "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.097,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-02-15",
+          "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.046,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2024-10-08",
+          "title": "EvenUp $135M Series D, Bain Capital Ventures, $1B+ unicorn (PI claims)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.0,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "origination"
+        },
+        {
+          "date": "2024-07-17",
+          "title": "Leya $25M Series A, Redpoint-led (agentic research)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.014,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2026-04-15",
+          "title": "Legora ~$50M extension (Nvidia NVentures+Atlassian) + 5 acquisitions",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.183,
+          "matched": [],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2026-05-19",
+          "title": "EU Commission draft: agentic/coordinating systems = single high-risk system (anti-splitting)",
+          "tier": "T2",
+          "software": "regulatory_room",
+          "weight": 0.0,
+          "matched": [
+            "agentic"
+          ],
+          "empirical": false,
+          "flag": "origination"
+        },
+        {
+          "date": "2025-04-07",
+          "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
+          "tier": "T3",
+          "software": "ship",
+          "weight": 0.034,
+          "matched": [
+            "agentic",
+            "autonomous agent",
+            "scope-limited"
+          ],
+          "empirical": true,
+          "flag": null
+        }
+      ],
+      "queue": 5.8,
+      "lead": "~1 year"
     },
     {
       "id": "competence",
@@ -710,17 +1476,66 @@
       "tech_driver": "Mandatory AI CLE spreading; firm-level governance capability expected.",
       "build_now": "Training and enablement at scale (iTrain bet; AI Build Lab proof).",
       "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
+      "capability": 6.6,
+      "capability_weighted": 3.22,
+      "capability_classes": [
+        "model_access",
+        "study"
+      ],
+      "n_capability_evidence": 5,
+      "capability_evidence": [
+        {
+          "date": "2025-04-02",
+          "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
+          "tier": "T3",
+          "capability": "study",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": true
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        },
+        {
+          "date": "2025-08-12",
+          "title": "Claude 1M-token context public beta (Sonnet 4)",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        },
+        {
+          "date": "2024-03-04",
+          "title": "Claude 3: first Claude vision/document input",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        },
+        {
+          "date": "2023-11-21",
+          "title": "Claude 2.1: 200K context + beta tool use",
+          "tier": "T5",
+          "capability": "model_access",
+          "weight": 0.45,
+          "matched": [],
+          "empirical": false
+        }
+      ],
       "pressure_seed": 6.0,
-      "pressure": 9.0,
+      "pressure": 9.2,
       "trend": "rising",
-      "weighted_evidence": 4.11,
-      "corroboration": 0.15,
-      "n_evidence": 5,
+      "weighted_evidence": 4.78,
+      "corroboration": 0.3,
+      "n_evidence": 10,
       "evidence": [
         {
           "date": "2026-05-14",
@@ -784,12 +1599,67 @@
           "tier": "T3",
           "source": "Practising Law Institute",
           "url": "https://www.globenewswire.com/fr/news-release/2026/05/05/3288064/0/en/PLI-Introduces-Industry-First-AI-Competency-Framework.html",
-          "weight": 0.371,
+          "weight": 0.369,
           "matched": [
             "competence",
             "training",
             "governance program"
           ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-04-02",
+          "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
+          "tier": "T3",
+          "source": "arXiv 2504.01840",
+          "url": "https://ar5iv.labs.arxiv.org/html/2504.01840",
+          "weight": 0.1,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-03-13",
+          "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://claude.com/blog/1m-context-ga",
+          "weight": 0.004,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-08-12",
+          "title": "Claude 1M-token context public beta (Sonnet 4)",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://claude.com/blog/1m-context",
+          "weight": 0.002,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-03-04",
+          "title": "Claude 3: first Claude vision/document input",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://www.anthropic.com/news/claude-3-family",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2023-11-21",
+          "title": "Claude 2.1: 200K context + beta tool use",
+          "tier": "T5",
+          "source": "Anthropic",
+          "url": "https://www.anthropic.com/news/claude-2-1",
+          "weight": 0.0,
+          "matched": [],
           "empirical": false,
           "conflict": false
         }
@@ -852,7 +1722,13 @@
           "empirical": false
         }
       ],
-      "queue": 6.7,
+      "software_seed": 5.0,
+      "software": 5.0,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
+      "queue": 6.8,
       "lead": "~1 year"
     },
     {
@@ -887,7 +1763,7 @@
           "tier": "T3",
           "source": "CNA (largest US legal malpractice carrier)",
           "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.543,
+          "weight": 0.541,
           "matched": [
             "insurer",
             "premium",
@@ -906,7 +1782,7 @@
       "driver": "market",
       "adoption_seed": 7.5,
       "adoption": 8.4,
-      "adoption_weighted": 0.91,
+      "adoption_weighted": 0.9,
       "market_classes": [
         "insurer"
       ],
@@ -917,7 +1793,7 @@
           "title": "CNA adds AI-governance questionnaires to malpractice renewals",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.905,
+          "weight": 0.901,
           "matched": [
             "insurer",
             "premium",
@@ -955,118 +1831,14 @@
           "empirical": true
         }
       ],
+      "software_seed": 4.0,
+      "software": 4.0,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
       "queue": 7.3,
       "lead": "now"
-    },
-    {
-      "id": "agentic",
-      "title": "Agentic autonomy reopens supervision & UPL",
-      "model_rules": [
-        "5.1",
-        "5.3",
-        "5.5"
-      ],
-      "horizon": "mid (1-3yr)",
-      "layer": "3b \u2014 operating model",
-      "vector": "AI is shifting from drafting text to taking actions on its own across multiple steps (so-called agents). 'Just review the final output' breaks down when no single person saw every step, reopening old duties around supervision and the unauthorized practice of law.",
-      "tech_driver": "Autonomous multi-step agents; AI AGENT Act; UPL-by-proxy scholarship.",
-      "build_now": "Human-decides gates and scope-limiting by design.",
-      "capability_seed": 4.0,
-      "capability": 4.0,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
-      "pressure_seed": 6.5,
-      "pressure": 7.2,
-      "trend": "steady",
-      "weighted_evidence": 0.68,
-      "corroboration": 0.0,
-      "n_evidence": 2,
-      "evidence": [
-        {
-          "date": "2026-08-29",
-          "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
-          "tier": "T3",
-          "source": "Federal legislation (proposed) / Reg Review",
-          "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
-          "weight": 0.58,
-          "matched": [
-            "agentic",
-            "ai agent act",
-            "upl",
-            "scope-limited",
-            "revocable"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-04-07",
-          "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
-          "tier": "T3",
-          "source": "Artificial Lawyer (deployment reporting)",
-          "url": "https://www.artificiallawyer.com/2025/04/07/ao-shearman-to-profit-share-with-harvey-on-agentic-tools/",
-          "weight": 0.102,
-          "matched": [
-            "agentic",
-            "autonomous agent",
-            "scope-limited"
-          ],
-          "empirical": true,
-          "conflict": false
-        }
-      ],
-      "control": "Human-decides gates + scope-limiting",
-      "seam": "mixed",
-      "driver": "capability",
-      "adoption_seed": 5.0,
-      "adoption": 6.2,
-      "adoption_weighted": 0.53,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2026-08-29",
-          "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
-          "tier": "T3",
-          "market": "process_mandate",
-          "weight": 0.531,
-          "matched": [
-            "agentic",
-            "ai agent act",
-            "upl",
-            "scope-limited",
-            "revocable"
-          ]
-        }
-      ],
-      "enable_seed": 3.5,
-      "enable": 6.5,
-      "enable_weighted": 1.25,
-      "enable_classes": [
-        "deploy_scale"
-      ],
-      "n_enable_evidence": 1,
-      "enable_evidence": [
-        {
-          "date": "2025-04-07",
-          "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
-          "tier": "T3",
-          "enable": "deploy_scale",
-          "weight": 1.25,
-          "matched": [
-            "agentic",
-            "autonomous agent",
-            "scope-limited"
-          ],
-          "empirical": true
-        }
-      ],
-      "queue": 4.5,
-      "lead": "~1 year"
     },
     {
       "id": "benchmark",
@@ -1080,12 +1852,12 @@
       "tech_driver": "'Lex-TruthfulQA'-style minimum-competence benchmarks proposed.",
       "build_now": "You already built one: NERVE. A benchmark is a compliance instrument.",
       "capability_seed": 6.5,
-      "capability": 8.6,
-      "capability_weighted": 3.75,
+      "capability": 9.0,
+      "capability_weighted": 5.0,
       "capability_classes": [
         "benchmark"
       ],
-      "n_capability_evidence": 3,
+      "n_capability_evidence": 4,
       "capability_evidence": [
         {
           "date": "2026-06-01",
@@ -1098,6 +1870,18 @@
             "error rate",
             "hallucination rate",
             "stanford"
+          ],
+          "empirical": true
+        },
+        {
+          "date": "2025-07-29",
+          "title": "Vals legal_bench: GPT-5 84.6%, #1 of 63 models",
+          "tier": "T5",
+          "capability": "benchmark",
+          "weight": 1.25,
+          "matched": [
+            "benchmark",
+            "certif"
           ],
           "empirical": true
         },
@@ -1129,11 +1913,11 @@
         }
       ],
       "pressure_seed": 6.0,
-      "pressure": 6.7,
+      "pressure": 8.6,
       "trend": "steady",
-      "weighted_evidence": 0.56,
-      "corroboration": 0.0,
-      "n_evidence": 3,
+      "weighted_evidence": 3.09,
+      "corroboration": 0.3,
+      "n_evidence": 19,
       "evidence": [
         {
           "date": "2026-06-01",
@@ -1141,13 +1925,125 @@
           "tier": "T3",
           "source": "Stanford (research)",
           "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
-          "weight": 0.514,
+          "weight": 0.512,
           "matched": [
             "benchmark",
             "error rate",
             "hallucination rate",
             "stanford"
           ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-03-25",
+          "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
+          "tier": "T3",
+          "source": "Bloomberg/CNBC/GIC",
+          "url": "",
+          "weight": 0.394,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2026-03-04",
+          "title": "Spellbook $40M RBCx debt facility to fund acquisitions (acquirer, not acquired)",
+          "tier": "T3",
+          "source": "The Globe and Mail",
+          "url": "https://www.theglobeandmail.com/business/article-spellbook-secures-us40-million-from-rbc-to-snap-up-smaller-generative/",
+          "weight": 0.364,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-11-10",
+          "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
+          "tier": "T3",
+          "source": "ABA Journal",
+          "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
+          "weight": 0.234,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-10-29",
+          "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
+          "tier": "T3",
+          "source": "Bloomberg/Forbes",
+          "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
+          "weight": 0.224,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-06-30",
+          "title": "Clio signs definitive agreement to acquire vLex ($1B)",
+          "tier": "T3",
+          "source": "Clio",
+          "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
+          "weight": 0.14,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-06-23",
+          "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
+          "tier": "T3",
+          "source": "Fortune / verified",
+          "url": "",
+          "weight": 0.137,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-02-18",
+          "title": "Luminance $75M Series C, Point72-led, valuation undisclosed (CLM)",
+          "tier": "T3",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2025/02/18/legal-ai-startup-luminance-backed-by-the-late-mike-lynch-raises-75m/",
+          "weight": 0.084,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-02-15",
+          "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
+          "tier": "T3",
+          "source": "Harvey / verified",
+          "url": "https://www.harvey.ai/blog",
+          "weight": 0.084,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-01-29",
+          "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
+          "tier": "T3",
+          "source": "legaltechnology.com",
+          "url": "https://legaltechnology.com/genai-legal-assistant-paxton-raises-22m-series-a/",
+          "weight": 0.078,
+          "matched": [
+            "benchmark"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-07-17",
+          "title": "Leya $25M Series A, Redpoint-led (agentic research)",
+          "tier": "T3",
+          "source": "siliconangle.com",
+          "url": "https://siliconangle.com/2024/07/17/legal-ai-startup-leya-ab-raises-25m-help-lawyers-boost-productivity/",
+          "weight": 0.037,
+          "matched": [],
           "empirical": true,
           "conflict": false
         },
@@ -1166,6 +2062,17 @@
           "conflict": false
         },
         {
+          "date": "2024-04-02",
+          "title": "Luminance $40M Series B, March Capital-led (CLM)",
+          "tier": "T3",
+          "source": "Reuters/CNBC",
+          "url": "",
+          "weight": 0.024,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
           "date": "2024-01-11",
           "title": "Stanford/Yale 'Large Legal Fictions' \u2014 58\u201388% hallucination rate on legal queries",
           "tier": "T3",
@@ -1178,6 +2085,66 @@
             "hallucination rate",
             "stanford"
           ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2023-06-26",
+          "title": "Thomson Reuters agrees to acquire Casetext $650M cash (closed 2023-08-17)",
+          "tier": "T3",
+          "source": "Thomson Reuters",
+          "url": "https://www.thomsonreuters.com/en/press-releases/2023/june/thomson-reuters-corporation-signs-definitive-agreement-to-acquire-casetext",
+          "weight": 0.008,
+          "matched": [
+            "benchmark"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2023-10-17",
+          "title": "vLex Vincent AI launched (GPT-4)",
+          "tier": "T4",
+          "source": "legaltechnology.com",
+          "url": "https://legaltechnology.com/2023/10/17/",
+          "weight": 0.006,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-10-09",
+          "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
+          "tier": "T5",
+          "source": "Spellbook",
+          "url": "https://www.spellbook.legal/blog/series-b",
+          "weight": 0.003,
+          "matched": [],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2025-07-29",
+          "title": "Vals legal_bench: GPT-5 84.6%, #1 of 63 models",
+          "tier": "T5",
+          "source": "vals.ai",
+          "url": "https://vals.ai/benchmarks/legal_bench-07-29-2025",
+          "weight": 0.002,
+          "matched": [
+            "benchmark",
+            "certif"
+          ],
+          "empirical": true,
+          "conflict": false
+        },
+        {
+          "date": "2024-01-03",
+          "title": "Robin AI $26M Series B, Temasek-led (CLM/workflow)",
+          "tier": "T5",
+          "source": "Robin AI",
+          "url": "https://robinai.com/news-and-resources/news/robin-ai-raises-26-million-series-b",
+          "weight": 0.0,
+          "matched": [],
           "empirical": true,
           "conflict": false
         }
@@ -1198,7 +2165,7 @@
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
           "tier": "T3",
           "market": "cert",
-          "weight": 0.514,
+          "weight": 0.512,
           "matched": [
             "benchmark",
             "error rate",
@@ -1230,8 +2197,316 @@
           "empirical": true
         }
       ],
-      "queue": 4.4,
+      "software_seed": 5.0,
+      "software": 7.5,
+      "software_weighted": 1.72,
+      "software_classes": [
+        "acquisition",
+        "capital",
+        "ship"
+      ],
+      "n_software_evidence": 15,
+      "software_evidence": [
+        {
+          "date": "2026-03-25",
+          "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.476,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-10-29",
+          "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.204,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-10-09",
+          "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
+          "tier": "T5",
+          "software": "capital",
+          "weight": 0.182,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-06-23",
+          "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.097,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-02-18",
+          "title": "Luminance $75M Series C, Point72-led, valuation undisclosed (CLM)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": true,
+          "flag": "origination"
+        },
+        {
+          "date": "2025-02-15",
+          "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.046,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2025-01-29",
+          "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.042,
+          "matched": [
+            "benchmark"
+          ],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2024-07-17",
+          "title": "Leya $25M Series A, Redpoint-led (agentic research)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.014,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2024-04-02",
+          "title": "Luminance $40M Series B, March Capital-led (CLM)",
+          "tier": "T3",
+          "software": "capital",
+          "weight": 0.007,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2024-01-03",
+          "title": "Robin AI $26M Series B, Temasek-led (CLM/workflow)",
+          "tier": "T5",
+          "software": "capital",
+          "weight": 0.004,
+          "matched": [],
+          "empirical": true,
+          "flag": "continuation"
+        },
+        {
+          "date": "2026-03-04",
+          "title": "Spellbook $40M RBCx debt facility to fund acquisitions (acquirer, not acquired)",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.143,
+          "matched": [],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2025-11-10",
+          "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.074,
+          "matched": [],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2025-06-30",
+          "title": "Clio signs definitive agreement to acquire vLex ($1B)",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.034,
+          "matched": [],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2023-06-26",
+          "title": "Thomson Reuters agrees to acquire Casetext $650M cash (closed 2023-08-17)",
+          "tier": "T3",
+          "software": "acquisition",
+          "weight": 0.0,
+          "matched": [
+            "benchmark"
+          ],
+          "empirical": true,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2023-10-17",
+          "title": "vLex Vincent AI launched (GPT-4)",
+          "tier": "T4",
+          "software": "ship",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": false,
+          "flag": "origination"
+        }
+      ],
+      "queue": 5.6,
       "lead": "~1 year"
+    },
+    {
+      "id": "vendor_liability",
+      "title": "Liability shifts partway to vendors",
+      "model_rules": [
+        "\u2014"
+      ],
+      "horizon": "far (3yr+)",
+      "layer": "first-order (who bears risk)",
+      "vector": "Today the lawyer carries all the risk when an AI tool fails; there is no clear legal path to hold the vendor responsible. Pressure is building, through disclosure mandates and product-liability proposals, to shift some of that liability onto the toolmakers.",
+      "tech_driver": "Pressure toward disclosure mandates and certification standards on vendors.",
+      "build_now": "Track for a shift; document tool provenance now.",
+      "capability_seed": 2.5,
+      "capability": 2.5,
+      "capability_weighted": 0.0,
+      "capability_classes": [],
+      "n_capability_evidence": 0,
+      "capability_evidence": [],
+      "pressure_seed": 3.5,
+      "pressure": 8.5,
+      "trend": "rising",
+      "weighted_evidence": 4.4,
+      "corroboration": 0.45,
+      "n_evidence": 5,
+      "evidence": [
+        {
+          "date": "2026-05-07",
+          "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
+          "tier": "T1",
+          "source": "EU (licentium.io)",
+          "url": "https://www.licentium.io/post/eu-lawmakers-agree-to-delay-ai-act-high-risk-obligations-2026-05-08",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2024-12-08",
+          "title": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
+          "tier": "T1",
+          "source": "European Union (Directive)",
+          "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+          "weight": 1.0,
+          "matched": [
+            "vendor liability",
+            "product liability"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2026-05-19",
+          "title": "EU Commission draft: agentic/coordinating systems = single high-risk system (anti-splitting)",
+          "tier": "T2",
+          "source": "arthurcox.com",
+          "url": "https://www.arthurcox.com/knowledge/eu-ai-act-commission-draft-guidelines-high-risk-ai-systems/",
+          "weight": 0.8,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-09-29",
+          "title": "AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards",
+          "tier": "T3",
+          "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
+          "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
+          "weight": 0.16,
+          "matched": [
+            "vendor liability",
+            "product liability"
+          ],
+          "empirical": false,
+          "conflict": false
+        },
+        {
+          "date": "2025-08-08",
+          "title": "Ebers 'LawGPT': UPL-by-LLM a live comparative question",
+          "tier": "T4",
+          "source": "Cambridge Handbook of Generative AI and the Law",
+          "url": "https://www.cambridge.org/core/books/abs/cambridge-handbook-of-generative-ai-and-the-law/lawgpt/E68060BDAC6BABA881BE2B180C9E88C9#1",
+          "weight": 0.076,
+          "matched": [],
+          "empirical": false,
+          "conflict": false
+        }
+      ],
+      "control": "Tool-provenance documentation",
+      "seam": "codifiable",
+      "driver": "market",
+      "adoption_seed": 2.5,
+      "adoption": 2.5,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
+      "enable_seed": 3.0,
+      "enable": 3.0,
+      "enable_weighted": 0.0,
+      "enable_classes": [],
+      "n_enable_evidence": 0,
+      "enable_evidence": [],
+      "software_seed": 3.5,
+      "software": 3.8,
+      "software_weighted": 0.14,
+      "software_classes": [
+        "regulatory_room"
+      ],
+      "n_software_evidence": 3,
+      "software_evidence": [
+        {
+          "date": "2026-05-19",
+          "title": "EU Commission draft: agentic/coordinating systems = single high-risk system (anti-splitting)",
+          "tier": "T2",
+          "software": "regulatory_room",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": false,
+          "flag": "origination"
+        },
+        {
+          "date": "2026-05-07",
+          "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
+          "tier": "T1",
+          "software": "regulatory_room",
+          "weight": 0.137,
+          "matched": [],
+          "empirical": false,
+          "flag": "direction_shift"
+        },
+        {
+          "date": "2025-08-08",
+          "title": "Ebers 'LawGPT': UPL-by-LLM a live comparative question",
+          "tier": "T4",
+          "software": "regulatory_room",
+          "weight": 0.0,
+          "matched": [],
+          "empirical": false,
+          "flag": "origination"
+        }
+      ],
+      "queue": 2.1,
+      "lead": "later"
     },
     {
       "id": "judicial_analytics",
@@ -1291,6 +2566,12 @@
       "enable_classes": [],
       "n_enable_evidence": 0,
       "enable_evidence": [],
+      "software_seed": 3.0,
+      "software": 3.0,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
       "queue": 1.9,
       "lead": "~1 year"
     },
@@ -1348,79 +2629,14 @@
       "enable_classes": [],
       "n_enable_evidence": 0,
       "enable_evidence": [],
+      "software_seed": 3.0,
+      "software": 3.0,
+      "software_weighted": 0.0,
+      "software_classes": [],
+      "n_software_evidence": 0,
+      "software_evidence": [],
       "queue": 1.7,
       "lead": "~1-2 years"
-    },
-    {
-      "id": "vendor_liability",
-      "title": "Liability shifts partway to vendors",
-      "model_rules": [
-        "\u2014"
-      ],
-      "horizon": "far (3yr+)",
-      "layer": "first-order (who bears risk)",
-      "vector": "Today the lawyer carries all the risk when an AI tool fails; there is no clear legal path to hold the vendor responsible. Pressure is building, through disclosure mandates and product-liability proposals, to shift some of that liability onto the toolmakers.",
-      "tech_driver": "Pressure toward disclosure mandates and certification standards on vendors.",
-      "build_now": "Track for a shift; document tool provenance now.",
-      "capability_seed": 2.5,
-      "capability": 2.5,
-      "capability_weighted": 0.0,
-      "capability_classes": [],
-      "n_capability_evidence": 0,
-      "capability_evidence": [],
-      "pressure_seed": 3.5,
-      "pressure": 5.8,
-      "trend": "quiet",
-      "weighted_evidence": 1.33,
-      "corroboration": 0.15,
-      "n_evidence": 2,
-      "evidence": [
-        {
-          "date": "2024-12-08",
-          "title": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
-          "tier": "T1",
-          "source": "European Union (Directive)",
-          "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
-          "weight": 1.0,
-          "matched": [
-            "vendor liability",
-            "product liability"
-          ],
-          "empirical": false,
-          "conflict": false
-        },
-        {
-          "date": "2025-09-29",
-          "title": "AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards",
-          "tier": "T3",
-          "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
-          "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
-          "weight": 0.16,
-          "matched": [
-            "vendor liability",
-            "product liability"
-          ],
-          "empirical": false,
-          "conflict": false
-        }
-      ],
-      "control": "Tool-provenance documentation",
-      "seam": "codifiable",
-      "driver": "market",
-      "adoption_seed": 2.5,
-      "adoption": 2.5,
-      "adoption_weighted": 0.0,
-      "market_classes": [],
-      "n_adoption_evidence": 0,
-      "adoption_evidence": [],
-      "enable_seed": 3.0,
-      "enable": 3.0,
-      "enable_weighted": 0.0,
-      "enable_classes": [],
-      "n_enable_evidence": 0,
-      "enable_evidence": [],
-      "queue": 1.4,
-      "lead": "later"
     }
   ],
   "tiers": {
@@ -1481,5 +2697,29 @@
     "judicial_analytics": 3.0,
     "vendor_liability": 3.0
   },
-  "n_items": 30
+  "software_weights": {
+    "capital": 1.0,
+    "acquisition": 0.85,
+    "regulatory_room": 0.7,
+    "ship": 0.55
+  },
+  "software_seeds": {
+    "benchmark": 5.0,
+    "verification": 5.5,
+    "disclosure": 5.5,
+    "confidentiality": 5.5,
+    "competence": 5.0,
+    "convergence": 5.0,
+    "agentic": 5.0,
+    "insurance": 4.0,
+    "fees": 3.0,
+    "judicial_analytics": 3.0,
+    "vendor_liability": 3.5
+  },
+  "software_flag_multiplier": {
+    "continuation": 1.0,
+    "direction_shift": 0.4,
+    "origination": 0.0
+  },
+  "n_items": 67
 }

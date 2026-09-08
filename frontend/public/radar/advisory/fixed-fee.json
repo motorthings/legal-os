@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-07",
+  "as_of": "2026-09-08",
   "firm": {
     "name": "Fixed-fee firm",
     "pricing": "fixed_fee",
@@ -30,12 +30,12 @@
   "pricing_model_source": false,
   "verdict_counts": {
     "govern": {
-      "stand-up-now": 8,
-      "no-mandate": 3
+      "stand-up-now": 9,
+      "no-mandate": 2
     },
     "deploy": {
-      "deploy-now": 4,
-      "defer": 2,
+      "deploy-now": 5,
+      "defer": 1,
       "watch": 1
     }
   },
@@ -55,13 +55,13 @@
       "deploy": "deploy-now",
       "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
       "orders": {
-        "1_capability": 6.7,
+        "1_capability": 8.4,
         "2_enablement": 7.0,
         "2_market_enable": 8.1,
         "3_pressure": 10.0,
         "3_adoption": 8.1,
         "4_gate_full": 7860,
-        "4_gate_eff": 3286
+        "4_gate_eff": 5642
       }
     },
     {
@@ -130,10 +130,34 @@
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 4.0,
-        "3_pressure": 9.5,
+        "3_pressure": 9.8,
         "3_adoption": 7.7,
         "4_gate_full": 7860,
         "4_gate_eff": 7860
+      }
+    },
+    {
+      "fault_line": "agentic",
+      "title": "Agentic autonomy reopens supervision & UPL",
+      "control": "Human-decides gates + scope-limiting",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "mixed",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "defer",
+      "deploy_note": "AI can't yet capture this work profitably (seam=mixed, capability=6.9)",
+      "orders": {
+        "1_capability": 6.9,
+        "2_enablement": 7.0,
+        "2_market_enable": 6.5,
+        "3_pressure": 9.4,
+        "3_adoption": 6.2,
+        "4_gate_full": 7860,
+        "4_gate_eff": -262
       }
     },
     {
@@ -148,16 +172,16 @@
       "opportunistic": false,
       "govern": "stand-up-now",
       "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "defer",
-      "deploy_note": "AI can't yet capture this work profitably (seam=codifiable, capability=2.5)",
+      "deploy": "deploy-now",
+      "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
       "orders": {
-        "1_capability": 2.5,
+        "1_capability": 6.6,
         "2_enablement": 7.0,
         "2_market_enable": 7.4,
-        "3_pressure": 9.0,
+        "3_pressure": 9.2,
         "3_adoption": 7.4,
         "4_gate_full": 7860,
-        "4_gate_eff": -2535
+        "4_gate_eff": 3148
       }
     },
     {
@@ -185,30 +209,6 @@
       }
     },
     {
-      "fault_line": "agentic",
-      "title": "Agentic autonomy reopens supervision & UPL",
-      "control": "Human-decides gates + scope-limiting",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "mixed",
-      "driver": "capability",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "defer",
-      "deploy_note": "AI can't yet capture this work profitably (seam=mixed, capability=4.0)",
-      "orders": {
-        "1_capability": 4.0,
-        "2_enablement": 7.0,
-        "2_market_enable": 6.5,
-        "3_pressure": 7.2,
-        "3_adoption": 6.2,
-        "4_gate_full": 7860,
-        "4_gate_eff": -2674
-      }
-    },
-    {
       "fault_line": "benchmark",
       "title": "A tool-certification / benchmark standard emerges",
       "control": "Tool-certification benchmark (NERVE)",
@@ -216,20 +216,44 @@
       "lead": "~1 year",
       "seam": "codifiable",
       "driver": "capability",
-      "required": false,
-      "opportunistic": true,
+      "required": true,
+      "opportunistic": false,
       "govern": "stand-up-now",
       "govern_note": "required/open and the firm is ready \u2014 stand the control up",
       "deploy": "deploy-now",
       "deploy_note": "AI can capture this work, the economics pass, and the market can supply it",
       "orders": {
-        "1_capability": 8.6,
+        "1_capability": 9.0,
         "2_enablement": 7.0,
         "2_market_enable": 8.3,
-        "3_pressure": 6.7,
+        "3_pressure": 8.6,
         "3_adoption": 6.5,
         "4_gate_full": 7860,
-        "4_gate_eff": 5920
+        "4_gate_eff": 6474
+      }
+    },
+    {
+      "fault_line": "vendor_liability",
+      "title": "Liability shifts partway to vendors",
+      "control": "Tool-provenance documentation",
+      "horizon": "far (3yr+)",
+      "lead": "later",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 7.0,
+        "2_market_enable": 3.0,
+        "3_pressure": 8.5,
+        "3_adoption": 2.5,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
       }
     },
     {
@@ -276,30 +300,6 @@
         "2_market_enable": 3.5,
         "3_pressure": 5.8,
         "3_adoption": 3.0,
-        "4_gate_full": 7860,
-        "4_gate_eff": 7860
-      }
-    },
-    {
-      "fault_line": "vendor_liability",
-      "title": "Liability shifts partway to vendors",
-      "control": "Tool-provenance documentation",
-      "horizon": "far (3yr+)",
-      "lead": "later",
-      "seam": "codifiable",
-      "driver": "market",
-      "required": false,
-      "opportunistic": false,
-      "govern": "no-mandate",
-      "govern_note": "not yet required or open \u2014 nothing forces it now",
-      "deploy": null,
-      "deploy_note": "not an AI-deployment question (market-driven governance control)",
-      "orders": {
-        "1_capability": 2.5,
-        "2_enablement": 7.0,
-        "2_market_enable": 3.0,
-        "3_pressure": 5.8,
-        "3_adoption": 2.5,
         "4_gate_full": 7860,
         "4_gate_eff": 7860
       }

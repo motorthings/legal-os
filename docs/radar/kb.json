@@ -1,5 +1,5 @@
 {
-  "n_items": 30,
+  "n_items": 67,
   "items": [
     {
       "date": "2023-06-22",
@@ -823,6 +823,979 @@
         }
       ],
       "why": "Empirical / institutional authority (weight 0.60). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2023-10-17",
+      "tier": "T4",
+      "tier_label": "Professional commentary",
+      "tier_weight": 0.35,
+      "title": "vLex Vincent AI launched (GPT-4)",
+      "source": "legaltechnology.com",
+      "url": "https://legaltechnology.com/2023/10/17/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "vLex shipped Vincent AI, a GPT-4 legal-research assistant. First-of-kind research-AI launch; the vendor research-tooling trajectory begins.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Professional commentary authority (weight 0.35). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2023-11-21",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude 2.1: 200K context + beta tool use",
+      "source": "Anthropic",
+      "url": "https://www.anthropic.com/news/claude-2-1",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude 2.1 raised the context window to 200K tokens and introduced beta tool use. A frontier-model unlock legal tooling builds on (long-document review).",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Competence becomes an affirmative governance duty. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2024-03-04",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude 3: first Claude vision/document input",
+      "source": "Anthropic",
+      "url": "https://www.anthropic.com/news/claude-3-family",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude 3 added vision and document input, letting legal tooling read scanned filings and exhibits natively.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Competence becomes an affirmative governance duty. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2024-10-22",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude 3.5 Sonnet: first frontier computer-use public beta",
+      "source": "Anthropic",
+      "url": "https://www.anthropic.com/news/claude-3-5-models-and-computer-use",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "First frontier public beta of computer use \u2014 an AI that operates a computer. The substrate for agentic legal tooling that acts, not just drafts.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Agentic autonomy reopens supervision & UPL. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2025-02-15",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
+      "source": "Harvey / verified",
+      "url": "https://www.harvey.ai/blog",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Harvey raised a ~$100M Series D at a $3B valuation on fast ARR growth and roughly half the Am Law 100 as customers. Capital at this scale funds the next tier of agentic and research tooling.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-02-24",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude 3.7 Sonnet hybrid reasoning + Claude Code preview",
+      "source": "Anthropic",
+      "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude 3.7 Sonnet added hybrid reasoning and shipped Claude Code in research preview \u2014 reasoning and coding the vendor agentic tooling builds on.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Agentic autonomy reopens supervision & UPL. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2025-03-11",
+      "tier": "T4",
+      "tier_label": "Professional commentary",
+      "tier_weight": 0.35,
+      "title": "OpenAI Responses API + Agents SDK: third-party agentic/computer-use",
+      "source": "TechCrunch",
+      "url": "https://techcrunch.com/2025/03/11/openai-launches-new-tools-to-help-businesses-build-ai-agents/",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "OpenAI shipped the Responses API and Agents SDK, letting third parties build agentic/computer-use systems. Legal vendors can now assemble agents on OpenAI's stack.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Professional commentary authority (weight 0.35). It evidences the Agentic autonomy reopens supervision & UPL. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2025-04-02",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "LRAGE: legal RAG gains are corpus/backbone-dependent, not monotonic",
+      "source": "arXiv 2504.01840",
+      "url": "https://ar5iv.labs.arxiv.org/html/2504.01840",
+      "empirical": true,
+      "conflict": false,
+      "capability": "study",
+      "market": null,
+      "order": null,
+      "what": "Peer-reviewed study: legal retrieval-augmented-generation gains depend on the corpus and backbone, not monotonic scaling \u2014 domain-specific corpora outperform. Refines the capability claim behind retrieval-based legal tooling.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Competence becomes an affirmative governance duty. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-05-22",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude Code GA (1.0.0)",
+      "source": "Anthropic (GitHub)",
+      "url": "https://github.com/anthropics/claude-code",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude Code reached general availability \u2014 a production agentic coding tool. Proof of the agentic substrate that legal agentic tooling extends.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Agentic autonomy reopens supervision & UPL. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2025-05-23",
+      "tier": "T4",
+      "tier_label": "Professional commentary",
+      "tier_weight": 0.35,
+      "title": "OpenAI Operator upgraded to o3, global research preview",
+      "source": "VentureBeat",
+      "url": "https://venturebeat.com/ai/openai-updates-operator-to-o3-making-its-200-monthly-chatgpt-subscription-more-enticing",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "OpenAI upgraded Operator to the o3 model and opened a global research preview of browser-driving agents. Agentic substrate widening across the two frontier labs.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Professional commentary authority (weight 0.35). It evidences the Agentic autonomy reopens supervision & UPL. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2025-06-23",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
+      "source": "Fortune / verified",
+      "url": "",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Harvey raised a $300M Series E at a $5B valuation. Escalating valuation on the same revenue base concentrates more build capacity in agentic and research tooling.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-06-30",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Clio signs definitive agreement to acquire vLex ($1B)",
+      "source": "Clio",
+      "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Clio signed a definitive agreement to acquire research provider vLex for $1B, pairing practice management with legal research. Tool-surface consolidation toward one operating model.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Regulatory convergence forces one operating model, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-07-29",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Vals legal_bench: GPT-5 84.6%, #1 of 63 models",
+      "source": "vals.ai",
+      "url": "https://vals.ai/benchmarks/legal_bench-07-29-2025",
+      "empirical": true,
+      "conflict": false,
+      "capability": "benchmark",
+      "market": null,
+      "order": null,
+      "what": "Vals' legal_bench snapshot ranked GPT-5 at 84.6% atop 63 models on legal reasoning. A vendor benchmark \u2014 a measured-but-vendor-sourced error signal, not an independent certification.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the A tool-certification / benchmark standard emerges. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-08-08",
+      "tier": "T4",
+      "tier_label": "Professional commentary",
+      "tier_weight": 0.35,
+      "title": "Ebers 'LawGPT': UPL-by-LLM a live comparative question",
+      "source": "Cambridge Handbook of Generative AI and the Law",
+      "url": "https://www.cambridge.org/core/books/abs/cambridge-handbook-of-generative-ai-and-the-law/lawgpt/E68060BDAC6BABA881BE2B180C9E88C9#1",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Scholarly chapter frames unauthorized-practice-by-LLM as a live comparative question, constraining what non-lawyer vendors may ship without bar authorization.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Professional commentary authority (weight 0.35). It evidences the Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-08-12",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude 1M-token context public beta (Sonnet 4)",
+      "source": "Anthropic",
+      "url": "https://claude.com/blog/1m-context",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude opened a 1M-token context public beta \u2014 whole-case-record scale. Stretches what a single competent review pass can hold.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Competence becomes an affirmative governance duty. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2025-10-15",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "JURIX 2025: frontier LLMs era-biased and citation-hallucinating (GPT-5 35.29% pre-1881)",
+      "source": "arXiv 2510.20941",
+      "url": "https://ar5iv.labs.arxiv.org/html/2510.20941",
+      "empirical": true,
+      "conflict": false,
+      "capability": "study",
+      "market": null,
+      "order": null,
+      "what": "Peer-reviewed JURIX study: frontier LLMs are era-biased and citation-hallucinating, scoring 35.29% (GPT-5) on pre-1881 authority and 73.31% best on overruling-identification. Quantifies the verification duty as a measured capability fact.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the 'A human reviewed it' stops being enough. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-10-29",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
+      "source": "Bloomberg/Forbes",
+      "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Harvey raised ~$160M at an $8B valuation, the decacorn-scale round for a legal-AI pure-play. The capital now on hand funds a full agentic product line, not just research.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-10-30",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Legora Series C $150M at $1.8B",
+      "source": "BusinessWire/Sifted",
+      "url": "",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Legora raised a $150M Series C at a $1.8B valuation for agentic legal workflow. A second agentic-workflow pure-play enters the capital escalation.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-11-10",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
+      "source": "ABA Journal",
+      "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Clio closed the $1B vLex acquisition and announced a $500M Series G at a $5B valuation, cementing practice-management-plus-research as one converged platform.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Regulatory convergence forces one operating model, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-03-10",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Legora Series D $550M at $5.55B, Accel-led",
+      "source": "CNBC/Crunchbase",
+      "url": "",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Legora raised a $550M Series D at a $5.55B valuation, tripling its prior round in months. Agentic-workflow capital compounding.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-03-13",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude 1M context GA (Opus 4.6/Sonnet 4.6)",
+      "source": "Anthropic",
+      "url": "https://claude.com/blog/1m-context-ga",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude 1M-token context reached GA (media limit 100 to 600 pages). Whole-record review becomes a standard capability, not a beta.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Competence becomes an affirmative governance duty. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2026-03-25",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
+      "source": "Bloomberg/CNBC/GIC",
+      "url": "",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Harvey raised ~$200M at an $11B valuation on ~$190M ARR. Legal-AI pure-play reaches eleven-figure scale; build capacity continues to concentrate.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-04-15",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Legora ~$50M extension (Nvidia NVentures+Atlassian) + 5 acquisitions",
+      "source": "tech.eu/Bloomberg",
+      "url": "",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Legora added ~$50M (Nvidia NVentures + Atlassian) and made five acquisitions (Walter AI, Graceview, Cadastral, Wexler), consolidating an M&A-led workflow suite.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-05-07",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
+      "source": "EU (licentium.io)",
+      "url": "https://www.licentium.io/post/eu-lawmakers-agree-to-delay-ai-act-high-risk-obligations-2026-05-08",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "The EU Digital Omnibus deferred Annex III high-risk obligations to 2026-12-02 and Annex I to 2028-08-02, widening the runway for legal-AI vendors before conformity-assessment duties bind.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        },
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Liability shifts partway to vendors, Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-05-15",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Etymolt trademark-clearance hallucination benchmark",
+      "source": "Etymolt (GitHub)",
+      "url": "https://github.com/etymolt/llm-hallucination-benchmark/blob/main/ABSTRACT.md",
+      "empirical": true,
+      "conflict": false,
+      "capability": "benchmark",
+      "market": null,
+      "order": null,
+      "what": "Etymolt published a trademark-clearance hallucination benchmark (five metrics vs USPTO TSDR). A vendor-authored measured error signal \u2014 useful, but self-described.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the 'A human reviewed it' stops being enough. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-05-19",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "EU Commission draft: agentic/coordinating systems = single high-risk system (anti-splitting)",
+      "source": "arthurcox.com",
+      "url": "https://www.arthurcox.com/knowledge/eu-ai-act-commission-draft-guidelines-high-risk-ai-systems/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Commission draft guidance would treat agentic/coordinating systems as a single high-risk system, closing the anti-splitting loophole. Tightens what vendors may ship as agentic legal systems.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        },
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Agentic autonomy reopens supervision & UPL, Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-08-19",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Claude computer-use + browser-use GA (toolsets 20260801)",
+      "source": "Anthropic",
+      "url": "https://platform.claude.com/docs/en/release-notes/overview",
+      "empirical": false,
+      "conflict": false,
+      "capability": "model_access",
+      "market": null,
+      "order": null,
+      "what": "Claude computer-use and browser-use reached GA. Agentic substrate is now generally available for legal vendors to build multi-step autonomous tooling on.",
+      "role": [
+        "L1 capability"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the Agentic autonomy reopens supervision & UPL. It is an L1 capability signal \u2014 a demonstration that AI can now do the thing."
+    },
+    {
+      "date": "2023-06-26",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Thomson Reuters agrees to acquire Casetext $650M cash (closed 2023-08-17)",
+      "source": "Thomson Reuters",
+      "url": "https://www.thomsonreuters.com/en/press-releases/2023/june/thomson-reuters-corporation-signs-definitive-agreement-to-acquire-casetext",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Thomson Reuters agreed to acquire Casetext for $650M cash, folding CoCounsel into its research stack. A deep-pocketed incumbent absorbing a legal-AI research tool consolidates benchmark-and-verification tooling as the default build surface.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges, 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-01-03",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Robin AI $26M Series B, Temasek-led (CLM/workflow)",
+      "source": "Robin AI",
+      "url": "https://robinai.com/news-and-resources/news/robin-ai-raises-26-million-series-b",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Robin AI raised a $26M Series B led by Temasek for contract-review/CLM tooling. Contract-lifecycle build capital; self-reported single-source round.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-04-02",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Luminance $40M Series B, March Capital-led (CLM)",
+      "source": "Reuters/CNBC",
+      "url": "",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Luminance raised a $40M Series B led by March Capital for contract-analysis/CLM tooling. Contract-review build capital.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-07-17",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Leya $25M Series A, Redpoint-led (agentic research)",
+      "source": "siliconangle.com",
+      "url": "https://siliconangle.com/2024/07/17/legal-ai-startup-leya-ab-raises-25m-help-lawyers-boost-productivity/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Leya raised a $25M Series A led by Redpoint for an agentic legal-research assistant. Research-plus-agentic build capital.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        },
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL, A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2024-09-26",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Relativity aiR for Review GA (genAI e-discovery)",
+      "source": "EDRM",
+      "url": "https://edrm.net/2024/09/26/relativity-announces-general-availability-of-relativity-air-for-review/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Relativity shipped aiR for Review at GA, bringing genAI to e-discovery review. Vendor build proof in the verification/evidence space; no funding round attached.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-10-08",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "EvenUp $135M Series D, Bain Capital Ventures, $1B+ unicorn (PI claims)",
+      "source": "Crunchbase News",
+      "url": "https://news.crunchbase.com/venture/ai-legal-tech-evenup-unicorn-bain/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "EvenUp raised a $135M Series D led by Bain Capital Ventures at a $1B+ valuation for personal-injury claims workflow. Agentic claims-processing build capital.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Agentic autonomy reopens supervision & UPL. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-01-29",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
+      "source": "legaltechnology.com",
+      "url": "https://legaltechnology.com/genai-legal-assistant-paxton-raises-22m-series-a/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Paxton AI raised a $22M Series A led by Unusual Ventures for research and drafting. Benchmark-and-verification build capital.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        },
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges, 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-02-18",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Luminance $75M Series C, Point72-led, valuation undisclosed (CLM)",
+      "source": "TechCrunch",
+      "url": "https://techcrunch.com/2025/02/18/legal-ai-startup-luminance-backed-by-the-late-mike-lynch-raises-75m/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Luminance raised a $75M Series C led by Point72 Private Investments; valuation not disclosed. Contract-analysis/CLM build capital at scale.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2025-10-09",
+      "tier": "T5",
+      "tier_label": "Vendor / marketing / opinion",
+      "tier_weight": 0.008,
+      "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
+      "source": "Spellbook",
+      "url": "https://www.spellbook.legal/blog/series-b",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Spellbook raised a $50M Series B led by Khosla at a $350M post-money for contract review plus agentic drafting. Self-reported single-source round.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        },
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Vendor / marketing / opinion authority (weight 0.01). It evidences the A tool-certification / benchmark standard emerges, Agentic autonomy reopens supervision & UPL. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-03-04",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Spellbook $40M RBCx debt facility to fund acquisitions (acquirer, not acquired)",
+      "source": "The Globe and Mail",
+      "url": "https://www.theglobeandmail.com/business/article-spellbook-secures-us40-million-from-rbc-to-snap-up-smaller-generative/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Spellbook secured a $40M RBCx debt facility to acquire smaller generative-legal vendors (up to $60M/five deals). M&A-led consolidation in contract-review tooling.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting. Note: it carries hard data (weight \u00d71.25)."
     }
   ]
 }
