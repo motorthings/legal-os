@@ -47,6 +47,7 @@ const ALL_FUNCTIONS: NavItem[] = [
   { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
   { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
   { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
+  { href: '/radar/reference', label: 'Master reference', icon: BookOpen },
 ];
 
 const NAV: Record<Persona, NavGroup[]> = {
@@ -92,6 +93,7 @@ const NAV: Record<Persona, NavGroup[]> = {
         { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
         { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
         { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
+        { href: '/radar/reference', label: 'Master reference', icon: BookOpen },
       ],
     },
   ],

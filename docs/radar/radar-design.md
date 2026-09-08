@@ -119,19 +119,19 @@ capability driver. §6 records that as a gap; Layer A should move to per-line ca
 **The eleven fault lines** (each also carries `pressure_seed`, `horizon`, `layer`, a
 `control`, and the Model Rules it maps to):
 
-| id | control | seed | horizon |
-|---|---|---|---|
-| insurance | Governance as an insurable artifact | 8.5 | near (0-12mo) |
-| disclosure | Verification-by-default with an audit trail | 8.0 | near (0-12mo) |
-| verification | Documented verification + trace logs | 7.5 | near-mid |
-| confidentiality | Data-flow mapping + vendor attestation | 7.0 | near (0-12mo) |
-| convergence | One operating model, to the strictest standard | 7.5 | near (0-12mo) |
-| agentic | Human-decides gates + scope-limiting | 6.5 | mid (1-3yr) |
-| benchmark | Tool-certification benchmark (NERVE) | 6.0 | mid (1-3yr) |
-| competence | Firm-wide training + governance program | 6.0 | mid (1-3yr) |
-| judicial_analytics | Guardrailed strategy sim (no actor prediction) | 5.0 | mid (1-3yr) |
-| fees | Value-delivered measurement | 4.5 | mid-far |
-| vendor_liability | Tool-provenance documentation | 3.5 | far (3yr+) |
+| id                 | control                                        | seed | horizon       |
+| ------------------ | ---------------------------------------------- | ---- | ------------- |
+| insurance          | Governance as an insurable artifact            | 8.5  | near (0-12mo) |
+| disclosure         | Verification-by-default with an audit trail    | 8.0  | near (0-12mo) |
+| verification       | Documented verification + trace logs           | 7.5  | near-mid      |
+| confidentiality    | Data-flow mapping + vendor attestation         | 7.0  | near (0-12mo) |
+| convergence        | One operating model, to the strictest standard | 7.5  | near (0-12mo) |
+| agentic            | Human-decides gates + scope-limiting           | 6.5  | mid (1-3yr)   |
+| benchmark          | Tool-certification benchmark (NERVE)           | 6.0  | mid (1-3yr)   |
+| competence         | Firm-wide training + governance program        | 6.0  | mid (1-3yr)   |
+| judicial_analytics | Guardrailed strategy sim (no actor prediction) | 5.0  | mid (1-3yr)   |
+| fees               | Value-delivered measurement                    | 4.5  | mid-far       |
+| vendor_liability   | Tool-provenance documentation                  | 3.5  | far (3yr+)    |
 
 ## 4. Layer A — forecast core, as built (v1)
 
@@ -144,13 +144,13 @@ honest under the two-layer scope.
 Every item in `radar/sources/feed.jsonl` is tagged with a tier. Weight by sway so the forecast
 cannot be captured by whoever publishes most (usually vendors).
 
-| Tier | label | weight |
-|---|---|---|
-| T1 | Binding / primary | 1.00 |
-| T2 | Regulatory guidance | 0.80 |
-| T3 | Empirical / institutional | 0.60 |
-| T4 | Professional commentary | 0.35 |
-| T5 | Vendor / marketing / opinion | 0.008 |
+| Tier | label                        | weight |
+| ---- | ---------------------------- | ------ |
+| T1   | Binding / primary            | 1.00   |
+| T2   | Regulatory guidance          | 0.80   |
+| T3   | Empirical / institutional    | 0.60   |
+| T4   | Professional commentary      | 0.35   |
+| T5   | Vendor / marketing / opinion | 0.008  |
 
 A T5 vendor blog carries ~1/100 of an ABA opinion and ~1/125 of a binding ruling. Volume
 alone never moves a reading.
@@ -210,17 +210,17 @@ history says that is where the largest and most monetizable effects actually wer
 
 Every defining rule-level effect of the period is captured and seeded:
 
-| Effect (recent history) | Fault line |
-|---|---|
-| Hallucination sanctions → disclosure/verification wave | disclosure, verification |
-| ABA Op. 512 + state ethics wave | competence, confidentiality |
-| EU AI Act + US state patchwork | convergence |
-| Malpractice insurers gating AI | insurance |
-| Benchmarks / error-rate studies | benchmark |
-| Agentic + UPL + the AI AGENT Act | agentic |
-| Billing pressure (value-based fees) | fees |
-| Vendor/product liability (EU Product Liability Directive) | vendor_liability |
-| Judicial profiling (France Art. 33) | judicial_analytics |
+| Effect (recent history)                                   | Fault line                  |
+| --------------------------------------------------------- | --------------------------- |
+| Hallucination sanctions → disclosure/verification wave    | disclosure, verification    |
+| ABA Op. 512 + state ethics wave                           | competence, confidentiality |
+| EU AI Act + US state patchwork                            | convergence                 |
+| Malpractice insurers gating AI                            | insurance                   |
+| Benchmarks / error-rate studies                           | benchmark                   |
+| Agentic + UPL + the AI AGENT Act                          | agentic                     |
+| Billing pressure (value-based fees)                       | fees                        |
+| Vendor/product liability (EU Product Liability Directive) | vendor_liability            |
+| Judicial profiling (France Art. 33)                       | judicial_analytics          |
 
 ### 5.2 Off target — the enablement axis, with real content
 
