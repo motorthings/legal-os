@@ -304,6 +304,28 @@ EARNED and kept strictly separate (backlog 8b).
   learning state it used. Tested (`tests/test_reliability.py`, 4/4: dormant-today,
   in-sample-gated, earns-and-caps, effective-cap-below-primary).
 
+## 5.6 Network fetchers — allowlist-bound, offline by default (2026-09-14)
+
+The harvesting half of Phase 2 (`fetchers.py`), wired to `ingest.admit()` so every fetch
+flows through the Layer-0 dedup memory.
+
+- **Allowlist is the boundary, not a filter.** A URL whose domain is not in
+  `SOURCE_ALLOWLIST` is refused *before any request*; tier is assigned at admission from
+  the allowlist, never from the source's own claim. No open-web crawl.
+- **Offline by default.** `harvest()` makes no network calls unless `live=True` or
+  `RADAR_LIVE_FETCH=1`, so CI, tests, and default runs are deterministic and silent. Per-
+  source failures are skipped, never fatal.
+- **Harvested docs get their own store.** Fetched rows go to `sources/harvested.jsonl`
+  (marked `harvested: true`), NEVER the hand-curated `feed.jsonl` — a human vouched for
+  every curated row, and mixing machine-pulled items into it would silently move the
+  calibration baseline. `score.load_corpus()` merges the two for scoring; an absent/empty
+  harvested file means curated-only, so scoring is unchanged until harvesting admits
+  something.
+- **Stdlib only** (urllib + xml.etree) — RSS 2.0, Atom, and the CourtListener JSON API,
+  no new dependency. Tested offline against recorded fixtures
+  (`tests/test_fetchers.py`, 8/8), including the allowlist refusal and the
+  fixture→candidate→admit path.
+
 ## 6. Logic gaps in v1 (recorded so each fix is traceable)
 
 - **G1 — The confluence readout (queue) drops the capability axis.** Queue is

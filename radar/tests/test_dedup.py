@@ -64,11 +64,11 @@ def test_kb_skip_and_idempotency(tmp_path):
     cand = {"date": "2024-01-01", "title": "Mata v. Avianca (reprint)",
             "url": "https://www.courtlistener.com/mata?utm_source=x",
             "text": "Rule 11 sanctions.", "tier": "T1"}
-    r1 = ingest.admit([cand], feed_path=feed)
+    r1 = ingest.admit([cand], feed_path=feed, seen_feed=kb)
     assert r1["admitted"] == 0 and r1["skipped_in_kb"] == 1
     assert _count_feed(feed) == 1  # unchanged
     # run again — still idempotent
-    r2 = ingest.admit([cand], feed_path=feed)
+    r2 = ingest.admit([cand], feed_path=feed, seen_feed=kb)
     assert r2["skipped_decided"] + r2["skipped_in_kb"] == 1
     assert _count_feed(feed) == 1
 

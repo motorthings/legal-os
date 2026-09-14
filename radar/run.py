@@ -43,8 +43,12 @@ def one_pass(do_ingest=False):
         out_of_sample_rulings=rel["out_of_sample_resolutions"])
     if do_ingest:
         try:
-            admitted = ingest.harvest_and_admit()
-            log("ingest", admitted=admitted)
+            s = ingest.harvest_and_admit()
+            log("ingest", live=s["live"], candidates=s["n_candidates"],
+                admitted=s["admitted"], deduped=s["skipped_in_kb"],
+                quarantined=s["quarantined"], sources=s["sources_allowlisted"])
+            if not s["live"]:
+                log("ingest_offline", reason="RADAR_LIVE_FETCH not set; no network calls")
         except Exception as e:  # network fetchers optional; never block the page build
             log("ingest_skipped", reason=str(e))
     from build import build

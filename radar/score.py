@@ -51,6 +51,10 @@ ENABLE_DIVISOR = 2.0   # market enablement (E), same conservative saturating sha
 SOFTWARE_DIVISOR = 2.5 # software capability (S), momentum-shaped; slightly slower than adoption
 
 FEED_PATH = Path(__file__).parent / "sources" / "feed.jsonl"
+# Machine-fetched docs live in a SEPARATE store. The hand-curated feed stays hand-curated
+# (a human vouched for each row); harvested rows are appended by the admission gate with
+# provenance. load_corpus() merges the two for scoring; load_feed() still reads one file.
+HARVESTED_PATH = Path(__file__).parent / "sources" / "harvested.jsonl"
 TIER_RANK = {"T1": 5, "T2": 4, "T3": 3, "T4": 2, "T5": 1}
 
 
@@ -65,6 +69,21 @@ def load_feed(path=FEED_PATH):
         if not line:
             continue
         items.append(json.loads(line))
+    return items
+
+
+def load_corpus(curated=FEED_PATH, harvested=HARVESTED_PATH):
+    """The full evidence corpus the scorer reads: hand-curated feed + machine-harvested
+    docs. Curated rows keep their provenance; harvested rows carry a `harvested: true`
+    flag so the page and ledger can distinguish them. Empty harvested file = curated
+    only, so scoring is unchanged until harvesting actually admits something."""
+    items = load_feed(curated)
+    for item in items:
+        item.setdefault("harvested", False)
+    if Path(harvested).exists():
+        for item in load_feed(harvested):
+            item["harvested"] = True
+            items.append(item)
     return items
 
 
@@ -215,7 +234,7 @@ def score(feed=None, as_of=None, seeds="default"):
     every seed with NEUTRAL_SEED — used by the seed-ablation backtest to isolate how much
     of a reading is driven by evidence versus the analyst's baseline."""
     if feed is None:
-        feed = load_feed()
+        feed = load_corpus()
     if as_of is None:
         as_of = date.today()
     elif isinstance(as_of, str):

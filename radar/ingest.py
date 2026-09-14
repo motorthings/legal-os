@@ -53,7 +53,7 @@ from pathlib import Path
 import dedup
 import ledger
 from fault_lines import FAULT_LINES
-from score import _attributes_to, load_feed, FEED_PATH
+from score import _attributes_to, load_feed, load_corpus, FEED_PATH, HARVESTED_PATH
 
 # Admission thresholds (tune against a labeled sample before trusting).
 REL_MIN = 0.62       # min cosine to a fault-line centroid to count as relevant (Layer 2)
@@ -103,6 +103,7 @@ def _feed_row(candidate, tier, fault_line_ids):
     row = {k: candidate.get(k) for k in _FEED_KEYS if k in candidate}
     row["tier"] = tier
     row["fault_lines"] = fault_line_ids
+    row["harvested"] = True   # provenance: machine-fetched, not hand-curated
     row["empirical"] = bool(candidate.get("empirical"))
     conflict = bool(candidate.get("conflict")) or \
         dedup.domain_of(candidate.get("url", "")) in VENDOR_DOMAINS
@@ -120,9 +121,11 @@ def _append_feed(row, feed_path):
         f.write(json.dumps(row) + "\n")
 
 
-def admit(candidates, feed_path=FEED_PATH, run=None, dry_run=False):
+def admit(candidates, feed_path=HARVESTED_PATH, run=None, dry_run=False, seen_feed=None):
     """Idempotent admission gate. Returns a summary dict; appends admitted rows to the
-    feed (unless dry_run) and records every decision to the admission ledger.
+    HARVESTED store (unless dry_run) and records every decision to the admission ledger.
+    The seen-index is built from the FULL corpus (curated + harvested) so a fetched doc
+    that duplicates a curated one is caught too.
 
     Order of checks — cheapest and most memory-driven first:
       1. seen in KB      — canonical URL / content hash / citation echo already held
@@ -132,8 +135,10 @@ def admit(candidates, feed_path=FEED_PATH, run=None, dry_run=False):
       5. admit           — append to feed, add to the live SeenIndex, log
     """
     run = run or ledger.run_id()
-    kb = load_feed(feed_path) if Path(feed_path).exists() else []
-    seen = ledger.SeenIndex(feed=kb)     # what the KB already holds, this run
+    # Seen-index over the whole corpus (curated + harvested), not just the target file —
+    # a fetched doc duplicating a curated one must be caught as well. `seen_feed` lets
+    # callers/tests inject the corpus explicitly.
+    seen = ledger.SeenIndex(feed=seen_feed if seen_feed is not None else load_corpus())
     decided = ledger.decided_keys()      # what any prior run already judged
     summary = {"run": run, "n_candidates": len(candidates), "admitted": 0,
                "skipped_in_kb": 0, "skipped_decided": 0, "quarantined": 0,
@@ -187,7 +192,7 @@ def reconcile_kb(feed_path=FEED_PATH):
     and logged, and the seen-memory is guaranteed current before any admission runs.
     Read-only: it reports duplicates, it does not rewrite the curated feed.
     """
-    feed = load_feed(feed_path) if Path(feed_path).exists() else []
+    feed = load_corpus(curated=feed_path if feed_path else FEED_PATH)
     index = ledger.SeenIndex(feed=[])
     duplicates = []   # true content duplicates — a real integrity problem
     shared = []       # same URL / citation but distinct content — informational
@@ -204,21 +209,19 @@ def reconcile_kb(feed_path=FEED_PATH):
             "n_shared_source": len(shared), "shared_source": shared}
 
 
-def _harvest():
-    """Fetch candidate docs from the allowlisted sources. Network layer — not wired.
-
-    Raises so run.py logs 'ingest_skipped' and still builds the page from the curated
-    feed. When implemented, return a list of candidate dicts (feed-schema-ish: at least
-    date, title, url, text; tier optional — the allowlist assigns it) and hand them to
-    admit(), which already provides the full run-to-run dedup memory.
-    """
-    raise NotImplementedError(
-        "Harvest fetchers not wired yet. admit(candidates) is live and tested; "
-        "implement _harvest() against SOURCE_ALLOWLIST to feed it."
-    )
+def _harvest(live=None):
+    """Fetch candidate docs from the allowlisted sources (see fetchers.py). Offline by
+    default — returns [] and makes no network calls unless live is set (or
+    RADAR_LIVE_FETCH=1)."""
+    import fetchers
+    return fetchers.harvest(live=live)
 
 
-def harvest_and_admit(feed_path=FEED_PATH):
-    """harvest -> admit. Returns count admitted (int, for run.py's log line)."""
-    summary = admit(_harvest(), feed_path=feed_path)
-    return summary["admitted"]
+def harvest_and_admit(feed_path=HARVESTED_PATH, live=None):
+    """harvest -> admit. Returns the admit() summary dict (with `live` folded in)."""
+    import fetchers
+    is_live = live if live is not None else (os.environ.get("RADAR_LIVE_FETCH") == "1")
+    summary = admit(_harvest(live=live), feed_path=feed_path)
+    summary["live"] = bool(is_live)
+    summary["sources_allowlisted"] = len(fetchers.SOURCES)
+    return summary

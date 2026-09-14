@@ -19,6 +19,9 @@ and weight), evidence over eloquence.
 python radar/run.py            # one pass: score curated feed -> regenerate page
 python radar/run.py --watch 30 # local background: repeat every 30 min
 python radar/run.py --ingest   # also run harvester + admission gate (phase 2)
+
+# Live harvesting is OFF unless explicitly enabled (no surprise outbound calls):
+RADAR_LIVE_FETCH=1 python radar/run.py --ingest   # fetch allowlisted sources for real
 ```
 
 **Advisory seam** (`advisory.py` — returns TWO verdicts per fault line: GOVERN = stand up the
@@ -103,7 +106,11 @@ live in separate lanes so speculation never masquerades as legal fact (see backl
          document the KB holds, never re-judges a quarantined one, and collapses
          echoes to the primary. Idempotent, deterministic, no deps, tested
          (`tests/test_dedup.py`, 7/7). The tier + signal-relevance gate is live.
-   - [ ] Network fetchers (`_harvest()`) against `SOURCE_ALLOWLIST` — feed `admit()`.
+   - [x] **Network fetchers** (`fetchers.py`, 2026-09-14) — allowlist-bound RSS/Atom +
+         CourtListener parsers (stdlib only), wired to `admit()`. **Offline by default**
+         (no network unless `RADAR_LIVE_FETCH=1`); the allowlist is a hard boundary
+         (non-allowlisted domains refused before any request); fetched rows land in
+         `sources/harvested.jsonl` (marked `harvested: true`), never the curated feed.
    - [ ] Layer 2 — Voyage/pgvector semantic dedup (`REL_MIN`/`DEDUP_MAX`).
 3. **Capability-trajectory lane** — ingest AI-capability forecasts as a **separate,
    clearly-labeled, low-weight signal** that shifts a fault line's horizon/likelihood,

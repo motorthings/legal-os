@@ -30,9 +30,9 @@ jobs:
           # Durable run-to-run memory: persist harvested feed rows, the admission
           # ledger, calibration snapshots, and run artifacts so each scheduled run
           # builds on the last (dedup memory survives across CI runs).
-          git add radar/sources/feed.jsonl radar/history/admissions.jsonl \
-                  radar/history/snapshots.jsonl radar/history/runs \
-                  radar/history/source_reliability.json || true
+          git add radar/sources/feed.jsonl radar/sources/harvested.jsonl \
+                  radar/history/admissions.jsonl radar/history/snapshots.jsonl \
+                  radar/history/runs radar/history/source_reliability.json || true
           if git diff --cached --quiet; then
             echo "No change in radar output."
           else
