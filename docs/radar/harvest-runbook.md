@@ -15,6 +15,25 @@ is appended to `radar/history/admissions.jsonl`. The scorer then reads
 `lawnext.com`, `artificiallawyer.com`). A non-allowlisted domain is refused before any
 request. A source that 4xx/5xx's or times out is skipped — never fatal.
 
+## API keys — none required
+
+- **LawSites / Artificial Lawyer** — public RSS, no key ever.
+- **CourtListener** — the API is *"open by default"*; the search endpoint answers
+  anonymously, so the run works with **no key at all**. Its rate limits are tight though
+  (125/day authenticated, less anonymous), so an optional token is supported:
+
+  ```bash
+  export COURTLISTENER_TOKEN=<your-token>   # optional; raises the rate ceiling
+  ```
+
+  The fetcher sends `Authorization: Token <key>` (CourtListener requires the literal word
+  `Token`). Without the env var the request is anonymous, exactly as before.
+- **Voyage** (`VOYAGE_API_KEY`) is only for Layer-2 semantic dedup, which is not wired
+  into the harvest path — not needed for a live run.
+
+If CourtListener silently vanishes from a preview, that is the likely cause: check whether
+`sources_allowlisted=3` but only the two RSS sources produced candidates.
+
 ## Step 0 — preflight (static, no network)
 
 ```bash

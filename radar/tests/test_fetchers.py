@@ -127,6 +127,18 @@ def test_fixture_candidate_flows_through_admit(tmp_path):
     assert rows[0]["tier"] == "T4"               # tier from the allowlist
 
 
+def test_auth_header_only_when_token_set(monkeypatch=None):
+    """Anonymous by default; the token is sent only when its env var is set."""
+    import os
+    os.environ.pop("COURTLISTENER_TOKEN", None)
+    assert fetchers._auth_headers("https://www.courtlistener.com/api/rest/v4/search/") == {}
+    assert fetchers._auth_headers("https://www.lawnext.com/feed/") == {}   # no token mapping
+    os.environ["COURTLISTENER_TOKEN"] = "abc123"
+    h = fetchers._auth_headers("https://www.courtlistener.com/api/rest/v4/search/")
+    assert h == {"Authorization": "Token abc123"}, h   # 'Token' word is required
+    os.environ.pop("COURTLISTENER_TOKEN", None)
+
+
 def test_dry_run_writes_nothing(tmp_path):
     """The property the first live run depends on: a dry run must not append to the
     store OR the ledger. If it wrote ledger rows, the real run would skip those docs as

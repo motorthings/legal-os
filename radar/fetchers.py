@@ -145,11 +145,29 @@ def to_candidate(entry, source=None):
 
 # --- network (opt-in) -------------------------------------------------------
 
+# Optional API tokens, per domain. Public RSS needs none; CourtListener's API is "open by
+# default" but rate-limited hard (125/day authenticated, less anonymous), so a token raises
+# the ceiling. Absent the env var the request is anonymous, exactly as before — no token is
+# required to run, and nothing breaks when one isn't set.
+DOMAIN_TOKEN_ENV = {
+    "courtlistener.com": "COURTLISTENER_TOKEN",
+}
+
+
+def _auth_headers(url):
+    """Auth header for a domain, when its token env var is set. CourtListener requires the
+    literal word 'Token' before the key — a documented common error to omit it."""
+    env = DOMAIN_TOKEN_ENV.get(dedup.domain_of(url))
+    token = os.environ.get(env) if env else None
+    return {"Authorization": f"Token {token}"} if token else {}
+
+
 def _fetch(url):
     """GET a URL with a UA and timeout. Only ever called for allowlisted domains."""
     if not _domain_allowed(url):
         raise PermissionError(f"domain not allowlisted: {dedup.domain_of(url)}")
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    headers = {"User-Agent": USER_AGENT, **_auth_headers(url)}
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
         return resp.read()
 
