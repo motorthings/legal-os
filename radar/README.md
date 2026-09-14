@@ -21,7 +21,9 @@ python radar/run.py --watch 30 # local background: repeat every 30 min
 python radar/run.py --ingest   # also run harvester + admission gate (phase 2)
 
 # Live harvesting is OFF unless explicitly enabled (no surprise outbound calls):
+python radar/harvest_preview.py                   # preflight + preview a live run (writes nothing)
 RADAR_LIVE_FETCH=1 python radar/run.py --ingest   # fetch allowlisted sources for real
+# Full procedure + rollback: docs/radar/harvest-runbook.md
 ```
 
 **Advisory seam** (`advisory.py` — returns TWO verdicts per fault line: GOVERN = stand up the

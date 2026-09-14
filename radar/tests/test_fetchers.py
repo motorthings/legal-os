@@ -127,6 +127,41 @@ def test_fixture_candidate_flows_through_admit(tmp_path):
     assert rows[0]["tier"] == "T4"               # tier from the allowlist
 
 
+def test_dry_run_writes_nothing(tmp_path):
+    """The property the first live run depends on: a dry run must not append to the
+    store OR the ledger. If it wrote ledger rows, the real run would skip those docs as
+    'already decided' — a preview would silently break the run it validates."""
+    harvested = tmp_path / "harvested.jsonl"
+    ledger.ADMISSIONS_FILE = tmp_path / "admissions.jsonl"
+    ledger.HISTORY = tmp_path
+    cand = {"date": "2026-09-01", "title": "Court sanctions over fabricated cites",
+            "url": "https://www.lawnext.com/x.html", "text": "disclosure required.",
+            "fault_lines": ["disclosure"]}
+    r = ingest.admit([cand], feed_path=harvested, seen_feed=[], dry_run=True)
+    assert r["admitted"] == 1 and r["dry_run"] is True
+    assert r["decisions"][0]["decision"] == "admit"
+    assert not harvested.exists(), "dry run appended to the store"
+    assert not ledger.ADMISSIONS_FILE.exists(), "dry run wrote ledger rows"
+
+
+def test_dry_run_preview_matches_real_run(tmp_path):
+    """A preview must predict the real run exactly (same decisions), then the real run
+    must produce them — and the second preview after that must show 'already decided'."""
+    harvested = tmp_path / "harvested.jsonl"
+    ledger.ADMISSIONS_FILE = tmp_path / "admissions.jsonl"
+    ledger.HISTORY = tmp_path
+    cand = {"date": "2026-09-01", "title": "Court sanctions over fabricated cites",
+            "url": "https://www.lawnext.com/y.html", "text": "disclosure required.",
+            "fault_lines": ["disclosure"]}
+    prev = ingest.admit([cand], feed_path=harvested, seen_feed=[], dry_run=True)
+    real = ingest.admit([cand], feed_path=harvested, seen_feed=[])
+    assert prev["decisions"][0]["decision"] == real["decisions"][0]["decision"] == "admit"
+    assert real["admitted"] == 1
+    # now it is decided; a further run skips it (memory works, and the preview didn't lie)
+    again = ingest.admit([cand], feed_path=harvested, seen_feed=[])
+    assert again["skipped_decided"] == 1 and again["admitted"] == 0
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items())
              if k.startswith("test_") and callable(v)]

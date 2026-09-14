@@ -142,32 +142,44 @@ def admit(candidates, feed_path=HARVESTED_PATH, run=None, dry_run=False, seen_fe
     decided = ledger.decided_keys()      # what any prior run already judged
     summary = {"run": run, "n_candidates": len(candidates), "admitted": 0,
                "skipped_in_kb": 0, "skipped_decided": 0, "quarantined": 0,
-               "admitted_titles": []}
+               "dry_run": bool(dry_run),
+               "admitted_titles": [], "decisions": []}
+
+    def _decide(cand, decision, reason, scores=None):
+        """Record a decision on the real path, or collect it for preview on a dry run.
+        dry_run must have NO side effects — otherwise a preview would poison the ledger
+        and the real run would then skip these docs as 'already decided'."""
+        row = {"title": cand.get("title", ""), "url": cand.get("url", ""),
+               "decision": decision, "reason": reason, "scores": scores or {}}
+        summary["decisions"].append(row)
+        if not dry_run:
+            ledger.record_decision(cand, decision, reason, run=run, scores=scores)
+        return row
 
     for cand in candidates:
         # 2 first for candidates a prior run judged but that are NOT in the KB
         # (e.g. quarantined) — skip silently, no duplicate ledger row.
         if ledger.already_decided(cand, decided):
             summary["skipped_decided"] += 1
+            _decide(cand, "skip", "already_decided")
             continue
         # 1 — already in the KB
         reason = seen.seen(cand)
         if reason:
-            ledger.record_decision(cand, "dedup", reason, run=run)
+            _decide(cand, "dedup", reason)
             summary["skipped_in_kb"] += 1
             continue
         # 3 — tier gate
         tier = _assign_tier(cand)
         if not tier:
-            ledger.record_decision(cand, "quarantine", "unknown_source", run=run,
-                                   scores={"domain": dedup.domain_of(cand.get("url", ""))})
+            _decide(cand, "quarantine", "unknown_source",
+                    {"domain": dedup.domain_of(cand.get("url", ""))})
             summary["quarantined"] += 1
             continue
         # 4 — relevance
         fls = _relevant_fault_lines(cand)
         if not fls:
-            ledger.record_decision(cand, "quarantine", "no_fault_line_match",
-                                   run=run, scores={"tier": tier})
+            _decide(cand, "quarantine", "no_fault_line_match", {"tier": tier})
             summary["quarantined"] += 1
             continue
         # 5 — admit
@@ -175,8 +187,7 @@ def admit(candidates, feed_path=HARVESTED_PATH, run=None, dry_run=False, seen_fe
         if not dry_run:
             _append_feed(row, feed_path)
         seen.add(row)   # so a duplicate later in THIS batch is caught too
-        ledger.record_decision(row, "admit", "passed_gate", run=run,
-                              scores={"tier": tier, "fault_lines": fls})
+        _decide(row, "admit", "passed_gate", {"tier": tier, "fault_lines": fls})
         summary["admitted"] += 1
         summary["admitted_titles"].append(row.get("title", ""))
 
@@ -217,11 +228,12 @@ def _harvest(live=None):
     return fetchers.harvest(live=live)
 
 
-def harvest_and_admit(feed_path=HARVESTED_PATH, live=None):
-    """harvest -> admit. Returns the admit() summary dict (with `live` folded in)."""
+def harvest_and_admit(feed_path=HARVESTED_PATH, live=None, dry_run=False):
+    """harvest -> admit. Returns the admit() summary dict (with `live` folded in).
+    dry_run=True previews decisions and writes nothing (no feed append, no ledger row)."""
     import fetchers
     is_live = live if live is not None else (os.environ.get("RADAR_LIVE_FETCH") == "1")
-    summary = admit(_harvest(live=live), feed_path=feed_path)
+    summary = admit(_harvest(live=live), feed_path=feed_path, dry_run=dry_run)
     summary["live"] = bool(is_live)
     summary["sources_allowlisted"] = len(fetchers.SOURCES)
     return summary
