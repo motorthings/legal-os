@@ -51,11 +51,17 @@ def preflight():
 def preview(live=True, candidates=None):
     """Fetch (unless candidates given) then run the admission gate in dry-run. Writes
     nothing. Returns the dispatch summary with live/source counts folded in."""
+    sources = None
     if candidates is None:
-        candidates = fetchers.harvest(live=live)
+        report = fetchers.harvest_report(live=live)
+        sources = [{k: r[k] for k in ("name", "domain", "authenticated", "ok",
+                                      "n_entries", "n_candidates", "error")}
+                   for r in report]
+        candidates = [c for r in report for c in r["candidates"]]
     summary = ingest.admit(candidates, dry_run=True)
     summary["live"] = bool(live)
     summary["sources_allowlisted"] = len(fetchers.SOURCES)
+    summary["sources"] = sources
     return summary
 
 
@@ -81,6 +87,19 @@ def _render(summary, problems):
         print()
     print(f"live={summary['live']}  sources_allowlisted={summary['sources_allowlisted']}  "
           f"candidates={summary['n_candidates']}  (dry run — nothing written)")
+    if summary.get("sources"):
+        print("  sources:")
+        for s in summary["sources"]:
+            if not s["ok"]:
+                status = f"FAILED ({s['error']})"
+            elif s["n_candidates"] == 0:
+                status = f"{s['n_entries']} entries, 0 usable"
+            else:
+                status = f"{s['n_candidates']} candidates"
+            auth = "token" if s["authenticated"] else "anon"
+            print(f"    {'ok ' if s['ok'] else 'ERR'} [{auth:5}] {s['domain']:<24} {status}")
+
+
     print(f"  would admit:      {summary['admitted']}")
     print(f"  already in KB:    {summary['skipped_in_kb']}")
     print(f"  already decided:  {summary['skipped_decided']}")

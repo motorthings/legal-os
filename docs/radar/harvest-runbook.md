@@ -54,6 +54,9 @@ This is the actual network call, but the admission gate runs in **dry-run**: it 
 every candidate's decision and reason and touches nothing. Safe to run repeatedly.
 
 Read the output:
+- `sources` — **per-source status**, so you can see which feed actually responded and
+  why one didn't (`ERR ... FAILED (<reason>)`), and whether each request was `[anon]` or
+  `[token]`. This is how you tell whether CourtListener worked.
 - `would admit` — what the real run would add.
 - `reason tally` — the distribution of decisions. Expect a **high quarantine rate**;
   that is the anti-noise gate working, not a bug (see Limitations).

@@ -139,6 +139,21 @@ def test_auth_header_only_when_token_set(monkeypatch=None):
     os.environ.pop("COURTLISTENER_TOKEN", None)
 
 
+def test_harvest_report_offline_is_empty():
+    assert fetchers.harvest_report(live=False) == []
+
+
+def test_harvest_report_flags_unallowlisted_source():
+    """An unlisted domain is reported as a failed source, not silently dropped — so a
+    preview can say WHY a source produced nothing."""
+    bad = {"name": "Sketchy", "url": "https://nope.example/feed", "kind": "rss"}
+    rep = fetchers.harvest_report(live=True, sources=[bad])
+    assert len(rep) == 1
+    assert rep[0]["ok"] is False
+    assert rep[0]["error"] == "domain_not_allowlisted"
+    assert rep[0]["n_candidates"] == 0
+
+
 def test_dry_run_writes_nothing(tmp_path):
     """The property the first live run depends on: a dry run must not append to the
     store OR the ledger. If it wrote ledger rows, the real run would skip those docs as

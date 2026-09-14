@@ -172,29 +172,52 @@ def _fetch(url):
         return resp.read()
 
 
+def _fetch_source(src):
+    """Fetch + parse ONE source. Returns (entries, error_or_None). Never raises — a
+    per-source failure is isolated so one dead feed never blocks the pass."""
+    if not _domain_allowed(src["url"]):
+        return [], "domain_not_allowlisted"
+    try:
+        body = _fetch(src["url"])
+        entries = (parse_courtlistener(body) if src["kind"] == "courtlistener"
+                   else parse_rss(body))
+        return entries, None
+    except Exception as e:
+        return [], f"{type(e).__name__}: {e}"
+
+
+def harvest_report(live=None, sources=None):
+    """Per-source fetch outcomes, for diagnosing a run (which source responded, and
+    why one didn't). Returns [] when not live. Each row:
+    {name, domain, authenticated, ok, n_entries, n_candidates, error, candidates}.
+    `authenticated` distinguishes "anonymous and fine" from "token was actually used"."""
+    if live is None:
+        live = os.environ.get("RADAR_LIVE_FETCH") == "1"
+    if not live:
+        return []
+    report = []
+    for src in (sources or SOURCES):
+        entries, err = _fetch_source(src)
+        cands = [c for c in (to_candidate(e, src) for e in entries) if c]
+        report.append({
+            "name": src["name"], "domain": dedup.domain_of(src["url"]),
+            "authenticated": bool(_auth_headers(src["url"])),
+            "ok": err is None, "n_entries": len(entries), "n_candidates": len(cands),
+            "error": err, "candidates": cands,
+        })
+    return report
+
+
 def harvest(live=None, sources=None):
     """Return candidate dicts from the allowlisted sources.
 
     Off by default: with live unset (and RADAR_LIVE_FETCH not '1') this makes no network
     calls and returns []. Pass live=True to actually fetch. A per-source failure is
-    logged and skipped — one dead feed never blocks the pass.
+    skipped — one dead feed never blocks the pass. Use harvest_report() to see which
+    sources responded.
     """
     if live is None:
         live = os.environ.get("RADAR_LIVE_FETCH") == "1"
     if not live:
         return []
-    candidates = []
-    for src in (sources or SOURCES):
-        if not _domain_allowed(src["url"]):
-            continue
-        try:
-            body = _fetch(src["url"])
-            entries = (parse_courtlistener(body) if src["kind"] == "courtlistener"
-                       else parse_rss(body))
-        except Exception:
-            continue   # transient fetch/parse failure: skip this source, keep going
-        for entry in entries:
-            cand = to_candidate(entry, src)
-            if cand:
-                candidates.append(cand)
-    return candidates
+    return [c for r in harvest_report(live=True, sources=sources) for c in r["candidates"]]
