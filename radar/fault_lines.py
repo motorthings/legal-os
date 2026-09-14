@@ -58,8 +58,19 @@ KNOBS_FROZEN_AT = "2026-09-14"
 # Neutral seed used by the seed-ablation backtest: replaces every analyst seed with a
 # single midpoint so the ablation shows how much of a "call" is evidence vs seed choice.
 NEUTRAL_SEED = 5.0
-# NOTE: source-reliability (a source earning weight above its tier floor by a proven
-# track record) is a BACKLOG item, not v1. v1 weights are tier-flat.
+# --- Source reliability (Layer 3, EARNED) — see docs §5.4 / backlog 8b ----------
+# Authority (tier) is fixed; reliability is earned. A source whose earlier items kept
+# presaging real rulings earns a bounded multiplier on its tier weight — but only from
+# OUT-OF-SAMPLE presages (rulings dated after KNOBS_FROZEN_AT), so the scorer is never
+# tuned on hindsight (see §5.3). Written by reliability.py, read by score._item_weight.
+# Kept strictly below primary authority: a proven vendor blog can rise, but never to the
+# weight of a court or an ABA opinion. Until forward rulings accrue, every multiplier is
+# 1.0 and scoring is byte-identical to Layer-2.
+RELIABILITY_CAP_MULT = 3.0         # max multiplier a source can earn on its tier weight
+RELIABILITY_MAX_EFFECTIVE = 0.75   # hard ceiling on earned effective weight — below the
+                                   # T2 (0.80) and T1 (1.00) primary-authority floors
+PRESAGE_STEP = 0.5                 # multiplier gained per distinct out-of-sample ruling a
+                                   # source's earlier items presaged
 
 # --- Three orders of prediction ---------------------------------------------
 # The engine forecasts a CASCADE. Each order depends on the one before it, so we

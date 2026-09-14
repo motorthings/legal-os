@@ -34,6 +34,13 @@ def one_pass(do_ingest=False):
         duplicates=recon["n_duplicates"], shared_source=recon["n_shared_source"])
     for d in recon["duplicates"]:   # true content dupes — surface loudly
         log("kb_duplicate", title=d["title"][:80], reason=d["reason"])
+    # Layer 3: refresh earned source-reliability from OUT-OF-SAMPLE presages only, then
+    # the scorer reads the updated ledger. Dormant (all multipliers 1.0) until forward
+    # rulings accrue, so scoring is unchanged today.
+    import reliability
+    rel = reliability.refresh()
+    log("reliability", boosted=rel["n_boosted"],
+        out_of_sample_rulings=rel["out_of_sample_resolutions"])
     if do_ingest:
         try:
             admitted = ingest.harvest_and_admit()

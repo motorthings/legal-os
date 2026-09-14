@@ -281,6 +281,29 @@ harvesting):
   change scoring and therefore must bump `KNOBS_FROZEN_AT` (see §5.3) and re-baseline —
   learned-methods memory and the forward-only holdout are coupled by design.
 
+## 5.5 Source-reliability learning — Layer 3 (2026-09-14)
+
+The "use what it learned last time" half. Authority (tier) is fixed; reliability is
+EARNED and kept strictly separate (backlog 8b).
+
+- **Mechanism** (`reliability.py`) — a source that repeatedly presages real rulings (an
+  item attributed to a ruling's fault line, dated ≥ `LEAD_DAYS` before it) earns a
+  multiplier `1 + PRESAGE_STEP × (rulings presaged)`, capped at `RELIABILITY_CAP_MULT`.
+  Written to `history/source_reliability.json`, read by `score._item_weight`, which then
+  caps the *effective* weight at `RELIABILITY_MAX_EFFECTIVE` (0.75) — below the T2 (0.80)
+  and T1 (1.00) primary-authority floors. A proven vendor blog can rise; it never becomes
+  a court. One-directional: written by the learner, only read by the scorer.
+- **The honesty gate** — only OUT-OF-SAMPLE presages count (rulings dated after
+  `KNOBS_FROZEN_AT`). In-sample hits are retrodiction (§5.3); rewarding a source for
+  "presaging" a ruling the feed was authored knowing about would tune the scorer on
+  hindsight and silently corrupt the holdout. So today, with no post-freeze rulings, every
+  multiplier is 1.0 and scoring is byte-identical to Layer-2 — the loop is wired and
+  dormant, not faked. It begins learning only from genuine forward evidence.
+- **Wired into the OS** — `run.py` refreshes the ledger every pass; the reliability ledger
+  hash is captured in each run artifact's knobs so a score replays against the exact
+  learning state it used. Tested (`tests/test_reliability.py`, 4/4: dormant-today,
+  in-sample-gated, earns-and-caps, effective-cap-below-primary).
+
 ## 6. Logic gaps in v1 (recorded so each fix is traceable)
 
 - **G1 — The confluence readout (queue) drops the capability axis.** Queue is

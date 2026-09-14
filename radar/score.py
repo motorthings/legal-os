@@ -20,7 +20,26 @@ from fault_lines import (
     CAPABILITY_WEIGHTS, CAPABILITY_SEEDS, FAULT_ANNOTATIONS,
     ENABLE_WEIGHTS, ENABLE_SEEDS,
     SOFTWARE_WEIGHTS, SOFTWARE_SEEDS, SOFTWARE_HALF_LIFE, FLAG_MULTIPLIER,
+    RELIABILITY_MAX_EFFECTIVE,
 )
+
+# Source-reliability ledger (Layer 3): earned per-source multipliers on tier weight,
+# written by reliability.py. Read here directly (no import of reliability -> no cycle).
+# Absent/empty ledger => every multiplier 1.0 => scoring identical to Layer-2.
+RELIABILITY_PATH = Path(__file__).parent / "history" / "source_reliability.json"
+_RELIABILITY = None
+
+
+def reliability_multipliers():
+    """Load {source: multiplier} once per process. Deterministic given the ledger file;
+    the ledger is captured in each run artifact for exact replay."""
+    global _RELIABILITY
+    if _RELIABILITY is None:
+        try:
+            _RELIABILITY = json.loads(RELIABILITY_PATH.read_text()).get("source_multipliers", {})
+        except (FileNotFoundError, ValueError):
+            _RELIABILITY = {}
+    return _RELIABILITY
 
 # Saturation divisors: how fast each meter's evidence saturates toward 10. Larger =
 # slower, more conservative. The capability lane is the most conservative on purpose
@@ -62,6 +81,12 @@ def _decay(item_date, as_of, tier):
 def _item_weight(item, as_of):
     tier = item["tier"]
     w = SOURCE_TIERS[tier]["weight"]
+    # Earned reliability (Layer 3): lift the tier weight by the source's earned
+    # multiplier, then hard-cap the effective weight below primary authority so trust
+    # earned by track record never reaches a court/ABA-opinion floor.
+    mult = reliability_multipliers().get(item.get("source", ""), 1.0)
+    if mult != 1.0:
+        w = min(w * mult, RELIABILITY_MAX_EFFECTIVE)
     if item.get("conflict"):
         w *= CONFLICT_DISCOUNT
     if item.get("empirical"):

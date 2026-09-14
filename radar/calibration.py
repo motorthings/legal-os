@@ -59,7 +59,17 @@ def _knobs():
         "software_flag_multiplier": K.FLAG_MULTIPLIER,
         "call_threshold": CALL_THRESHOLD,
         "lead_days": LEAD_DAYS,
+        "reliability_ledger_sha256": _reliability_ledger_hash(),
     }
+
+
+def _reliability_ledger_hash():
+    """Hash of the earned-reliability ledger the scorer read, for exact replay."""
+    try:
+        import reliability
+        return reliability.ledger_hash()
+    except Exception:
+        return None
 
 
 def load_resolutions():

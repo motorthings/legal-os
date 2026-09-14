@@ -1,0 +1,11 @@
+{
+  "generated_from": {
+    "cap_mult": 3.0,
+    "knobs_frozen_at": "2026-09-14",
+    "lead_days": 90,
+    "out_of_sample_resolutions": 0,
+    "presage_step": 0.5
+  },
+  "note": "Earned from OUT-OF-SAMPLE ruling presages only; in-sample hits are retrodiction and excluded (design \u00a75.3). Empty until forward rulings land.",
+  "source_multipliers": {}
+}

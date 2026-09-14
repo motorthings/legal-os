@@ -137,11 +137,12 @@ live in separate lanes so speculation never masquerades as legal fact (see backl
    item landing.
 8. **Calibration-driven tuning** — adjust tier weights/knobs from the ledger's
    hit/miss record (with change log, so replay stays honest).
-8b. **Source-reliability tracking** — let a source earn effective weight above its
-   tier floor by a proven track record (a vendor blog stays ~1/100 of an ABA opinion
-   UNLESS its earlier posts kept presaging real rulings). Authority (tier) and
-   reliability (earned) kept separate; reliability written by the calibration ledger,
-   read by the scorer; capped below primary authority. One-directional learning loop.
+8b. **Source-reliability tracking** — [x] SHIPPED 2026-09-14 (`reliability.py`). A source
+   earns a bounded weight multiplier by presaging real rulings; authority (tier) and
+   reliability (earned) kept separate; effective weight capped below primary authority;
+   one-directional (written by the learner, read by the scorer). **Honesty gate:** only
+   OUT-OF-SAMPLE presages (rulings after `KNOBS_FROZEN_AT`) count, so it can't be tuned on
+   hindsight — dormant (all multipliers 1.0) until forward rulings accrue. Design §5.5.
 9. **Scenario branches** — model "if capability X arrives, these fault lines jump."
 10. **Litigation strategy simulation** (separate product, extends `law-firm-sim`) —
     Monte Carlo over a litigation decision tree to find best cumulative strategies.
