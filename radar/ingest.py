@@ -48,6 +48,7 @@ semantic dedup (Layer 2) remain stubs; `admit()` works on any candidate list.
 """
 import json
 import os
+import re
 from pathlib import Path
 
 import dedup
@@ -69,6 +70,36 @@ SOURCE_ALLOWLIST = {
 }
 
 VENDOR_DOMAINS = {"harvey.ai", "eudia.com", "legora.com"}  # -> conflict=True
+
+# --- AI-context gate (harvested items only) ---------------------------------
+# The fault lines' `signals` are often generic legal words ("disclosure",
+# "verification", "competence"), so signal-substring matching alone admits a discovery
+# dispute that merely contains the word "disclosure" and quarantines a "Harvey raises
+# $550M" post that has no literal signal word. The radar is about AI in legal work, so a
+# harvested item must be ABOUT AI to earn admission: signal match AND an AI-context term.
+# Matched with word boundaries on normalized text so "ai" does not fire inside "said".
+# This is a hard gate for uncurated rows; curated rows (a human attributed them) are exempt.
+AI_CONTEXT_PHRASES = (
+    "artificial intelligence", "generative ai", "gen ai", "large language model",
+    "machine learning", "legal ai", "legal tech", "legal technology", "law tech",
+    "legaltech", "lawtech", "legal automation", "ai tool", "ai tools", "ai model",
+    "ai use", "ai-assisted", "ai assisted", "ai generated", "ai-generated",
+    "ai hallucination", "hallucinated citation", "hallucinated case",
+    "chatgpt", "chat gpt", "gpt-4", "copilot", "agentic ai", "autonomous agent",
+    "ai agent", "ai act", "deep learning",
+)
+AI_CONTEXT_TOKENS = ("ai", "a.i.", "llm", "llms", "genai", "gpt", "rag")
+
+
+def _has_ai_context(item):
+    """True if title+text is about AI, matched on word boundaries (so 'ai' doesn't hit
+    'said'/'claim'). Deterministic; used to gate harvested (uncurated) admission."""
+    text = f"{item.get('title', '')} {item.get('text', '')}"
+    norm = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+    padded = f" {norm} "
+    if any(f" {p} " in padded for p in AI_CONTEXT_PHRASES):
+        return True
+    return bool(set(norm.split()) & set(AI_CONTEXT_TOKENS))
 
 # Feed schema keys an admitted row carries (the scorer reads these).
 _FEED_KEYS = ("date", "tier", "title", "source", "url", "text",
@@ -94,8 +125,16 @@ def _assign_tier(candidate):
 
 
 def _relevant_fault_lines(candidate):
-    """Layer-0 relevance: which fault lines this candidate matches by curated
-    attribution or signal. (Embedding-cosine relevance is Layer 2.)"""
+    """Layer-0 relevance: which fault lines this candidate matches.
+
+    A curated candidate (a human already attributed `fault_lines`) passes through as-is.
+    An uncurated harvested candidate must ALSO be about AI (`_has_ai_context`) — otherwise
+    a generic legal word like "disclosure" admits an unrelated discovery dispute. Signal
+    match + AI-context is the gate; embedding-cosine relevance remains Layer 2."""
+    if candidate.get("fault_lines"):
+        return [fl["id"] for fl in FAULT_LINES if _attributes_to(candidate, fl)]
+    if not _has_ai_context(candidate):
+        return []
     return [fl["id"] for fl in FAULT_LINES if _attributes_to(candidate, fl)]
 
 

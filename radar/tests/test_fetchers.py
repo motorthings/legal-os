@@ -154,6 +154,38 @@ def test_harvest_report_flags_unallowlisted_source():
     assert rep[0]["n_candidates"] == 0
 
 
+# --- AI-context relevance gate ----------------------------------------------
+
+def test_ai_context_gate_word_boundaries():
+    assert ingest._has_ai_context({"title": "AI disclosure in briefs", "text": ""})
+    assert ingest._has_ai_context({"title": "", "text": "a generative AI tool was used"})
+    assert not ingest._has_ai_context({"title": "", "text": "the witness said disclosure"})
+    # "ai" inside another word must not fire the gate
+    assert not ingest._has_ai_context({"title": "party claimed relief", "text": ""})
+
+
+def test_uncurated_item_requires_ai_context():
+    """A generic legal word without AI context no longer admits; AI context does."""
+    generic = {"date": "2026-09-01", "title": "Discovery dispute",
+               "url": "https://www.lawnext.com/a.html",
+               "text": "The court ordered disclosure of documents.", "source": "x"}
+    assert ingest._relevant_fault_lines(generic) == []   # "disclosure" but not about AI
+    ai_item = {"date": "2026-09-01", "title": "Court sanctions firm over AI citations",
+               "url": "https://www.lawnext.com/b.html",
+               "text": "Disclosure of generative AI use is required.",
+               "source": "x"}
+    assert ingest._relevant_fault_lines(ai_item) != []
+
+
+def test_curated_item_bypasses_ai_context_gate():
+    """A human-attributed `fault_lines` passes through even without an AI keyword —
+    curation is the human's vouch."""
+    curated = {"date": "2026-09-01", "title": "Some ruling",
+               "url": "https://www.courtlistener.com/x", "text": "disclosure",
+               "fault_lines": ["disclosure"]}
+    assert "disclosure" in ingest._relevant_fault_lines(curated)
+
+
 def test_dry_run_writes_nothing(tmp_path):
     """The property the first live run depends on: a dry run must not append to the
     store OR the ledger. If it wrote ledger rows, the real run would skip those docs as

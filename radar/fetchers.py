@@ -36,7 +36,12 @@ TIMEOUT = 20  # seconds
 # tier is taken from the allowlist at admission, never from the source's own claim.
 SOURCES = [
     {"name": "CourtListener opinions (AI sanctions)",
-     "url": "https://www.courtlistener.com/api/rest/v4/search/?q=AI%20hallucination%20sanctions&type=o",
+     # KNOWN ISSUE (2026-09-14): the /api/rest/v4/search/ `q` param appears to be ignored —
+     # changing it from "AI hallucination sanctions" to "generative AI" returned byte-identical
+     # generic recent opinions (People v. Alvarez, divorce/criminal cases). So this source
+     # currently yields no signal; the AI-context gate quarantines everything it returns.
+     # Needs the correct full-text search endpoint/params before it contributes anything.
+     "url": "https://www.courtlistener.com/api/rest/v4/search/?q=%22generative%20AI%22&type=o",
      "kind": "courtlistener"},
     {"name": "LawSites (RSS)",
      "url": "https://www.lawnext.com/feed/", "kind": "rss"},
