@@ -88,7 +88,10 @@ AI_CONTEXT_PHRASES = (
     "chatgpt", "chat gpt", "gpt-4", "copilot", "agentic ai", "autonomous agent",
     "ai agent", "ai act", "deep learning",
 )
-AI_CONTEXT_TOKENS = ("ai", "a.i.", "llm", "llms", "genai", "gpt", "rag")
+AI_CONTEXT_TOKENS = ("llm", "llms", "genai", "gpt", "chatgpt", "copilot", "openai", "claude")
+# NOTE: the bare token "ai" is deliberately absent — on FULL opinion text it false-fires
+# (Hawaiian words, "A.I." abbreviations, etc.). "AI" is still caught when part of a
+# specific phrase ("generative AI", "legal AI", "AI tool", ...) in AI_CONTEXT_PHRASES.
 
 
 def _has_ai_context(item):

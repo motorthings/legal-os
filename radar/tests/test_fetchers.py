@@ -42,10 +42,19 @@ ATOM_SAMPLE = b"""<?xml version="1.0"?>
 </feed>"""
 
 CL_SAMPLE = json.dumps({"results": [
-    {"caseName": "Couvrette v. Wisnovsky",
-     "absolute_url": "/opinion/12345/couvrette-v-wisnovsky/",
-     "dateFiled": "2025-12-15", "citation": ["114 A.D.3d 947"],
-     "snippet": "<p>Sanctions for <b>verification</b> failures.</p>"}
+    {"caseName": "State v. Coleman",
+     "absolute_url": "/opinion/10812807/state-v-coleman/",
+     "dateFiled": "2026-03-20", "citation": ["2026-Ohio-965"],
+     "cluster_id": 10812807,
+     "syllabus": "",   # usually empty on the search endpoint
+     "opinions": [{"id": 11279559,
+                   "snippet": "use of hallucinated artificial intelligence to draft the filing"}],
+    },
+    {"caseName": "Mata v. Mata",   # no opinion text -> dropped (empty summary)
+     "absolute_url": "/opinion/5038847/mata-v-mata/",
+     "dateFiled": "2017-03-13", "citation": ["230 So. 3d 1213"],
+     "cluster_id": 5038847, "syllabus": "", "opinions": [],
+    },
 ]}).encode()
 
 
@@ -69,11 +78,29 @@ def test_parse_atom():
 
 def test_parse_courtlistener():
     entries = fetchers.parse_courtlistener(CL_SAMPLE)
-    assert len(entries) == 1
+    assert len(entries) == 2   # metadata parser keeps all title+link rows
     e = entries[0]
-    assert e["title"] == "Couvrette v. Wisnovsky"
+    assert e["title"] == "State v. Coleman"
     assert e["link"].startswith("https://www.courtlistener.com/opinion/")
-    assert e["date"] == "2025-12-15"
+    assert e["date"] == "2026-03-20"
+    assert e["opinion_id"] == 11279559 and e["cluster_id"] == 10812807
+    # the critical fix: text comes from opinions[0].snippet, not a top-level field
+    assert "hallucinated artificial intelligence" in e["summary"], e["summary"]
+    # an opinion with no sub-opinion has opinion_id None (full-text path drops it)
+    assert entries[1]["opinion_id"] is None and entries[1]["summary"] == ""
+
+
+def test_courtlistener_fulltext_enrichment(monkeypatch=None):
+    """The live path fetches full text per opinion and dedups by cluster. Mock the
+    per-opinion fetch; the truncated snippet is replaced by full plain_text."""
+    def fake_text(opinion_id):
+        return f"FULL TEXT for {opinion_id}: lawyer used ChatGPT to fabricate citations"
+    fetchers._fetch_opinion_text = fake_text
+    entries = fetchers._courtlistener_with_fulltext(CL_SAMPLE)
+    assert len(entries) == 1                     # "Mata v. Mata" has no opinion_id -> skipped
+    e = entries[0]
+    assert "FULL TEXT for 11279559" in e["summary"]   # enriched, not the truncated snippet
+    assert "fabricate citations" in e["summary"]
 
 
 # --- candidate shaping ------------------------------------------------------
@@ -157,11 +184,14 @@ def test_harvest_report_flags_unallowlisted_source():
 # --- AI-context relevance gate ----------------------------------------------
 
 def test_ai_context_gate_word_boundaries():
-    assert ingest._has_ai_context({"title": "AI disclosure in briefs", "text": ""})
+    assert ingest._has_ai_context({"title": "artificial intelligence in briefs", "text": ""})
     assert ingest._has_ai_context({"title": "", "text": "a generative AI tool was used"})
     assert not ingest._has_ai_context({"title": "", "text": "the witness said disclosure"})
     # "ai" inside another word must not fire the gate
     assert not ingest._has_ai_context({"title": "party claimed relief", "text": ""})
+    # bare "ai" alone no longer fires (too loose on full opinion text)
+    assert not ingest._has_ai_context({"title": "AI disclosure", "text": ""})
+    assert ingest._has_ai_context({"title": "lawyer used ChatGPT to draft", "text": ""})
 
 
 def test_uncurated_item_requires_ai_context():
