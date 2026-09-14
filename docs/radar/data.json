@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-08",
+  "as_of": "2026-09-14",
   "fault_lines": [
     {
       "id": "verification",
@@ -58,8 +58,8 @@
       "pressure_seed": 7.5,
       "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 24.1,
-      "weighted_positive": 24.1,
+      "weighted_evidence": 24.07,
+      "weighted_positive": 24.07,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
@@ -269,7 +269,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.405,
+          "weight": 0.396,
           "matched": [
             "verification",
             "reasonable inquiry"
@@ -284,7 +284,7 @@
           "tier": "T3",
           "source": "arXiv 2510.20941",
           "url": "https://ar5iv.labs.arxiv.org/html/2510.20941",
-          "weight": 0.212,
+          "weight": 0.207,
           "matched": [
             "verification"
           ],
@@ -298,7 +298,7 @@
           "tier": "T3",
           "source": "Lighthouse / FTI Consulting (adoption reporting)",
           "url": "https://www.lighthouseglobal.com/ai-in-ediscovery-report-2025",
-          "weight": 0.179,
+          "weight": 0.175,
           "matched": [
             "verification"
           ],
@@ -312,7 +312,7 @@
           "tier": "T3",
           "source": "legaltechnology.com",
           "url": "https://legaltechnology.com/genai-legal-assistant-paxton-raises-22m-series-a/",
-          "weight": 0.078,
+          "weight": 0.076,
           "matched": [
             "verification"
           ],
@@ -326,7 +326,7 @@
           "tier": "T3",
           "source": "Magesh, Surani, Dahl, Suzgun, Manning & Ho (Stanford RegLab)",
           "url": "https://arxiv.org/abs/2405.20362",
-          "weight": 0.03,
+          "weight": 0.029,
           "matched": [
             "verification",
             "human review"
@@ -461,7 +461,7 @@
           "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.042,
+          "weight": 0.041,
           "matched": [
             "verification"
           ],
@@ -517,8 +517,8 @@
       "pressure_seed": 8.0,
       "pressure": 9.9,
       "trend": "rising",
-      "weighted_evidence": 10.65,
-      "weighted_positive": 11.45,
+      "weighted_evidence": 10.63,
+      "weighted_positive": 11.43,
       "weighted_negative": 0.8,
       "corroboration": 0.3,
       "neg_corroboration": 0.0,
@@ -652,7 +652,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.405,
+          "weight": 0.396,
           "matched": [
             "disclosure"
           ],
@@ -729,7 +729,7 @@
       "capability_evidence": [],
       "pressure_seed": 7.0,
       "pressure": 9.9,
-      "trend": "rising",
+      "trend": "steady",
       "weighted_evidence": 9.75,
       "weighted_positive": 9.75,
       "weighted_negative": 0.0,
@@ -875,7 +875,7 @@
           "tier": "T3",
           "source": "CaseClerk / Baker McKenzie (vendor data-governance practice)",
           "url": "https://caseclerk.ai/blog/is-harvey-ai-safe-for-law-firms-confidentiality-data-retention-and-admin-controls-for-2025",
-          "weight": 0.1,
+          "weight": 0.098,
           "matched": [
             "confidential",
             "no-training",
@@ -1007,9 +1007,9 @@
       ],
       "pressure_seed": 6.0,
       "pressure": 9.9,
-      "trend": "rising",
-      "weighted_evidence": 10.26,
-      "weighted_positive": 10.26,
+      "trend": "steady",
+      "weighted_evidence": 10.24,
+      "weighted_positive": 10.24,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
@@ -1134,7 +1134,7 @@
           "tier": "T3",
           "source": "Practising Law Institute",
           "url": "https://www.globenewswire.com/fr/news-release/2026/05/05/3288064/0/en/PLI-Introduces-Industry-First-AI-Competency-Framework.html",
-          "weight": 0.369,
+          "weight": 0.361,
           "matched": [
             "competence",
             "training",
@@ -1150,7 +1150,7 @@
           "tier": "T3",
           "source": "arXiv 2504.01840",
           "url": "https://ar5iv.labs.arxiv.org/html/2504.01840",
-          "weight": 0.1,
+          "weight": 0.097,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1310,8 +1310,8 @@
       "pressure_seed": 7.5,
       "pressure": 9.8,
       "trend": "rising",
-      "weighted_evidence": 7.33,
-      "weighted_positive": 7.33,
+      "weighted_evidence": 7.32,
+      "weighted_positive": 7.32,
       "weighted_negative": 0.0,
       "corroboration": 0.15,
       "neg_corroboration": 0.0,
@@ -1411,7 +1411,7 @@
           "tier": "T3",
           "source": "ABA Journal",
           "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
-          "weight": 0.234,
+          "weight": 0.229,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1423,7 +1423,7 @@
           "tier": "T3",
           "source": "Clio",
           "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
-          "weight": 0.14,
+          "weight": 0.137,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1463,7 +1463,7 @@
       "enable_evidence": [],
       "software_seed": 5.0,
       "software": 5.5,
-      "software_weighted": 0.28,
+      "software_weighted": 0.27,
       "software_classes": [
         "acquisition",
         "regulatory_room"
@@ -1475,7 +1475,7 @@
           "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.074,
+          "weight": 0.072,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -1485,7 +1485,7 @@
           "title": "Clio signs definitive agreement to acquire vLex ($1B)",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.034,
+          "weight": 0.033,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -1495,7 +1495,7 @@
           "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
           "tier": "T1",
           "software": "regulatory_room",
-          "weight": 0.137,
+          "weight": 0.132,
           "matched": [],
           "empirical": false,
           "flag": "direction_shift"
@@ -1593,10 +1593,10 @@
         }
       ],
       "pressure_seed": 6.5,
-      "pressure": 9.4,
+      "pressure": 9.3,
       "trend": "rising",
-      "weighted_evidence": 5.14,
-      "weighted_positive": 5.14,
+      "weighted_evidence": 5.05,
+      "weighted_positive": 5.05,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
@@ -1623,7 +1623,7 @@
           "tier": "T3",
           "source": "Federal legislation (proposed) / Reg Review",
           "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
-          "weight": 0.577,
+          "weight": 0.564,
           "matched": [
             "agentic",
             "ai agent act",
@@ -1641,7 +1641,7 @@
           "tier": "T3",
           "source": "tech.eu/Bloomberg",
           "url": "",
-          "weight": 0.427,
+          "weight": 0.418,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1653,7 +1653,7 @@
           "tier": "T3",
           "source": "Bloomberg/CNBC/GIC",
           "url": "",
-          "weight": 0.394,
+          "weight": 0.385,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1665,7 +1665,7 @@
           "tier": "T3",
           "source": "CNBC/Crunchbase",
           "url": "",
-          "weight": 0.372,
+          "weight": 0.364,
           "matched": [
             "agentic"
           ],
@@ -1679,7 +1679,7 @@
           "tier": "T3",
           "source": "BusinessWire/Sifted",
           "url": "",
-          "weight": 0.225,
+          "weight": 0.22,
           "matched": [
             "agentic"
           ],
@@ -1693,7 +1693,7 @@
           "tier": "T3",
           "source": "Bloomberg/Forbes",
           "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
-          "weight": 0.224,
+          "weight": 0.219,
           "matched": [
             "agentic"
           ],
@@ -1707,7 +1707,7 @@
           "tier": "T3",
           "source": "Fortune / verified",
           "url": "",
-          "weight": 0.137,
+          "weight": 0.134,
           "matched": [
             "agentic"
           ],
@@ -1721,7 +1721,7 @@
           "tier": "T3",
           "source": "Artificial Lawyer (deployment reporting)",
           "url": "https://www.artificiallawyer.com/2025/04/07/ao-shearman-to-profit-share-with-harvey-on-agentic-tools/",
-          "weight": 0.102,
+          "weight": 0.099,
           "matched": [
             "agentic",
             "autonomous agent",
@@ -1737,7 +1737,7 @@
           "tier": "T3",
           "source": "Harvey / verified",
           "url": "https://www.harvey.ai/blog",
-          "weight": 0.084,
+          "weight": 0.082,
           "matched": [
             "agentic"
           ],
@@ -1751,7 +1751,7 @@
           "tier": "T3",
           "source": "Crunchbase News",
           "url": "https://news.crunchbase.com/venture/ai-legal-tech-evenup-unicorn-bain/",
-          "weight": 0.051,
+          "weight": 0.049,
           "matched": [
             "agentic"
           ],
@@ -1765,7 +1765,7 @@
           "tier": "T3",
           "source": "siliconangle.com",
           "url": "https://siliconangle.com/2024/07/17/legal-ai-startup-leya-ab-raises-25m-help-lawyers-boost-productivity/",
-          "weight": 0.037,
+          "weight": 0.036,
           "matched": [
             "agentic"
           ],
@@ -1779,7 +1779,7 @@
           "tier": "T4",
           "source": "VentureBeat",
           "url": "https://venturebeat.com/ai/openai-updates-operator-to-o3-making-its-200-monthly-chatgpt-subscription-more-enticing",
-          "weight": 0.057,
+          "weight": 0.055,
           "matched": [
             "agentic"
           ],
@@ -1793,7 +1793,7 @@
           "tier": "T4",
           "source": "TechCrunch",
           "url": "https://techcrunch.com/2025/03/11/openai-launches-new-tools-to-help-businesses-build-ai-agents/",
-          "weight": 0.043,
+          "weight": 0.042,
           "matched": [
             "agentic"
           ],
@@ -1876,8 +1876,8 @@
       "seam": "mixed",
       "driver": "capability",
       "adoption_seed": 5.0,
-      "adoption": 6.2,
-      "adoption_weighted": 0.53,
+      "adoption": 6.1,
+      "adoption_weighted": 0.52,
       "market_classes": [
         "process_mandate"
       ],
@@ -1888,7 +1888,7 @@
           "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
           "tier": "T3",
           "market": "process_mandate",
-          "weight": 0.529,
+          "weight": 0.517,
           "matched": [
             "agentic",
             "ai agent act",
@@ -1922,7 +1922,7 @@
       ],
       "software_seed": 5.0,
       "software": 8.3,
-      "software_weighted": 2.72,
+      "software_weighted": 2.63,
       "software_classes": [
         "acquisition",
         "capital",
@@ -1936,7 +1936,7 @@
           "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.476,
+          "weight": 0.46,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -1946,7 +1946,7 @@
           "title": "Legora Series D $550M at $5.55B, Accel-led",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.437,
+          "weight": 0.422,
           "matched": [
             "agentic"
           ],
@@ -1958,7 +1958,7 @@
           "title": "Legora Series C $150M at $1.8B",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.205,
+          "weight": 0.198,
           "matched": [
             "agentic"
           ],
@@ -1970,7 +1970,7 @@
           "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.204,
+          "weight": 0.197,
           "matched": [
             "agentic"
           ],
@@ -1982,7 +1982,7 @@
           "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
           "tier": "T5",
           "software": "capital",
-          "weight": 0.182,
+          "weight": 0.175,
           "matched": [
             "agentic"
           ],
@@ -1994,7 +1994,7 @@
           "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.097,
+          "weight": 0.094,
           "matched": [
             "agentic"
           ],
@@ -2006,7 +2006,7 @@
           "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.046,
+          "weight": 0.045,
           "matched": [
             "agentic"
           ],
@@ -2030,7 +2030,7 @@
           "title": "Leya $25M Series A, Redpoint-led (agentic research)",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.014,
+          "weight": 0.013,
           "matched": [
             "agentic"
           ],
@@ -2042,7 +2042,7 @@
           "title": "Legora ~$50M extension (Nvidia NVentures+Atlassian) + 5 acquisitions",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.183,
+          "weight": 0.177,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -2064,7 +2064,7 @@
           "title": "A&O Shearman puts agentic AI to work firm-wide, revenue-sharing with Harvey",
           "tier": "T3",
           "software": "ship",
-          "weight": 0.034,
+          "weight": 0.033,
           "matched": [
             "agentic",
             "autonomous agent",
@@ -2074,7 +2074,7 @@
           "flag": null
         }
       ],
-      "queue": 5.8,
+      "queue": 5.7,
       "lead": "~1 year"
     },
     {
@@ -2152,8 +2152,8 @@
       "pressure_seed": 6.0,
       "pressure": 9.1,
       "trend": "steady",
-      "weighted_evidence": 4.61,
-      "weighted_positive": 4.61,
+      "weighted_evidence": 4.53,
+      "weighted_positive": 4.53,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
@@ -2178,7 +2178,7 @@
           "tier": "T3",
           "source": "Stanford (research)",
           "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
-          "weight": 0.512,
+          "weight": 0.501,
           "matched": [
             "benchmark",
             "error rate",
@@ -2195,7 +2195,7 @@
           "tier": "T3",
           "source": "Bloomberg/CNBC/GIC",
           "url": "",
-          "weight": 0.394,
+          "weight": 0.385,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2207,7 +2207,7 @@
           "tier": "T3",
           "source": "The Globe and Mail",
           "url": "https://www.theglobeandmail.com/business/article-spellbook-secures-us40-million-from-rbc-to-snap-up-smaller-generative/",
-          "weight": 0.364,
+          "weight": 0.355,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2219,7 +2219,7 @@
           "tier": "T3",
           "source": "ABA Journal",
           "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
-          "weight": 0.234,
+          "weight": 0.229,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2231,7 +2231,7 @@
           "tier": "T3",
           "source": "Bloomberg/Forbes",
           "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
-          "weight": 0.224,
+          "weight": 0.219,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2243,7 +2243,7 @@
           "tier": "T3",
           "source": "Clio",
           "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
-          "weight": 0.14,
+          "weight": 0.137,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2255,7 +2255,7 @@
           "tier": "T3",
           "source": "Fortune / verified",
           "url": "",
-          "weight": 0.137,
+          "weight": 0.134,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2267,7 +2267,7 @@
           "tier": "T3",
           "source": "TechCrunch",
           "url": "https://techcrunch.com/2025/02/18/legal-ai-startup-luminance-backed-by-the-late-mike-lynch-raises-75m/",
-          "weight": 0.084,
+          "weight": 0.083,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2279,7 +2279,7 @@
           "tier": "T3",
           "source": "Harvey / verified",
           "url": "https://www.harvey.ai/blog",
-          "weight": 0.084,
+          "weight": 0.082,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2291,7 +2291,7 @@
           "tier": "T3",
           "source": "legaltechnology.com",
           "url": "https://legaltechnology.com/genai-legal-assistant-paxton-raises-22m-series-a/",
-          "weight": 0.078,
+          "weight": 0.076,
           "matched": [
             "benchmark"
           ],
@@ -2305,7 +2305,7 @@
           "tier": "T3",
           "source": "siliconangle.com",
           "url": "https://siliconangle.com/2024/07/17/legal-ai-startup-leya-ab-raises-25m-help-lawyers-boost-productivity/",
-          "weight": 0.037,
+          "weight": 0.036,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2317,7 +2317,7 @@
           "tier": "T3",
           "source": "Magesh, Surani, Dahl, Suzgun, Manning & Ho (Stanford RegLab)",
           "url": "https://arxiv.org/abs/2405.20362",
-          "weight": 0.03,
+          "weight": 0.029,
           "matched": [
             "benchmark",
             "stanford"
@@ -2344,7 +2344,7 @@
           "tier": "T3",
           "source": "Dahl, Magesh, Suzgun & Ho (Journal of Legal Analysis)",
           "url": "https://arxiv.org/abs/2401.01301",
-          "weight": 0.018,
+          "weight": 0.017,
           "matched": [
             "benchmark",
             "error rate",
@@ -2425,8 +2425,8 @@
       "seam": "codifiable",
       "driver": "capability",
       "adoption_seed": 5.5,
-      "adoption": 7.6,
-      "adoption_weighted": 1.22,
+      "adoption": 7.5,
+      "adoption_weighted": 1.21,
       "market_classes": [
         "cert",
         "process_mandate"
@@ -2438,7 +2438,7 @@
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
           "tier": "T3",
           "market": "cert",
-          "weight": 0.512,
+          "weight": 0.501,
           "matched": [
             "benchmark",
             "error rate",
@@ -2488,8 +2488,8 @@
         }
       ],
       "software_seed": 5.0,
-      "software": 7.5,
-      "software_weighted": 1.72,
+      "software": 7.4,
+      "software_weighted": 1.66,
       "software_classes": [
         "acquisition",
         "capital",
@@ -2502,7 +2502,7 @@
           "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.476,
+          "weight": 0.46,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2512,7 +2512,7 @@
           "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.204,
+          "weight": 0.197,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2522,7 +2522,7 @@
           "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
           "tier": "T5",
           "software": "capital",
-          "weight": 0.182,
+          "weight": 0.175,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2532,7 +2532,7 @@
           "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.097,
+          "weight": 0.094,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2552,7 +2552,7 @@
           "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.046,
+          "weight": 0.045,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2562,7 +2562,7 @@
           "title": "Paxton AI $22M Series A, Unusual Ventures, total $28M (research/drafting)",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.042,
+          "weight": 0.041,
           "matched": [
             "benchmark"
           ],
@@ -2574,7 +2574,7 @@
           "title": "Leya $25M Series A, Redpoint-led (agentic research)",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.014,
+          "weight": 0.013,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2604,7 +2604,7 @@
           "title": "Spellbook $40M RBCx debt facility to fund acquisitions (acquirer, not acquired)",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.143,
+          "weight": 0.139,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -2614,7 +2614,7 @@
           "title": "Clio closes vLex ($1B) + $500M Series G (NEA) at $5B",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.074,
+          "weight": 0.072,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -2624,7 +2624,7 @@
           "title": "Clio signs definitive agreement to acquire vLex ($1B)",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.034,
+          "weight": 0.033,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -2652,7 +2652,7 @@
           "flag": "origination"
         }
       ],
-      "queue": 6.9,
+      "queue": 6.8,
       "lead": "~1 year"
     },
     {
@@ -2675,8 +2675,8 @@
       "pressure_seed": 3.5,
       "pressure": 9.1,
       "trend": "rising",
-      "weighted_evidence": 5.85,
-      "weighted_positive": 5.85,
+      "weighted_evidence": 5.84,
+      "weighted_positive": 5.84,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
@@ -2740,7 +2740,7 @@
           "tier": "T3",
           "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
           "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
-          "weight": 0.16,
+          "weight": 0.156,
           "matched": [
             "vendor liability",
             "product liability"
@@ -2755,7 +2755,7 @@
           "tier": "T4",
           "source": "Cambridge Handbook of Generative AI and the Law",
           "url": "https://www.cambridge.org/core/books/abs/cambridge-handbook-of-generative-ai-and-the-law/lawgpt/E68060BDAC6BABA881BE2B180C9E88C9#1",
-          "weight": 0.076,
+          "weight": 0.074,
           "matched": [],
           "empirical": false,
           "conflict": false,
@@ -2779,7 +2779,7 @@
       "enable_evidence": [],
       "software_seed": 3.5,
       "software": 3.8,
-      "software_weighted": 0.14,
+      "software_weighted": 0.13,
       "software_classes": [
         "regulatory_room"
       ],
@@ -2800,7 +2800,7 @@
           "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
           "tier": "T1",
           "software": "regulatory_room",
-          "weight": 0.137,
+          "weight": 0.132,
           "matched": [],
           "empirical": false,
           "flag": "direction_shift"
@@ -2841,8 +2841,8 @@
       "pressure_seed": 8.5,
       "pressure": 8.7,
       "trend": "steady",
-      "weighted_evidence": 0.54,
-      "weighted_positive": 0.54,
+      "weighted_evidence": 0.53,
+      "weighted_positive": 0.53,
       "weighted_negative": 0.0,
       "corroboration": 0.0,
       "neg_corroboration": 0.0,
@@ -2855,7 +2855,7 @@
           "tier": "T3",
           "source": "CNA (largest US legal malpractice carrier)",
           "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.541,
+          "weight": 0.528,
           "matched": [
             "insurer",
             "premium",
@@ -2875,7 +2875,7 @@
       "driver": "market",
       "adoption_seed": 7.5,
       "adoption": 8.4,
-      "adoption_weighted": 0.9,
+      "adoption_weighted": 0.88,
       "market_classes": [
         "insurer"
       ],
@@ -2886,7 +2886,7 @@
           "title": "CNA adds AI-governance questionnaires to malpractice renewals",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.901,
+          "weight": 0.88,
           "matched": [
             "insurer",
             "premium",
