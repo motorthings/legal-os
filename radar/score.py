@@ -14,7 +14,8 @@ from pathlib import Path
 
 from fault_lines import (
     FAULT_LINES, SOURCE_TIERS, CONFLICT_DISCOUNT, EMPIRICAL_BOOST,
-    CORROBORATION_STEP, HALF_LIFE_DAYS, STANDING_TIERS,
+    CORROBORATION_STEP, CORROBORATION_CAP, HALF_LIFE_DAYS, STANDING_TIERS,
+    RULING_TIERS, NEUTRAL_SEED,
     MARKET_WEIGHTS, CONTROLS, ADOPTION_SEEDS, LEAD_BY_HORIZON,
     CAPABILITY_WEIGHTS, CAPABILITY_SEEDS, FAULT_ANNOTATIONS,
     ENABLE_WEIGHTS, ENABLE_SEEDS,
@@ -83,6 +84,23 @@ def _attributes_to(item, fault_line):
     if curated:
         return fault_line["id"] in curated
     return bool(_matches(item, fault_line))
+
+
+def _is_ruling(item):
+    """Ruling-lane gate (closes G5): an item may lift the L2 ruling meter only if it is
+    actual ruling/regulatory evidence — primary/binding law or regulatory guidance
+    (RULING_TIERS), or an explicit per-item `ruling` override. Market, commentary, and
+    vendor items are kept as provenance but excluded from the ruling pressure math."""
+    if "ruling" in item:
+        return bool(item["ruling"])
+    return item.get("tier") in RULING_TIERS
+
+
+def _corroboration(sources):
+    """Corroboration bonus from distinct INDEPENDENT sources, capped. Keyed to source
+    identity (not tier) so a curated feed can't inflate a reading with many tiers or
+    re-reported echoes; `single_source`-flagged items are excluded by the caller."""
+    return min(CORROBORATION_CAP, max(0, len(sources) - 1) * CORROBORATION_STEP)
 
 
 def _market_weight(item, as_of):
@@ -165,8 +183,12 @@ def _two_sided_pressure(net, seed, divisor):
     return seed * math.exp(net / divisor)
 
 
-def score(feed=None, as_of=None):
-    """Return a list of scored fault lines with full provenance."""
+def score(feed=None, as_of=None, seeds="default"):
+    """Return a list of scored fault lines with full provenance.
+
+    seeds="default" uses the analyst seeds in fault_lines.py. seeds="neutral" replaces
+    every seed with NEUTRAL_SEED — used by the seed-ablation backtest to isolate how much
+    of a reading is driven by evidence versus the analyst's baseline."""
     if feed is None:
         feed = load_feed()
     if as_of is None:
@@ -174,11 +196,14 @@ def score(feed=None, as_of=None):
     elif isinstance(as_of, str):
         as_of = _parse_date(as_of)
 
+    def _seed(default):
+        return NEUTRAL_SEED if seeds == "neutral" else default
+
     results = []
     for fl in FAULT_LINES:
         evidence = []
-        tiers_seen = set()
-        neg_tiers_seen = set()
+        pos_sources = set()   # distinct independent ruling sources supporting the line
+        neg_sources = set()   # distinct independent ruling sources countering the line
         adoption_evidence = []
         market_classes = set()
         capability_evidence = []
@@ -200,6 +225,7 @@ def score(feed=None, as_of=None):
             # that disclosure is NOT required). `negative_fault_lines` lists the lines the
             # item argues against; its weight is subtracted there and added everywhere else.
             negative = fl["id"] in item.get("negative_fault_lines", [])
+            ruling_eligible = _is_ruling(item)   # G5: only these lift the L2 meter
             evidence.append({
                 "date": item["date"], "title": item["title"], "tier": item["tier"],
                 "source": item.get("source", ""), "url": item.get("url", ""),
@@ -207,11 +233,13 @@ def score(feed=None, as_of=None):
                 "empirical": bool(item.get("empirical")),
                 "conflict": bool(item.get("conflict")),
                 "negative": negative,
+                "ruling_eligible": ruling_eligible,
             })
-            if negative:
-                neg_tiers_seen.add(item["tier"])
-            else:
-                tiers_seen.add(item["tier"])
+            # Corroboration counts distinct INDEPENDENT ruling sources only. A
+            # `single_source` item does not add independence (it IS the one source).
+            if ruling_eligible and not item.get("single_source"):
+                src = item.get("source", "") or item.get("url", "") or item["title"]
+                (neg_sources if negative else pos_sources).add(src)
 
             # First-order (L1): does this item demonstrate the capability that CREATES
             # the fault line? (benchmark, study, release ...) Non-decaying.
@@ -256,15 +284,19 @@ def score(feed=None, as_of=None):
                 })
                 software_classes.add(scls)
 
-        # Corroboration: reward agreement across distinct tiers (independence), computed
-        # separately for positive and negative evidence so a counter-ruling is not
-        # "corroborated" into a larger drag by sharing tiers with supporting evidence.
-        pos_corr = max(0, len(tiers_seen) - 1) * CORROBORATION_STEP
-        neg_corr = max(0, len(neg_tiers_seen) - 1) * CORROBORATION_STEP
-        pos_weighted = sum(e["weight"] for e in evidence if e["weight"] > 0) * (1 + pos_corr)
-        neg_weighted = -sum(e["weight"] for e in evidence if e["weight"] < 0) * (1 + neg_corr)
-        weighted = pos_weighted - neg_weighted   # net signed evidence
+        # Corroboration: reward agreement across distinct INDEPENDENT sources (capped),
+        # computed separately for positive and negative evidence so a counter-ruling is
+        # not "corroborated" into a larger drag by sharing sources with supporting
+        # evidence. G5: only ruling-eligible evidence feeds the L2 pressure math — market,
+        # commentary, and vendor items stay as provenance but cannot lift the ruling grade.
+        pos_corr = _corroboration(pos_sources)
+        neg_corr = _corroboration(neg_sources)
+        ruling_ev = [e for e in evidence if e["ruling_eligible"]]
+        pos_weighted = sum(e["weight"] for e in ruling_ev if e["weight"] > 0) * (1 + pos_corr)
+        neg_weighted = -sum(e["weight"] for e in ruling_ev if e["weight"] < 0) * (1 + neg_corr)
+        weighted = pos_weighted - neg_weighted   # net signed ruling evidence
         n_negative = sum(1 for e in evidence if e["negative"])
+        n_ruling_evidence = len(ruling_ev)
 
         # L1 — capability pressure: same saturating shape, capability-weighted evidence
         # only, corroborated across distinct demonstration classes. Held deliberately
@@ -272,7 +304,7 @@ def score(feed=None, as_of=None):
         # arrived never reads as a ruling that has landed.
         c_corr = max(0, len(capability_classes) - 1) * CORROBORATION_STEP
         c_weighted = sum(e["weight"] for e in capability_evidence) * (1 + c_corr)
-        c_seed = CAPABILITY_SEEDS.get(fl["id"], 2.5)
+        c_seed = _seed(CAPABILITY_SEEDS.get(fl["id"], 2.5))
         c_lift = (10 - c_seed) * (1 - math.exp(-c_weighted / CAP_DIVISOR))
         capability = round(min(10.0, c_seed + c_lift), 1)
         capability_evidence.sort(
@@ -281,14 +313,14 @@ def score(feed=None, as_of=None):
         # L2 — ruling pressure: two-sided saturating. Positive evidence lifts the seed
         # toward 10; negative evidence drags it toward 0 (below the seed), because a
         # counter-ruling weakens the thesis, it does not merely offset the lift.
-        seed = fl["pressure_seed"]
+        seed = _seed(fl["pressure_seed"])
         pressure = round(_two_sided_pressure(weighted, seed, RULING_DIVISOR), 1)
 
         # L3 — control-adoption pressure: same shape, market-weighted evidence only,
         # corroborated across distinct market classes (insurer + RFP + deployment ...).
         a_corr = max(0, len(market_classes) - 1) * CORROBORATION_STEP
         a_weighted = sum(e["weight"] for e in adoption_evidence) * (1 + a_corr)
-        a_seed = ADOPTION_SEEDS.get(fl["id"], 3.0)
+        a_seed = _seed(ADOPTION_SEEDS.get(fl["id"], 3.0))
         a_lift = (10 - a_seed) * (1 - math.exp(-a_weighted / ADOPTION_DIVISOR))
         adoption = round(min(10.0, a_seed + a_lift), 1)
         adoption_evidence.sort(key=lambda e: (MARKET_WEIGHTS[e["market"]], e["date"]),
@@ -298,7 +330,7 @@ def score(feed=None, as_of=None):
         # across distinct enable classes. Part B (T-market): never a backtested call.
         e_corr = max(0, len(enable_classes) - 1) * CORROBORATION_STEP
         e_weighted = sum(e["weight"] for e in enable_evidence) * (1 + e_corr)
-        e_seed = ENABLE_SEEDS.get(fl["id"], 3.0)
+        e_seed = _seed(ENABLE_SEEDS.get(fl["id"], 3.0))
         e_lift = (10 - e_seed) * (1 - math.exp(-e_weighted / ENABLE_DIVISOR))
         enable = round(min(10.0, e_seed + e_lift), 1)
         enable_evidence.sort(key=lambda e: (ENABLE_WEIGHTS[e["enable"]], e["date"]),
@@ -308,7 +340,7 @@ def score(feed=None, as_of=None):
         # corroborated across distinct software classes. Part B (T-market), forward.
         s_corr = max(0, len(software_classes) - 1) * CORROBORATION_STEP
         s_weighted = sum(e["weight"] for e in software_evidence) * (1 + s_corr)
-        s_seed = SOFTWARE_SEEDS.get(fl["id"], 3.0)
+        s_seed = _seed(SOFTWARE_SEEDS.get(fl["id"], 3.0))
         s_lift = (10 - s_seed) * (1 - math.exp(-s_weighted / SOFTWARE_DIVISOR))
         software = round(min(10.0, s_seed + s_lift), 1)
         software_evidence.sort(key=lambda e: (SOFTWARE_WEIGHTS[e["software"]], e["date"]),
@@ -321,7 +353,7 @@ def score(feed=None, as_of=None):
 
         # Trend arrow from recent (<=120d) weighted momentum vs standing base. Signed:
         # a recent counter-ruling can pull the trend to "quiet", not just "steady".
-        recent = sum(e["weight"] for e in evidence
+        recent = sum(e["weight"] for e in ruling_ev
                      if (as_of - _parse_date(e["date"])).days <= 120)
         trend = "rising" if recent >= 0.8 else ("steady" if recent > -0.8 else "quiet")
 
@@ -345,6 +377,7 @@ def score(feed=None, as_of=None):
             "corroboration": round(pos_corr, 2),
             "neg_corroboration": round(neg_corr, 2),
             "n_evidence": len(evidence),
+            "n_ruling_evidence": n_ruling_evidence,
             "n_negative": n_negative,
             "evidence": evidence,
             # --- third-order (L3) control-adoption layer ---
@@ -391,4 +424,4 @@ if __name__ == "__main__":
         print(f'{r["capability"]:>4} {r["pressure"]:>5} {r["adoption"]:>6} {r["enable"]:>7} {r["software"]:>5} '
               f'{r["queue"]:>6}  {r["lead"]:<12} {r["title"]}  '
               f'[{r["control"]}]  (L1:{r["n_capability_evidence"]}ev '
-              f'L2:{r["n_evidence"]}ev L3:{r["n_adoption_evidence"]}ev E:{r["n_enable_evidence"]}ev S:{r["n_software_evidence"]}ev)')
+              f'L2:{r["n_ruling_evidence"]}/{r["n_evidence"]}ev L3:{r["n_adoption_evidence"]}ev E:{r["n_enable_evidence"]}ev S:{r["n_software_evidence"]}ev)')

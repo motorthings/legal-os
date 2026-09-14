@@ -279,6 +279,36 @@ are the content Layer B's enablement axis must eventually carry:
   regardless of lane, so a T3 market action or commentary can lift ruling pressure. Under the
   two-layer scope this is a Layer-A integrity problem: the meter the ruling grade is computed on
   must be isolated to actual ruling/regulatory evidence.
+  **(Resolved 2026-09-14.** `RULING_TIERS = {T1, T2}` + optional per-item `ruling` override in
+  `fault_lines.py`; `score._is_ruling()` gates the L2 math. Only ruling/regulatory evidence feeds
+  ruling pressure, its corroboration, and its trend; market/commentary/vendor items stay on the
+  line as provenance but cannot lift the grade. Effect: RULE de-saturated on the vendor-heavy lines
+  — benchmark 9.1→6.9, agentic 9.3→7.3. `n_ruling_evidence` is reported beside `n_evidence`.)
+
+## 5.3 Calibration honesty — the false-positive side and the holdout (2026-09-14)
+
+The recall backtest (§calibration) answered only "of the rulings that landed, how many did we
+flag?" That number is structurally inflatable: a model that pins every line high scores perfect
+recall. Four fixes close the gap, all deterministic and replayable:
+
+- **Precision / base-rate grid** (`calibration.precision_report`). A (fault-line × month) grid over
+  the feed's lifespan scores every cell TP/FP/FN/TN against order-2 resolutions within a forward
+  window, yielding **precision, recall, flag-rate, base-rate, and LIFT (precision / base-rate)**.
+  Current reading: precision **0.10**, flag-rate **0.62**, base-rate 0.063, **lift 1.59** — the
+  engine flags ~62% of line-months and has modest but real skill over flagging blindly. This is the
+  honest exposure the recall number hid; it is reported, not buried.
+- **Forward-only holdout** (`KNOBS_FROZEN_AT`). Every resolution on/before the freeze is graded as
+  `in_sample` (**retrodiction** — knobs, seeds, and feed were authored knowing the outcome) and only
+  post-freeze events count as an `out_of_sample` forecast track record. Today: in-sample 0.67 (6/9),
+  out-of-sample 0/0. The 6/9 is explicitly *not* claimed as predictive skill.
+- **Seed ablation** (`calibration.seed_ablation`). Re-runs the backtest with every seed neutralized
+  to `NEUTRAL_SEED`. `seed_dependence` = default hit-rate − neutral hit-rate = **0.11** today: that
+  share of calls rests on the analyst baseline, not on point-in-time evidence.
+- **Corroboration by independent source, capped** (`CORROBORATION_STEP`/`CORROBORATION_CAP`). The
+  bonus is now keyed to distinct `source` strings among ruling-eligible evidence (not tiers), with
+  `single_source` items excluded and a hard ceiling — a curated feed can no longer inflate a reading
+  with many tiers or re-reported echoes. This also closes the ratchet's inflation vector; standing-
+  authority *persistence* (a landed sanction does not un-happen) is intentional and kept.
 
 ## 7. Design direction — the planned three-part confluence model
 

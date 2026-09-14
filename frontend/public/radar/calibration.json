@@ -7,11 +7,12 @@
       "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
       "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
       "meter": "pressure",
-      "reading_at_lead": 9.2,
+      "reading_at_lead": 9.3,
       "evidence_at_lead": 4,
-      "reading_at_event": 9.5,
+      "reading_at_event": 9.7,
       "lead_days": 90,
-      "called": true
+      "called": true,
+      "sample": "in_sample"
     },
     {
       "date": "2026-04-15",
@@ -20,11 +21,12 @@
       "title": "Nebraska Supreme Court suspension over hallucinated brief",
       "url": "https://natlawreview.com/article/ten-ai-predictions-2026-what-leading-analysts-say-legal-teams-should-expect",
       "meter": "pressure",
-      "reading_at_lead": 10.0,
-      "evidence_at_lead": 13,
+      "reading_at_lead": 9.9,
+      "evidence_at_lead": 7,
       "reading_at_event": 10.0,
       "lead_days": 90,
-      "called": true
+      "called": true,
+      "sample": "in_sample"
     },
     {
       "date": "2026-08-01",
@@ -33,11 +35,12 @@
       "title": "EU AI Act obligations took effect",
       "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
       "meter": "pressure",
-      "reading_at_lead": 9.4,
-      "evidence_at_lead": 5,
-      "reading_at_event": 9.8,
+      "reading_at_lead": 9.3,
+      "evidence_at_lead": 3,
+      "reading_at_event": 9.9,
       "lead_days": 90,
-      "called": true
+      "called": true,
+      "sample": "in_sample"
     },
     {
       "date": "2026-06-15",
@@ -50,7 +53,8 @@
       "evidence_at_lead": 0,
       "reading_at_event": 8.7,
       "lead_days": 90,
-      "called": true
+      "called": true,
+      "sample": "in_sample"
     },
     {
       "date": "2026-08-31",
@@ -63,7 +67,8 @@
       "evidence_at_lead": 2,
       "reading_at_event": 8.6,
       "lead_days": 90,
-      "called": true
+      "called": true,
+      "sample": "in_sample"
     },
     {
       "date": "2026-08-29",
@@ -76,7 +81,8 @@
       "evidence_at_lead": 0,
       "reading_at_event": 6.2,
       "lead_days": 90,
-      "called": false
+      "called": false,
+      "sample": "in_sample"
     },
     {
       "date": "2024-01-11",
@@ -89,7 +95,8 @@
       "evidence_at_lead": 0,
       "reading_at_event": 7.4,
       "lead_days": 90,
-      "called": false
+      "called": false,
+      "sample": "in_sample"
     },
     {
       "date": "2024-05-23",
@@ -102,7 +109,8 @@
       "evidence_at_lead": 0,
       "reading_at_event": 6.7,
       "lead_days": 90,
-      "called": false
+      "called": false,
+      "sample": "in_sample"
     },
     {
       "date": "2026-06-01",
@@ -115,7 +123,8 @@
       "evidence_at_lead": 3,
       "reading_at_event": 9.0,
       "lead_days": 90,
-      "called": true
+      "called": true,
+      "sample": "in_sample"
     }
   ],
   "n_resolutions": 9,
@@ -138,6 +147,19 @@
       "hit_rate": 0.67
     }
   },
+  "by_sample": {
+    "in_sample": {
+      "n": 9,
+      "hits": 6,
+      "hit_rate": 0.67
+    },
+    "out_of_sample": {
+      "n": 0,
+      "hits": 0,
+      "hit_rate": null
+    }
+  },
+  "knobs_frozen_at": "2026-09-14",
   "cascade": {
     "n_l3_called": 2,
     "n_l3_backed_by_l2": 1,
@@ -168,5 +190,41 @@
   },
   "call_threshold": 7.0,
   "lead_days": 90,
+  "precision": {
+    "grid": {
+      "step_days": 30,
+      "window_days": 90,
+      "start": "2025-09-16",
+      "end": "2026-09-14",
+      "n_dates": 13,
+      "n_lines": 11,
+      "n_cells": 143
+    },
+    "tp": 9,
+    "fp": 79,
+    "fn": 0,
+    "tn": 55,
+    "precision": 0.1,
+    "recall": 1.0,
+    "flag_rate": 0.62,
+    "base_rate": 0.063,
+    "lift": 1.59,
+    "threshold": 7.0
+  },
+  "seed_ablation": {
+    "default_seeds": {
+      "n": 9,
+      "hits": 6,
+      "hit_rate": 0.67
+    },
+    "neutral_seeds": {
+      "n": 9,
+      "hits": 5,
+      "hit_rate": 0.56
+    },
+    "seed_dependence": 0.11,
+    "neutral_seed": 5.0,
+    "note": "hits lost when seeds are neutralized = calls that rested on the analyst baseline rather than on point-in-time evidence"
+  },
   "snapshots_recorded": 2
 }

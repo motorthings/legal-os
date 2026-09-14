@@ -36,7 +36,7 @@ def one_pass(do_ingest=False):
     from build import build
     import calibration
     data = build()
-    bt = calibration.backtest()
+    bt = calibration.report()   # recall backtest + precision + seed ablation + holdout
     n_snaps = calibration.snapshot(data)
     artifact = calibration.write_run_artifact(data, bt)
     rising = [f["title"] for f in data["fault_lines"] if f["trend"] == "rising"]

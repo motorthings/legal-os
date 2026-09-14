@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-08",
+  "as_of": "2026-09-14",
   "firm": {
     "name": "Hourly firm",
     "pricing": "hourly",
@@ -40,6 +40,30 @@
   },
   "rows": [
     {
+      "fault_line": "disclosure",
+      "title": "Disclosure & certification standardize",
+      "control": "Verification-by-default with an audit trail",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 5.5,
+        "2_enablement": 7.0,
+        "2_market_enable": 7.4,
+        "3_pressure": 10.0,
+        "3_adoption": 7.7,
+        "4_gate_full": -123810,
+        "4_gate_eff": -70796
+      }
+    },
+    {
       "fault_line": "verification",
       "title": "'A human reviewed it' stops being enough",
       "control": "Documented verification + trace logs",
@@ -61,30 +85,6 @@
         "3_adoption": 8.6,
         "4_gate_full": -123810,
         "4_gate_eff": -104960
-      }
-    },
-    {
-      "fault_line": "disclosure",
-      "title": "Disclosure & certification standardize",
-      "control": "Verification-by-default with an audit trail",
-      "horizon": "near (0-12mo)",
-      "lead": "now",
-      "seam": "codifiable",
-      "driver": "deployment",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "fix-pricing-first",
-      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
-      "orders": {
-        "1_capability": 5.5,
-        "2_enablement": 7.0,
-        "2_market_enable": 7.4,
-        "3_pressure": 9.9,
-        "3_adoption": 7.7,
-        "4_gate_full": -123810,
-        "4_gate_eff": -70796
       }
     },
     {
@@ -112,30 +112,6 @@
       }
     },
     {
-      "fault_line": "competence",
-      "title": "Competence becomes an affirmative governance duty",
-      "control": "Firm-wide training + governance program",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "codifiable",
-      "driver": "deployment",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "fix-pricing-first",
-      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
-      "orders": {
-        "1_capability": 6.6,
-        "2_enablement": 7.0,
-        "2_market_enable": 8.4,
-        "3_pressure": 9.9,
-        "3_adoption": 8.0,
-        "4_gate_full": -123810,
-        "4_gate_eff": -83755
-      }
-    },
-    {
       "fault_line": "convergence",
       "title": "Regulatory convergence forces one operating model",
       "control": "One operating model, to the strictest standard",
@@ -153,44 +129,20 @@
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 4.0,
-        "3_pressure": 9.8,
+        "3_pressure": 9.9,
         "3_adoption": 7.7,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
       }
     },
     {
-      "fault_line": "agentic",
-      "title": "Agentic autonomy reopens supervision & UPL",
-      "control": "Human-decides gates + scope-limiting",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "mixed",
-      "driver": "capability",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "fix-pricing-first",
-      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
-      "orders": {
-        "1_capability": 6.9,
-        "2_enablement": 7.0,
-        "2_market_enable": 6.5,
-        "3_pressure": 9.4,
-        "3_adoption": 6.2,
-        "4_gate_full": -123810,
-        "4_gate_eff": -54773
-      }
-    },
-    {
-      "fault_line": "benchmark",
-      "title": "A tool-certification / benchmark standard emerges",
-      "control": "Tool-certification benchmark (NERVE)",
+      "fault_line": "competence",
+      "title": "Competence becomes an affirmative governance duty",
+      "control": "Firm-wide training + governance program",
       "horizon": "mid (1-3yr)",
       "lead": "~1 year",
       "seam": "codifiable",
-      "driver": "capability",
+      "driver": "deployment",
       "required": true,
       "opportunistic": false,
       "govern": "stand-up-now",
@@ -198,13 +150,13 @@
       "deploy": "fix-pricing-first",
       "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
       "orders": {
-        "1_capability": 9.0,
+        "1_capability": 6.6,
         "2_enablement": 7.0,
-        "2_market_enable": 8.9,
-        "3_pressure": 9.1,
-        "3_adoption": 7.6,
+        "2_market_enable": 8.4,
+        "3_pressure": 9.8,
+        "3_adoption": 8.0,
         "4_gate_full": -123810,
-        "4_gate_eff": -112029
+        "4_gate_eff": -83755
       }
     },
     {
@@ -225,7 +177,7 @@
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 3.0,
-        "3_pressure": 9.1,
+        "3_pressure": 9.0,
         "3_adoption": 2.5,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
@@ -249,10 +201,58 @@
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 6.9,
-        "3_pressure": 8.7,
+        "3_pressure": 8.5,
         "3_adoption": 8.4,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
+      }
+    },
+    {
+      "fault_line": "agentic",
+      "title": "Agentic autonomy reopens supervision & UPL",
+      "control": "Human-decides gates + scope-limiting",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "mixed",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 6.9,
+        "2_enablement": 7.0,
+        "2_market_enable": 6.5,
+        "3_pressure": 7.3,
+        "3_adoption": 6.1,
+        "4_gate_full": -123810,
+        "4_gate_eff": -54773
+      }
+    },
+    {
+      "fault_line": "benchmark",
+      "title": "A tool-certification / benchmark standard emerges",
+      "control": "Tool-certification benchmark (NERVE)",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 9.0,
+        "2_enablement": 7.0,
+        "2_market_enable": 8.9,
+        "3_pressure": 6.9,
+        "3_adoption": 7.5,
+        "4_gate_full": -123810,
+        "4_gate_eff": -112029
       }
     },
     {

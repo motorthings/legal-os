@@ -43,8 +43,13 @@ Output: `docs/radar/index.html` (self-contained, GitHub Pages serves it) +
 - Weight = tier weight × conflict discount × empirical boost × recency decay.
   Standing authority (T1/T2) never decays out.
 - A fault line's pressure = seed thesis lifted by summed weighted evidence,
-  amplified by **corroboration across independent tiers**. Ten vendor posts can't
-  outweigh one ruling.
+  amplified by **corroboration across independent sources** (distinct `source`
+  strings, `single_source` items excluded, hard-capped). Ten vendor posts can't
+  outweigh one ruling, and a curated feed can't inflate a reading with echoes.
+- **Ruling-lane isolation (G5):** only ruling/regulatory evidence (`RULING_TIERS`
+  T1/T2, or a per-item `ruling` override) lifts the L2 ruling meter. Market,
+  commentary, and vendor items stay on the line as provenance but cannot move the
+  ruling grade (they feed the adoption/capability/software lanes instead).
 - **Negative evidence** (optional `negative_fault_lines` on an item): an item can
   COUNTER a line (e.g. a court holding disclosure is NOT required). Its weight is
   subtracted on the listed lines and added everywhere else; the ruling meter is
@@ -80,6 +85,12 @@ live in separate lanes so speculation never masquerades as legal fact (see backl
       lead), pressure time-series snapshots, and an immutable per-run audit artifact
       (`history/runs/`) capturing knobs, evidence, weights, math, predictions, backtest.
       The engine earns trust by being graded, not by asserting the future.
+- [x] **Calibration honesty layer** (2026-09-14) — the recall backtest can't see false
+      positives, so it's paired with: a **precision / base-rate grid** (precision,
+      flag-rate, lift over a line×month grid — currently precision 0.10, lift 1.59); a
+      **forward-only holdout** (`KNOBS_FROZEN_AT` splits retrodictive in-sample from a real
+      out-of-sample track record); and a **seed ablation** (how much of each call rests on
+      the analyst seed vs point-in-time evidence). See design doc §5.3.
 
 ### Most valuable next (do these first)
 1. **Harvester + admission gate** (`ingest.py`) — allowlist-only fetch, then admit

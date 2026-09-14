@@ -28,9 +28,36 @@ SOURCE_TIERS = {
 # Scoring knobs (all explicit so score replay is deterministic).
 CONFLICT_DISCOUNT = 0.4     # multiply weight if source sells what it comments on
 EMPIRICAL_BOOST = 1.25      # multiply weight if item carries hard data
-CORROBORATION_STEP = 0.15   # added per distinct higher-or-equal tier corroborating
+CORROBORATION_STEP = 0.15   # added per distinct INDEPENDENT SOURCE (not tier) corroborating
+CORROBORATION_CAP = 0.45    # hard ceiling on the corroboration bonus (≈3 independent sources).
+                            # Corroboration is keyed to distinct `source` strings, and items
+                            # flagged `single_source` do not count as independent — so a curated
+                            # feed cannot inflate a reading just by carrying many tiers/echoes.
 HALF_LIFE_DAYS = 180        # momentum decay half-life (standing T1/T2 evidence exempt)
 STANDING_TIERS = {"T1", "T2"}   # never decays out of the evidence base
+
+# --- L2 ruling-lane isolation (closes G5) -----------------------------------
+# The ruling (L2) meter must be computed on ACTUAL ruling/regulatory evidence, not
+# on any matched document. A T3 market action, T4 commentary, or T5 vendor post is
+# real signal for adoption/capability/software lanes but is NOT a ruling — it must
+# never lift the ruling grade. An item is ruling-eligible iff it is primary/binding
+# law (T1) or regulatory guidance (T2: ethics opinions, standing orders), OR it
+# carries an explicit per-item `ruling` boolean override. Everything else is kept as
+# provenance on the line but excluded from the L2 pressure math and its corroboration.
+RULING_TIERS = {"T1", "T2"}
+
+# --- Forward-only holdout (honest calibration) ------------------------------
+# Knobs, seeds, thresholds, and the curated feed were authored with hindsight, so a
+# backtest over events that predate this freeze is RETRODICTION, not a forecast track
+# record. We freeze the configuration here; resolutions dated on/before the freeze are
+# graded as `in_sample` (retrodiction, reported but not claimed as skill), and only
+# resolutions dated AFTER the freeze count as an out-of-sample forecast track record.
+# Bump this date only when knobs/seeds/feed curation change, and record why.
+KNOBS_FROZEN_AT = "2026-09-14"
+
+# Neutral seed used by the seed-ablation backtest: replaces every analyst seed with a
+# single midpoint so the ablation shows how much of a "call" is evidence vs seed choice.
+NEUTRAL_SEED = 5.0
 # NOTE: source-reliability (a source earning weight above its tier floor by a proven
 # track record) is a BACKLOG item, not v1. v1 weights are tier-flat.
 
