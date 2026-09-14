@@ -96,6 +96,15 @@ live in separate lanes so speculation never masquerades as legal fact (see backl
 1. **Harvester + admission gate** (`ingest.py`) — allowlist-only fetch, then admit
    only on tier + relevance + novelty; quarantine the rest with a logged reason.
    The anti-noise layer. Appends to `feed.jsonl` in the existing schema.
+   - [x] **Layer 0 — run-to-run dedup memory** (`dedup.py`, `ledger.py`). `admit()`
+         consults the `SeenIndex` (canonical URL / content hash / citation-echo over
+         the KB) and the `history/admissions.jsonl` ledger (what a prior run already
+         judged) BEFORE evaluating a candidate — so a new run never re-admits a
+         document the KB holds, never re-judges a quarantined one, and collapses
+         echoes to the primary. Idempotent, deterministic, no deps, tested
+         (`tests/test_dedup.py`, 7/7). The tier + signal-relevance gate is live.
+   - [ ] Network fetchers (`_harvest()`) against `SOURCE_ALLOWLIST` — feed `admit()`.
+   - [ ] Layer 2 — Voyage/pgvector semantic dedup (`REL_MIN`/`DEDUP_MAX`).
 3. **Capability-trajectory lane** — ingest AI-capability forecasts as a **separate,
    clearly-labeled, low-weight signal** that shifts a fault line's horizon/likelihood,
    NOT its ruling evidence. Named inputs so far, and they are DIFFERENT epistemic

@@ -26,12 +26,19 @@ def log(event, **fields):
 
 
 def one_pass(do_ingest=False):
+    import ingest
+    # Always-on run-to-run dedup memory: enforce KB integrity on EVERY pass, harvest
+    # or not, so the seen-memory is part of the OS and duplicates never accrue silently.
+    recon = ingest.reconcile_kb()
+    log("kb_reconciled", n_items=recon["n_items"],
+        duplicates=recon["n_duplicates"], shared_source=recon["n_shared_source"])
+    for d in recon["duplicates"]:   # true content dupes — surface loudly
+        log("kb_duplicate", title=d["title"][:80], reason=d["reason"])
     if do_ingest:
         try:
-            from ingest import harvest_and_admit
-            admitted = harvest_and_admit()
+            admitted = ingest.harvest_and_admit()
             log("ingest", admitted=admitted)
-        except Exception as e:  # ingestion is optional; never block the page build
+        except Exception as e:  # network fetchers optional; never block the page build
             log("ingest_skipped", reason=str(e))
     from build import build
     import calibration

@@ -255,6 +255,32 @@ are the content Layer B's enablement axis must eventually carry:
 - **Cal. Rule of Court 10.430** (adopted July 2025) was a real governance event absent from the
   feed. **Resolved 2026-09-07:** added as a T1 item mapping to convergence/disclosure/verification.
 
+## 5.4 Run-to-run harvester memory — Layer 0 (2026-09-14)
+
+So a new research run uses what the last one did instead of starting cold, the admission
+gate has durable memory, wired into the OS so it runs on **every** pass (not only when
+harvesting):
+
+- **Identity** (`dedup.py`) — a document is identified by canonical URL, content hash,
+  and extracted case citations (rule/statute refs excluded so FRAP 38 doesn't collapse
+  distinct rulings). Pure, deterministic, no deps.
+- **SeenIndex + admission ledger** (`ledger.py`) — the `SeenIndex` is everything the KB
+  (`feed.jsonl`) already holds; `history/admissions.jsonl` is every candidate any prior
+  run decided on (admit / quarantine / dedup, with reason). `admit()` (`ingest.py`)
+  consults both BEFORE evaluating a candidate, so a run never re-admits a document the
+  KB holds, never re-judges a quarantined one, and collapses echoes to the primary.
+  Idempotent and tested (`tests/test_dedup.py`, 7/7).
+- **Wired into the OS** — `run.py` calls `reconcile_kb()` on **every** pass (local,
+  `--watch`, and the weekly CI job), enforcing KB integrity and refreshing the seen-memory
+  before any build; the CI workflow commits `feed.jsonl` + the ledger + snapshots so the
+  memory persists across scheduled runs. Distinguishes true content duplicates (alarm)
+  from distinct docs sharing an aggregator URL (informational).
+- **Not yet**: the network fetchers (`_harvest()`) and Layer-2 Voyage/pgvector semantic
+  dedup. `admit()` runs the full memory today on any candidate list.
+- **Honesty interaction**: Layer-3 learned tuning (source reliability, thresholds) would
+  change scoring and therefore must bump `KNOBS_FROZEN_AT` (see §5.3) and re-baseline —
+  learned-methods memory and the forward-only holdout are coupled by design.
+
 ## 6. Logic gaps in v1 (recorded so each fix is traceable)
 
 - **G1 — The confluence readout (queue) drops the capability axis.** Queue is
