@@ -47,6 +47,14 @@ interface Calibration {
     default_seeds: { hit_rate: number | null };
     neutral_seeds: { hit_rate: number | null };
   };
+  top_n: {
+    top_n: number;
+    lead_days: number;
+    n_resolutions: number;
+    hits: number;
+    hit_rate: number | null;
+    rows: { date: string; order: number; fault_line: string; title: string; rank: number | null; in_top: boolean }[];
+  };
 }
 
 /* -------------------------------------------------------------- constants */
@@ -80,6 +88,7 @@ export default function CalibrationPage() {
   const recall = cal.hit_rate;
   const prec = cal.precision;
   const ab = cal.seed_ablation;
+  const topN = cal.top_n;
   const inSample = cal.by_sample?.in_sample;
   const outSample = cal.by_sample?.out_of_sample;
 
@@ -110,8 +119,8 @@ export default function CalibrationPage() {
         </p>
       </div>
 
-      {/* recall, and the two sides that temper it */}
-      <div className="grid md:grid-cols-3 gap-4">
+      {/* recall, and the three sides that temper it */}
+      <div className="grid md:grid-cols-4 gap-4">
         <div className="card p-4">
           <p className="eyebrow mb-1">Recall <span className="font-normal normal-case text-[var(--text-muted)]">· retrodiction</span></p>
           <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{pct(recall)}</p>
@@ -131,6 +140,13 @@ export default function CalibrationPage() {
           <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{pct(ab?.seed_dependence)}</p>
           <p className="text-[12px] text-[var(--text-muted)] mt-1 leading-snug">
             how much of the calls rest on the analyst's baseline guess rather than evidence. Flatten the seed to neutral and the hit rate drops {pct(ab?.default_seeds.hit_rate)} → {pct(ab?.neutral_seeds.hit_rate)} — so the evidence is doing the work, not the priors.
+          </p>
+        </div>
+        <div className="card p-4" style={{ borderColor: 'var(--primary)' }}>
+          <p className="eyebrow mb-1">Top-{topN?.top_n} hit rate <span className="font-normal normal-case text-[var(--text-muted)]">· the metric that matters</span></p>
+          <p className="font-mono text-3xl font-extrabold text-[var(--primary)]">{pct(topN?.hit_rate)}</p>
+          <p className="text-[12px] text-[var(--text-muted)] mt-1 leading-snug">
+            of the {topN?.n_resolutions} events that landed, {topN?.hits} were already in the build-now top-{topN?.top_n} — so you'd have been building the right control. The product is the ranking, not the prediction.
           </p>
         </div>
       </div>

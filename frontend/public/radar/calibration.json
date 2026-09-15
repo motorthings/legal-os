@@ -226,5 +226,86 @@
     "neutral_seed": 5.0,
     "note": "hits lost when seeds are neutralized = calls that rested on the analyst baseline rather than on point-in-time evidence"
   },
+  "top_n": {
+    "top_n": 3,
+    "lead_days": 90,
+    "n_resolutions": 9,
+    "hits": 3,
+    "hit_rate": 0.33,
+    "rows": [
+      {
+        "date": "2025-12-15",
+        "order": 2,
+        "fault_line": "disclosure",
+        "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
+        "rank": 4,
+        "in_top": false
+      },
+      {
+        "date": "2026-04-15",
+        "order": 2,
+        "fault_line": "verification",
+        "title": "Nebraska Supreme Court suspension over hallucinated brief",
+        "rank": 1,
+        "in_top": true
+      },
+      {
+        "date": "2026-08-01",
+        "order": 2,
+        "fault_line": "convergence",
+        "title": "EU AI Act obligations took effect",
+        "rank": 5,
+        "in_top": false
+      },
+      {
+        "date": "2026-06-15",
+        "order": 3,
+        "fault_line": "insurance",
+        "title": "CNA makes AI governance a coverage condition (adoption)",
+        "rank": 7,
+        "in_top": false
+      },
+      {
+        "date": "2026-08-31",
+        "order": 3,
+        "fault_line": "verification",
+        "title": "Verification duty extended to expert work product (adoption)",
+        "rank": 1,
+        "in_top": true
+      },
+      {
+        "date": "2026-08-29",
+        "order": 3,
+        "fault_line": "agentic",
+        "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
+        "rank": 8,
+        "in_top": false
+      },
+      {
+        "date": "2024-01-11",
+        "order": 1,
+        "fault_line": "benchmark",
+        "title": "Legal LLM hallucination capability demonstrated at scale (Stanford/Yale, 58-88%)",
+        "rank": 6,
+        "in_top": false
+      },
+      {
+        "date": "2024-05-23",
+        "order": 1,
+        "fault_line": "verification",
+        "title": "'A human reviewed it' shown insufficient \u2014 RAG legal tools produce confident wrong cites",
+        "rank": 1,
+        "in_top": true
+      },
+      {
+        "date": "2026-06-01",
+        "order": 1,
+        "fault_line": "benchmark",
+        "title": "Purpose-built legal AI tools quantified at 17-34% error (Westlaw/Lexis)",
+        "rank": 7,
+        "in_top": false
+      }
+    ]
+  },
   "snapshots_recorded": 4
 }

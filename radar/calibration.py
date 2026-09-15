@@ -382,14 +382,41 @@ def write_run_artifact(data, bt):
     return str(path.relative_to(Path(__file__).parent))
 
 
+def top_n_report(top_n=3, lead_days=LEAD_DAYS):
+    """Top-N hit rate — the ranking metric the radar is actually graded on.
+
+    The product is the build-now queue (top-N by `queue`), not "which of 11 lines will
+    rule." So the honest question is: of the rulings that landed, how many were already
+    in the top-N at the lead date? A firm acts on the top-N, so the radar is "good" if
+    the rulings land on those lines — regardless of the bottom of the list. This is
+    recall@N over the queue ranking."""
+    rows = []
+    for r in load_resolutions():
+        lead_date = (_parse_date(r["date"]) - timedelta(days=lead_days)).isoformat()
+        ranked = sorted(score(as_of=lead_date)["fault_lines"], key=lambda f: -f["queue"])
+        rank = next((i + 1 for i, f in enumerate(ranked) if f["id"] == r["fault_line"]), None)
+        rows.append({
+            "date": r["date"], "order": r.get("order", 2), "fault_line": r["fault_line"],
+            "title": r["title"], "rank": rank, "in_top": rank is not None and rank <= top_n,
+        })
+    n_rows = len(rows)
+    hits = sum(1 for x in rows if x["in_top"])
+    return {
+        "top_n": top_n, "lead_days": lead_days,
+        "n_resolutions": n_rows, "hits": hits,
+        "hit_rate": round(hits / n_rows, 2) if n_rows else None,
+        "rows": rows,
+    }
+
+
 def report():
-    """Bundle for the page: recall backtest + precision + seed ablation + snapshots."""
+    """Bundle for the page: recall backtest + precision + seed ablation + top-N + snapshots."""
     bt = backtest()
     n_snaps = 0
     if SNAP_FILE.exists():
         n_snaps = len([l for l in SNAP_FILE.read_text().splitlines() if l.strip()])
     return {**bt, "precision": precision_report(), "seed_ablation": seed_ablation(),
-            "snapshots_recorded": n_snaps}
+            "top_n": top_n_report(), "snapshots_recorded": n_snaps}
 
 
 if __name__ == "__main__":
