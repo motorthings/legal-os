@@ -44,6 +44,8 @@ interface FaultLine {
   software: number;
   queue: number;
   lead: string;
+  last_evidence_date?: string;
+  stale_days?: number | null;
   seam?: string;
   driver?: string;
 }
@@ -526,7 +528,12 @@ export default function RadarPage() {
                   <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{rowRanks.get(f.id)}</span>
                   <span>
                     <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
-                    <span className="block text-[11px] text-[var(--text-muted)]">{f.title}</span>
+                    <span className="block text-[11px] text-[var(--text-muted)]">
+                      {f.title}
+                      {f.stale_days != null && f.stale_days > 180 && (
+                        <span className="ml-1.5 font-semibold text-[var(--rose)]">stale {f.stale_days}d</span>
+                      )}
+                    </span>
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-[12px]">
                     <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
