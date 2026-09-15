@@ -90,6 +90,14 @@ function sBucket(s: number): Momentum {
   if (s >= 4.5) return 'building';
   return 'idle';
 }
+function staleColor(d: number): string {
+  if (d <= 45) return '#8FBFAE';   // fresh (green)
+  if (d <= 180) return '#EFAE42';  // aging (amber)
+  return '#A4093F';                // stale (rose)
+}
+function staleLabel(d: number): string {
+  return d > 180 ? `stale ${d}d` : `${d}d`;
+}
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -530,8 +538,8 @@ export default function RadarPage() {
                     <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
                     <span className="block text-[11px] text-[var(--text-muted)]">
                       {f.title}
-                      {f.stale_days != null && f.stale_days > 180 && (
-                        <span className="ml-1.5 font-semibold text-[var(--rose)]">stale {f.stale_days}d</span>
+                      {f.stale_days != null && (
+                        <span className="ml-1.5 font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
                       )}
                     </span>
                   </span>
@@ -566,6 +574,12 @@ export default function RadarPage() {
                         <p className="eyebrow mb-1">What to put in place</p>
                         <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.build_now}</p>
                         <p className="text-[11px] text-[var(--text-muted)] mt-1">Model rules: {f.model_rules.join(', ')}</p>
+                        {f.last_evidence_date && f.stale_days != null && (
+                          <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                            Last evidence {f.last_evidence_date} ·{' '}
+                            <span className="font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-4">
