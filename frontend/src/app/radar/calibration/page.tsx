@@ -116,9 +116,9 @@ export default function CalibrationPage() {
         </div>
         <div className="card p-4">
           <p className="eyebrow mb-1">Seed dependence <span className="font-normal normal-case text-[var(--text-muted)]">· lower is better</span></p>
-          <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{ab?.seed_dependence == null ? '—' : `${ab.seed_dependence.toFixed(2)}`}</p>
+          <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{pct(ab?.seed_dependence)}</p>
           <p className="text-[12px] text-[var(--text-muted)] mt-1 leading-snug">
-            how much of the score is the analyst's baseline guess rather than evidence. Flatten the seed to neutral and hits only drop {pct(ab?.default_seeds.hit_rate)} → {pct(ab?.neutral_seeds.hit_rate)} — so the evidence is doing the work, not the priors.
+            how much of the calls rest on the analyst's baseline guess rather than evidence. Flatten the seed to neutral and the hit rate drops {pct(ab?.default_seeds.hit_rate)} → {pct(ab?.neutral_seeds.hit_rate)} — so the evidence is doing the work, not the priors.
           </p>
         </div>
       </div>
