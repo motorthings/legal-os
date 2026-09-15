@@ -28,8 +28,10 @@ request. A source that 4xx/5xx's or times out is skipped — never fatal.
 
   The fetcher sends `Authorization: Token <key>` (CourtListener requires the literal word
   `Token`). Without the env var the request is anonymous, exactly as before.
-- **Voyage** (`VOYAGE_API_KEY`) is only for Layer-2 semantic dedup, which is not wired
-  into the harvest path — not needed for a live run.
+- **Voyage** (`VOYAGE_API_KEY`) powers the Layer-2 **semantic relevance gate**: harvested
+  items are embedded and matched to fault-line centroids by cosine similarity instead of
+  (over-matching) keyword substrings. **Optional** — without it, the gate falls back to
+  keyword matching, which over-matches full opinion text and admits false positives.
 
 If CourtListener silently vanishes from a preview, that is the likely cause: check whether
 `sources_allowlisted=3` but only the two RSS sources produced candidates.
@@ -103,7 +105,13 @@ that run's decisions. The curated `feed.jsonl` is never touched by harvesting.
 3. **CourtListener may require auth.** If the search endpoint returns 401/403, that
    source is skipped silently and only the RSS sources contribute. Check the preview's
    `candidates` count against the source count.
-4. **A live run changes scores, which touches calibration honesty.** If harvested items
+4. **Relevance is embedding cosine when `VOYAGE_API_KEY` is set.** Without the key,
+   relevance is signal-substring matching, which over-matches full opinions (a real
+   estate case that mentions "artificial intelligence" admits). With the key, the
+   Layer-2 gate embeds each candidate against the 11 fault-line centroids and admits on
+   `REL_MIN` cosine (default 0.62 — still needs calibration against a labeled sample).
+   Prefer the keyed run for trustworthy admission.
+5. **A live run changes scores, which touches calibration honesty.** If harvested items
    land on lines with resolutions, the backtest numbers can move. That is expected —
    more evidence, different reading. It does **not** require bumping `KNOBS_FROZEN_AT`
    (the knobs didn't change; the evidence did) but the shift should be noted.

@@ -29,3 +29,6 @@ legal-os-SUMMARY.md
 # Simulation run artifacts (reportgen writes results/_sens)
 results/
 .vercel
+
+# Layer-2 embedding centroid cache (regenerated from fault_lines.py on demand)
+radar/history/fault_line_centroids.json
