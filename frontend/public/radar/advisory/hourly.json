@@ -30,12 +30,11 @@
   "pricing_model_source": false,
   "verdict_counts": {
     "govern": {
-      "stand-up-now": 7,
-      "no-mandate": 4
+      "stand-up-now": 10,
+      "no-mandate": 1
     },
     "deploy": {
-      "fix-pricing-first": 5,
-      "watch": 2
+      "fix-pricing-first": 7
     }
   },
   "rows": [
@@ -54,13 +53,13 @@
       "deploy": "fix-pricing-first",
       "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
       "orders": {
-        "1_capability": 6.3,
+        "1_capability": 7.8,
         "2_enablement": 7.0,
-        "2_market_enable": 7.3,
-        "3_pressure": 9.5,
-        "3_adoption": 7.1,
+        "2_market_enable": 8.4,
+        "3_pressure": 9.7,
+        "3_adoption": 8.2,
         "4_gate_full": -123810,
-        "4_gate_eff": -80220
+        "4_gate_eff": -97892
       }
     },
     {
@@ -80,9 +79,9 @@
       "orders": {
         "1_capability": 5.5,
         "2_enablement": 7.0,
-        "2_market_enable": 6.3,
-        "3_pressure": 9.0,
-        "3_adoption": 6.2,
+        "2_market_enable": 7.2,
+        "3_pressure": 9.5,
+        "3_adoption": 6.9,
         "4_gate_full": -123810,
         "4_gate_eff": -70796
       }
@@ -104,9 +103,9 @@
       "orders": {
         "1_capability": 4.5,
         "2_enablement": 7.0,
-        "2_market_enable": 5.8,
-        "3_pressure": 8.6,
-        "3_adoption": 6.2,
+        "2_market_enable": 6.6,
+        "3_pressure": 9.4,
+        "3_adoption": 6.9,
         "4_gate_full": -123810,
         "4_gate_eff": -59014
       }
@@ -126,13 +125,13 @@
       "deploy": "fix-pricing-first",
       "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
       "orders": {
-        "1_capability": 3.6,
+        "1_capability": 5.8,
         "2_enablement": 7.0,
-        "2_market_enable": 6.7,
-        "3_pressure": 8.6,
-        "3_adoption": 6.2,
+        "2_market_enable": 7.9,
+        "3_pressure": 9.3,
+        "3_adoption": 7.5,
         "4_gate_full": -123810,
-        "4_gate_eff": -48412
+        "4_gate_eff": -74330
       }
     },
     {
@@ -153,42 +152,18 @@
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 4.0,
-        "3_pressure": 8.6,
-        "3_adoption": 6.2,
+        "3_pressure": 9.3,
+        "3_adoption": 6.9,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
       }
     },
     {
-      "fault_line": "agentic",
-      "title": "Agentic autonomy reopens supervision & UPL",
-      "control": "Human-decides gates + scope-limiting",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "mixed",
-      "driver": "capability",
-      "required": false,
-      "opportunistic": false,
-      "govern": "no-mandate",
-      "govern_note": "not yet required or open \u2014 nothing forces it now",
-      "deploy": "watch",
-      "deploy_note": "no deploy case yet \u2014 not required or opportunistic",
-      "orders": {
-        "1_capability": 4.8,
-        "2_enablement": 7.0,
-        "2_market_enable": 4.3,
-        "3_pressure": 6.7,
-        "3_adoption": 5.3,
-        "4_gate_full": -123810,
-        "4_gate_eff": -39929
-      }
-    },
-    {
-      "fault_line": "insurance",
-      "title": "Insurance becomes the real regulator",
-      "control": "Governance as an insurable artifact",
-      "horizon": "near (0-12mo)",
-      "lead": "now",
+      "fault_line": "vendor_liability",
+      "title": "Liability shifts partway to vendors",
+      "control": "Tool-provenance documentation",
+      "horizon": "far (3yr+)",
+      "lead": "later",
       "seam": "codifiable",
       "driver": "market",
       "required": true,
@@ -200,57 +175,9 @@
       "orders": {
         "1_capability": 2.5,
         "2_enablement": 7.0,
-        "2_market_enable": 5.4,
-        "3_pressure": 6.5,
-        "3_adoption": 7.1,
-        "4_gate_full": -123810,
-        "4_gate_eff": -123810
-      }
-    },
-    {
-      "fault_line": "benchmark",
-      "title": "A tool-certification / benchmark standard emerges",
-      "control": "Tool-certification benchmark (NERVE)",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "codifiable",
-      "driver": "capability",
-      "required": false,
-      "opportunistic": true,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "fix-pricing-first",
-      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
-      "orders": {
-        "1_capability": 7.3,
-        "2_enablement": 7.0,
-        "2_market_enable": 7.1,
-        "3_pressure": 6.5,
-        "3_adoption": 6.0,
-        "4_gate_full": -123810,
-        "4_gate_eff": -92001
-      }
-    },
-    {
-      "fault_line": "vendor_liability",
-      "title": "Liability shifts partway to vendors",
-      "control": "Tool-provenance documentation",
-      "horizon": "far (3yr+)",
-      "lead": "later",
-      "seam": "codifiable",
-      "driver": "market",
-      "required": false,
-      "opportunistic": false,
-      "govern": "no-mandate",
-      "govern_note": "not yet required or open \u2014 nothing forces it now",
-      "deploy": null,
-      "deploy_note": "not an AI-deployment question (market-driven governance control)",
-      "orders": {
-        "1_capability": 2.5,
-        "2_enablement": 7.0,
         "2_market_enable": 3.0,
-        "3_pressure": 6.3,
-        "3_adoption": 2.7,
+        "3_pressure": 8.3,
+        "3_adoption": 3.3,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
       }
@@ -263,20 +190,68 @@
       "lead": "~1 year",
       "seam": "tacit",
       "driver": "capability",
-      "required": false,
+      "required": true,
       "opportunistic": false,
-      "govern": "no-mandate",
-      "govern_note": "not yet required or open \u2014 nothing forces it now",
-      "deploy": "watch",
-      "deploy_note": "no deploy case yet \u2014 not required or opportunistic",
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
       "orders": {
         "1_capability": 4.0,
         "2_enablement": 7.0,
         "2_market_enable": 3.0,
-        "3_pressure": 6.1,
+        "3_pressure": 7.8,
         "3_adoption": 3.0,
         "4_gate_full": -123810,
         "4_gate_eff": -22830
+      }
+    },
+    {
+      "fault_line": "benchmark",
+      "title": "A tool-certification / benchmark standard emerges",
+      "control": "Tool-certification benchmark (NERVE)",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 8.4,
+        "2_enablement": 7.0,
+        "2_market_enable": 8.3,
+        "3_pressure": 7.6,
+        "3_adoption": 7.2,
+        "4_gate_full": -123810,
+        "4_gate_eff": -104960
+      }
+    },
+    {
+      "fault_line": "agentic",
+      "title": "Agentic autonomy reopens supervision & UPL",
+      "control": "Human-decides gates + scope-limiting",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "mixed",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 6.4,
+        "2_enablement": 7.0,
+        "2_market_enable": 6.0,
+        "3_pressure": 7.2,
+        "3_adoption": 6.3,
+        "4_gate_full": -123810,
+        "4_gate_eff": -51239
       }
     },
     {
@@ -297,8 +272,32 @@
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 3.5,
-        "3_pressure": 5.2,
-        "3_adoption": 3.6,
+        "3_pressure": 6.7,
+        "3_adoption": 5.3,
+        "4_gate_full": -123810,
+        "4_gate_eff": -123810
+      }
+    },
+    {
+      "fault_line": "insurance",
+      "title": "Insurance becomes the real regulator",
+      "control": "Governance as an insurable artifact",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 7.0,
+        "2_market_enable": 6.6,
+        "3_pressure": 6.5,
+        "3_adoption": 8.1,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
       }

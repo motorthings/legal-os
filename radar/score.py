@@ -59,15 +59,14 @@ def reliability_multipliers():
 # Saturation divisors: how fast each meter's evidence saturates toward 10. Larger =
 # slower, more conservative. The capability lane is the most conservative on purpose
 # — a demonstration should nudge, not shout, so speculation never reads as a ruling.
-# NOTE (2026-09-15): raised ~5x from the original (3/2/4/2/2.5) so the meters SPREAD
-# instead of pinning at 10.0. At the old divisors any line with ~10 weighted evidence
-# saturated to "certain", so 13 vs 20 vs 10 rulings all read 10.0 — the meter was lying
-# about confidence. Higher divisors make "lots" and "tons" of evidence distinguishable.
-RULING_DIVISOR = 15.0
-ADOPTION_DIVISOR = 10.0
-CAP_DIVISOR = 20.0
-ENABLE_DIVISOR = 10.0   # market enablement (E), same conservative saturating shape as adoption
-SOFTWARE_DIVISOR = 12.0 # software capability (S), momentum-shaped; slightly slower than adoption
+# NOTE (2026-09-15): the lift is now net/(net+divisor) — a sub-linear curve that never
+# pins at 10.0 — so the ORIGINAL divisors are fine again. The curve itself spreads the
+# meter; the divisor no longer needs to be inflated to avoid saturation.
+RULING_DIVISOR = 3.0
+ADOPTION_DIVISOR = 2.0
+CAP_DIVISOR = 4.0
+ENABLE_DIVISOR = 2.0   # market enablement (E), same conservative saturating shape as adoption
+SOFTWARE_DIVISOR = 2.5 # software capability (S), momentum-shaped; slightly slower than adoption
 
 FEED_PATH = Path(__file__).parent / "sources" / "feed.jsonl"
 # Machine-fetched docs live in a SEPARATE store. The hand-curated feed stays hand-curated
@@ -234,6 +233,17 @@ def _capability_weight(item):
     return w, cls
 
 
+def _lift(net, divisor):
+    """Diminishing-returns lift: 0 at net=0, approaching 1 as net grows, on a sub-linear
+    curve (net / (net + divisor)) that never pins at 1.0. Unlike an exp curve — which
+    saturates so fast that 10 vs 20 vs 13 units of evidence all read ~10.0 — this keeps
+    lots and tons of evidence distinguishable, so the meter spreads and a high score
+    means genuinely more evidence, not just enough to pin."""
+    if net <= 0:
+        return 0.0
+    return net / (net + divisor)
+
+
 def _two_sided_pressure(net, seed, divisor):
     """Two-sided saturating pressure for the ruling (L2) meter.
 
@@ -242,7 +252,7 @@ def _two_sided_pressure(net, seed, divisor):
     required) genuinely weakens the analyst thesis rather than merely offsetting the
     lift. Symmetric and deterministic, so score replay stays exact."""
     if net >= 0:
-        return seed + (10 - seed) * (1 - math.exp(-net / divisor))
+        return seed + (10 - seed) * _lift(net, divisor)
     return seed * math.exp(net / divisor)
 
 
@@ -369,7 +379,7 @@ def score(feed=None, as_of=None, seeds="default"):
         c_corr = max(0, len(capability_classes) - 1) * CORROBORATION_STEP
         c_weighted = sum(e["weight"] for e in capability_evidence) * (1 + c_corr)
         c_seed = _seed(CAPABILITY_SEEDS.get(fl["id"], 2.5))
-        c_lift = (10 - c_seed) * (1 - math.exp(-c_weighted / CAP_DIVISOR))
+        c_lift = (10 - c_seed) * _lift(c_weighted, CAP_DIVISOR)
         capability = round(min(10.0, c_seed + c_lift), 1)
         capability_evidence.sort(
             key=lambda e: (CAPABILITY_WEIGHTS[e["capability"]], e["date"]), reverse=True)
@@ -385,7 +395,7 @@ def score(feed=None, as_of=None, seeds="default"):
         a_corr = max(0, len(market_classes) - 1) * CORROBORATION_STEP
         a_weighted = sum(e["weight"] for e in adoption_evidence) * (1 + a_corr)
         a_seed = _seed(ADOPTION_SEEDS.get(fl["id"], 3.0))
-        a_lift = (10 - a_seed) * (1 - math.exp(-a_weighted / ADOPTION_DIVISOR))
+        a_lift = (10 - a_seed) * _lift(a_weighted, ADOPTION_DIVISOR)
         adoption = round(min(10.0, a_seed + a_lift), 1)
         adoption_evidence.sort(key=lambda e: (MARKET_WEIGHTS[e["market"]], e["date"]),
                                reverse=True)
@@ -395,7 +405,7 @@ def score(feed=None, as_of=None, seeds="default"):
         e_corr = max(0, len(enable_classes) - 1) * CORROBORATION_STEP
         e_weighted = sum(e["weight"] for e in enable_evidence) * (1 + e_corr)
         e_seed = _seed(ENABLE_SEEDS.get(fl["id"], 3.0))
-        e_lift = (10 - e_seed) * (1 - math.exp(-e_weighted / ENABLE_DIVISOR))
+        e_lift = (10 - e_seed) * _lift(e_weighted, ENABLE_DIVISOR)
         enable = round(min(10.0, e_seed + e_lift), 1)
         enable_evidence.sort(key=lambda e: (ENABLE_WEIGHTS[e["enable"]], e["date"]),
                              reverse=True)
@@ -405,7 +415,7 @@ def score(feed=None, as_of=None, seeds="default"):
         s_corr = max(0, len(software_classes) - 1) * CORROBORATION_STEP
         s_weighted = sum(e["weight"] for e in software_evidence) * (1 + s_corr)
         s_seed = _seed(SOFTWARE_SEEDS.get(fl["id"], 3.0))
-        s_lift = (10 - s_seed) * (1 - math.exp(-s_weighted / SOFTWARE_DIVISOR))
+        s_lift = (10 - s_seed) * _lift(s_weighted, SOFTWARE_DIVISOR)
         software = round(min(10.0, s_seed + s_lift), 1)
         software_evidence.sort(key=lambda e: (SOFTWARE_WEIGHTS[e["software"]], e["date"]),
                                reverse=True)
