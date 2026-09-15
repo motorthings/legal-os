@@ -48,6 +48,7 @@ const ALL_FUNCTIONS: NavItem[] = [
   { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
   { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
   { href: '/radar/reference', label: 'Master reference', icon: BookOpen },
+  { href: '/radar/calibration', label: 'Radar calibration', icon: Target },
 ];
 
 const NAV: Record<Persona, NavGroup[]> = {
@@ -94,6 +95,7 @@ const NAV: Record<Persona, NavGroup[]> = {
         { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
         { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
         { href: '/radar/reference', label: 'Master reference', icon: BookOpen },
+        { href: '/radar/calibration', label: 'Radar calibration', icon: Target },
       ],
     },
   ],
