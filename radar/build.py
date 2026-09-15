@@ -38,6 +38,20 @@ def _trend_glyph(t):
     return {"rising": "▲ rising", "steady": "► steady", "quiet": "· quiet"}.get(t, t)
 
 
+def _staleness(r):
+    """When did this fault line last get new evidence? A line is stale when no ruling,
+    market action, or capability demo has landed in a long while — the re-curation cue."""
+    if r.get("stale_days") is None or not r.get("last_evidence_date"):
+        return ""
+    d = r["stale_days"]
+    label = f"last evidence {r['last_evidence_date']}"
+    if d <= 45:
+        return f'<span class="fresh">· {label} ({d}d)</span>'
+    if d <= 180:
+        return f'<span class="mid">· {label} ({d}d)</span>'
+    return f'<span class="stale">· {label} — {d}d stale</span>'
+
+
 def render(data):
     fls = data["fault_lines"]
     rows = []
@@ -76,7 +90,7 @@ def render(data):
             <span class="p" style="background:{_pressure_color(r['pressure'])}" title="L2 ruling">{r['pressure']}</span>
             <span class="p a" title="L3 adoption">{r['adoption']}</span>
             <span class="t">{_esc(r['title'])}</span>
-            <span class="meta">{_trend_glyph(r['trend'])} · {_esc(r['horizon'])} · {_esc(r['layer'])}</span>
+            <span class="meta">{_trend_glyph(r['trend'])} · {_esc(r['horizon'])} · {_esc(r['layer'])} {_staleness(r)}</span>
           </summary>
           <div class="body">
             <p class="vec"><b>Fault line:</b> {_esc(r['vector'])}</p>
@@ -196,6 +210,9 @@ def render(data):
     text-align:center; font-family:Fraunces,serif; }}
   .t {{ font-family:Fraunces,serif; font-size:1.06rem; }}
   .meta {{ color:var(--dim); font-size:.74rem; margin-left:auto; }}
+  .meta .fresh {{ color:#8fd3b0; }}
+  .meta .mid {{ color:#c9a227; }}
+  .meta .stale {{ color:#e0603a; font-weight:600; }}
   .body {{ padding:0 1rem 1rem; border-top:1px solid var(--line); }}
   .vec {{ margin:.6rem 0; font-size:.86rem; }}
   .vec.build {{ color:#8fd3b0; }}

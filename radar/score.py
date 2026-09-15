@@ -401,6 +401,14 @@ def score(feed=None, as_of=None, seeds="default"):
                      if (as_of - _parse_date(e["date"])).days <= 120)
         trend = "rising" if recent >= 0.8 else ("steady" if recent > -0.8 else "quiet")
 
+        # Staleness: when did this fault line last receive ANY new evidence (any lane)?
+        # A line is "stale" when no ruling, market action, capability demo, enablement, or
+        # software signal has landed in a long while. Answers "which lines need re-curation."
+        all_dates = [e["date"] for e in evidence + capability_evidence
+                     + adoption_evidence + enable_evidence + software_evidence]
+        last_evidence_date = max(all_dates) if all_dates else None
+        stale_days = (as_of - _parse_date(last_evidence_date)).days if last_evidence_date else None
+
         evidence.sort(key=lambda e: (TIER_RANK[e["tier"]], e["date"]), reverse=True)
         results.append({
             **{k: fl[k] for k in ("id", "title", "model_rules", "horizon", "layer",
@@ -450,6 +458,8 @@ def score(feed=None, as_of=None, seeds="default"):
             "software_evidence": software_evidence,
             "queue": queue,
             "lead": lead,
+            "last_evidence_date": last_evidence_date,
+            "stale_days": stale_days,
         })
 
     results.sort(key=lambda r: r["pressure"], reverse=True)
