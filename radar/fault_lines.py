@@ -53,7 +53,10 @@ RULING_TIERS = {"T1", "T2"}
 # graded as `in_sample` (retrodiction, reported but not claimed as skill), and only
 # resolutions dated AFTER the freeze count as an out-of-sample forecast track record.
 # Bump this date only when knobs/seeds/feed curation change, and record why.
-KNOBS_FROZEN_AT = "2026-09-14"
+KNOBS_FROZEN_AT = "2026-09-15"   # bumped: seeds capped below the call threshold and the flag
+                                  # threshold raised to 9.5 — a knob change that re-baselines the
+                                  # in-sample/out-of-sample split. Everything before this date is
+                                  # retrodiction; only post-this-date rulings count as real calls.
 
 # Neutral seed used by the seed-ablation backtest: replaces every analyst seed with a
 # single midpoint so the ablation shows how much of a "call" is evidence vs seed choice.
@@ -190,8 +193,12 @@ FAULT_ANNOTATIONS = {
 
 # Adoption seed (0-10): how far the market has already moved toward the control being
 # table stakes, before this run's evidence. The evidence then moves it, same as pressure.
+# NOTE (2026-09-15): all seeds are capped BELOW the call threshold (7.0). A seed at/above
+# the threshold is a conclusion ("this WILL be called"), not a prior — it pre-marks the
+# line "called" with zero evidence and inflates the backtest with seed-alone hits. Capped
+# so the meter is evidence-driven; the analyst's prior is a weak ordering, not a verdict.
 ADOPTION_SEEDS = {
-    "insurance": 7.5, "disclosure": 7.0, "verification": 6.5, "convergence": 7.0,
+    "insurance": 6.5, "disclosure": 6.0, "verification": 6.5, "convergence": 6.0,
     "confidentiality": 6.0, "benchmark": 5.5, "competence": 5.5, "agentic": 5.0,
     "fees": 3.0, "judicial_analytics": 3.0, "vendor_liability": 2.5,
 }
@@ -216,7 +223,7 @@ ENABLE_WEIGHTS = {
 
 # Enablement seed (0-10): baseline ecosystem readiness before this run's evidence.
 ENABLE_SEEDS = {
-    "benchmark": 7.0, "verification": 6.5, "disclosure": 6.0, "competence": 6.0,
+    "benchmark": 6.5, "verification": 6.5, "disclosure": 6.0, "competence": 6.0,
     "confidentiality": 5.5, "insurance": 5.0, "convergence": 4.0, "fees": 3.5,
     "agentic": 3.5, "judicial_analytics": 3.0, "vendor_liability": 3.0,
 }
@@ -278,7 +285,7 @@ FAULT_LINES = [
         "id": "insurance",
         "title": "Insurance becomes the real regulator",
         "model_rules": ["1.1", "5.1", "5.3"],
-        "pressure_seed": 8.5,
+        "pressure_seed": 6.5,
         "horizon": "near (0-12mo)",
         "layer": "3b — operating model",
         "vector": "Malpractice insurers are adding AI-governance questions to policy "
@@ -295,7 +302,7 @@ FAULT_LINES = [
         "id": "disclosure",
         "title": "Disclosure & certification standardize",
         "model_rules": ["3.3", "Rule 11"],
-        "pressure_seed": 8.0,
+        "pressure_seed": 6.4,
         "horizon": "near (0-12mo)",
         "layer": "3a — reactive",
         "vector": "Courts first punished fake AI citations after the fact (Mata v. "
@@ -311,7 +318,7 @@ FAULT_LINES = [
         "id": "verification",
         "title": "'A human reviewed it' stops being enough",
         "model_rules": ["5.1", "5.3"],
-        "pressure_seed": 7.5,
+        "pressure_seed": 6.2,
         "horizon": "near-mid",
         "layer": "3b — operating model",
         "vector": "Signing a line that says 'a human reviewed it' is no longer enough. "
@@ -342,7 +349,7 @@ FAULT_LINES = [
         "id": "confidentiality",
         "title": "Confidentiality hardens into data governance",
         "model_rules": ["1.6", "1.7", "1.9"],
-        "pressure_seed": 7.0,
+        "pressure_seed": 6.0,
         "horizon": "near (0-12mo)",
         "layer": "3b — operating model",
         "vector": "AI tools that learn from what you feed them, or mix data across "
@@ -439,7 +446,7 @@ FAULT_LINES = [
         "id": "convergence",
         "title": "Regulatory convergence forces one operating model",
         "model_rules": ["1.1", "1.6"],
-        "pressure_seed": 7.5,
+        "pressure_seed": 6.2,
         "horizon": "near (0-12mo)",
         "layer": "3b — operating model",
         "vector": "The rules are a patchwork — the EU AI Act, Colorado, Texas, 35-plus "

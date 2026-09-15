@@ -57,7 +57,7 @@
         "2_enablement": 7.0,
         "2_market_enable": 7.4,
         "3_pressure": 10.0,
-        "3_adoption": 7.7,
+        "3_adoption": 7.0,
         "4_gate_full": 7860,
         "4_gate_eff": 1623
       }
@@ -153,7 +153,7 @@
         "2_enablement": 7.0,
         "2_market_enable": 4.0,
         "3_pressure": 10.0,
-        "3_adoption": 7.7,
+        "3_adoption": 7.0,
         "4_gate_full": 7860,
         "4_gate_eff": 7860
       }
@@ -207,30 +207,6 @@
       }
     },
     {
-      "fault_line": "insurance",
-      "title": "Insurance becomes the real regulator",
-      "control": "Governance as an insurable artifact",
-      "horizon": "near (0-12mo)",
-      "lead": "now",
-      "seam": "codifiable",
-      "driver": "market",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": null,
-      "deploy_note": "not an AI-deployment question (market-driven governance control)",
-      "orders": {
-        "1_capability": 2.5,
-        "2_enablement": 7.0,
-        "2_market_enable": 6.9,
-        "3_pressure": 8.5,
-        "3_adoption": 8.9,
-        "4_gate_full": 7860,
-        "4_gate_eff": 7860
-      }
-    },
-    {
       "fault_line": "benchmark",
       "title": "A tool-certification / benchmark standard emerges",
       "control": "Tool-certification benchmark (NERVE)",
@@ -247,7 +223,7 @@
       "orders": {
         "1_capability": 9.0,
         "2_enablement": 7.0,
-        "2_market_enable": 8.9,
+        "2_market_enable": 8.7,
         "3_pressure": 8.0,
         "3_adoption": 7.5,
         "4_gate_full": 7860,
@@ -298,6 +274,30 @@
         "2_market_enable": 3.5,
         "3_pressure": 7.2,
         "3_adoption": 5.7,
+        "4_gate_full": 7860,
+        "4_gate_eff": 7860
+      }
+    },
+    {
+      "fault_line": "insurance",
+      "title": "Insurance becomes the real regulator",
+      "control": "Governance as an insurable artifact",
+      "horizon": "near (0-12mo)",
+      "lead": "now",
+      "seam": "codifiable",
+      "driver": "market",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": null,
+      "deploy_note": "not an AI-deployment question (market-driven governance control)",
+      "orders": {
+        "1_capability": 2.5,
+        "2_enablement": 7.0,
+        "2_market_enable": 6.9,
+        "3_pressure": 6.5,
+        "3_adoption": 8.5,
         "4_gate_full": 7860,
         "4_gate_eff": 7860
       }

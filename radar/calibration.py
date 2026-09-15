@@ -28,7 +28,10 @@ RES_FILE = HISTORY / "resolutions.jsonl"
 SWRES_FILE = HISTORY / "software_resolutions.jsonl"
 RUNS_DIR = HISTORY / "runs"
 
-CALL_THRESHOLD = 7.0   # pressure at/above this = the fault line was "flagged"
+CALL_THRESHOLD = 9.5   # pressure at/above this = the fault line was "flagged". Raised from
+                        # 7.0 (2026-09-15): at 7.0 the engine flagged ~83% of lines — a "forecast"
+                        # that calls almost everything is not discriminating. 9.5 flags only the
+                        # genuinely-hot lines so a flag is a rare, meaningful signal.
 LEAD_DAYS = 90         # how far before the event we replay the engine
 
 SOFTWARE_CALL_THRESHOLD = 6.0   # software momentum at/above this = the build move was flagged
