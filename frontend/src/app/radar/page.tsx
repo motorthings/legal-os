@@ -47,6 +47,8 @@ interface FaultLine {
   lead: string;
   last_evidence_date?: string;
   stale_days?: number | null;
+  lanes?: Record<string, number>;
+  lanes_populated?: number;
   seam?: string;
   driver?: string;
 }
@@ -79,6 +81,14 @@ function staleColor(d: number): string {
 function staleLabel(d: number): string {
   return d > 180 ? `stale ${d}d` : `${d}d`;
 }
+function coverageColor(n: number): string {
+  if (n >= 5) return '#8FBFAE';   // full (green)
+  if (n >= 3) return '#EFAE42';   // partial (amber)
+  return '#A4093F';               // thin (rose)
+}
+const LANE_KEYS: [string, string][] = [
+  ['capability', 'L1'], ['ruling', 'L2'], ['adoption', 'L3'], ['enable', 'E'], ['software', 'S'],
+];
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -499,7 +509,7 @@ export default function RadarPage() {
         </div>
         <div className="card overflow-hidden">
           <div className="grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>#</span><span>Control · fault line</span><span>Lead</span><span>Fresh</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
+            <span>#</span><span>Control · fault line</span><span>Lead</span><span>Coverage</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
           </div>
           {tableRows.map((f) => {
             const lead = leadBucket(f.lead);
@@ -516,11 +526,11 @@ export default function RadarPage() {
                     <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
                   </span>
                   <span className="flex flex-col items-start leading-tight">
+                    <span className="text-[11px] font-semibold" style={{ color: coverageColor(f.lanes_populated ?? 0) }}>
+                      {f.lanes_populated ?? 0}/5 lanes
+                    </span>
                     {f.stale_days != null ? (
-                      <>
-                        <span className="text-[11px] font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
-                        <span className="text-[10px] text-[var(--text-muted)] font-mono">{f.last_evidence_date}</span>
-                      </>
+                      <span className="text-[10px] font-mono" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
                     ) : (
                       <span className="text-[10px] text-[var(--text-muted)] font-mono">—</span>
                     )}
@@ -553,6 +563,11 @@ export default function RadarPage() {
                         <p className="eyebrow mb-1">What to put in place</p>
                         <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.build_now}</p>
                         <p className="text-[11px] text-[var(--text-muted)] mt-1">Model rules: {f.model_rules.join(', ')}</p>
+                        {f.lanes && (
+                          <p className="text-[11px] text-[var(--text-muted)] mt-1 font-mono">
+                            Evidence per lane: {LANE_KEYS.map(([k, label]) => `${label}:${f.lanes![k] ?? 0}`).join(' · ')}
+                          </p>
+                        )}
                         {f.last_evidence_date && f.stale_days != null && (
                           <p className="text-[11px] text-[var(--text-muted)] mt-1">
                             Last evidence {f.last_evidence_date} ·{' '}

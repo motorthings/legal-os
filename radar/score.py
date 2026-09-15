@@ -409,6 +409,18 @@ def score(feed=None, as_of=None, seeds="default"):
         last_evidence_date = max(all_dates) if all_dates else None
         stale_days = (as_of - _parse_date(last_evidence_date)).days if last_evidence_date else None
 
+        # Coverage (fullness): how many of the five evidence lanes have at least one doc,
+        # and the per-lane counts. Distinct from pressure, which measures hotness — this is
+        # how well-documented the line is, so a thin line reads as "lacking," not "calm."
+        lanes = {
+            "capability": len(capability_evidence),
+            "ruling": n_ruling_evidence,
+            "adoption": len(adoption_evidence),
+            "enable": len(enable_evidence),
+            "software": len(software_evidence),
+        }
+        lanes_populated = sum(1 for v in lanes.values() if v > 0)
+
         evidence.sort(key=lambda e: (TIER_RANK[e["tier"]], e["date"]), reverse=True)
         results.append({
             **{k: fl[k] for k in ("id", "title", "model_rules", "horizon", "layer",
@@ -460,6 +472,8 @@ def score(feed=None, as_of=None, seeds="default"):
             "lead": lead,
             "last_evidence_date": last_evidence_date,
             "stale_days": stale_days,
+            "lanes": lanes,
+            "lanes_populated": lanes_populated,
         })
 
     results.sort(key=lambda r: r["pressure"], reverse=True)

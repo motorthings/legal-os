@@ -283,7 +283,15 @@
       "queue": 7.7,
       "lead": "now",
       "last_evidence_date": "2026-06-01",
-      "stale_days": 106
+      "stale_days": 106,
+      "lanes": {
+        "capability": 0,
+        "ruling": 13,
+        "adoption": 1,
+        "enable": 1,
+        "software": 0
+      },
+      "lanes_populated": 3
     },
     {
       "id": "verification",
@@ -876,7 +884,15 @@
       "queue": 8.6,
       "lead": "~2 quarters",
       "last_evidence_date": "2026-08-31",
-      "stale_days": 15
+      "stale_days": 15,
+      "lanes": {
+        "capability": 3,
+        "ruling": 20,
+        "adoption": 3,
+        "enable": 2,
+        "software": 3
+      },
+      "lanes_populated": 5
     },
     {
       "id": "confidentiality",
@@ -1179,7 +1195,15 @@
       "queue": 7.0,
       "lead": "now",
       "last_evidence_date": "2026-06-10",
-      "stale_days": 97
+      "stale_days": 97,
+      "lanes": {
+        "capability": 0,
+        "ruling": 13,
+        "adoption": 1,
+        "enable": 1,
+        "software": 0
+      },
+      "lanes_populated": 3
     },
     {
       "id": "competence",
@@ -1604,7 +1628,15 @@
       "queue": 8.0,
       "lead": "~1 year",
       "last_evidence_date": "2026-08-04",
-      "stale_days": 42
+      "stale_days": 42,
+      "lanes": {
+        "capability": 5,
+        "ruling": 12,
+        "adoption": 3,
+        "enable": 2,
+        "software": 0
+      },
+      "lanes_populated": 4
     },
     {
       "id": "convergence",
@@ -1888,7 +1920,15 @@
       "queue": 7.7,
       "lead": "now",
       "last_evidence_date": "2026-08-01",
-      "stale_days": 45
+      "stale_days": 45,
+      "lanes": {
+        "capability": 0,
+        "ruling": 10,
+        "adoption": 1,
+        "enable": 0,
+        "software": 3
+      },
+      "lanes_populated": 3
     },
     {
       "id": "vendor_liability",
@@ -2087,7 +2127,15 @@
       "queue": 2.4,
       "lead": "later",
       "last_evidence_date": "2026-05-19",
-      "stale_days": 119
+      "stale_days": 119,
+      "lanes": {
+        "capability": 0,
+        "ruling": 6,
+        "adoption": 0,
+        "enable": 0,
+        "software": 3
+      },
+      "lanes_populated": 2
     },
     {
       "id": "judicial_analytics",
@@ -2189,7 +2237,15 @@
       "queue": 2.6,
       "lead": "~1 year",
       "last_evidence_date": "2025-02-20",
-      "stale_days": 572
+      "stale_days": 572,
+      "lanes": {
+        "capability": 0,
+        "ruling": 3,
+        "adoption": 0,
+        "enable": 0,
+        "software": 0
+      },
+      "lanes_populated": 1
     },
     {
       "id": "insurance",
@@ -2307,7 +2363,15 @@
       "queue": 7.1,
       "lead": "now",
       "last_evidence_date": "2026-06-15",
-      "stale_days": 92
+      "stale_days": 92,
+      "lanes": {
+        "capability": 0,
+        "ruling": 0,
+        "adoption": 1,
+        "enable": 1,
+        "software": 0
+      },
+      "lanes_populated": 2
     },
     {
       "id": "benchmark",
@@ -2923,7 +2987,15 @@
       "queue": 6.0,
       "lead": "~1 year",
       "last_evidence_date": "2026-08-18",
-      "stale_days": 28
+      "stale_days": 28,
+      "lanes": {
+        "capability": 4,
+        "ruling": 2,
+        "adoption": 2,
+        "enable": 2,
+        "software": 15
+      },
+      "lanes_populated": 5
     },
     {
       "id": "agentic",
@@ -3518,7 +3590,15 @@
       "queue": 4.5,
       "lead": "~1 year",
       "last_evidence_date": "2026-08-29",
-      "stale_days": 17
+      "stale_days": 17,
+      "lanes": {
+        "capability": 6,
+        "ruling": 1,
+        "adoption": 1,
+        "enable": 1,
+        "software": 12
+      },
+      "lanes_populated": 5
     },
     {
       "id": "fees",
@@ -3603,7 +3683,15 @@
       "queue": 2.2,
       "lead": "~1-2 years",
       "last_evidence_date": "2025-11-24",
-      "stale_days": 295
+      "stale_days": 295,
+      "lanes": {
+        "capability": 0,
+        "ruling": 2,
+        "adoption": 0,
+        "enable": 0,
+        "software": 0
+      },
+      "lanes_populated": 1
     }
   ],
   "tiers": {
