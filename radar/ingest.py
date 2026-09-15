@@ -53,7 +53,6 @@ from pathlib import Path
 
 import dedup
 import ledger
-import embed
 from fault_lines import FAULT_LINES
 from score import _attributes_to, load_feed, load_corpus, FEED_PATH, HARVESTED_PATH
 
@@ -107,7 +106,7 @@ def _has_ai_context(item):
 
 # Feed schema keys an admitted row carries (the scorer reads these).
 _FEED_KEYS = ("date", "tier", "title", "source", "url", "text",
-              "fault_lines", "empirical", "conflict")
+              "fault_lines", "empirical", "conflict", "citation")
 
 
 def _assign_tier(candidate):
@@ -118,19 +117,15 @@ def _assign_tier(candidate):
     return SOURCE_ALLOWLIST.get(dedup.domain_of(candidate.get("url", "")))
 
 
-def _relevant_fault_lines(candidate, gate=None):
+def _relevant_fault_lines(candidate):
     """Relevance: which fault lines this candidate matches.
 
     A curated candidate (a human already attributed `fault_lines`) passes through as-is.
-    An uncurated harvested candidate is gated three ways, best first:
-      1. `gate` (Layer 2) — embedding cosine vs fault-line centroids, when available.
-      2. AI-context + signal match — the keyword stopgap, when no embeddings.
-    Keyword matching over-matches full opinion text, so the embedding gate is preferred
-    whenever VOYAGE_API_KEY is present."""
+    An uncurated harvested candidate must be about AI (`_has_ai_context`) AND match a
+    fault-line signal — the keyword stopgap for the RSS sources. Case-law discovery is
+    Descrybe's job (see curate.py), not the automated harvester's."""
     if candidate.get("fault_lines"):
         return [fl["id"] for fl in FAULT_LINES if _attributes_to(candidate, fl)]
-    if gate is not None:
-        return gate(candidate)   # semantic: cosine >= REL_MIN
     if not _has_ai_context(candidate):
         return []
     return [fl["id"] for fl in FAULT_LINES if _attributes_to(candidate, fl)]
@@ -177,10 +172,6 @@ def admit(candidates, feed_path=HARVESTED_PATH, run=None, dry_run=False, seen_fe
     # callers/tests inject the corpus explicitly.
     seen = ledger.SeenIndex(feed=seen_feed if seen_feed is not None else load_corpus())
     decided = ledger.decided_keys()      # what any prior run already judged
-    # Layer-2 semantic relevance: batch-embed uncurated candidates once, gate on cosine.
-    # None when VOYAGE_API_KEY is absent (tests/CI) — then keyword matching is the fallback.
-    gate = embed.build_gate([c for c in candidates if not c.get("fault_lines")],
-                            rel_min=REL_MIN)
     summary = {"run": run, "n_candidates": len(candidates), "admitted": 0,
                "skipped_in_kb": 0, "skipped_decided": 0, "quarantined": 0,
                "dry_run": bool(dry_run),
@@ -218,7 +209,7 @@ def admit(candidates, feed_path=HARVESTED_PATH, run=None, dry_run=False, seen_fe
             summary["quarantined"] += 1
             continue
         # 4 — relevance
-        fls = _relevant_fault_lines(cand, gate=gate)
+        fls = _relevant_fault_lines(cand)
         if not fls:
             _decide(cand, "quarantine", "no_fault_line_match", {"tier": tier})
             summary["quarantined"] += 1

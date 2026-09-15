@@ -11,30 +11,19 @@ candidate, and runs the full admission gate. Admitted rows are appended to
 is appended to `radar/history/admissions.jsonl`. The scorer then reads
 `load_corpus()` = curated + harvested.
 
-**Outbound calls:** three, to allowlisted domains only (`courtlistener.com`,
-`lawnext.com`, `artificiallawyer.com`). A non-allowlisted domain is refused before any
-request. A source that 4xx/5xx's or times out is skipped — never fatal.
+**Outbound calls:** two, to allowlisted domains only (`lawnext.com`,
+`artificiallawyer.com`). A non-allowlisted domain is refused before any request. A source
+that 4xx/5xx's or times out is skipped — never fatal.
+
+**Case-law discovery is Descrybe's job, not the harvester's.** The automated harvest
+covers the two RSS feeds (legal-tech news); court opinions/rulings are found and vetted
+semantically via Descrybe (`curate.py`), then attributed by a human. See §Curating case
+law below.
 
 ## API keys — none required
 
 - **LawSites / Artificial Lawyer** — public RSS, no key ever.
-- **CourtListener** — the API is *"open by default"*; the search endpoint answers
-  anonymously, so the run works with **no key at all**. Its rate limits are tight though
-  (125/day authenticated, less anonymous), so an optional token is supported:
-
-  ```bash
-  export COURTLISTENER_TOKEN=<your-token>   # optional; raises the rate ceiling
-  ```
-
-  The fetcher sends `Authorization: Token <key>` (CourtListener requires the literal word
-  `Token`). Without the env var the request is anonymous, exactly as before.
-- **Voyage** (`VOYAGE_API_KEY`) powers the Layer-2 **semantic relevance gate**: harvested
-  items are embedded and matched to fault-line centroids by cosine similarity instead of
-  (over-matching) keyword substrings. **Optional** — without it, the gate falls back to
-  keyword matching, which over-matches full opinion text and admits false positives.
-
-If CourtListener silently vanishes from a preview, that is the likely cause: check whether
-`sources_allowlisted=3` but only the two RSS sources produced candidates.
+- **Descrybe** — for curation, runs in the Claude session (MCP), no key in the pipeline.
 
 ## Step 0 — preflight (static, no network)
 
@@ -57,8 +46,7 @@ every candidate's decision and reason and touches nothing. Safe to run repeatedl
 
 Read the output:
 - `sources` — **per-source status**, so you can see which feed actually responded and
-  why one didn't (`ERR ... FAILED (<reason>)`), and whether each request was `[anon]` or
-  `[token]`. This is how you tell whether CourtListener worked.
+  why one didn't (`ERR ... FAILED (<reason>)`).
 - `would admit` — what the real run would add.
 - `reason tally` — the distribution of decisions. Expect a **high quarantine rate**;
   that is the anti-noise gate working, not a bug (see Limitations).
@@ -102,19 +90,21 @@ that run's decisions. The curated `feed.jsonl` is never touched by harvesting.
 2. **The substring fallback is leaky by design.** `score.py` notes the real example:
    the signal `certif` matches `uncertified`. Curation exists to stop exactly this; the
    fallback cannot. Treat signal-matched admissions as lower-confidence than curated ones.
-3. **CourtListener may require auth.** If the search endpoint returns 401/403, that
-   source is skipped silently and only the RSS sources contribute. Check the preview's
-   `candidates` count against the source count.
-4. **Relevance is embedding cosine when `VOYAGE_API_KEY` is set.** Without the key,
-   relevance is signal-substring matching, which over-matches full opinions (a real
-   estate case that mentions "artificial intelligence" admits). With the key, the
-   Layer-2 gate embeds each candidate against the 11 fault-line centroids and admits on
-   `REL_MIN` cosine (default 0.62 — still needs calibration against a labeled sample).
-   Prefer the keyed run for trustworthy admission.
-5. **A live run changes scores, which touches calibration honesty.** If harvested items
+3. **A live run changes scores, which touches calibration honesty.** If harvested items
    land on lines with resolutions, the backtest numbers can move. That is expected —
    more evidence, different reading. It does **not** require bumping `KNOBS_FROZEN_AT`
    (the knobs didn't change; the evidence did) but the shift should be noted.
-5. **First meaningful learning needs post-freeze rulings.** The Layer-3 reliability
+4. **First meaningful learning needs post-freeze rulings.** The Layer-3 reliability
    learner stays dormant until rulings dated after `KNOBS_FROZEN_AT` accrue. Harvesting
    alone does not wake it.
+
+## Curating case law (Descrybe)
+
+The automated harvest does not fetch court opinions — that was tried with CourtListener
+and it over-matched (full opinion text drowns the AI signal in boilerplate). Case-law
+discovery is done with Descrybe instead:
+
+1. For each fault line, run `search_cases_by_concept` in the Claude session.
+2. `curate.py` turns the Descrybe results into feed-schema candidates and dedups them
+   against the KB.
+3. A human attributes `fault_lines` and approves each admitted item into `feed.jsonl`.

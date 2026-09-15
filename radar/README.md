@@ -108,12 +108,19 @@ live in separate lanes so speculation never masquerades as legal fact (see backl
          document the KB holds, never re-judges a quarantined one, and collapses
          echoes to the primary. Idempotent, deterministic, no deps, tested
          (`tests/test_dedup.py`, 7/7). The tier + signal-relevance gate is live.
-   - [x] **Network fetchers** (`fetchers.py`, 2026-09-14) — allowlist-bound RSS/Atom +
-         CourtListener parsers (stdlib only), wired to `admit()`. **Offline by default**
-         (no network unless `RADAR_LIVE_FETCH=1`); the allowlist is a hard boundary
-         (non-allowlisted domains refused before any request); fetched rows land in
-         `sources/harvested.jsonl` (marked `harvested: true`), never the curated feed.
-   - [ ] Layer 2 — Voyage/pgvector semantic dedup (`REL_MIN`/`DEDUP_MAX`).
+   - [x] **Network fetchers** (`fetchers.py`, 2026-09-14) — allowlist-bound RSS/Atom
+         (stdlib only), wired to `admit()`. **Offline by default** (no network unless
+         `RADAR_LIVE_FETCH=1`); the allowlist is a hard boundary (non-allowlisted domains
+         refused before any request); fetched rows land in `sources/harvested.jsonl`
+         (marked `harvested: true`), never the curated feed.
+   - [x] **Case-law curation** (`curate.py`, 2026-09-15) — court opinions are discovered
+         semantically with **Descrybe** (`search_cases_by_concept`), not the harvester.
+         `descrybe_to_items()` turns Descrybe results into feed-schema candidates, flags
+         them against the KB (`in_kb`), and a human attributes `fault_lines` before
+         admission. (CourtListener harvesting was tried and reverted — full opinion text
+         drowns the AI signal in boilerplate; embeddings/rerank were the wrong tool.)
+   - [ ] Layer 2 — Voyage/pgvector semantic dedup (`REL_MIN`/`DEDUP_MAX`) — re-scoped to
+         dedup of curated items only, not discovery.
 3. **Capability-trajectory lane** — ingest AI-capability forecasts as a **separate,
    clearly-labeled, low-weight signal** that shifts a fault line's horizon/likelihood,
    NOT its ruling evidence. Named inputs so far, and they are DIFFERENT epistemic

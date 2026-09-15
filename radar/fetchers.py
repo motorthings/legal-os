@@ -35,15 +35,6 @@ TIMEOUT = 20  # seconds
 # The allowlisted harvesting targets. Each entry's domain MUST be in SOURCE_ALLOWLIST;
 # tier is taken from the allowlist at admission, never from the source's own claim.
 SOURCES = [
-    {"name": "CourtListener opinions (AI sanctions)",
-     # Precise OR of quoted phrases. Unquoted terms like "sanction"/"citation" match every
-     # discovery/appellate case (thousands); a single quoted phrase is too narrow. This
-     # set captures the AI-sanction canon: hallucinated cites (Mata/Couvrette), ChatGPT
-     # misuse, and "generative AI" disclosure/rule cases. The AI-context gate + fault-line
-     # signals do the final filter on the opinion text carried in opinions[].snippet.
-     "url": ("https://www.courtlistener.com/api/rest/v4/search/?type=o&q="
-             "%22hallucinated%22%20OR%20%22generative%20AI%22%20OR%20%22ChatGPT%22"),
-     "kind": "courtlistener"},
     {"name": "LawSites (RSS)",
      "url": "https://www.lawnext.com/feed/", "kind": "rss"},
     {"name": "Artificial Lawyer (RSS)",
@@ -93,70 +84,6 @@ _TAGS = re.compile(r"<[^>]+>")
 
 def _strip_html(s):
     return re.sub(r"\s+", " ", _TAGS.sub(" ", s or "")).strip()
-
-
-def parse_courtlistener(json_bytes):
-    """Parse a CourtListener search API response into entries with metadata + the
-    truncated search `snippet`. The search snippet is NOT full text (it is cut off at
-    the top of the opinion), so the live path enriches each entry with the full
-    `plain_text` via `_courtlistener_with_fulltext`. Extract the `opinion_id` +
-    `cluster_id` needed for that enrichment and for per-case dedup."""
-    data = json.loads(json_bytes)
-    out = []
-    for r in data.get("results", []):
-        cites = r.get("citation") or []
-        sub_snippets = [o.get("snippet", "") for o in r.get("opinions", []) if o.get("snippet")]
-        first_opinion = (r.get("opinions") or [{}])[0]
-        out.append({
-            "title": r.get("caseName") or r.get("case_name") or "",
-            "link": "https://www.courtlistener.com" + (r.get("absolute_url") or ""),
-            "date": r.get("dateFiled") or r.get("date_filed") or "",
-            "summary": _strip_html(" ".join(sub_snippets) or (r.get("syllabus") or "")),
-            "citation": cites[0] if cites else "",
-            "opinion_id": first_opinion.get("id"),
-            "cluster_id": r.get("cluster_id"),
-        })
-    return [e for e in out if e["title"] and e["link"]]
-
-
-# Cap full-text fetches per run so a weekly pass stays far under the 125/day limit.
-MAX_CL_FETCHES = 15
-
-
-def _fetch_opinion_text(opinion_id):
-    """Fetch the full `plain_text` of one opinion. Returns '' on any failure (never
-    raises — a single missing opinion must not block the pass)."""
-    try:
-        body = _fetch(
-            f"https://www.courtlistener.com/api/rest/v4/opinions/{opinion_id}/")
-        return json.loads(body).get("plain_text") or ""
-    except Exception:
-        return ""
-
-
-def _courtlistener_with_fulltext(search_body):
-    """CourtListener is a 2-step fetch: search for candidate opinions, then fetch each
-    one's full text. The search snippet is truncated, so the AI-context gate needs the
-    full `plain_text`. Dedup by cluster_id (one entry per case, keep the lead opinion)
-    and cap at MAX_CL_FETCHES."""
-    entries = parse_courtlistener(search_body)
-    seen = set()
-    enriched = []
-    for e in entries:
-        cid = e.get("cluster_id")
-        key = cid if cid is not None else e.get("opinion_id")
-        if key in seen or len(enriched) >= MAX_CL_FETCHES:
-            continue
-        seen.add(key)
-        oid = e.get("opinion_id")
-        if not oid:
-            continue
-        text = _fetch_opinion_text(oid)
-        if not text:
-            continue
-        e["summary"] = _strip_html(text)
-        enriched.append(e)
-    return enriched
 
 
 def _norm_date(s):
@@ -232,8 +159,7 @@ def _fetch_source(src):
         return [], "domain_not_allowlisted"
     try:
         body = _fetch(src["url"])
-        entries = (_courtlistener_with_fulltext(body) if src["kind"] == "courtlistener"
-                   else parse_rss(body))
+        entries = parse_rss(body)
         return entries, None
     except Exception as e:
         return [], f"{type(e).__name__}: {e}"

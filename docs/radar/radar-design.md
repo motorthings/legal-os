@@ -321,10 +321,16 @@ flows through the Layer-0 dedup memory.
   calibration baseline. `score.load_corpus()` merges the two for scoring; an absent/empty
   harvested file means curated-only, so scoring is unchanged until harvesting admits
   something.
-- **Stdlib only** (urllib + xml.etree) — RSS 2.0, Atom, and the CourtListener JSON API,
-  no new dependency. Tested offline against recorded fixtures
-  (`tests/test_fetchers.py`, 8/8), including the allowlist refusal and the
-  fixture→candidate→admit path.
+- **Stdlib only** (urllib + xml.etree) — RSS 2.0 and Atom, no new dependency. Tested
+  offline against recorded fixtures (`tests/test_fetchers.py`), including the allowlist
+  refusal and the fixture→candidate→admit path.
+- **CourtListener removed (2026-09-15).** Court opinions are no longer harvested from
+  CourtListener. The search endpoint + a 2-step full-text fetch were built, but full
+  opinion text drowns the AI signal in boilerplate — the real AI case scored *below*
+  noise under embedding cosine. Discovery is Descrybe's job: `curate.py` turns
+  `search_cases_by_concept` results into feed candidates, deduped against the KB and
+  hand-attributed. The Voyage embedding gate (`embed.py`) was reverted for the same
+  reason — general embeddings are the wrong tool for legal relevance.
 
 ## 6. Logic gaps in v1 (recorded so each fix is traceable)
 
