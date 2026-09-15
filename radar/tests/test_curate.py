@@ -116,6 +116,18 @@ def test_admit_records_to_ledger(tmp_path):
     assert ledger.already_decided(items[0])
 
 
+def test_admit_preserves_lane_class(tmp_path):
+    """A curated item with a lane class (market/capability/...) keeps it, so it feeds the
+    L1/L3/E/S meters, not just the L2 ruling lane."""
+    _sandbox_ledger(tmp_path)
+    feed = tmp_path / "feed.jsonl"
+    items = [{"date": "2026-01-01", "tier": "T3", "title": "Insurer action", "source": "CNA",
+              "url": "https://x", "citation": "", "fault_lines": ["insurance"],
+              "text": "market signal", "empirical": False, "conflict": False, "market": "insurer"}]
+    written = curate.admit(items, feed_path=feed)
+    assert written[0].get("market") == "insurer"
+
+
 def test_mark_reviewed_roundtrip(tmp_path):
     """mark_reviewed writes today's date; load_reviewed reads it back (dormant vs neglected)."""
     import score

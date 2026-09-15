@@ -51,7 +51,7 @@
       "meter": "adoption",
       "reading_at_lead": 7.5,
       "evidence_at_lead": 0,
-      "reading_at_event": 8.7,
+      "reading_at_event": 9.3,
       "lead_days": 90,
       "called": true,
       "sample": "in_sample"

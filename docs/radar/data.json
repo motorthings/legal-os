@@ -2303,7 +2303,7 @@
       "weighted_negative": 0.0,
       "corroboration": 0.0,
       "neg_corroboration": 0.0,
-      "n_evidence": 1,
+      "n_evidence": 2,
       "n_ruling_evidence": 0,
       "n_negative": 0,
       "evidence": [
@@ -2327,18 +2327,38 @@
           "conflict": false,
           "negative": false,
           "ruling_eligible": false
+        },
+        {
+          "date": "2026-06-09",
+          "title": "CNA adds AI governance to malpractice underwriting",
+          "tier": "T3",
+          "source": "CNA (USI Affinity)",
+          "url": "https://lalegalethics.org/malpractice-insurer-offers-practical-ai-policy-playbook/",
+          "weight": 0.514,
+          "matched": [
+            "insurance",
+            "malpractice carrier",
+            "underwrit",
+            "premium",
+            "cna",
+            "endorsement"
+          ],
+          "empirical": true,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": false
         }
       ],
       "control": "Governance as an insurable artifact",
       "seam": "codifiable",
       "driver": "market",
       "adoption_seed": 7.5,
-      "adoption": 8.4,
-      "adoption_weighted": 0.88,
+      "adoption": 8.9,
+      "adoption_weighted": 1.73,
       "market_classes": [
         "insurer"
       ],
-      "n_adoption_evidence": 1,
+      "n_adoption_evidence": 2,
       "adoption_evidence": [
         {
           "date": "2026-06-15",
@@ -2354,6 +2374,21 @@
             "axa",
             "endorsement",
             "uninsurable"
+          ]
+        },
+        {
+          "date": "2026-06-09",
+          "title": "CNA adds AI governance to malpractice underwriting",
+          "tier": "T3",
+          "market": "insurer",
+          "weight": 0.857,
+          "matched": [
+            "insurance",
+            "malpractice carrier",
+            "underwrit",
+            "premium",
+            "cna",
+            "endorsement"
           ]
         }
       ],
@@ -2389,14 +2424,14 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 7.1,
+      "queue": 7.6,
       "lead": "now",
       "last_evidence_date": "2026-06-15",
       "stale_days": 92,
       "lanes": {
         "capability": 0,
         "ruling": 0,
-        "adoption": 1,
+        "adoption": 2,
         "enable": 1,
         "software": 0
       },
@@ -3813,5 +3848,5 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 104
+  "n_items": 105
 }

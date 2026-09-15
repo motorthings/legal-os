@@ -1,5 +1,5 @@
 {
-  "n_items": 104,
+  "n_items": 105,
   "items": [
     {
       "date": "2023-06-22",
@@ -2754,6 +2754,31 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-06-09",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "CNA adds AI governance to malpractice underwriting",
+      "source": "CNA (USI Affinity)",
+      "url": "https://lalegalethics.org/malpractice-insurer-offers-practical-ai-policy-playbook/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": "insurer",
+      "order": null,
+      "what": "CNA, the largest U.S. legal malpractice carrier, now prices policy renewals on a firm's AI governance posture: supplemental questionnaires ask which AI tools a firm uses, whether a written AI policy and attorney training exist, and whether there is an incident-response plan. Firms that cannot answer face higher premiums or restrictive endorsements \u2014 insurance, not the bar, is becoming the real gatekeeper.",
+      "role": [
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "insurance",
+          "title": "Insurance becomes the real regulator"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Insurance becomes the real regulator. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
     }
   ]
 }

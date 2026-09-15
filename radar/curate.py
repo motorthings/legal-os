@@ -109,6 +109,13 @@ def _feed_row(item):
     }
     if item.get("citation"):
         row["citation"] = item["citation"]
+    # Preserve lane classes (market/capability/enable/software/...) so a curated item can
+    # feed the L1/L3/E/S lanes, not just the L2 ruling lane — e.g. a CNA insurer action
+    # carries market="insurer" and feeds the adoption meter, not the ruling meter.
+    for k in ("capability", "market", "enable", "software", "flag", "order",
+              "negative_fault_lines", "single_source", "ruling"):
+        if item.get(k) is not None:
+            row[k] = item[k]
     return row
 
 

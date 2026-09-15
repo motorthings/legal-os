@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T16:46:12.879334+00:00",
+  "generated_at": "2026-09-15T16:55:16.801892+00:00",
   "as_of": "2026-09-15",
   "knobs": {
     "tier_weights": {
@@ -113,8 +113,8 @@
     "lead_days": 90,
     "reliability_ledger_sha256": "5a06b470397f0069f8897ef5ec31e514ff25cd0badbf4559f7a7924f4dd03130"
   },
-  "feed_sha256": "0c5f5f60b7689b082bca66b5098055bc41084c68b944475df976bc6dc7d194f1",
-  "feed_items": 104,
+  "feed_sha256": "fe2091e22b4d98979bb640809add6e9c68cf69499c65a6dade96f06b2239ed1c",
+  "feed_items": 105,
   "fault_lines": [
     {
       "id": "disclosure",
@@ -2418,7 +2418,7 @@
       "weighted_negative": 0.0,
       "corroboration": 0.0,
       "neg_corroboration": 0.0,
-      "n_evidence": 1,
+      "n_evidence": 2,
       "n_ruling_evidence": 0,
       "n_negative": 0,
       "evidence": [
@@ -2442,18 +2442,38 @@
           "conflict": false,
           "negative": false,
           "ruling_eligible": false
+        },
+        {
+          "date": "2026-06-09",
+          "title": "CNA adds AI governance to malpractice underwriting",
+          "tier": "T3",
+          "source": "CNA (USI Affinity)",
+          "url": "https://lalegalethics.org/malpractice-insurer-offers-practical-ai-policy-playbook/",
+          "weight": 0.514,
+          "matched": [
+            "insurance",
+            "malpractice carrier",
+            "underwrit",
+            "premium",
+            "cna",
+            "endorsement"
+          ],
+          "empirical": true,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": false
         }
       ],
       "control": "Governance as an insurable artifact",
       "seam": "codifiable",
       "driver": "market",
       "adoption_seed": 7.5,
-      "adoption": 8.4,
-      "adoption_weighted": 0.88,
+      "adoption": 8.9,
+      "adoption_weighted": 1.73,
       "market_classes": [
         "insurer"
       ],
-      "n_adoption_evidence": 1,
+      "n_adoption_evidence": 2,
       "adoption_evidence": [
         {
           "date": "2026-06-15",
@@ -2469,6 +2489,21 @@
             "axa",
             "endorsement",
             "uninsurable"
+          ]
+        },
+        {
+          "date": "2026-06-09",
+          "title": "CNA adds AI governance to malpractice underwriting",
+          "tier": "T3",
+          "market": "insurer",
+          "weight": 0.857,
+          "matched": [
+            "insurance",
+            "malpractice carrier",
+            "underwrit",
+            "premium",
+            "cna",
+            "endorsement"
           ]
         }
       ],
@@ -2504,14 +2539,14 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 7.1,
+      "queue": 7.6,
       "lead": "now",
       "last_evidence_date": "2026-06-15",
       "stale_days": 92,
       "lanes": {
         "capability": 0,
         "ruling": 0,
-        "adoption": 1,
+        "adoption": 2,
         "enable": 1,
         "software": 0
       },
@@ -3899,7 +3934,7 @@
         "meter": "adoption",
         "reading_at_lead": 7.5,
         "evidence_at_lead": 0,
-        "reading_at_event": 8.7,
+        "reading_at_event": 9.3,
         "lead_days": 90,
         "called": true,
         "sample": "in_sample"
