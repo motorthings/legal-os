@@ -1,5 +1,5 @@
 {
-  "n_items": 103,
+  "n_items": 104,
   "items": [
     {
       "date": "2023-06-22",
@@ -2729,6 +2729,31 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-03-25",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Elilton Alves Gouveia v. Meridian Financial Investments, LLC \u2014 prophylactic AI disclosure for pro se litigants",
+      "source": "District Court of Appeal of Florida",
+      "url": "https://descrybe.com/share/case-viewer/c10814752",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Florida appellate court warned that unchecked AI use in filings may lead to sanctions under Fla. R. App. P. 9.210(c). Judge Lott concurred that courts should require prophylactic AI disclosure from pro se litigants up front, because after-the-fact warnings and sanctions do not stop the continuing flood of chatbot-generated filings, and noted some courts already require disclosure of AI use by all litigants.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }

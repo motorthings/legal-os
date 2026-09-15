@@ -22,13 +22,13 @@
       "pressure_seed": 8.0,
       "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 17.18,
-      "weighted_positive": 17.98,
+      "weighted_evidence": 18.63,
+      "weighted_positive": 19.43,
       "weighted_negative": 0.8,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
-      "n_evidence": 14,
-      "n_ruling_evidence": 13,
+      "n_evidence": 15,
+      "n_ruling_evidence": 14,
       "n_negative": 1,
       "evidence": [
         {
@@ -55,6 +55,21 @@
           "weight": 1.25,
           "matched": [],
           "empirical": true,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2026-03-25",
+          "title": "Elilton Alves Gouveia v. Meridian Financial Investments, LLC \u2014 prophylactic AI disclosure for pro se litigants",
+          "tier": "T1",
+          "source": "District Court of Appeal of Florida",
+          "url": "https://descrybe.com/share/case-viewer/c10814752",
+          "weight": 1.0,
+          "matched": [
+            "disclosure"
+          ],
+          "empirical": false,
           "conflict": false,
           "negative": false,
           "ruling_eligible": true
@@ -286,7 +301,7 @@
       "stale_days": 106,
       "lanes": {
         "capability": 0,
-        "ruling": 13,
+        "ruling": 14,
         "adoption": 1,
         "enable": 1,
         "software": 0
@@ -3776,5 +3791,5 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 103
+  "n_items": 104
 }
