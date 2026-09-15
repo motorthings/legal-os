@@ -77,9 +77,9 @@
       "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
       "url": "",
       "meter": "adoption",
-      "reading_at_lead": 5.0,
-      "evidence_at_lead": 0,
-      "reading_at_event": 6.2,
+      "reading_at_lead": 5.3,
+      "evidence_at_lead": 1,
+      "reading_at_event": 6.6,
       "lead_days": 90,
       "called": false,
       "sample": "in_sample"

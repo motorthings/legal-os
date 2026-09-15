@@ -1,5 +1,5 @@
 {
-  "n_items": 106,
+  "n_items": 108,
   "items": [
     {
       "date": "2023-06-22",
@@ -2804,6 +2804,60 @@
         }
       ],
       "why": "Empirical / institutional authority (weight 0.60). It evidences the The billable hour cracks under AI. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-03-04",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "Nippon Life v. OpenAI \u2014 first AI-vendor-liability lawsuit",
+      "source": "N.D. Ill. (No. 1:26-cv-02448)",
+      "url": "https://natlawreview.com/article/lawsuit-alleges-ai-chatbot-engages-unauthorized-practice-law",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "commentary",
+      "order": null,
+      "what": "The first AI-vendor-liability suit: a disability claimant who fired her lawyer on ChatGPT's advice, then filed 44 ChatGPT-drafted motions (one citing a fictitious case), sues OpenAI for $10.3M on tortious interference, abuse of process, and unlicensed practice of law. Pending in N.D. Ill.; OpenAI moved to dismiss. The UPL claim touches agentic autonomy; the product-liability framing is the vendor-liability thesis.",
+      "role": [
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        },
+        {
+          "id": "agentic",
+          "title": "Agentic autonomy reopens supervision & UPL"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the Liability shifts partway to vendors, Agentic autonomy reopens supervision & UPL. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
+    },
+    {
+      "date": "2026-05-26",
+      "tier": "T4",
+      "tier_label": "Professional commentary",
+      "tier_weight": 0.35,
+      "title": "Law review proposes strict product liability for legal-AI vendors",
+      "source": "Litle/Morris/Das; Kildeev (law review)",
+      "url": "https://www.private-law-theory.org/2026/05/26/austin-litle-morris-and-das-when-the-tool-breaks-product-liability-and-the-legal-ai-vendor/",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": "commentary",
+      "order": null,
+      "what": "2026 scholarship proposes extending product liability to legal-AI vendors: an \"Architectural Defect Doctrine\" (strict liability when a feasible zero-fabrication alternative exists) and \"producer liability\" treating an LLM as a \"speaking instrument.\" Rejects the assumption that professional responsibility displaces manufacturer responsibility \u2014 liability may be cumulative.",
+      "role": [
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Professional commentary authority (weight 0.35). It evidences the Liability shifts partway to vendors. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court."
     }
   ]
 }
