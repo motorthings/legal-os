@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 /* ------------------------------------------------------------------ types */
 
@@ -55,25 +56,6 @@ interface RadarData {
   n_items: number;
   tiers: Record<string, { label: string; weight: number; desc: string }>;
 }
-interface Resolution {
-  date: string;
-  order: number;
-  fault_line: string;
-  title: string;
-  url?: string;
-  meter: string;
-  reading_at_lead: number;
-  reading_at_event: number;
-  called: boolean;
-}
-interface Calibration {
-  resolutions: Resolution[];
-  hits: number;
-  n_resolutions: number;
-  by_order: Record<string, { hit_rate: number; hits: number; n: number }>;
-  call_threshold: number;
-  lead_days: number;
-}
 
 /* -------------------------------------------------------------- constants */
 
@@ -81,7 +63,6 @@ const THRESH = 7;
 type Lead = 'now' | 'soon' | 'later';
 const LEAD_COLOR: Record<Lead, string> = { now: '#A4093F', soon: '#EFAE42', later: '#8FBFAE' };
 const LEAD_LABEL: Record<Lead, string> = { now: 'now', soon: 'soon', later: 'later' };
-const ORDER_LABEL: Record<string, string> = { '1': 'L1 capability', '2': 'L2 ruling', '3': 'L3 adoption' };
 type Momentum = 'arriving' | 'building' | 'idle';
 const S_COLOR: Record<Momentum, string> = { arriving: '#A4093F', building: '#EFAE42', idle: '#8FBFAE' };
 const S_LABEL: Record<Momentum, string> = { arriving: 'arriving', building: 'building', idle: 'idle' };
@@ -348,7 +329,6 @@ function EvidenceList({ items, empty }: { items: Evidence[]; empty: string }) {
 
 export default function RadarPage() {
   const [data, setData] = useState<RadarData | null>(null);
-  const [cal, setCal] = useState<Calibration | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPrimer, setShowPrimer] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -360,11 +340,8 @@ export default function RadarPage() {
     let cancelled = false;
     (async () => {
       try {
-        const [d, c] = await Promise.all([
-          fetch('/radar/data.json').then((r) => r.json()),
-          fetch('/radar/calibration.json').then((r) => r.json()),
-        ]);
-        if (!cancelled) { setData(d); setCal(c); }
+        const d = await fetch('/radar/data.json').then((r) => r.json());
+        if (!cancelled) setData(d);
       } catch {
         if (!cancelled) setError('Could not load radar data.');
       }
@@ -373,7 +350,7 @@ export default function RadarPage() {
   }, []);
 
   if (error) return <div className="p-8 text-[var(--rose)]">{error}</div>;
-  if (!data || !cal) return <div className="p-8 text-[var(--text-muted)] font-mono text-sm">Loading radar…</div>;
+  if (!data) return <div className="p-8 text-[var(--text-muted)] font-mono text-sm">Loading radar…</div>;
 
   const byQueue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
   const ranks = new Map(byQueue.map((f, i) => [f.id, i + 1]));
@@ -404,10 +381,7 @@ export default function RadarPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a href="#calibration" className="card px-3 py-2 flex items-center gap-2 no-underline hover:border-[var(--primary)]">
-            <span className="font-mono text-lg font-extrabold text-[var(--primary)]">{cal.hits}/{cal.n_resolutions}</span>
-            <span className="text-[11px] leading-tight text-[var(--text-muted)]">events called<br />{cal.lead_days} days early</span>
-          </a>
+          <Link href="/radar/calibration" className="btn-secondary no-underline">Calibration →</Link>
           <button onClick={() => setShowPrimer((s) => !s)} className="btn-secondary">
             {showPrimer ? 'Hide' : 'How this works'}
           </button>
@@ -603,44 +577,6 @@ export default function RadarPage() {
             );
           })}
         </div>
-      </section>
-
-      {/* calibration */}
-      <section id="calibration">
-        <p className="eyebrow mb-1">Calibration</p>
-        <p className="text-[13px] text-[var(--text)] mb-4">The engine grades itself: {cal.lead_days} days before each event, at threshold {cal.call_threshold}. Called {cal.hits} of {cal.n_resolutions} real events before they landed.</p>
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          {['2', '3', '1'].map((o) => {
-            const b = cal.by_order[o];
-            return (
-              <div key={o} className="card p-4 text-center">
-                <p className="font-mono text-2xl font-extrabold text-[var(--text-strong)]">{Math.round(b.hit_rate * 100)}%</p>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{ORDER_LABEL[o]} · {b.hits}/{b.n}</p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="card overflow-hidden">
-          <div className="grid grid-cols-[6rem_5rem_1fr_9rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>Landed</span><span>Stage</span><span>Event</span><span>At call → today</span>
-          </div>
-          {[...cal.resolutions].sort((a, b) => a.date.localeCompare(b.date)).map((r, i) => (
-            <div key={i} className="grid grid-cols-[6rem_5rem_1fr_9rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0">
-              <span className="font-mono text-[12px] text-[var(--text-muted)]">{r.date}</span>
-              <span className="font-mono text-[11px] text-[var(--text)]">L{r.order}</span>
-              <span className="text-[12px] text-[var(--text)]">
-                {r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="hover:text-[var(--primary)] underline decoration-[var(--border-strong)] underline-offset-2">{r.title}</a> : r.title}
-              </span>
-              <span className="flex items-center gap-2 font-mono text-[12px]">
-                <span className={`pill ${r.called ? 'pill-success' : 'pill-warn'}`}>{r.called ? 'CALLED' : 'MISSED'}</span>
-                <span className="text-[var(--text-muted)]">{dec(r.reading_at_lead)}→{dec(r.reading_at_event)}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-        <p className="text-[11px] text-[var(--text-muted)] leading-relaxed mt-3">
-          The L1 misses are honest: they were first-of-kind capability jumps with no precursor to call from. The engine reports them as misses rather than tuning them away.
-        </p>
       </section>
     </div>
   );
