@@ -524,27 +524,32 @@ export default function RadarPage() {
           )}
         </div>
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-[2rem_1fr_5rem_9rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>#</span><span>Control · fault line</span><span>Lead</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
+          <div className="grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <span>#</span><span>Control · fault line</span><span>Lead</span><span>Fresh</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
           </div>
           {tableRows.map((f) => {
             const lead = leadBucket(f.lead);
             const open = expanded === f.id;
             return (
               <div key={f.id} id={`row-${f.id}`} className={`border-b border-[var(--border)] last:border-0 ${hovered === f.id ? 'bg-[var(--brand-tint)]' : ''}`}>
-                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_9rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
+                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
                   <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{rowRanks.get(f.id)}</span>
                   <span>
                     <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
-                    <span className="block text-[11px] text-[var(--text-muted)]">
-                      {f.title}
-                      {f.stale_days != null && (
-                        <span className="ml-1.5 font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
-                      )}
-                    </span>
+                    <span className="block text-[11px] text-[var(--text-muted)]">{f.title}</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-[12px]">
                     <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
+                  </span>
+                  <span className="flex flex-col items-start leading-tight">
+                    {f.stale_days != null ? (
+                      <>
+                        <span className="text-[11px] font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
+                        <span className="text-[10px] text-[var(--text-muted)] font-mono">{f.last_evidence_date}</span>
+                      </>
+                    ) : (
+                      <span className="text-[10px] text-[var(--text-muted)] font-mono">—</span>
+                    )}
                   </span>
                   <span className="font-mono text-[13px] text-[var(--text)]">
                     {view === 'gap'
