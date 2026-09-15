@@ -1,5 +1,5 @@
 {
-  "n_items": 76,
+  "n_items": 80,
   "items": [
     {
       "date": "2023-06-22",
@@ -2054,6 +2054,106 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough, Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2023-07-19",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Ex Parte Allen Michael Lee v. the State of Texas \u2014 AI filing certification (Judge Starr standing order)",
+      "source": "Court of Appeals of Texas",
+      "url": "https://descrybe.com/share/case-viewer/c9414960",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Texas Court of Appeals references Judge Brantley Starr's N.D. Tex. standing order requiring attorneys to certify that no part of a filing was AI-generated, or that any AI-generated content was human-reviewed for accuracy.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-03-12",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Lillard v. Offit Kurman, P.A. \u2014 GenAI certification page ordered",
+      "source": "Superior Court of Delaware",
+      "url": "https://descrybe.com/share/case-viewer/c10356223",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Delaware Superior Court ordered any future filing using Generative AI to include a sworn certification identifying the AI platform and sections used, and confirming a human verified all citations and that each cited authority supports the stated proposition.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-04-04",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Daniel Jaiyong An v. Archblock, Inc. \u2014 GenAI certification ordered for future filings",
+      "source": "Court of Chancery of Delaware",
+      "url": "https://descrybe.com/share/case-viewer/c10373607",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Delaware Court of Chancery ordered a sworn GenAI certification for future filings: identify the tool/model/platform and specific sections generated, and confirm a human reviewed the text and verified citations, with sanctions for noncompliance.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-12-11",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "In Re Adoption of Arkansas Supreme Court Administrative Order No. 25 \u2014 generative AI rule",
+      "source": "Supreme Court of Arkansas",
+      "url": "https://descrybe.com/share/case-viewer/c10753381",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Arkansas Supreme Court adopted Administrative Order No. 25 on generative AI: prohibits exposing internal court data to public LLMs, distinguishes public vs private LLMs, and warns that disclosing confidential or sealed information may violate court rules and the Rules of Professional Conduct.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "disclosure",
+          "title": "Disclosure & certification standardize"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }

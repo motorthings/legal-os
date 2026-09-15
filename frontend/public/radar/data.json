@@ -22,13 +22,13 @@
       "pressure_seed": 8.0,
       "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 11.38,
-      "weighted_positive": 12.18,
+      "weighted_evidence": 17.18,
+      "weighted_positive": 17.98,
       "weighted_negative": 0.8,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
-      "n_evidence": 10,
-      "n_ruling_evidence": 9,
+      "n_evidence": 14,
+      "n_ruling_evidence": 13,
       "n_negative": 1,
       "evidence": [
         {
@@ -73,6 +73,19 @@
           "ruling_eligible": true
         },
         {
+          "date": "2025-12-11",
+          "title": "In Re Adoption of Arkansas Supreme Court Administrative Order No. 25 \u2014 generative AI rule",
+          "tier": "T1",
+          "source": "Supreme Court of Arkansas",
+          "url": "https://descrybe.com/share/case-viewer/c10753381",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
           "date": "2025-07-18",
           "title": "California Rule of Court 10.430 \u2014 courts must adopt generative-AI policies",
           "tier": "T1",
@@ -81,6 +94,52 @@
           "weight": 1.0,
           "matched": [
             "disclosure"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-04-04",
+          "title": "Daniel Jaiyong An v. Archblock, Inc. \u2014 GenAI certification ordered for future filings",
+          "tier": "T1",
+          "source": "Court of Chancery of Delaware",
+          "url": "https://descrybe.com/share/case-viewer/c10373607",
+          "weight": 1.0,
+          "matched": [
+            "certif"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-03-12",
+          "title": "Lillard v. Offit Kurman, P.A. \u2014 GenAI certification page ordered",
+          "tier": "T1",
+          "source": "Superior Court of Delaware",
+          "url": "https://descrybe.com/share/case-viewer/c10356223",
+          "weight": 1.0,
+          "matched": [
+            "certif"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2023-07-19",
+          "title": "Ex Parte Allen Michael Lee v. the State of Texas \u2014 AI filing certification (Judge Starr standing order)",
+          "tier": "T1",
+          "source": "Court of Appeals of Texas",
+          "url": "https://descrybe.com/share/case-viewer/c9414960",
+          "weight": 1.0,
+          "matched": [
+            "standing order",
+            "certif"
           ],
           "empirical": false,
           "conflict": false,
@@ -3280,5 +3339,5 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 76
+  "n_items": 80
 }

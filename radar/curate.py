@@ -19,7 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from score import load_corpus
+from score import load_corpus, FEED_PATH
 
 
 def _tier(result):
@@ -81,6 +81,44 @@ def _already_in_kb(item, corpus):
         if cite and cite in ((kb.get("text", "") or "") + " " + (kb.get("title", "") or "")).lower():
             return True
     return False
+
+
+def _feed_row(item):
+    """A curated item -> the feed schema, in the same field order as the curated feed."""
+    row = {
+        "date": item["date"],
+        "tier": item["tier"],
+        "title": item["title"],
+        "source": item["source"],
+        "url": item["url"],
+        "empirical": bool(item.get("empirical")),
+        "conflict": bool(item.get("conflict")),
+        "text": item.get("text", ""),
+        "fault_lines": item.get("fault_lines", []),
+    }
+    if item.get("citation"):
+        row["citation"] = item["citation"]
+    return row
+
+
+def admit(items, feed_path=FEED_PATH, dry_run=False):
+    """Append reviewed, human-attributed items to the hand-curated feed.
+
+    Skips anything already in the KB (by title/citation) and writes the rest in the
+    curated feed schema. This is the deliberate, human-vouched path — distinct from the
+    automated `ingest.admit()` that feeds the harvested store. Returns the rows written."""
+    corpus = load_corpus()
+    written = []
+    for it in items:
+        if _already_in_kb(it, corpus):
+            continue
+        row = _feed_row(it)
+        if not dry_run:
+            with open(feed_path, "a") as f:
+                f.write(json.dumps(row) + "\n")
+        written.append(row)
+        corpus.append(row)   # so a duplicate later in THIS batch is skipped too
+    return written
 
 
 def render(items):

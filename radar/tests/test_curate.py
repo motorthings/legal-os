@@ -50,13 +50,44 @@ def test_in_kb_flag_detects_duplicate():
     assert curate.descrybe_to_items(fresh, ["disclosure"])[0]["in_kb"] is False
 
 
+def test_admit_writes_curated_feed(tmp_path):
+    """admit() writes feed-schema rows (flat fault_lines, no harvested flag, citation kept)."""
+    import json
+    feed = tmp_path / "feed.jsonl"
+    items = [{"date": "2026-01-01", "tier": "T1", "title": "Totally New Case v. Nobody",
+              "source": "Court", "url": "https://x", "citation": "999 U.S. 1",
+              "fault_lines": ["disclosure"], "text": "AI disclosure required.",
+              "empirical": False, "conflict": False}]
+    written = curate.admit(items, feed_path=feed)
+    assert len(written) == 1
+    row = json.loads(feed.read_text().splitlines()[0])
+    assert row["fault_lines"] == ["disclosure"]       # flat list, not nested
+    assert "harvested" not in row                     # curated, not machine-fetched
+    assert row["citation"] == "999 U.S. 1"
+
+
+def test_admit_skips_kb_duplicate(tmp_path):
+    """admit() skips a case already in the KB."""
+    feed = tmp_path / "feed.jsonl"
+    items = [{"date": "2023-06-22", "tier": "T1", "title": "Mata v. Avianca, Inc.",
+              "source": "x", "url": "https://x", "citation": "", "fault_lines": ["disclosure"],
+              "text": "already in KB", "empirical": False, "conflict": False}]
+    written = curate.admit(items, feed_path=feed)
+    assert written == []                              # Mata is already in the curated feed
+
+
 if __name__ == "__main__":
+    import tempfile
     tests = [v for k, v in sorted(globals().items())
              if k.startswith("test_") and callable(v)]
     passed = 0
     for t in tests:
         try:
-            t()
+            if t.__code__.co_argcount:
+                with tempfile.TemporaryDirectory() as d:
+                    t(Path(d))
+            else:
+                t()
             print(f"PASS {t.__name__}")
             passed += 1
         except Exception:
