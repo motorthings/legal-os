@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T16:43:22.628976+00:00",
+  "generated_at": "2026-09-15T16:46:12.879334+00:00",
   "as_of": "2026-09-15",
   "knobs": {
     "tier_weights": {
@@ -421,7 +421,9 @@
         "enable": 1,
         "software": 0
       },
-      "lanes_populated": 3
+      "lanes_populated": 3,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "verification",
@@ -1022,7 +1024,9 @@
         "enable": 2,
         "software": 3
       },
-      "lanes_populated": 5
+      "lanes_populated": 5,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "confidentiality",
@@ -1333,7 +1337,9 @@
         "enable": 1,
         "software": 0
       },
-      "lanes_populated": 3
+      "lanes_populated": 3,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "competence",
@@ -1766,7 +1772,9 @@
         "enable": 2,
         "software": 0
       },
-      "lanes_populated": 4
+      "lanes_populated": 4,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "convergence",
@@ -2058,7 +2066,9 @@
         "enable": 0,
         "software": 3
       },
-      "lanes_populated": 3
+      "lanes_populated": 3,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "vendor_liability",
@@ -2265,7 +2275,9 @@
         "enable": 0,
         "software": 3
       },
-      "lanes_populated": 2
+      "lanes_populated": 2,
+      "reviewed_on": "2026-09-15",
+      "reviewed_days": 0
     },
     {
       "id": "judicial_analytics",
@@ -2375,7 +2387,9 @@
         "enable": 0,
         "software": 0
       },
-      "lanes_populated": 1
+      "lanes_populated": 1,
+      "reviewed_on": "2026-09-15",
+      "reviewed_days": 0
     },
     {
       "id": "insurance",
@@ -2501,7 +2515,9 @@
         "enable": 1,
         "software": 0
       },
-      "lanes_populated": 2
+      "lanes_populated": 2,
+      "reviewed_on": "2026-09-15",
+      "reviewed_days": 0
     },
     {
       "id": "benchmark",
@@ -3125,7 +3141,9 @@
         "enable": 2,
         "software": 15
       },
-      "lanes_populated": 5
+      "lanes_populated": 5,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "agentic",
@@ -3728,7 +3746,9 @@
         "enable": 1,
         "software": 12
       },
-      "lanes_populated": 5
+      "lanes_populated": 5,
+      "reviewed_on": null,
+      "reviewed_days": null
     },
     {
       "id": "fees",
@@ -3821,7 +3841,9 @@
         "enable": 0,
         "software": 0
       },
-      "lanes_populated": 1
+      "lanes_populated": 1,
+      "reviewed_on": "2026-09-15",
+      "reviewed_days": 0
     }
   ],
   "calibration": {

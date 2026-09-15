@@ -29,6 +29,21 @@ from fault_lines import (
 RELIABILITY_PATH = Path(__file__).parent / "history" / "source_reliability.json"
 _RELIABILITY = None
 
+# Human-review ledger: {fault_line_id: "YYYY-MM-DD"} — when a human last checked a line.
+# Distinct from evidence staleness: a line can be stale (no new authority) but recently
+# reviewed (checked, found genuinely dormant) — or stale and never reviewed. Read by the
+# scorer and folded into the result as reviewed_on / reviewed_days; written by
+# curate.mark_reviewed. Does NOT affect the meters, only the coverage/freshness readout.
+REVIEWED_PATH = Path(__file__).parent / "history" / "reviewed.json"
+
+
+def load_reviewed():
+    """{fault_line_id: last-reviewed date}. Empty/absent => nothing reviewed."""
+    try:
+        return json.loads(REVIEWED_PATH.read_text())
+    except (FileNotFoundError, ValueError):
+        return {}
+
 
 def reliability_multipliers():
     """Load {source: multiplier} once per process. Deterministic given the ledger file;
@@ -244,6 +259,7 @@ def score(feed=None, as_of=None, seeds="default"):
         return NEUTRAL_SEED if seeds == "neutral" else default
 
     results = []
+    reviewed = load_reviewed()   # {fault_line_id: last-reviewed date}; folded into each line
     for fl in FAULT_LINES:
         evidence = []
         pos_sources = set()   # distinct independent ruling sources supporting the line
@@ -421,6 +437,12 @@ def score(feed=None, as_of=None, seeds="default"):
         }
         lanes_populated = sum(1 for v in lanes.values() if v > 0)
 
+        # Human-review status: when did a human last check this line? Independent of
+        # evidence staleness — a stale line that was recently reviewed is "genuinely
+        # dormant," not "neglected."
+        reviewed_on = reviewed.get(fl["id"])
+        reviewed_days = (as_of - _parse_date(reviewed_on)).days if reviewed_on else None
+
         evidence.sort(key=lambda e: (TIER_RANK[e["tier"]], e["date"]), reverse=True)
         results.append({
             **{k: fl[k] for k in ("id", "title", "model_rules", "horizon", "layer",
@@ -474,6 +496,8 @@ def score(feed=None, as_of=None, seeds="default"):
             "stale_days": stale_days,
             "lanes": lanes,
             "lanes_populated": lanes_populated,
+            "reviewed_on": reviewed_on,
+            "reviewed_days": reviewed_days,
         })
 
     results.sort(key=lambda r: r["pressure"], reverse=True)

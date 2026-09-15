@@ -49,6 +49,8 @@ interface FaultLine {
   stale_days?: number | null;
   lanes?: Record<string, number>;
   lanes_populated?: number;
+  reviewed_on?: string;
+  reviewed_days?: number | null;
   seam?: string;
   driver?: string;
 }
@@ -377,9 +379,12 @@ export default function RadarPage() {
 
   const pick = (id: string) => setExpanded((cur) => (cur === id ? null : id));
 
-  const needsCurating = data.fault_lines.filter(
-    (f) => (f.stale_days ?? 0) > 180 || (f.lanes_populated ?? 0) <= 2
-  );
+  const needsCurating = data.fault_lines.filter((f) => {
+    const stale = (f.stale_days ?? 0) > 180;
+    const thin = (f.lanes_populated ?? 0) <= 2;
+    const recentlyReviewed = (f.reviewed_days ?? Infinity) <= 30;
+    return (stale || thin) && !recentlyReviewed;   // reviewed-but-dormant lines don't need the nudge
+  });
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-[1400px] mx-auto space-y-8">
@@ -589,6 +594,11 @@ export default function RadarPage() {
                           <p className="text-[11px] text-[var(--text-muted)] mt-1">
                             Last evidence {f.last_evidence_date} ·{' '}
                             <span className="font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
+                          </p>
+                        )}
+                        {f.reviewed_days != null && (
+                          <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                            Reviewed {f.reviewed_on} · <span className="font-semibold" style={{ color: '#8FBFAE' }}>{f.reviewed_days}d ago</span> — checked, dormant
                           </p>
                         )}
                       </div>

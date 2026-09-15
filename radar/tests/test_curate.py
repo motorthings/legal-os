@@ -116,6 +116,24 @@ def test_admit_records_to_ledger(tmp_path):
     assert ledger.already_decided(items[0])
 
 
+def test_mark_reviewed_roundtrip(tmp_path):
+    """mark_reviewed writes today's date; load_reviewed reads it back (dormant vs neglected)."""
+    import score
+    from datetime import date
+    reviewed_file = tmp_path / "reviewed.json"
+    orig_score = score.REVIEWED_PATH
+    orig_curate = curate.REVIEWED_PATH
+    score.REVIEWED_PATH = reviewed_file
+    curate.REVIEWED_PATH = reviewed_file
+    try:
+        r = curate.mark_reviewed(['fees', 'insurance'])
+        assert r['fees'] == date.today().isoformat()
+        assert score.load_reviewed()['insurance'] == date.today().isoformat()
+    finally:
+        score.REVIEWED_PATH = orig_score
+        curate.REVIEWED_PATH = orig_curate
+
+
 if __name__ == "__main__":
     import tempfile
     tests = [v for k, v in sorted(globals().items())

@@ -21,9 +21,12 @@ def needy_lines(data):
     for f in data.get("fault_lines", []):
         stale_days = f.get("stale_days") or 0
         lanes = f.get("lanes_populated") or 0
+        reviewed_days = f.get("reviewed_days")   # None if never reviewed
         stale = stale_days > 180
         thin = lanes <= 2
-        if not (stale or thin):
+        # A line reviewed within 30 days is "checked, dormant" — not a re-curation gap.
+        recently_reviewed = reviewed_days is not None and reviewed_days <= 30
+        if (not (stale or thin)) or recently_reviewed:
             continue
         why = []
         if stale:

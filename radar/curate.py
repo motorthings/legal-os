@@ -15,11 +15,12 @@ The Descrybe results JSON is the `results` array from `search_cases_by_concept`
 """
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from score import load_corpus, FEED_PATH
+from score import load_corpus, load_reviewed, REVIEWED_PATH, FEED_PATH
 import ledger
 
 
@@ -138,6 +139,23 @@ def admit(items, feed_path=FEED_PATH, dry_run=False):
         written.append(row)
         corpus.append(row)   # so a duplicate later in THIS batch is skipped too
     return written
+
+
+def mark_reviewed(fault_line_ids):
+    """Record that a human reviewed these fault lines today (history/reviewed.json).
+
+    This is the fix for "stale but genuinely dormant": re-curation found nothing new, so
+    mark the line reviewed. The scorer then reports reviewed_on/reviewed_days alongside
+    stale_days, so the app can distinguish "stale + checked (dormant)" from "stale +
+    unchecked (neglected)" — and the CI nudge stops re-flagging a dormant line every week.
+    """
+    reviewed = load_reviewed()
+    today = date.today().isoformat()
+    for fid in fault_line_ids:
+        reviewed[fid] = today
+    REVIEWED_PATH.parent.mkdir(parents=True, exist_ok=True)
+    REVIEWED_PATH.write_text(json.dumps(reviewed, indent=2, sort_keys=True) + "\n")
+    return reviewed
 
 
 def render(items):

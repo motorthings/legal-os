@@ -48,7 +48,8 @@ jobs:
           # builds on the last (dedup memory survives across CI runs).
           git add radar/sources/feed.jsonl radar/sources/harvested.jsonl \
                   radar/history/admissions.jsonl radar/history/snapshots.jsonl \
-                  radar/history/runs radar/history/source_reliability.json || true
+                  radar/history/runs radar/history/source_reliability.json \
+                  radar/history/reviewed.json || true
           if git diff --cached --quiet; then
             echo "No change in radar output."
           else
