@@ -1,5 +1,5 @@
 {
-  "n_items": 105,
+  "n_items": 106,
   "items": [
     {
       "date": "2023-06-22",
@@ -2779,6 +2779,31 @@
         }
       ],
       "why": "Empirical / institutional authority (weight 0.60). It evidences the Insurance becomes the real regulator. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
+    },
+    {
+      "date": "2026-08-19",
+      "tier": "T3",
+      "tier_label": "Empirical / institutional",
+      "tier_weight": 0.6,
+      "title": "AI forcing legal pricing reform \u2014 client demand for fixed fees",
+      "source": "Thomson Reuters / Clio / BigHand surveys",
+      "url": "https://www.forbes.com/sites/terdawn-deboe/2026/08/19/firms-adopted-ai-in-record-numbers-selling-hours-got-harder/",
+      "empirical": true,
+      "conflict": false,
+      "capability": null,
+      "market": "procurement",
+      "order": null,
+      "what": "2025-2026 surveys show the billable hour cracking under AI: 90% of legal dollars still flow hourly, but 80% of firms expect AI to fundamentally alter pricing, 71% of clients prefer fixed fees, 74% of a lawyer's billable tasks are automatable, and 47% of large firms report rising client demand for alternative fee arrangements. AI collapses the hours that pricing is built on.",
+      "role": [
+        "L3 adoption"
+      ],
+      "fault_lines": [
+        {
+          "id": "fees",
+          "title": "The billable hour cracks under AI"
+        }
+      ],
+      "why": "Empirical / institutional authority (weight 0.60). It evidences the The billable hour cracks under AI. It is an L3 adoption signal \u2014 evidence the control is becoming table stakes, court or no court. Note: it carries hard data (weight \u00d71.25)."
     }
   ]
 }

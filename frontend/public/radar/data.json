@@ -3695,7 +3695,7 @@
       "weighted_negative": 0.0,
       "corroboration": 0.15,
       "neg_corroboration": 0.0,
-      "n_evidence": 2,
+      "n_evidence": 3,
       "n_ruling_evidence": 2,
       "n_negative": 0,
       "evidence": [
@@ -3727,17 +3727,47 @@
           "conflict": false,
           "negative": false,
           "ruling_eligible": true
+        },
+        {
+          "date": "2026-08-19",
+          "title": "AI forcing legal pricing reform \u2014 client demand for fixed fees",
+          "tier": "T3",
+          "source": "Thomson Reuters / Clio / BigHand surveys",
+          "url": "https://www.forbes.com/sites/terdawn-deboe/2026/08/19/firms-adopted-ai-in-record-numbers-selling-hours-got-harder/",
+          "weight": 0.676,
+          "matched": [
+            "billable hour",
+            "alternative fee"
+          ],
+          "empirical": true,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": false
         }
       ],
       "control": "Value-delivered measurement",
       "seam": "tacit",
       "driver": "market",
       "adoption_seed": 3.0,
-      "adoption": 3.0,
-      "adoption_weighted": 0.0,
-      "market_classes": [],
-      "n_adoption_evidence": 0,
-      "adoption_evidence": [],
+      "adoption": 5.7,
+      "adoption_weighted": 0.96,
+      "market_classes": [
+        "procurement"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-19",
+          "title": "AI forcing legal pricing reform \u2014 client demand for fixed fees",
+          "tier": "T3",
+          "market": "procurement",
+          "weight": 0.958,
+          "matched": [
+            "billable hour",
+            "alternative fee"
+          ]
+        }
+      ],
       "enable_seed": 3.5,
       "enable": 3.5,
       "enable_weighted": 0.0,
@@ -3750,18 +3780,18 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 2.2,
+      "queue": 4.1,
       "lead": "~1-2 years",
-      "last_evidence_date": "2025-11-24",
-      "stale_days": 295,
+      "last_evidence_date": "2026-08-19",
+      "stale_days": 27,
       "lanes": {
         "capability": 0,
         "ruling": 2,
-        "adoption": 0,
+        "adoption": 1,
         "enable": 0,
         "software": 0
       },
-      "lanes_populated": 1,
+      "lanes_populated": 2,
       "reviewed_on": "2026-09-15",
       "reviewed_days": 0
     }
@@ -3848,5 +3878,5 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 105
+  "n_items": 106
 }

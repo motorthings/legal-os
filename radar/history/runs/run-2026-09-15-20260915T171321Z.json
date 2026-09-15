@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T16:55:16.801892+00:00",
+  "generated_at": "2026-09-15T17:13:21.322718+00:00",
   "as_of": "2026-09-15",
   "knobs": {
     "tier_weights": {
@@ -113,8 +113,8 @@
     "lead_days": 90,
     "reliability_ledger_sha256": "5a06b470397f0069f8897ef5ec31e514ff25cd0badbf4559f7a7924f4dd03130"
   },
-  "feed_sha256": "fe2091e22b4d98979bb640809add6e9c68cf69499c65a6dade96f06b2239ed1c",
-  "feed_items": 105,
+  "feed_sha256": "9b22fcd8f3be64aa3e9fb6d7bcf8361ca152f8b191dd23671b6d9c7361b2c1a4",
+  "feed_items": 106,
   "fault_lines": [
     {
       "id": "disclosure",
@@ -3810,7 +3810,7 @@
       "weighted_negative": 0.0,
       "corroboration": 0.15,
       "neg_corroboration": 0.0,
-      "n_evidence": 2,
+      "n_evidence": 3,
       "n_ruling_evidence": 2,
       "n_negative": 0,
       "evidence": [
@@ -3842,17 +3842,47 @@
           "conflict": false,
           "negative": false,
           "ruling_eligible": true
+        },
+        {
+          "date": "2026-08-19",
+          "title": "AI forcing legal pricing reform \u2014 client demand for fixed fees",
+          "tier": "T3",
+          "source": "Thomson Reuters / Clio / BigHand surveys",
+          "url": "https://www.forbes.com/sites/terdawn-deboe/2026/08/19/firms-adopted-ai-in-record-numbers-selling-hours-got-harder/",
+          "weight": 0.676,
+          "matched": [
+            "billable hour",
+            "alternative fee"
+          ],
+          "empirical": true,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": false
         }
       ],
       "control": "Value-delivered measurement",
       "seam": "tacit",
       "driver": "market",
       "adoption_seed": 3.0,
-      "adoption": 3.0,
-      "adoption_weighted": 0.0,
-      "market_classes": [],
-      "n_adoption_evidence": 0,
-      "adoption_evidence": [],
+      "adoption": 5.7,
+      "adoption_weighted": 0.96,
+      "market_classes": [
+        "procurement"
+      ],
+      "n_adoption_evidence": 1,
+      "adoption_evidence": [
+        {
+          "date": "2026-08-19",
+          "title": "AI forcing legal pricing reform \u2014 client demand for fixed fees",
+          "tier": "T3",
+          "market": "procurement",
+          "weight": 0.958,
+          "matched": [
+            "billable hour",
+            "alternative fee"
+          ]
+        }
+      ],
       "enable_seed": 3.5,
       "enable": 3.5,
       "enable_weighted": 0.0,
@@ -3865,18 +3895,18 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 2.2,
+      "queue": 4.1,
       "lead": "~1-2 years",
-      "last_evidence_date": "2025-11-24",
-      "stale_days": 295,
+      "last_evidence_date": "2026-08-19",
+      "stale_days": 27,
       "lanes": {
         "capability": 0,
         "ruling": 2,
-        "adoption": 0,
+        "adoption": 1,
         "enable": 0,
         "software": 0
       },
-      "lanes_populated": 1,
+      "lanes_populated": 2,
       "reviewed_on": "2026-09-15",
       "reviewed_days": 0
     }
