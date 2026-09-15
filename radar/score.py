@@ -59,11 +59,15 @@ def reliability_multipliers():
 # Saturation divisors: how fast each meter's evidence saturates toward 10. Larger =
 # slower, more conservative. The capability lane is the most conservative on purpose
 # — a demonstration should nudge, not shout, so speculation never reads as a ruling.
-RULING_DIVISOR = 3.0
-ADOPTION_DIVISOR = 2.0
-CAP_DIVISOR = 4.0
-ENABLE_DIVISOR = 2.0   # market enablement (E), same conservative saturating shape as adoption
-SOFTWARE_DIVISOR = 2.5 # software capability (S), momentum-shaped; slightly slower than adoption
+# NOTE (2026-09-15): raised ~5x from the original (3/2/4/2/2.5) so the meters SPREAD
+# instead of pinning at 10.0. At the old divisors any line with ~10 weighted evidence
+# saturated to "certain", so 13 vs 20 vs 10 rulings all read 10.0 — the meter was lying
+# about confidence. Higher divisors make "lots" and "tons" of evidence distinguishable.
+RULING_DIVISOR = 15.0
+ADOPTION_DIVISOR = 10.0
+CAP_DIVISOR = 20.0
+ENABLE_DIVISOR = 10.0   # market enablement (E), same conservative saturating shape as adoption
+SOFTWARE_DIVISOR = 12.0 # software capability (S), momentum-shaped; slightly slower than adoption
 
 FEED_PATH = Path(__file__).parent / "sources" / "feed.jsonl"
 # Machine-fetched docs live in a SEPARATE store. The hand-curated feed stays hand-curated
