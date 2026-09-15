@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T02:26:29.379053+00:00",
+  "generated_at": "2026-09-15T02:30:34.311184+00:00",
   "as_of": "2026-09-14",
   "knobs": {
     "tier_weights": {
@@ -113,8 +113,8 @@
     "lead_days": 90,
     "reliability_ledger_sha256": "5a06b470397f0069f8897ef5ec31e514ff25cd0badbf4559f7a7924f4dd03130"
   },
-  "feed_sha256": "e07af3971cea448815faf680d74d5f36ec3340b2b661202f6be772e96156a862",
-  "feed_items": 97,
+  "feed_sha256": "0caae765184300143e3a3cf28f4b7d395752ce86f7d9560aee57e1cd2df6f00c",
+  "feed_items": 103,
   "fault_lines": [
     {
       "id": "disclosure",
@@ -1732,15 +1732,15 @@
       "n_capability_evidence": 0,
       "capability_evidence": [],
       "pressure_seed": 7.5,
-      "pressure": 9.9,
+      "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 8.7,
-      "weighted_positive": 8.7,
+      "weighted_evidence": 14.5,
+      "weighted_positive": 14.5,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
-      "n_evidence": 8,
-      "n_ruling_evidence": 6,
+      "n_evidence": 12,
+      "n_ruling_evidence": 10,
       "n_negative": 0,
       "evidence": [
         {
@@ -1755,6 +1755,21 @@
             "conformity assessment",
             "risk management system",
             "convergence"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2026-06-30",
+          "title": "Colorado AI Act \u2014 consumer disclosure, Colo. Rev. Stat. \u00a7 6-1-1704",
+          "tier": "T1",
+          "source": "Colorado Legislature",
+          "url": "https://olls.info/crs/crs2025-title-06.pdf",
+          "weight": 1.0,
+          "matched": [
+            "colorado ai act"
           ],
           "empirical": false,
           "conflict": false,
@@ -1785,6 +1800,23 @@
           "url": "https://www.licentium.io/post/eu-lawmakers-agree-to-delay-ai-act-high-risk-obligations-2026-05-08",
           "weight": 1.0,
           "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2026-02-01",
+          "title": "Colorado AI Act \u2014 NIST/ISO 42001 affirmative defense, \u00a7 6-1-1706",
+          "tier": "T1",
+          "source": "Colorado Legislature",
+          "url": "https://olls.info/crs/crs2025-title-06.pdf",
+          "weight": 1.0,
+          "matched": [
+            "colorado ai act",
+            "patchwork",
+            "convergence"
+          ],
           "empirical": false,
           "conflict": false,
           "negative": false,
@@ -1831,6 +1863,32 @@
           "matched": [
             "eu ai act"
           ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2024-05-01",
+          "title": "Utah AI Policy Act \u2014 AI liability, Utah Code \u00a7 13-77-102",
+          "tier": "T1",
+          "source": "Utah Legislature",
+          "url": "https://le.utah.gov/xcode/Title13/Chapter77/13-77-S102.html",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2021-01-01",
+          "title": "NIST AI Standards \u2014 15 U.S.C. \u00a7 278h-1",
+          "tier": "T1",
+          "source": "United States Congress",
+          "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title15-section278h1",
+          "weight": 1.0,
+          "matched": [],
           "empirical": false,
           "conflict": false,
           "negative": false,
@@ -1934,7 +1992,7 @@
           "flag": "direction_shift"
         }
       ],
-      "queue": 7.6,
+      "queue": 7.7,
       "lead": "now"
     },
     {
@@ -1955,15 +2013,15 @@
       "n_capability_evidence": 0,
       "capability_evidence": [],
       "pressure_seed": 3.5,
-      "pressure": 9.0,
+      "pressure": 9.6,
       "trend": "rising",
-      "weighted_evidence": 5.51,
-      "weighted_positive": 5.51,
+      "weighted_evidence": 8.41,
+      "weighted_positive": 8.41,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
-      "n_evidence": 6,
-      "n_ruling_evidence": 4,
+      "n_evidence": 8,
+      "n_ruling_evidence": 6,
       "n_negative": 0,
       "evidence": [
         {
@@ -1985,6 +2043,32 @@
           "tier": "T1",
           "source": "E.D. Cal. (1:26-cv-00297, Mag. Judge Grosjean)",
           "url": "https://www.law360.com/newyork/articles/2462536",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2026-01-01",
+          "title": "California AI Transparency Act \u2014 provider disclosure, \u00a7 22757.3",
+          "tier": "T1",
+          "source": "California Legislature",
+          "url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=BPC&division=8.",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-07-01",
+          "title": "Wyoming AI developer liability immunity \u2014 Wyo. Stat. \u00a7 1-1-143",
+          "tier": "T1",
+          "source": "Wyoming Legislature",
+          "url": "https://wyoleg.gov/statutes/compress/title01.pdf",
           "weight": 1.0,
           "matched": [],
           "empirical": false,
@@ -2105,7 +2189,7 @@
           "flag": "origination"
         }
       ],
-      "queue": 2.2,
+      "queue": 2.4,
       "lead": "later"
     },
     {
@@ -3652,9 +3736,9 @@
         "title": "EU AI Act obligations took effect",
         "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
         "meter": "pressure",
-        "reading_at_lead": 9.3,
-        "evidence_at_lead": 3,
-        "reading_at_event": 9.9,
+        "reading_at_lead": 9.9,
+        "evidence_at_lead": 6,
+        "reading_at_event": 10.0,
         "lead_days": 90,
         "called": true,
         "sample": "in_sample"
@@ -3818,12 +3902,12 @@
         "n_cells": 143
       },
       "tp": 9,
-      "fp": 103,
+      "fp": 110,
       "fn": 0,
-      "tn": 31,
+      "tn": 24,
       "precision": 0.08,
       "recall": 1.0,
-      "flag_rate": 0.78,
+      "flag_rate": 0.83,
       "base_rate": 0.063,
       "lift": 1.27,
       "threshold": 7.0

@@ -69,17 +69,26 @@ def descrybe_to_items(results, fault_lines):
 
 
 def _already_in_kb(item, corpus):
-    """Rough dedup signal: same case (base name matches, ignoring '— description'
-    suffixes and 'Inc.'/'.' variations), or the citation appears in a KB item."""
+    """Rough dedup signal: same case or authority already in the KB.
+
+    Citation is the authoritative unique key: when both sides carry one and they differ,
+    the two are distinct authorities (e.g. two "Colorado AI Act —" sections) and the
+    title fallback is skipped. Otherwise fall back to title base-name matching (ignoring
+    '— description' and 'Inc.' suffixes)."""
     title = item["title"].lower().strip().rstrip(".")
-    cite = item.get("citation", "").lower()
+    cite = (item.get("citation", "") or "").lower()
     for kb in corpus:
         kb_title = (kb.get("title", "") or "").lower().strip()
         kb_base = kb_title.split("—")[0].split("–")[0].strip().rstrip(".")
+        kb_text = (kb.get("text", "") or "").lower()
+        kb_cite = (kb.get("citation", "") or "").lower()
+        # Both carry a citation and they disagree -> different authorities.
+        if cite and kb_cite and cite != kb_cite:
+            continue
+        if cite and (cite == kb_cite or cite in (kb_text + " " + kb_title)):
+            return True
         if title and (title == kb_base or title == kb_title
                       or title.startswith(kb_base) or kb_base.startswith(title)):
-            return True
-        if cite and cite in ((kb.get("text", "") or "") + " " + (kb.get("title", "") or "")).lower():
             return True
     return False
 

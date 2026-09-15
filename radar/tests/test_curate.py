@@ -50,6 +50,21 @@ def test_in_kb_flag_detects_duplicate():
     assert curate.descrybe_to_items(fresh, ["disclosure"])[0]["in_kb"] is False
 
 
+def test_distinct_statutes_same_prefix_not_dupes():
+    """Two statutes sharing a prefix ('Colorado AI Act —') but with different citations
+    (§ 6-1-1704 vs § 6-1-1706) must NOT be deduped against each other."""
+    items = [
+        {"date": "2026-01-01", "tier": "T1", "title": "Colorado AI Act — consumer disclosure",
+         "source": "x", "url": "https://x", "citation": "Colo. Rev. Stat. § 6-1-1704",
+         "fault_lines": ["convergence"], "text": "disclose AI", "empirical": False, "conflict": False},
+        {"date": "2026-01-01", "tier": "T1", "title": "Colorado AI Act — ISO 42001 defense",
+         "source": "x", "url": "https://x", "citation": "Colo. Rev. Stat. § 6-1-1706",
+         "fault_lines": ["convergence"], "text": "affirmative defense", "empirical": False, "conflict": False},
+    ]
+    # distinct citations -> both are new relative to each other
+    assert curate._already_in_kb(items[1], [items[0]]) is False
+
+
 def _sandbox_ledger(tmp_path):
     """Point the admission ledger at a temp file so admit() tests don't pollute the real one."""
     import ledger

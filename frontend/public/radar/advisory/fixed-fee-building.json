@@ -152,7 +152,7 @@
         "1_capability": 2.5,
         "2_enablement": 2.0,
         "2_market_enable": 4.0,
-        "3_pressure": 9.9,
+        "3_pressure": 10.0,
         "3_adoption": 7.7,
         "4_gate_full": 7860,
         "4_gate_eff": 7860
@@ -176,7 +176,7 @@
         "1_capability": 2.5,
         "2_enablement": 2.0,
         "2_market_enable": 3.0,
-        "3_pressure": 9.0,
+        "3_pressure": 9.6,
         "3_adoption": 2.5,
         "4_gate_full": 7860,
         "4_gate_eff": 7860

@@ -1,5 +1,5 @@
 {
-  "n_items": 97,
+  "n_items": 103,
   "items": [
     {
       "date": "2023-06-22",
@@ -2579,6 +2579,156 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the The billable hour cracks under AI. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2021-01-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "NIST AI Standards \u2014 15 U.S.C. \u00a7 278h-1",
+      "source": "United States Congress",
+      "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title15-section278h1",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Directs NIST to develop voluntary AI standards, guidelines, and a risk-management framework for trustworthy AI, including bias-testing methods \u2014 the harmonizing federal standard that state AI laws reference.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-06-30",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Colorado AI Act \u2014 consumer disclosure, Colo. Rev. Stat. \u00a7 6-1-1704",
+      "source": "Colorado Legislature",
+      "url": "https://olls.info/crs/crs2025-title-06.pdf",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Colorado AI Act: from June 30, 2026, a deployer or developer must disclose to each consumer that they are interacting with an AI system, unless it would be obvious to a reasonable person.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-05-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Utah AI Policy Act \u2014 AI liability, Utah Code \u00a7 13-77-102",
+      "source": "Utah Legislature",
+      "url": "https://le.utah.gov/xcode/Title13/Chapter77/13-77-S102.html",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Utah AI Policy Act: it is not a defense to a consumer-protection violation that generative AI made the statement, took the act, or was used in furtherance of the violation.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-07-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Wyoming AI developer liability immunity \u2014 Wyo. Stat. \u00a7 1-1-143",
+      "source": "Wyoming Legislature",
+      "url": "https://wyoleg.gov/statutes/compress/title01.pdf",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Wyoming limits AI system developer liability for third-party misuse: a developer is immune from damages unless the system was developed with knowledge or intent that its primary purpose was illegal or illicit.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-01-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "California AI Transparency Act \u2014 provider disclosure, \u00a7 22757.3",
+      "source": "California Legislature",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=BPC&division=8.",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "California AI Transparency Act: covered providers must offer manifest and latent disclosures identifying AI-generated content, and contractually require licensees to keep disclosure capability, with revocation on noncompliance.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "vendor_liability",
+          "title": "Liability shifts partway to vendors"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Liability shifts partway to vendors. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-02-01",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Colorado AI Act \u2014 NIST/ISO 42001 affirmative defense, \u00a7 6-1-1706",
+      "source": "Colorado Legislature",
+      "url": "https://olls.info/crs/crs2025-title-06.pdf",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Colorado AI Act: an affirmative defense to AG enforcement if the developer/deployer follows the NIST AI Risk Management Framework, ISO/IEC 42001, or an equivalent \u2014 the concrete convergence signal that one operating model satisfies the patchwork.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "convergence",
+          "title": "Regulatory convergence forces one operating model"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Regulatory convergence forces one operating model. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }

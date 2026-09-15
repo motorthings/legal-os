@@ -35,9 +35,9 @@
       "title": "EU AI Act obligations took effect",
       "url": "https://www.corporatecomplianceinsights.com/ai-risk-2026-critical-changes-general-counsel/",
       "meter": "pressure",
-      "reading_at_lead": 9.3,
-      "evidence_at_lead": 3,
-      "reading_at_event": 9.9,
+      "reading_at_lead": 9.9,
+      "evidence_at_lead": 6,
+      "reading_at_event": 10.0,
       "lead_days": 90,
       "called": true,
       "sample": "in_sample"
@@ -201,12 +201,12 @@
       "n_cells": 143
     },
     "tp": 9,
-    "fp": 103,
+    "fp": 110,
     "fn": 0,
-    "tn": 31,
+    "tn": 24,
     "precision": 0.08,
     "recall": 1.0,
-    "flag_rate": 0.78,
+    "flag_rate": 0.83,
     "base_rate": 0.063,
     "lift": 1.27,
     "threshold": 7.0
