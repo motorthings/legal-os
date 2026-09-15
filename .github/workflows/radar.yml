@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write               # allow committing the regenerated page
+  issues: write                 # allow the re-curation nudge issue
 
 jobs:
   build:
@@ -22,6 +23,21 @@ jobs:
           python-version: "3.12"
       - name: Regenerate radar
         run: python radar/run.py
+      - name: Detect stale/thin lines
+        id: detect
+        run: echo "report=$(python radar/stale_report.py)" >> "$GITHUB_OUTPUT"
+      - name: Ping via re-curation issue
+        if: startsWith(steps.detect.outputs.report, 'needs re-curation')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          REPORT="${{ steps.detect.outputs.report }}"
+          NUM=$(gh issue list --state open --search "Radar re-curation" --json number --jq '.[0].number' || true)
+          if [ -z "$NUM" ]; then
+            gh issue create --title "Radar re-curation" --body "$REPORT"
+          else
+            gh issue edit "$NUM" --body "$REPORT"
+          fi
       - name: Commit if changed
         run: |
           git config user.name "radar-bot"
@@ -36,6 +52,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No change in radar output."
           else
-            git commit -m "radar: regenerate fault-line page [skip ci]"
+            git commit -m "radar: regenerate fault-line page [skip ci] (${{ steps.detect.outputs.report }})"
             git push
           fi
