@@ -50,9 +50,17 @@ def test_in_kb_flag_detects_duplicate():
     assert curate.descrybe_to_items(fresh, ["disclosure"])[0]["in_kb"] is False
 
 
+def _sandbox_ledger(tmp_path):
+    """Point the admission ledger at a temp file so admit() tests don't pollute the real one."""
+    import ledger
+    ledger.ADMISSIONS_FILE = tmp_path / "admissions.jsonl"
+    ledger.HISTORY = tmp_path
+
+
 def test_admit_writes_curated_feed(tmp_path):
     """admit() writes feed-schema rows (flat fault_lines, no harvested flag, citation kept)."""
     import json
+    _sandbox_ledger(tmp_path)
     feed = tmp_path / "feed.jsonl"
     items = [{"date": "2026-01-01", "tier": "T1", "title": "Totally New Case v. Nobody",
               "source": "Court", "url": "https://x", "citation": "999 U.S. 1",
@@ -68,12 +76,29 @@ def test_admit_writes_curated_feed(tmp_path):
 
 def test_admit_skips_kb_duplicate(tmp_path):
     """admit() skips a case already in the KB."""
+    _sandbox_ledger(tmp_path)
     feed = tmp_path / "feed.jsonl"
     items = [{"date": "2023-06-22", "tier": "T1", "title": "Mata v. Avianca, Inc.",
               "source": "x", "url": "https://x", "citation": "", "fault_lines": ["disclosure"],
               "text": "already in KB", "empirical": False, "conflict": False}]
     written = curate.admit(items, feed_path=feed)
     assert written == []                              # Mata is already in the curated feed
+
+
+def test_admit_records_to_ledger(tmp_path):
+    """admit() records a 'curated' decision to the audit ledger — the run-to-run memory."""
+    import ledger
+    _sandbox_ledger(tmp_path)
+    feed = tmp_path / "feed.jsonl"
+    items = [{"date": "2026-01-01", "tier": "T1", "title": "Brand New Ruling v. Z",
+              "source": "Court", "url": "https://descrybe.com/share/x", "citation": "",
+              "fault_lines": ["verification"], "text": "verify citations",
+              "empirical": False, "conflict": False}]
+    curate.admit(items, feed_path=feed)
+    rows = ledger.load_admissions()
+    assert any(r["decision"] == "curated" and "Brand New Ruling" in r["title"] for r in rows)
+    # and it is now "already decided", so a re-run skips it
+    assert ledger.already_decided(items[0])
 
 
 if __name__ == "__main__":

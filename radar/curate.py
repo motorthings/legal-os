@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from score import load_corpus, FEED_PATH
+import ledger
 
 
 def _tier(result):
@@ -106,7 +107,12 @@ def admit(items, feed_path=FEED_PATH, dry_run=False):
 
     Skips anything already in the KB (by title/citation) and writes the rest in the
     curated feed schema. This is the deliberate, human-vouched path — distinct from the
-    automated `ingest.admit()` that feeds the harvested store. Returns the rows written."""
+    automated `ingest.admit()` that feeds the harvested store.
+
+    Run-to-run memory: every curation decision is ALSO recorded to the admission ledger
+    (decision="curated", reason="descrybe_discovery") so the ruling is traceable (who/
+    when/why) and future runs can see it was already decided — not just via the KB's
+    title/citation match, but via the append-only audit log. Returns the rows written."""
     corpus = load_corpus()
     written = []
     for it in items:
@@ -116,6 +122,10 @@ def admit(items, feed_path=FEED_PATH, dry_run=False):
         if not dry_run:
             with open(feed_path, "a") as f:
                 f.write(json.dumps(row) + "\n")
+            ledger.record_decision(row, "curated", "descrybe_discovery", scores={
+                "fault_lines": row.get("fault_lines", []),
+                "case_id": it.get("case_id", ""),
+            })
         written.append(row)
         corpus.append(row)   # so a duplicate later in THIS batch is skipped too
     return written

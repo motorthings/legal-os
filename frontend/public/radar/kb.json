@@ -1,5 +1,5 @@
 {
-  "n_items": 80,
+  "n_items": 85,
   "items": [
     {
       "date": "2023-06-22",
@@ -2154,6 +2154,131 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the Disclosure & certification standardize. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-10-03",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "People v. Alvarez \u2014 AI verification duty, candor to the tribunal",
+      "source": "California Court of Appeal",
+      "url": "https://descrybe.com/share/case-viewer/c10690262",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "California Court of Appeal sanctioned counsel who admitted failing to verify cases supplied by artificial intelligence. Attorneys cannot delegate the duty to verify citations to technology; a fabricated quotation and a nonexistent case citation violated the duty of candor under Bus. & Prof. Code 6068(d) and Rule 3.3.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-11-17",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Schlichter v. Kennedy \u2014 every citation must be checked",
+      "source": "California Court of Appeal",
+      "url": "https://descrybe.com/share/case-viewer/c10737604",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "California Court of Appeal reaffirmed that an attorney must check every citation to confirm the case exists and the citation is correct, contrasting Noland and Alvarez on the AI verification duty.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-07-23",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Elizondo v. City of Laredo \u2014 nondelegable Rule 11 verification duty",
+      "source": "District Court, S.D. Texas",
+      "url": "https://descrybe.com/share/case-viewer/c10640077",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Rule 11 verification is a nondelegable duty; the signing attorney must personally apply judgment. Counsel whose law clerk used generative AI to produce citations without verification violated Rule 11 despite good faith.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-05-13",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Ramirez v. El Tri MX Restaurant & Bar Corp \u2014 $1,000 sanction for unverified AI cites",
+      "source": "District Court, E.D. New York",
+      "url": "https://descrybe.com/share/case-viewer/c10583707",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "$1,000 sanction for citing four nonexistent cases; counsel relied on a paralegal AI research assistant without independently verifying each citation, violating the Rule 11 reasonable-inquiry duty.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-07-28",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "AP Electric, Inc. v. Oakland Automation, LLC \u2014 fabricated quotes on real cites",
+      "source": "District Court, E.D. Michigan",
+      "url": "https://descrybe.com/share/case-viewer/c10643320",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Sanctions scrutiny for real case citations paired with fabricated quotations and parentheticals. Legal AI chatbots predict word patterns and are not designed to fact-check, so their output must be independently verified by attorneys.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "verification",
+          "title": "'A human reviewed it' stops being enough"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }

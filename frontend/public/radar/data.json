@@ -340,13 +340,13 @@
       "pressure_seed": 7.5,
       "pressure": 10.0,
       "trend": "rising",
-      "weighted_evidence": 22.76,
-      "weighted_positive": 22.76,
+      "weighted_evidence": 30.01,
+      "weighted_positive": 30.01,
       "weighted_negative": 0.0,
       "corroboration": 0.45,
       "neg_corroboration": 0.0,
-      "n_evidence": 23,
-      "n_ruling_evidence": 15,
+      "n_evidence": 28,
+      "n_ruling_evidence": 20,
       "n_negative": 0,
       "evidence": [
         {
@@ -434,6 +434,21 @@
           "ruling_eligible": true
         },
         {
+          "date": "2025-11-17",
+          "title": "Schlichter v. Kennedy \u2014 every citation must be checked",
+          "tier": "T1",
+          "source": "California Court of Appeal",
+          "url": "https://descrybe.com/share/case-viewer/c10737604",
+          "weight": 1.0,
+          "matched": [
+            "verification"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
           "date": "2025-10-29",
           "title": "Mezu v. Mezu (Md. App.) \u2014 AGC referral for non-lawyer clerk AI delegation",
           "tier": "T1",
@@ -441,6 +456,50 @@
           "url": "https://www.courtlistener.com/opinion/10714052/mezu-v-mezu",
           "weight": 1.0,
           "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-10-03",
+          "title": "People v. Alvarez \u2014 AI verification duty, candor to the tribunal",
+          "tier": "T1",
+          "source": "California Court of Appeal",
+          "url": "https://descrybe.com/share/case-viewer/c10690262",
+          "weight": 1.0,
+          "matched": [
+            "verification",
+            "verify citation"
+          ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-07-28",
+          "title": "AP Electric, Inc. v. Oakland Automation, LLC \u2014 fabricated quotes on real cites",
+          "tier": "T1",
+          "source": "District Court, E.D. Michigan",
+          "url": "https://descrybe.com/share/case-viewer/c10643320",
+          "weight": 1.0,
+          "matched": [],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-07-23",
+          "title": "Elizondo v. City of Laredo \u2014 nondelegable Rule 11 verification duty",
+          "tier": "T1",
+          "source": "District Court, S.D. Texas",
+          "url": "https://descrybe.com/share/case-viewer/c10640077",
+          "weight": 1.0,
+          "matched": [
+            "verification"
+          ],
           "empirical": false,
           "conflict": false,
           "negative": false,
@@ -457,6 +516,19 @@
             "verification",
             "human review"
           ],
+          "empirical": false,
+          "conflict": false,
+          "negative": false,
+          "ruling_eligible": true
+        },
+        {
+          "date": "2025-05-13",
+          "title": "Ramirez v. El Tri MX Restaurant & Bar Corp \u2014 $1,000 sanction for unverified AI cites",
+          "tier": "T1",
+          "source": "District Court, E.D. New York",
+          "url": "https://descrybe.com/share/case-viewer/c10583707",
+          "weight": 1.0,
+          "matched": [],
           "empirical": false,
           "conflict": false,
           "negative": false,
@@ -3339,5 +3411,5 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 80
+  "n_items": 85
 }
