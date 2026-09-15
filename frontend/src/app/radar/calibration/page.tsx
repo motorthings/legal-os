@@ -98,13 +98,25 @@ export default function CalibrationPage() {
         <Link href="/radar" className="btn-secondary no-underline">← back to the radar</Link>
       </header>
 
-      {/* the honest headline: recall, and the two sides that temper it */}
+      {/* the honest headline: retrodiction vs. real prediction */}
+      <div className="card p-4 border-l-4" style={{ borderLeftColor: outSample?.n ? 'var(--metric)' : 'var(--primary)' }}>
+        <p className="text-[13px] font-semibold text-[var(--text-strong)]">
+          {outSample?.n
+            ? `${outSample.hits}/${outSample.n} real out-of-sample predictions`
+            : '0 real predictions yet'}
+        </p>
+        <p className="text-[12px] text-[var(--text)] mt-1 leading-relaxed">
+          The metrics below are <b>retrodiction</b> — the knobs and feed were authored knowing how these {cal.n_resolutions} events turned out, so they're a replay, not a forecast. Real skill starts when a ruling dated <b>after {cal.knobs_frozen_at}</b> gets called {cal.lead_days} days early, with no hindsight.
+        </p>
+      </div>
+
+      {/* recall, and the two sides that temper it */}
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card p-4">
-          <p className="eyebrow mb-1">Recall</p>
+          <p className="eyebrow mb-1">Recall <span className="font-normal normal-case text-[var(--text-muted)]">· retrodiction</span></p>
           <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{pct(recall)}</p>
           <p className="text-[12px] text-[var(--text-muted)] mt-1 leading-snug">
-            {cal.hits} of {cal.n_resolutions} real rulings were already flagged {cal.lead_days} days early.
+            {cal.hits} of {cal.n_resolutions} events were flagged {cal.lead_days} days early — replaying a feed that already knew the outcome.
           </p>
         </div>
         <div className="card p-4">
