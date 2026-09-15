@@ -377,6 +377,10 @@ export default function RadarPage() {
 
   const pick = (id: string) => setExpanded((cur) => (cur === id ? null : id));
 
+  const needsCurating = data.fault_lines.filter(
+    (f) => (f.stale_days ?? 0) > 180 || (f.lanes_populated ?? 0) <= 2
+  );
+
   return (
     <div className="px-4 md:px-8 py-6 max-w-[1400px] mx-auto space-y-8">
       {/* header */}
@@ -397,6 +401,19 @@ export default function RadarPage() {
           </button>
         </div>
       </header>
+
+      {/* re-curation prompt: surface thin/stale lines and point at the fix */}
+      {needsCurating.length > 0 && (
+        <div className="card p-4 border-l-4" style={{ borderLeftColor: 'var(--rose)' }}>
+          <p className="text-[13px] font-semibold text-[var(--text-strong)]">
+            {needsCurating.length} {needsCurating.length === 1 ? 'fault line needs' : 'fault lines need'} re-curation
+          </p>
+          <p className="text-[12px] text-[var(--text)] mt-1 leading-relaxed">
+            {needsCurating.map((f) => f.control).join(' · ')} — thin or stale. In Claude Code, run{' '}
+            <span className="font-mono text-[var(--primary)]">/refresh-radar</span> to re-curate them with Descrybe.
+          </p>
+        </div>
+      )}
 
       {/* primer */}
       {showPrimer && (
