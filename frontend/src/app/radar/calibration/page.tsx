@@ -108,17 +108,17 @@ export default function CalibrationPage() {
           </p>
         </div>
         <div className="card p-4">
-          <p className="eyebrow mb-1">Precision</p>
+          <p className="eyebrow mb-1">Precision <span className="font-normal normal-case text-[var(--text-muted)]">· lower looks bad, but that's expected</span></p>
           <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{pct(prec?.precision)}</p>
           <p className="text-[12px] text-[var(--text-muted)] mt-1 leading-snug">
-            of everything flagged, how much produced a ruling. Flag rate {pct(prec?.flag_rate)} · base rate {pct(prec?.base_rate)} · lift {prec?.lift == null ? '—' : `${prec.lift.toFixed(2)}×`}.
+            how often a flagged line actually produced a ruling. Rulings are rare — only {pct(prec?.base_rate)} of all line-months — so this reads low. What matters is <b className="text-[var(--text)]">lift {prec?.lift == null ? '—' : `${prec.lift.toFixed(2)}×`}</b>: the engine beats blind flagging by that much.
           </p>
         </div>
         <div className="card p-4">
-          <p className="eyebrow mb-1">Seed dependence</p>
+          <p className="eyebrow mb-1">Seed dependence <span className="font-normal normal-case text-[var(--text-muted)]">· lower is better</span></p>
           <p className="font-mono text-3xl font-extrabold text-[var(--text-strong)]">{ab?.seed_dependence == null ? '—' : `${ab.seed_dependence.toFixed(2)}`}</p>
           <p className="text-[12px] text-[var(--text-muted)] mt-1 leading-snug">
-            share of calls resting on the analyst seed, not evidence. Default {pct(ab?.default_seeds.hit_rate)} → neutral {pct(ab?.neutral_seeds.hit_rate)}.
+            how much of the score is the analyst's baseline guess rather than evidence. Flatten the seed to neutral and hits only drop {pct(ab?.default_seeds.hit_rate)} → {pct(ab?.neutral_seeds.hit_rate)} — so the evidence is doing the work, not the priors.
           </p>
         </div>
       </div>
