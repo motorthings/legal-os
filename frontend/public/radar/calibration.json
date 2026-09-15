@@ -201,14 +201,14 @@
       "n_cells": 143
     },
     "tp": 9,
-    "fp": 79,
+    "fp": 103,
     "fn": 0,
-    "tn": 55,
-    "precision": 0.1,
+    "tn": 31,
+    "precision": 0.08,
     "recall": 1.0,
-    "flag_rate": 0.62,
+    "flag_rate": 0.78,
     "base_rate": 0.063,
-    "lift": 1.59,
+    "lift": 1.27,
     "threshold": 7.0
   },
   "seed_ablation": {

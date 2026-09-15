@@ -30,12 +30,10 @@
   "pricing_model_source": false,
   "verdict_counts": {
     "govern": {
-      "stand-up-now": 9,
-      "no-mandate": 2
+      "stand-up-now": 11
     },
     "deploy": {
-      "fix-pricing-first": 6,
-      "watch": 1
+      "fix-pricing-first": 7
     }
   },
   "rows": [
@@ -105,10 +103,34 @@
         "1_capability": 4.5,
         "2_enablement": 7.0,
         "2_market_enable": 6.7,
-        "3_pressure": 9.9,
+        "3_pressure": 10.0,
         "3_adoption": 7.0,
         "4_gate_full": -123810,
         "4_gate_eff": -59014
+      }
+    },
+    {
+      "fault_line": "competence",
+      "title": "Competence becomes an affirmative governance duty",
+      "control": "Firm-wide training + governance program",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "deployment",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 6.6,
+        "2_enablement": 7.0,
+        "2_market_enable": 8.4,
+        "3_pressure": 10.0,
+        "3_adoption": 8.0,
+        "4_gate_full": -123810,
+        "4_gate_eff": -83755
       }
     },
     {
@@ -136,30 +158,6 @@
       }
     },
     {
-      "fault_line": "competence",
-      "title": "Competence becomes an affirmative governance duty",
-      "control": "Firm-wide training + governance program",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "codifiable",
-      "driver": "deployment",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "fix-pricing-first",
-      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
-      "orders": {
-        "1_capability": 6.6,
-        "2_enablement": 7.0,
-        "2_market_enable": 8.4,
-        "3_pressure": 9.8,
-        "3_adoption": 8.0,
-        "4_gate_full": -123810,
-        "4_gate_eff": -83755
-      }
-    },
-    {
       "fault_line": "vendor_liability",
       "title": "Liability shifts partway to vendors",
       "control": "Tool-provenance documentation",
@@ -181,6 +179,30 @@
         "3_adoption": 2.5,
         "4_gate_full": -123810,
         "4_gate_eff": -123810
+      }
+    },
+    {
+      "fault_line": "judicial_analytics",
+      "title": "Judicial / litigation analytics gets regulated",
+      "control": "Guardrailed strategy sim (no actor prediction)",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "tacit",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 4.0,
+        "2_enablement": 7.0,
+        "2_market_enable": 3.0,
+        "3_pressure": 8.6,
+        "3_adoption": 3.0,
+        "4_gate_full": -123810,
+        "4_gate_eff": -22830
       }
     },
     {
@@ -208,6 +230,30 @@
       }
     },
     {
+      "fault_line": "benchmark",
+      "title": "A tool-certification / benchmark standard emerges",
+      "control": "Tool-certification benchmark (NERVE)",
+      "horizon": "mid (1-3yr)",
+      "lead": "~1 year",
+      "seam": "codifiable",
+      "driver": "capability",
+      "required": true,
+      "opportunistic": false,
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
+      "deploy": "fix-pricing-first",
+      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
+      "orders": {
+        "1_capability": 9.0,
+        "2_enablement": 7.0,
+        "2_market_enable": 8.9,
+        "3_pressure": 8.0,
+        "3_adoption": 7.5,
+        "4_gate_full": -123810,
+        "4_gate_eff": -112029
+      }
+    },
+    {
       "fault_line": "agentic",
       "title": "Agentic autonomy reopens supervision & UPL",
       "control": "Human-decides gates + scope-limiting",
@@ -232,54 +278,6 @@
       }
     },
     {
-      "fault_line": "benchmark",
-      "title": "A tool-certification / benchmark standard emerges",
-      "control": "Tool-certification benchmark (NERVE)",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "codifiable",
-      "driver": "capability",
-      "required": true,
-      "opportunistic": false,
-      "govern": "stand-up-now",
-      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
-      "deploy": "fix-pricing-first",
-      "deploy_note": "hourly billing makes AI adoption a net loss ($-123,810/lawyer/yr at full capture)",
-      "orders": {
-        "1_capability": 9.0,
-        "2_enablement": 7.0,
-        "2_market_enable": 8.9,
-        "3_pressure": 6.9,
-        "3_adoption": 7.5,
-        "4_gate_full": -123810,
-        "4_gate_eff": -112029
-      }
-    },
-    {
-      "fault_line": "judicial_analytics",
-      "title": "Judicial / litigation analytics gets regulated",
-      "control": "Guardrailed strategy sim (no actor prediction)",
-      "horizon": "mid (1-3yr)",
-      "lead": "~1 year",
-      "seam": "tacit",
-      "driver": "capability",
-      "required": false,
-      "opportunistic": false,
-      "govern": "no-mandate",
-      "govern_note": "not yet required or open \u2014 nothing forces it now",
-      "deploy": "watch",
-      "deploy_note": "no deploy case yet \u2014 not required or opportunistic",
-      "orders": {
-        "1_capability": 4.0,
-        "2_enablement": 7.0,
-        "2_market_enable": 3.0,
-        "3_pressure": 6.4,
-        "3_adoption": 3.0,
-        "4_gate_full": -123810,
-        "4_gate_eff": -22830
-      }
-    },
-    {
       "fault_line": "fees",
       "title": "The billable hour cracks under AI",
       "control": "Value-delivered measurement",
@@ -287,17 +285,17 @@
       "lead": "~1-2 years",
       "seam": "tacit",
       "driver": "market",
-      "required": false,
+      "required": true,
       "opportunistic": false,
-      "govern": "no-mandate",
-      "govern_note": "not yet required or open \u2014 nothing forces it now",
+      "govern": "stand-up-now",
+      "govern_note": "required/open and the firm is ready \u2014 stand the control up",
       "deploy": null,
       "deploy_note": "not an AI-deployment question (market-driven governance control)",
       "orders": {
         "1_capability": 2.5,
         "2_enablement": 7.0,
         "2_market_enable": 3.5,
-        "3_pressure": 5.8,
+        "3_pressure": 7.2,
         "3_adoption": 3.0,
         "4_gate_full": -123810,
         "4_gate_eff": -123810

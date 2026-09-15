@@ -1,5 +1,5 @@
 {
-  "n_items": 85,
+  "n_items": 97,
   "items": [
     {
       "date": "2023-06-22",
@@ -2279,6 +2279,306 @@
         }
       ],
       "why": "Binding / primary authority (weight 1.00). It evidences the 'A human reviewed it' stops being enough. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-12-02",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "In Re TikTok Inc. v. State of Texas \u2014 AI no-training protective order",
+      "source": "Court of Appeals of Texas",
+      "url": "https://descrybe.com/share/case-viewer/c10748964",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Texas Court of Appeals protective order barring use of confidential Attorneys-Eyes-Only material for AI model training, improvement, or development (including prompts, outputs, and embeddings) across proprietary, open-source, and third-party models.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-08-29",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "In Re Amendments to Rules Regulating The Florida Bar - Chapter 4 \u2014 generative AI confidentiality",
+      "source": "Supreme Court of Florida",
+      "url": "https://descrybe.com/share/case-viewer/c10097730",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Florida amended its confidentiality rule to require reasonable efforts to protect client information when using generative AI, weighing safeguards by sensitivity, likelihood of disclosure, cost, and difficulty.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-06-04",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Wilmington Trust v. Kingsbridge Realty \u2014 closed-AI-only protective order",
+      "source": "District Court, S.D. New York",
+      "url": "https://descrybe.com/share/case-viewer/c10923602",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Protective order permitting closed AI tools only if configured to prevent training and third-party disclosure and allow deletion; uploading protected material to open public AI tools is prohibited.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-06-10",
+      "tier": "T2",
+      "tier_label": "Regulatory guidance",
+      "tier_weight": 0.8,
+      "title": "Derek Cirilo v. Resorts World Las Vegas \u2014 public AI platform restriction",
+      "source": "District Court, D. Nevada",
+      "url": "https://descrybe.com/share/case-viewer/c10910676",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Stipulation defining public AI platforms (ChatGPT, Gemini, Copilot, Claude) and restricting confidential material from tools that retain inputs or train models.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "confidentiality",
+          "title": "Confidentiality hardens into data governance"
+        }
+      ],
+      "why": "Regulatory guidance authority (weight 0.80). It evidences the Confidentiality hardens into data governance. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-08-04",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "TOV Realty, LLC v. Suarez \u2014 AI hallucinations violate Rule 1.1 competence",
+      "source": "Supreme Court of Connecticut",
+      "url": "https://descrybe.com/share/case-viewer/c10941955",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Connecticut Supreme Court: submitting filings with hallucinated AI citations violates the Rule 1.1 duty of competent representation; sua sponte ordered counsel to show cause on AI use and verification.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-12-11",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "In Re Amendments to Arkansas RPC \u2014 AI competence under Rule 5.3",
+      "source": "Supreme Court of Arkansas",
+      "url": "https://descrybe.com/share/case-viewer/c10753380",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Arkansas amended Rule 5.3 so nonlawyer assistance includes generative AI platforms, retaining supervisory duties over AI tool use and managerial responsibility for firm AI measures.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-07-10",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Estate of Lane Caviness v. Atlas Air \u2014 outsourcing to AI is not competent lawyering",
+      "source": "Court of Appeals for the Eleventh Circuit",
+      "url": "https://descrybe.com/share/case-viewer/c10925376",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Eleventh Circuit: completely outsourcing legal work to AI is not competent lawyering under Rule 1.1; counsel referred to the Committee on Lawyer Qualifications for hallucinated citations.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-04-03",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "United States v. John Farris \u2014 baseline AI ethics duties",
+      "source": "Court of Appeals for the Sixth Circuit",
+      "url": "https://descrybe.com/share/case-viewer/c10833420",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Sixth Circuit restated baseline AI duties: competence, output verification, confidentiality and privilege, disclosure or informed consent, firm-wide AI policies, and ethical billing.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "competence",
+          "title": "Competence becomes an affirmative governance duty"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Competence becomes an affirmative governance duty. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2025-02-20",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Ross v. United States \u2014 judicial AI competency and bias duty",
+      "source": "District of Columbia Court of Appeals",
+      "url": "https://descrybe.com/share/case-viewer/c10336428",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "DC Court of Appeals: judges must develop technological competency as AI enters courts; AI bias implicates Model Code of Judicial Conduct Rules 2.2/2.3 (impartiality), and ignorance of the technology does not excuse noncompliance with the Rule 2.5 competence duty.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "judicial_analytics",
+          "title": "Judicial / litigation analytics gets regulated"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Judicial / litigation analytics gets regulated. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-05-28",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "James Snell v. United Specialty Insurance \u2014 LLMs and the robo-judge concern",
+      "source": "Court of Appeals for the Eleventh Circuit",
+      "url": "https://descrybe.com/share/case-viewer/c9507705",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Eleventh Circuit: LLM outputs are supplementary data points, not a substitute for human judgment; the robo-judge concern is unfounded because human judgment remains necessary, and LLMs produce probabilistic outputs rather than definitive answers.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "judicial_analytics",
+          "title": "Judicial / litigation analytics gets regulated"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the Judicial / litigation analytics gets regulated. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2026-08-18",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "Scale AI, Inc. v. United States \u2014 AI model accuracy vs human review",
+      "source": "United States Court of Federal Claims",
+      "url": "https://descrybe.com/share/case-viewer/c10954147",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "Court of Federal Claims distinguishes human review during production from post-hoc auditing against an objective IoU metric; an AI model is measured against a benchmark, not just the fact that a human reviewed each task.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "benchmark",
+          "title": "A tool-certification / benchmark standard emerges"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the A tool-certification / benchmark standard emerges. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
+    },
+    {
+      "date": "2024-12-26",
+      "tier": "T1",
+      "tier_label": "Binding / primary",
+      "tier_weight": 1.0,
+      "title": "White v. County of Suffolk \u2014 AI availability and fee reasonableness",
+      "source": "District Court, E.D. New York",
+      "url": "https://descrybe.com/share/case-viewer/c10304791",
+      "empirical": false,
+      "conflict": false,
+      "capability": null,
+      "market": null,
+      "order": null,
+      "what": "E.D.N.Y. flagged, in a footnote, whether the growing availability of AI tools should be considered when judging the reasonableness of fee requests \u2014 an early judicial signal that AI-driven efficiency bears on the reasonable-fee analysis.",
+      "role": [
+        "L2 ruling"
+      ],
+      "fault_lines": [
+        {
+          "id": "fees",
+          "title": "The billable hour cracks under AI"
+        }
+      ],
+      "why": "Binding / primary authority (weight 1.00). It evidences the The billable hour cracks under AI. It is L2 ruling evidence \u2014 a court, bar, or regulator acting."
     }
   ]
 }
