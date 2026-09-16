@@ -6,3 +6,117 @@
 {"ts": "2026-09-06T03:36:44.909352+00:00", "event": "built", "n_items": 25, "n_fault_lines": 11, "as_of": "2026-09-05", "rising": 6, "hit_rate": 0.67, "snapshots": 1, "artifact": "history/runs/run-2026-09-05-20260906T033644Z.json"}
 {"ts": "2026-09-08T15:00:35.080182+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-08", "rising": 7, "hit_rate": 0.67, "snapshots": 2, "artifact": "history/runs/run-2026-09-08-20260908T150035Z.json"}
 {"ts": "2026-09-08T15:05:48.171674+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-08", "rising": 7, "hit_rate": 0.67, "snapshots": 2, "artifact": "history/runs/run-2026-09-08-20260908T150548Z.json"}
+{"ts": "2026-09-14T16:48:37.284945+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T164837Z.json"}
+{"ts": "2026-09-14T16:56:05.747931+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T165605Z.json"}
+{"ts": "2026-09-14T16:56:05.783509+00:00", "event": "ingest_skipped", "reason": "Harvest fetchers not wired yet. admit(candidates) is live and tested; implement _harvest() against SOURCE_ALLOWLIST to feed it."}
+{"ts": "2026-09-14T16:56:06.091020+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T165606Z.json"}
+{"ts": "2026-09-14T16:56:55.885809+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 3}
+{"ts": "2026-09-14T16:56:55.886199+00:00", "event": "kb_duplicate", "title": "New York Formal Opinion 2025-6 \u2014 recording/transcribing client meetings with AI", "reason": "url_in_kb"}
+{"ts": "2026-09-14T16:56:55.886247+00:00", "event": "kb_duplicate", "title": "AI sanction wave: ~$145K in Q1 2026 penalties", "reason": "url_in_kb"}
+{"ts": "2026-09-14T16:56:55.886283+00:00", "event": "kb_duplicate", "title": "France criminalizes judicial profiling (Justice Reform Act, Art. 33)", "reason": "url_in_kb"}
+{"ts": "2026-09-14T16:56:56.198495+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T165656Z.json"}
+{"ts": "2026-09-14T16:57:52.400181+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T16:57:52.709566+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T165752Z.json"}
+{"ts": "2026-09-14T16:58:42.116193+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T16:58:42.428909+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T165842Z.json"}
+{"ts": "2026-09-14T17:43:12.409456+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T17:43:12.410520+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T17:43:12.816302+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T174312Z.json"}
+{"ts": "2026-09-14T18:05:03.710858+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:05:03.712376+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:05:04.020601+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T180504Z.json"}
+{"ts": "2026-09-14T18:05:04.057160+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:05:04.057810+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:05:04.087911+00:00", "event": "ingest", "live": false, "candidates": 0, "admitted": 0, "deduped": 0, "quarantined": 0, "sources": 3}
+{"ts": "2026-09-14T18:05:04.087982+00:00", "event": "ingest_offline", "reason": "RADAR_LIVE_FETCH not set; no network calls"}
+{"ts": "2026-09-14T18:05:04.399976+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T180504Z.json"}
+{"ts": "2026-09-14T18:07:06.923296+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:07:06.924014+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:07:07.224553+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T180707Z.json"}
+{"ts": "2026-09-14T18:07:07.262952+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:07:07.263600+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:07:07.276316+00:00", "event": "ingest", "live": false, "candidates": 0, "admitted": 0, "deduped": 0, "quarantined": 0, "sources": 3}
+{"ts": "2026-09-14T18:07:07.276403+00:00", "event": "ingest_offline", "reason": "RADAR_LIVE_FETCH not set; no network calls"}
+{"ts": "2026-09-14T18:07:07.579395+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T180707Z.json"}
+{"ts": "2026-09-14T18:13:28.933002+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:13:28.933743+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:13:29.231626+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T181329Z.json"}
+{"ts": "2026-09-14T18:13:29.268839+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:13:29.269456+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:13:29.281342+00:00", "event": "ingest", "live": false, "candidates": 0, "admitted": 0, "deduped": 0, "quarantined": 0, "sources": 3}
+{"ts": "2026-09-14T18:13:29.281441+00:00", "event": "ingest_offline", "reason": "RADAR_LIVE_FETCH not set; no network calls"}
+{"ts": "2026-09-14T18:13:29.583059+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T181329Z.json"}
+{"ts": "2026-09-14T18:16:25.949584+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:16:25.950335+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:16:26.253111+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T181626Z.json"}
+{"ts": "2026-09-14T18:30:18.757694+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T18:30:18.758921+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T18:30:19.071541+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T183019Z.json"}
+{"ts": "2026-09-14T19:50:28.434112+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T19:50:28.435583+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T19:50:28.743553+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T195028Z.json"}
+{"ts": "2026-09-14T21:13:37.457750+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-14T21:13:37.458966+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-14T21:13:37.764802+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260914T211337Z.json"}
+{"ts": "2026-09-15T01:52:45.302993+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T01:52:45.304221+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T01:52:45.606083+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T015245Z.json"}
+{"ts": "2026-09-15T02:01:46.557285+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:01:46.558278+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:01:46.854252+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T020146Z.json"}
+{"ts": "2026-09-15T02:04:37.670886+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:04:37.671611+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:04:37.968809+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T020437Z.json"}
+{"ts": "2026-09-15T02:06:21.335129+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:06:21.335842+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:06:21.631858+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T020621Z.json"}
+{"ts": "2026-09-15T02:06:21.668778+00:00", "event": "kb_reconciled", "n_items": 76, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:06:21.669410+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:06:21.681392+00:00", "event": "ingest", "live": false, "candidates": 0, "admitted": 0, "deduped": 0, "quarantined": 0, "sources": 2}
+{"ts": "2026-09-15T02:06:21.681475+00:00", "event": "ingest_offline", "reason": "RADAR_LIVE_FETCH not set; no network calls"}
+{"ts": "2026-09-15T02:06:21.984155+00:00", "event": "built", "n_items": 76, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T020621Z.json"}
+{"ts": "2026-09-15T02:12:23.089122+00:00", "event": "kb_reconciled", "n_items": 80, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:12:23.089879+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:12:23.399571+00:00", "event": "built", "n_items": 80, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T021223Z.json"}
+{"ts": "2026-09-15T02:19:24.971365+00:00", "event": "kb_reconciled", "n_items": 85, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:19:24.972125+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:19:25.299331+00:00", "event": "built", "n_items": 85, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 5, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T021925Z.json"}
+{"ts": "2026-09-15T02:26:29.008593+00:00", "event": "kb_reconciled", "n_items": 97, "duplicates": 0, "shared_source": 3}
+{"ts": "2026-09-15T02:26:29.009373+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:26:29.379515+00:00", "event": "built", "n_items": 97, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 8, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T022629Z.json"}
+{"ts": "2026-09-15T02:30:33.921737+00:00", "event": "kb_reconciled", "n_items": 103, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T02:30:33.922519+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T02:30:34.311713+00:00", "event": "built", "n_items": 103, "n_fault_lines": 11, "as_of": "2026-09-14", "rising": 8, "hit_rate": 0.67, "snapshots": 3, "artifact": "history/runs/run-2026-09-14-20260915T023034Z.json"}
+{"ts": "2026-09-15T14:25:52.199380+00:00", "event": "kb_reconciled", "n_items": 103, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T14:25:52.200838+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T14:25:52.605842+00:00", "event": "built", "n_items": 103, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T142552Z.json"}
+{"ts": "2026-09-15T15:57:19.002365+00:00", "event": "kb_reconciled", "n_items": 103, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T15:57:19.003569+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T15:57:19.397340+00:00", "event": "built", "n_items": 103, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T155719Z.json"}
+{"ts": "2026-09-15T16:43:22.212880+00:00", "event": "kb_reconciled", "n_items": 104, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T16:43:22.214294+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T16:43:22.629483+00:00", "event": "built", "n_items": 104, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T164322Z.json"}
+{"ts": "2026-09-15T16:46:12.470365+00:00", "event": "kb_reconciled", "n_items": 104, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T16:46:12.471308+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T16:46:12.879893+00:00", "event": "built", "n_items": 104, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T164612Z.json"}
+{"ts": "2026-09-15T16:55:16.392203+00:00", "event": "kb_reconciled", "n_items": 105, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T16:55:16.393093+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T16:55:16.802391+00:00", "event": "built", "n_items": 105, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T165516Z.json"}
+{"ts": "2026-09-15T17:13:20.889981+00:00", "event": "kb_reconciled", "n_items": 106, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T17:13:20.891168+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T17:13:21.323291+00:00", "event": "built", "n_items": 106, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T171321Z.json"}
+{"ts": "2026-09-15T18:06:01.729660+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T18:06:01.731313+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T18:06:02.155819+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.67, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T180602Z.json"}
+{"ts": "2026-09-15T19:16:25.887752+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T19:16:25.890070+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T19:16:26.512182+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.33, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T191626Z.json"}
+{"ts": "2026-09-15T19:19:35.060732+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T19:19:35.061805+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T19:19:35.480842+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.0, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T191935Z.json"}
+{"ts": "2026-09-15T19:25:37.389338+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T19:25:37.390465+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T19:25:37.821764+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.44, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T192537Z.json"}
+{"ts": "2026-09-15T19:37:11.688904+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-15T19:37:11.690035+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-15T19:37:12.174530+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.44, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T193712Z.json"}

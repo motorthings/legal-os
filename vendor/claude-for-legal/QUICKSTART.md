@@ -64,7 +64,7 @@ Each plugin learns your playbook through a setup interview, writes it to a pract
 
 ## What's in the box
 
-12 practice-area plugins, 5 managed-agent cookbooks, 16+ connectors. The full reference is in [README.md](README.md).
+12 practice-area plugins, 5 managed-agent cookbooks, 16+ connectors. The full reference is in [README.md](GitHub/legal-os/vendor/claude-for-legal/README.md).
 
 ## Stuck?
 
