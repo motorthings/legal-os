@@ -183,7 +183,7 @@ The two leading streams from the upgrade roadmap. 103 agents, 21 sources, 82 cla
 
 ### Stream 5 — judicial/regulatory docket feed (enforcement)
 
-Six dated events beyond the four seed cases. Venue-broadening cascade: district → circuit → state-bar discipline.
+Seven dated events beyond the four seed cases. Venue-broadening cascade: district → circuit → state-bar discipline.
 
 | date | event | source | tier | fault_line | flag |
 |---|---|---|---|---|---|
@@ -193,10 +193,17 @@ Six dated events beyond the four seed cases. Venue-broadening cascade: district 
 | 2026-03-13 | Whiting (6th Cir.): two lawyers $15k each + double costs + referral | courtlistener.com | T1 | verification | continuation |
 | 2026-03 | Alabama Bar Public Reprimand of Matthew Reeves (Butler Snow) | alabar.org | T2 | competence | continuation |
 | 2026-04-06 | Gamez (E.D. Cal.): OSC **naming product OpenCase** | law360.com | T1 | vendor_liability | origination |
+| 2026-09-09 † | State v. Sandoval (N.M. S-1-SC-40845): **direct contempt + $5,000**, fabricated witness testimony, Disciplinary Board referral, briefing struck | nmonesource.com | T1 | verification | continuation |
+
+† **Staged 2026-09-16, after the freeze.** Dated 2026-09-09, six days *before* `KNOBS_FROZEN_AT` (2026-09-15), so it is pre-freeze evidence the frozen feed did not carry. Per `FREEZE.md` it is held in this inventory rather than admitted to `radar/sources/feed.jsonl`; the fingerprint stays clean and the item enters at the December re-curation. It is deliberately **not** graded `out_of_sample` — `calibration.py` classes it `in_sample` on its date.
 
 **Two origination signals that matter beyond the count:**
 - **Mezu** — the failure mechanism is *delegation to a non-lawyer clerk*, not personal AI use. That's a new `competence`/supervision fault line, distinct from the "lawyer didn't verify" pattern.
 - **Gamez** — first OSC that names a specific legal-AI *product* (OpenCase) as the source of fabricated cites. This is the first `vendor_liability` datapoint in the docket feed, and it's the one your engine should weigh heaviest.
+
+**The escalation signal (Sandoval, 2026-09-09).** Every prior `verification` item in this table is a *citation* failure. Sandoval is not. The brief in chief carried false testimony from four wholly fabricated witnesses (Officer Michelle Amarillo, Officer Sanchez, Manal Al-Jibury, Teresa Marquez), false testimony attributed to real witnesses (Danny and Linda Stanton, Mariah Chavez), and a fabricated physical detail of the shooting. Two consequences follow. First, citation-checking tooling does not sit on this failure path: a fabricated witness roster is invisible to a cite-checker, which means the `verification` fault line's build guidance is under-scoped if it only names citation audit. Second, the court's own findings (¶¶5–6) record that counsel never told the client the brief contained misrepresentations, and never told him about the show cause proceedings at all. The verification failure compounded into a candor and client-communication failure, and the sanction escalated from a fine to contempt plus a bar referral. Treat it as `continuation` on `verification` and a new severity tier, not as `origination`. The underlying signal — "a human reviewed it" as an insufficient control — is already ranked at `verification`; the order upgrades the *cost* of the failure, not the taxonomy.
+
+Primary source: *State v. Sandoval*, No. S-1-SC-40845 (N.M. Sept. 9, 2026) (per curiam), Dispositional Order of Direct Contempt, ¶¶4–8, 11–18. Four pages. The brief itself was stricken at ¶16 and is not published; every claim about its contents traces to ¶4 of the order.
 
 ### Stream 6 — certification / benchmark-standard adoption (origination watch)
 
@@ -222,6 +229,7 @@ All confirmed items are ethics opinions and rulemakings, not third-party benchma
 - **Whiting** — one secondary said "refund client fees" but the actual order is to reimburse the *opponent* (City), not the lawyer's own client. 2-1 vote.
 - **Killed:** Shawnee County KS "Rule 3.125" AI-disclosure court rule — 1-2, refuted as single-source. Do not feed.
 - **Illinois "disclosure not required"** holds statewide but some individual circuit judges issued contrary standing orders.
+- **Sandoval** — **nonprecedential by election** under Rule 12-405(B) NMRA; not selected for publication, and Rule 12-405 restricts citing it. Cite the docket number and date, never as authority. If it is admitted to the feed in December, the `citation` field should read `No. S-1-SC-40845 (N.M. Sept. 9, 2026)` and the `text` should carry the nonprecedential status, so nothing downstream treats it as precedent.
 
 ### Residual open questions
 
