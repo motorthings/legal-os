@@ -2,6 +2,8 @@
 
 Cross-repo summary of every legal AI application and function built by Charlie Fuller. Use this as the map when working across the legal repos. Everything here is real, shipped, and (where noted) live in production.
 
+> **The comprehensive, recruiter-facing master index is [`LEGAL_WORK_SUMMARY.md`](LEGAL_WORK_SUMMARY.md).** This file is the quick working map; that one is the full portfolio including the Fault-Line Radar, the verify-before-file discipline, and the MIT Computational Law engagement. Update both when the body of work changes.
+
 **The one-paragraph pitch:** governed AI for legal work. Not the model, not the law library — the layer that makes AI tools deployable and defensible in a firm: every decision logged and provable, client data walled off, the attorney always in the loop. Built on the principle *deterministic over LLM* — the model reasons, the system judges. Every authority cited is verified real and still good law.
 
 ---
@@ -31,6 +33,20 @@ Ten functions:
 **MCP server** (`mcp-server/`, self-contained, deterministic, no LLM/DB/API): `clause_risk_check`, `nda_triage`, `risk_matrix` (severity×likelihood). Deployed to Fly.io as `legalos-mcp`, streamable HTTP at `/mcp`.
 
 **Cowork Legal Plugin** (`plugins/`) — 9 skills: review-contract, triage-nda, compliance-check, legal-risk-assessment, legal-response, meeting-briefing, vendor-check, signature-request, brief. Playbook-driven via `legal.local.md`.
+
+### The Fault-Line Radar — `legal-os/radar/` (Predict)
+The newest platform capability and the most distinctive: a self-backtesting engine that forecasts where legal AI is headed so someone can decide where to build and govern next. It tracks 11 **fault lines** (the places a new AI capability rubs against an existing legal duty) and scores each 0–10 on five meters — L1 capability, L2 ruling, L3 adoption, **E enablement** (market supply), **S software** (vendor momentum).
+
+- **Authority over volume.** Evidence is tier-stamped at intake and the tier sets the weight (court ruling 1.00 → vendor marketing 0.008), never the number of mentions. The feed holds 76 real, dated, 2023–26 items across six streams (vendor capital/M&A, model access, regulatory room, method/playbook, docket of sanctions/referrals, certification watch).
+- **Two-sided L2 ruling.** Items can argue *against* a line, dragging pressure below the seed. A forecast that can only say "more pressure" can't notice the rules reversing.
+- **Grades itself.** Calibration replays the feed days before each ruling that actually landed and scores its own hit rate. Deterministic and replayable: same feed + date → same score.
+- **GOVERN/DEPLOY advisory seam** (`advisory.py`). Two verdicts per fault line. GOVERN asks whether the control is required and whether the firm can meet it (economics never block a required control). DEPLOY asks whether to put AI on the work, gated by pricing and enablement. Fixed-fee vs hourly firms get opposite DEPLOY answers (the AI Profit Paradox, applied at the fault-line level).
+- **Adversarially-verified evidence.** Three reviewers try to break every claim; it stands only if two of three can't. Method in `docs/radar/evidence-methodology.md` and `docs/radar/build-method.md`; evidence in `docs/radar/radar-market-inventory.{md,jsonl}`.
+- **In the app:** `/radar`, `/radar/advisory`, `/radar/kb`, `/radar/reference`. Engine regenerates weekly via CI.
+
+Canonical spec: `docs/radar/radar-design.md`. Entry point: `docs/radar/radar-master-reference.md`. (Also indexed in `LEGAL_WORK_SUMMARY.md`.)
+
+> Note: `contentful-contract-review/` is a **stub** (only a `frontend/public` shell) — it is NOT the live `legal-contract-review/` SaaS above. Don't conflate them.
 
 ---
 

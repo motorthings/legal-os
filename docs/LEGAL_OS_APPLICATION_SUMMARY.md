@@ -41,6 +41,12 @@ Each function is a standalone application — its own UI, workflow, and data —
 
 ---
 
+## Beyond the Ten: the Fault-Line Radar (Predict)
+
+Sitting above the ten functions is a forecasting layer the platform calls the **Fault-Line Radar**. It watches where legal AI is heading by scoring 11 fault lines, the places where a new AI capability rubs against an existing legal duty. Each line is measured on five meters (capability, ruling, adoption, market enablement, and vendor momentum), weighted by the **authority** of the evidence behind it, not its volume. Its calibration replays the feed days before each ruling that actually landed and grades its own hit rate. Its advisory seam returns two verdicts per line: **GOVERN** (is the control required and can we meet it, where economics never block a required control) and **DEPLOY** (is this the moment to put AI on the work, gated by pricing and market enablement). The canonical spec lives at [`docs/radar/radar-design.md`](radar/radar-design.md); the cross-repo map describes it in full in `LEGAL_AI_APPS_SUMMARY.md` and `LEGAL_WORK_SUMMARY.md`.
+
+---
+
 ## The Governance Layer — Three Non-Negotiable Pillars
 
 Before any function runs, three things are true. They are the architecture.
