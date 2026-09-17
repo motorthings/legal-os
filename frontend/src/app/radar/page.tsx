@@ -238,7 +238,15 @@ function Chart({
             onMouseLeave={() => onHover(null)}
             onClick={() => onPick(f.id)}
           >
-            <circle cx={sx(f.pressure)} cy={sy(f.adoption)} r={r} fill={LEAD_COLOR[lead]} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
+            {/* Numbered to match the action list above, and the stroke separates the two
+                tiers that list defines: solid ring = required now, dashed = watching. */}
+            <circle
+              cx={sx(f.pressure)} cy={sy(f.adoption)} r={r}
+              fill={LEAD_COLOR[lead]} fillOpacity={f.is_duty ? 0.9 : 0.45}
+              stroke={f.is_duty ? 'var(--text-strong)' : 'var(--text-muted)'}
+              strokeWidth={f.is_duty ? 2 : 1.5}
+              strokeDasharray={f.is_duty ? undefined : '3 2.5'}
+            />
             <text x={sx(f.pressure)} y={sy(f.adoption) + 3.5} textAnchor="middle" fill="#fff" style={{ fontSize: 10, fontWeight: 700 }}>{ranks.get(f.id)}</text>
           </g>
         );
@@ -334,6 +342,7 @@ function GapChart({
           >
             <circle cx={sx(f.adoption)} cy={cy} r={r} fill={S_COLOR[mom]} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
             <text x={sx(f.adoption)} y={cy + 3.5} textAnchor="middle" fill="#fff" style={{ fontSize: 10, fontWeight: 700 }}>{ranks.get(f.id)}</text>
+        {!f.is_duty && <circle cx={sx(f.adoption)} cy={cy} r={rOf(f.queue) - 3} fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeDasharray="3 2.5" />}
           </g>
         );
       })}
@@ -448,7 +457,13 @@ export default function RadarPage() {
     .sort((a, b) => b.pressure - a.pressure);
 
   const byQueue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
-  const ranks = new Map(byQueue.map((f, i) => [f.id, i + 1]));
+  // ONE numbering for the whole page: the action list's order (duties by evidence strength,
+  // then the watching list by pressure). This used to be queue rank, so the chart numbered
+  // the same eleven things differently from the list above it and taught the reader to
+  // distrust both. Keep these two in step.
+  const ranks = new Map(
+    [...duties, ...watched].map((f, i) => [f.id, i + 1] as const),
+  );
   const buildNow = byQueue.slice(0, 3);
   const watch = byQueue.slice(3).filter((f) => leadBucket(f.lead) === 'later');
 
@@ -718,6 +733,16 @@ export default function RadarPage() {
       {/* chart — scoring provenance, below the fold */}
       <section className="card p-4 md:p-6">
         <p className="eyebrow mb-3">Scoring provenance <span className="font-normal normal-case tracking-normal text-[var(--text-muted)]">how the readings above were computed</span></p>
+        {/* The chart and the list above use ONE numbering now, so say it, and say which
+            mark means which tier — otherwise the reader has to infer the encoding twice. */}
+        <p className="text-[11.5px] text-[var(--text-muted)] leading-relaxed mb-3 max-w-[880px]">
+          Each dot is numbered to match its place in the list above. A <b>solid ring</b> means
+          required now; a <b>dashed ring</b> means on watch. Position is the two readings:
+          right is how far the law has moved, up is how far the market has moved. A dot high and
+          right is a control that is both required and being made table stakes; a dot far right
+          and low is one the law has moved on that the market has not. Dot size is the
+          intersection of the two.
+        </p>
         <div className="inline-flex rounded-lg border border-[var(--border)] overflow-hidden text-left mb-3">
           {(['urgency', 'gap'] as const).map((v) => (
             <button key={v} onClick={() => setView(v)} className={`px-3 py-1.5 ${view === v ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
