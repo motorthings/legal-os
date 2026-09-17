@@ -51,6 +51,7 @@ sys.path.insert(0, str(HERE))   # allow flat imports when run as a script
 from calibration import CALL_THRESHOLD          # noqa: E402  (the mandate threshold)
 import fault_lines as K                         # noqa: E402  (leverage classes)
 import milestones                               # noqa: E402  (lead time, for sequencing)
+import ordering                                 # noqa: E402  (the shared ordering rule)
 import leverage                                 # noqa: E402  (who withholds what)
 
 # --- Order 4 gate: reuse the paradox identity from legal-sim (single source) --
@@ -404,13 +405,14 @@ def sequence(rows):
     """
     facts = _milestone_facts()
     leads = dict(facts["lead"]); leads["_overall"] = facts["overall"]
+    # The rule itself lives in ordering.py, because the radar page sorts by it too and the
+    # two pages previously agreed on none of six rows. See that module for the reasoning.
     ordered = sorted(
         rows,
-        key=lambda r: (_tier_of(r),
-                       0 if r["confidence"] != "thin" else 1,
-                       0 if r["fault_line"] in leads else 1,
-                       leads.get(r["fault_line"], 0),
-                       -r["orders"]["3_pressure"]),
+        key=lambda r: ordering.sort_key(r["fault_line"],
+                                        tier=_tier_of(r),
+                                        thin=(r["confidence"] == "thin"),
+                                        pressure=r["orders"]["3_pressure"]),
     )
     plan = []
     for i, r in enumerate(ordered, 1):

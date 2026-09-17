@@ -37,6 +37,10 @@ interface FaultLine {
   action: string;
   stakes: string | null;
   is_duty: boolean;
+  /** The shared ordering tuple, computed in radar/ordering.py and published in data.json.
+   *  Lower sorts first. See that module: the radar page and the advisory page both sort by
+   *  this, and before it existed they agreed on none of six rows. */
+  order_key?: number[];
   watch_kind: string | null;
   watch_reason: string | null;
   strength: {
@@ -539,15 +543,6 @@ export default function RadarPage() {
   };
 
   const threshold = callThreshold ?? 8.0;
-  // Ordered by how well-supported the duty is, not by how high the meter reads: a duty
-  // resting on seven circuit courts is a different claim from one resting on two trial
-  // orders, and a single ranking should not present them as equals.
-  const duties = [...data.fault_lines]
-    .filter((f) => f.pressure >= threshold)
-    .sort((a, b) =>
-      (b.strength?.appellate ?? 0) - (a.strength?.appellate ?? 0) ||
-      (b.strength?.total ?? 0) - (a.strength?.total ?? 0) ||
-      b.pressure - a.pressure);
 
   const leadFor = (id: string): number | null => {
     const ds = (ms?.milestones ?? [])
@@ -558,15 +553,45 @@ export default function RadarPage() {
     return ds[Math.floor(ds.length / 2)];
   };
 
+  // Ordered by the shared rule in radar/ordering.py: requires before expects, then shortest
+  // measured lead first. NOT by evidence strength, which is what the bar length draws.
+  // `vendor_liability` has the fewest sources on the board and the second-shortest warning
+  // window, so the two axes genuinely disagree. The builder publishes `order_key`; the
+  // fallback recomputes the same tuple from the milestones so an older data.json still
+  // orders correctly instead of reverting to the superseded evidence sort.
+  const cmpKey = (a: number[], b: number[]) => {
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+      const d = (a[i] ?? 0) - (b[i] ?? 0);
+      if (d !== 0) return d;
+    }
+    return 0;
+  };
+  const orderKey = (f: FaultLine): number[] => {
+    if (f.order_key?.length) return f.order_key;
+    const lead = leadFor(f.id);
+    return [
+      0,
+      f.strength?.label === 'thin' ? 1 : 0,
+      lead == null ? 1 : 0,
+      lead ?? 0,
+      -f.pressure,
+    ];
+  };
+  const duties = [...data.fault_lines]
+    .filter((f) => f.is_duty)
+    .sort((a, b) => cmpKey(orderKey(a), orderKey(b)));
+
+  // The watch list keeps its own order: none of these is required, so "shortest lead" has
+  // nothing to rank. The question there is which is nearest to mattering.
   const watched = [...data.fault_lines]
     .filter((f) => !f.is_duty && f.watch_reason)
-    .sort((a, b) => b.pressure - a.pressure);
+    .sort((a, b) => b.pressure - a.pressure || (b.strength?.total ?? 0) - (a.strength?.total ?? 0));
 
   const byQueue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
-  // ONE numbering for the whole page: the action list's order (duties by evidence strength,
-  // then the watching list by pressure). This used to be queue rank, so the chart numbered
-  // the same eleven things differently from the list above it and taught the reader to
-  // distrust both. Keep these two in step.
+  // ONE numbering for the whole page: the action list's order (duties by the shared rule in
+  // radar/ordering.py, then the watching list by pressure). This used to be queue rank, so
+  // the chart numbered the same eleven things differently from the list above it and taught
+  // the reader to distrust both. Keep these two in step.
   const ranks = new Map(
     [...duties, ...watched].map((f, i) => [f.id, i + 1] as const),
   );
@@ -664,8 +689,10 @@ export default function RadarPage() {
         <p className="eyebrow mb-2">{copy.actions_heading}</p>
         <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
           {duties.length} controls are already required of any firm, whichever jurisdiction you
-          practise in. Ordered by how well the record supports each one, strongest first. Follow
-          the authority link on any of them to check the sources yourself.
+          practise in. The order is what to act on first. A control whose antecedents historically
+          bound in 192 days gives less warning than one that took 907, so it comes first. The
+          source count beside each one tells you how much to trust the line, not how soon to act
+          on it. Follow the authority link on any of them to check the sources yourself.
         </p>
 
         <ol className="space-y-3">

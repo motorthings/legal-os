@@ -1,7 +1,7 @@
 {
   "_note": "Copy that must read identically on BOTH surfaces: the static page (build.py -> docs/radar/index.html) and the in-app page (frontend/src/app/radar/page.tsx). Only strings BOTH render belong here \u2014 a one-sided entry is just a second place to drift. Both read this file; tests/test_copy_contract.py fails if either hardcodes one of these strings.",
   "board_heading": "The whole board",
-  "board_blurb": "Bar length is how many sources stand behind the duty, and the colours are what kind of authority they are, because seven circuit courts and seven bar opinions are not the same claim. The order is how WELL SUPPORTED each one is, not how much it matters to you. A duty resting on seven circuit courts ranks above one resting on two trial orders. Which of them you should do FIRST is a different question, and it depends on your firm.",
+  "board_blurb": "Bar length is how many sources stand behind the duty. The colours are what kind of authority they are, because seven circuit courts and seven bar opinions are not the same claim. The order is not bar length. A control the law requires comes before one the market merely expects, and within that, the control with the shortest warning window on the record comes first. How many sources stand behind a line tells you how much to trust it. It does not tell you what to do about it.",
   "actions_heading": "What to do",
   "seg_appellate": "appellate court",
   "seg_trial": "trial court",

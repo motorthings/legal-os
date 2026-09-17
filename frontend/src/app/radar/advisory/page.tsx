@@ -194,6 +194,8 @@ export default function RadarAdvisoryPage() {
           Ordered for you: duties before market norms, and within each, the shortest
           measured lead first — a control whose antecedents historically bound in 192
           days gives less warning than one that bound in 907, so it is nearer the top.
+          That rule reads only the record and no firm input, which is why the radar
+          board carries the same order.
         </p>
         <div className="grid grid-cols-[1fr_13rem_12rem_7rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
           <span># · Control · fault line</span><span>GOVERN · stand up?</span><span>DEPLOY · put AI on it?</span><span>L2 · L3 · E</span>

@@ -589,6 +589,13 @@
         -20,
         -9.7
       ],
+      "order_key": [
+        0,
+        0,
+        0,
+        907,
+        -9.7
+      ],
       "is_duty": true,
       "watch_kind": null,
       "watch_reason": null
@@ -905,6 +912,13 @@
       "rank_key": [
         -4,
         -14,
+        -9.5
+      ],
+      "order_key": [
+        0,
+        0,
+        0,
+        730,
         -9.5
       ],
       "is_duty": true,
@@ -1225,6 +1239,13 @@
       "rank_key": [
         -2,
         -13,
+        -9.4
+      ],
+      "order_key": [
+        0,
+        0,
+        0,
+        500,
         -9.4
       ],
       "is_duty": true,
@@ -1647,6 +1668,13 @@
         -12,
         -9.3
       ],
+      "order_key": [
+        0,
+        0,
+        0,
+        192,
+        -9.3
+      ],
       "is_duty": true,
       "watch_kind": null,
       "watch_reason": null
@@ -1945,6 +1973,13 @@
         -10,
         -9.3
       ],
+      "order_key": [
+        0,
+        0,
+        0,
+        601,
+        -9.3
+      ],
       "is_duty": true,
       "watch_kind": null,
       "watch_reason": null
@@ -2227,6 +2262,13 @@
         -6,
         -8.3
       ],
+      "order_key": [
+        0,
+        0,
+        0,
+        451,
+        -8.3
+      ],
       "is_duty": true,
       "watch_kind": null,
       "watch_reason": null
@@ -2357,6 +2399,13 @@
       "rank_key": [
         -2,
         -3,
+        -7.8
+      ],
+      "order_key": [
+        0,
+        0,
+        0,
+        2161,
         -7.8
       ],
       "is_duty": false,
@@ -2994,6 +3043,13 @@
       "rank_key": [
         0,
         -2,
+        -7.6
+      ],
+      "order_key": [
+        0,
+        1,
+        0,
+        872,
         -7.6
       ],
       "is_duty": false,
@@ -3649,6 +3705,13 @@
         -1,
         -7.2
       ],
+      "order_key": [
+        0,
+        1,
+        1,
+        0,
+        -7.2
+      ],
       "is_duty": false,
       "watch_kind": "precursor",
       "watch_reason": "Precursor on the record: AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards (2025-09-29)"
@@ -3792,6 +3855,13 @@
       "rank_key": [
         0,
         -2,
+        -6.7
+      ],
+      "order_key": [
+        0,
+        1,
+        0,
+        333,
         -6.7
       ],
       "is_duty": false,
@@ -3977,6 +4047,13 @@
         0,
         -6.5
       ],
+      "order_key": [
+        0,
+        1,
+        1,
+        0,
+        -6.5
+      ],
       "is_duty": false,
       "watch_kind": "precursor",
       "watch_reason": "Precursor on the record: CNA adds AI governance to malpractice underwriting (2026-06-09)"
@@ -4068,7 +4145,7 @@
   "copy": {
     "_note": "Copy that must read identically on BOTH surfaces: the static page (build.py -> docs/radar/index.html) and the in-app page (frontend/src/app/radar/page.tsx). Only strings BOTH render belong here \u2014 a one-sided entry is just a second place to drift. Both read this file; tests/test_copy_contract.py fails if either hardcodes one of these strings.",
     "board_heading": "The whole board",
-    "board_blurb": "Bar length is how many sources stand behind the duty, and the colours are what kind of authority they are, because seven circuit courts and seven bar opinions are not the same claim. The order is how WELL SUPPORTED each one is, not how much it matters to you. A duty resting on seven circuit courts ranks above one resting on two trial orders. Which of them you should do FIRST is a different question, and it depends on your firm.",
+    "board_blurb": "Bar length is how many sources stand behind the duty. The colours are what kind of authority they are, because seven circuit courts and seven bar opinions are not the same claim. The order is not bar length. A control the law requires comes before one the market merely expects, and within that, the control with the shortest warning window on the record comes first. How many sources stand behind a line tells you how much to trust it. It does not tell you what to do about it.",
     "actions_heading": "What to do",
     "seg_appellate": "appellate court",
     "seg_trial": "trial court",

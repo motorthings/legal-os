@@ -10,6 +10,7 @@ from pathlib import Path
 from score import score
 import calibration
 import milestones
+import ordering
 import actions
 import kb
 import advisory
@@ -181,12 +182,13 @@ def render(data):
     for m in ms["milestones"]:
         if m["status"] == "landed" and m["lead_days"] is not None:
             lead_by_line.setdefault(m["fault_line"], []).append(m["lead_days"])
-    # Ordered by how well-supported each duty is, not by meter height: a duty resting on
-    # seven circuit courts is a different claim from one resting on two trial orders, and a
-    # single ranking must not present them as equals.
-    duties = sorted(
-        [fl for fl in fls if fl["pressure"] >= calibration.CALL_THRESHOLD],
-        key=lambda r: r["rank_key"])
+    # Ordered by the shared rule in ordering.py: requires before expects, then shortest
+    # measured lead first. NOT by evidence strength, which is what the bar length draws and
+    # what this page used to sort on. The two axes genuinely disagree — `vendor_liability`
+    # has the fewest sources on the board and the second-shortest warning window — and the
+    # brief is that a reader should be told what to do first, with the source count carried
+    # alongside as a statement about how much to trust the line.
+    duties = sorted([fl for fl in fls if fl["is_duty"]], key=lambda r: r["order_key"])
     duty_rows = "".join(
         f'<li class="act">'
         f'<div class="act-h"><span class="act-n">{i}</span>'
@@ -272,8 +274,10 @@ def render(data):
         <span class="meta">{len(duties)} controls already required of any firm, whichever jurisdiction you practise in</span></h2>
       <p class="small">Each of these is a control the law has already moved on, at or above the
         flag threshold of {calibration.CALL_THRESHOLD} on ruling evidence only, so the list does not
-        depend on which jurisdiction you practise in. Ordered by how well the record supports each
-        one. Open any of them to read the sources yourself.</p>
+        depend on which jurisdiction you practise in. The order is what to act on first: a control
+        whose antecedents historically bound in 192 days gives less warning than one that took 907,
+        so it comes first. The source count beside each one tells you how much to trust the line,
+        not how soon to act on it. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
       <p class="seq"><a href="/radar/advisory">{_c("seq_cta")} &rarr;</a></p>
     </div>"""
@@ -635,11 +639,23 @@ def enrich(data, threshold=None, pending=None):
         fl["action"] = actions.plain_action(fl["id"], fl.get("control", ""))
         fl["stakes"] = actions.plain_stakes(fl["id"])
         fl["strength"] = evidence_strength(fl)
+        # How well supported a line is, strongest first. This is an ATTRIBUTE of the line
+        # and it is what the bar length draws, but it is no longer what sets the page order:
+        # see `order_key` immediately below for why.
         fl["rank_key"] = (
             -fl["strength"]["appellate"],
             -fl["strength"]["total"],
             -fl["pressure"],
         )
+        # What the page sorts by. Requires-before-expects, then shortest measured lead
+        # first, from the shared rule in ordering.py — the same one the advisory page uses,
+        # so the two surfaces stop disagreeing about what comes first. Deliberately reads
+        # only the record: the radar page has no firm, so it cannot answer the firm-specific
+        # question, but it can use the firm-specific page's ordering because that rule never
+        # reads a firm input.
+        fl["order_key"] = ordering.sort_key(fl["id"], tier=0,
+                                            thin=(fl["strength"]["label"] == "thin"),
+                                            pressure=fl["pressure"])
         fl["is_duty"] = fl["pressure"] >= threshold
         # Only non-duties get a watch reason. A duty reading "close to the threshold (9.7 of
         # 8.0)" is nonsense — it is over the threshold, which is the whole point of it.
