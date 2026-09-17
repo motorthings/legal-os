@@ -54,22 +54,6 @@ def _strength_line(d, lead_by_line):
     return " · ".join(bits)
 
 
-def _watch_item(w):
-    """One row of the 'not required yet' list. Built here rather than inline: nested
-    f-strings with escaped quotes are a syntax error in the expression part, and the
-    stakes line is conditional."""
-    stakes = f'<p class="act-k">{_esc(w["stakes"])}</p>' if w.get("stakes") else ""
-    label = _esc(w["strength"]["label"])
-    return (
-        f'<li class="act watch">'
-        f'<div class="act-h"><span class="act-t">{_esc(w["action"])}</span>'
-        f'<span class="act-s thin">{label}</span></div>'
-        f'{stakes}'
-        f'<p class="act-m">{_esc(w["watch_reason"])}</p>'
-        f'</li>'
-    )
-
-
 def _lead_cell(days_list):
     """Median antecedent -> binding lead for a line, or a dash when none is on record."""
     if not days_list:
@@ -217,21 +201,6 @@ def render(data):
         f'</div></details></li>'
         for i, d in enumerate(duties, 1)
     ) or '<li class="src">No control on the record is required yet.</li>'
-
-    # --- What's coming: the controls that are NOT required yet ----------------
-    # Suppressing these made the page read as if agentic supervision did not exist, when it
-    # is the one line with a live bill in Congress. A firm deciding what to build needs the
-    # near list as much as the now list; it just has to be labelled as not-yet-required.
-    watching = sorted([fl for fl in fls if not fl["is_duty"]],
-                      key=lambda r: (-r["pressure"], -r["strength"]["total"]))
-    watch_rows = "".join(_watch_item(w) for w in watching if w.get("watch_reason"))
-    watch_block = f"""
-      <h3 class="watch-h">Not required yet, but worth watching</h3>
-      <p class="small">These sit below the threshold, so nothing yet obliges you to act. They are
-        listed because a control can be worth building before it is required, and the reason
-        differs per line: a bill in Congress is a fact, while a reading near the line is only
-        our own dial moving.</p>
-      <ul class="acts">{watch_rows}</ul>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
       <h2>What to do
@@ -241,7 +210,6 @@ def render(data):
         depend on which jurisdiction you practise in. Ordered by how well the record supports each
         one. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
-      {watch_block}
     </div>"""
     ms_rows = "".join(
         f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
@@ -400,12 +368,6 @@ def render(data):
   .act-ev {{ margin:.5rem 0 0; font-size:.75rem; color:var(--fg); }}
   .act-ev .d {{ font-family:'Source Code Pro',monospace; color:var(--dim); margin-right:.35rem; }}
   .act-ev .src {{ display:block; color:var(--dim); font-size:.68rem; margin:.1rem 0 .5rem .4rem; }}
-  .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;
-    padding-top:.9rem; border-top:1px solid var(--line); }}
-  .act.watch {{ opacity:.86; }}
-  .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;
-    padding-top:.9rem; border-top:1px solid var(--line); }}
-  .act.watch {{ opacity:.86; }}
   .hit {{ color:#8fd3b0; font-weight:700; }}
   .miss {{ color:#e0a0a0; font-weight:700; }}
   .p.a {{ background:transparent !important; color:#8fd3b0; border:1px solid #2a4a3a; }}
@@ -554,12 +516,8 @@ def enrich(data, threshold=None, pending=None):
             -fl["pressure"],
         )
         fl["is_duty"] = fl["pressure"] >= threshold
-        # Only non-duties get a watch reason. A duty reading "close to the threshold (9.7 of
-        # 8.0)" is nonsense — it is over the threshold, which is the whole point of it.
-        if fl["is_duty"]:
-            fl["watch_kind"], fl["watch_reason"] = None, None
-        else:
-            fl["watch_kind"], fl["watch_reason"] = watch_reason(fl, threshold, pending)
+        kind, why = watch_reason(fl, threshold, pending)
+        fl["watch_kind"], fl["watch_reason"] = kind, why
     return data
 
 

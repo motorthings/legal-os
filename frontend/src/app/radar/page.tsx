@@ -36,6 +36,9 @@ interface FaultLine {
   // Presentation enrichment, computed in radar/build.py (not in the frozen scorer).
   action: string;
   stakes: string | null;
+  is_duty: boolean;
+  watch_kind: string | null;
+  watch_reason: string | null;
   strength: {
     appellate: number;
     trial: number;
@@ -440,6 +443,10 @@ export default function RadarPage() {
     return ds[Math.floor(ds.length / 2)];
   };
 
+  const watched = [...data.fault_lines]
+    .filter((f) => !f.is_duty && f.watch_reason)
+    .sort((a, b) => b.pressure - a.pressure);
+
   const byQueue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
   const ranks = new Map(byQueue.map((f, i) => [f.id, i + 1]));
   const buildNow = byQueue.slice(0, 3);
@@ -609,7 +616,43 @@ export default function RadarPage() {
           })}
         </ol>
 
-        <div className="mt-4 pt-3 border-t border-[var(--border)]">
+        {/* NOT REQUIRED YET — suppressing these made the page read as if agentic supervision
+            did not exist, when it is the one line with a live bill in Congress. */}
+        {watched.length > 0 && (
+          <>
+            <h3 className="text-[15px] font-bold text-[var(--text-strong)] mt-6 pt-4 border-t border-[var(--border)]">
+              Not required yet, but worth watching
+            </h3>
+            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
+              These sit below the threshold, so nothing yet obliges you to act. They are listed
+              because a control can be worth building before it is required, and the reason
+              differs per line: a bill in Congress is a fact, while a reading near the line is
+              only our own dial moving.
+            </p>
+            <ul className="space-y-2">
+              {watched.map((w) => (
+                <li key={w.id} className="border border-[var(--border)] rounded-lg p-3 opacity-90">
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="text-[13.5px] font-bold text-[var(--text-strong)]">
+                      {w.action}
+                    </span>
+                    <span className="pill text-[9px]" style={{ background: 'var(--brand-tint)', color: 'var(--primary)' }}>
+                      {w.strength?.label}
+                    </span>
+                  </div>
+                  {w.stakes && (
+                    <p className="text-[12px] text-[var(--text)] leading-relaxed mt-1">{w.stakes}</p>
+                  )}
+                  <p className="font-mono text-[10.5px] text-[var(--text-muted)] mt-1.5">
+                    {w.watch_reason}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        <div className="mt-5 pt-3 border-t border-[var(--border)]">
           <Link
             href="/radar/advisory"
             className="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--primary)] hover:underline"

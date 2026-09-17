@@ -588,7 +588,10 @@
         -7,
         -20,
         -9.7
-      ]
+      ],
+      "is_duty": true,
+      "watch_kind": null,
+      "watch_reason": null
     },
     {
       "id": "disclosure",
@@ -903,7 +906,10 @@
         -4,
         -14,
         -9.5
-      ]
+      ],
+      "is_duty": true,
+      "watch_kind": null,
+      "watch_reason": null
     },
     {
       "id": "confidentiality",
@@ -1220,7 +1226,10 @@
         -2,
         -13,
         -9.4
-      ]
+      ],
+      "is_duty": true,
+      "watch_kind": null,
+      "watch_reason": null
     },
     {
       "id": "competence",
@@ -1637,7 +1646,10 @@
         -5,
         -12,
         -9.3
-      ]
+      ],
+      "is_duty": true,
+      "watch_kind": null,
+      "watch_reason": null
     },
     {
       "id": "convergence",
@@ -1932,7 +1944,10 @@
         0,
         -10,
         -9.3
-      ]
+      ],
+      "is_duty": true,
+      "watch_kind": null,
+      "watch_reason": null
     },
     {
       "id": "vendor_liability",
@@ -2211,7 +2226,10 @@
         0,
         -6,
         -8.3
-      ]
+      ],
+      "is_duty": true,
+      "watch_kind": null,
+      "watch_reason": null
     },
     {
       "id": "judicial_analytics",
@@ -2340,7 +2358,10 @@
         -2,
         -3,
         -7.8
-      ]
+      ],
+      "is_duty": false,
+      "watch_kind": "near",
+      "watch_reason": "Close to the threshold (7.8 of 8.0) but no ruling has landed yet"
     },
     {
       "id": "benchmark",
@@ -2974,7 +2995,10 @@
         0,
         -2,
         -7.6
-      ]
+      ],
+      "is_duty": false,
+      "watch_kind": "near",
+      "watch_reason": "Close to the threshold (7.6 of 8.0) but no ruling has landed yet"
     },
     {
       "id": "agentic",
@@ -3624,7 +3648,10 @@
         0,
         -1,
         -7.2
-      ]
+      ],
+      "is_duty": false,
+      "watch_kind": "precursor",
+      "watch_reason": "Precursor on the record: AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards (2025-09-29)"
     },
     {
       "id": "fees",
@@ -3766,7 +3793,10 @@
         0,
         -2,
         -6.7
-      ]
+      ],
+      "is_duty": false,
+      "watch_kind": "market",
+      "watch_reason": "No authority yet, but the market is moving on it"
     },
     {
       "id": "insurance",
@@ -3946,7 +3976,10 @@
         0,
         0,
         -6.5
-      ]
+      ],
+      "is_duty": false,
+      "watch_kind": "precursor",
+      "watch_reason": "Precursor on the record: CNA adds AI governance to malpractice underwriting (2026-06-09)"
     }
   ],
   "tiers": {
