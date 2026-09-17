@@ -783,12 +783,55 @@ export default function RadarPage() {
 
 
 
+      </section>
+
+      {/* WHY LISTEN TO THIS — the page asserts throughout and never says why it should be
+          believed, or why the firm-specific answer is worth more than the general one. */}
+      <section className="card p-4 md:p-6">
+        <p className="eyebrow mb-3">Why this is worth your time</p>
+        <div className="space-y-4 max-w-[880px]">
+          <div>
+            <p className="eyebrow mb-1">How it works</p>
+            <p className="text-[12.5px] text-[var(--text)] leading-relaxed">
+              Every reading comes from primary sources &mdash; court orders, statutes, bar opinions
+              &mdash; weighted by who said it rather than by how many said it. A vendor blog carries
+              about a hundredth the weight of a bar opinion, so a reading cannot be moved by whoever
+              publishes most. Before anything is admitted, three independent reviews try to break
+              the claim; what does not survive is dropped rather than softened. Every number here
+              links to the sources behind it, so you can check the working instead of trusting the
+              summary.
+            </p>
+          </div>
+          <div>
+            <p className="eyebrow mb-1">Why the advice is useful</p>
+            <p className="text-[12.5px] text-[var(--text)] leading-relaxed">
+              This is a duty map, not a forecast. It reports what the law has already moved on, so
+              acting on it is compliance rather than a bet on a prediction. The order is a sort for
+              attention across controls you cannot all stand up at once, and it is graded against
+              its own record rather than asserted. Where the evidence is thin, it says so; where a
+              control is not required yet, this page does not pretend otherwise.
+            </p>
+          </div>
+          <div>
+            <p className="eyebrow mb-1">Why your fee structure changes the answer</p>
+            <p className="text-[12.5px] text-[var(--text)] leading-relaxed">
+              The same control costs different firms different amounts, and whether it pays to put
+              AI on a piece of work depends entirely on how you bill. On hourly billing, AI that
+              cuts time cuts your revenue and the saving goes to the client, so adopting it is a
+              net loss however good the tool is. On a fixed fee the same tool is margin. So the
+              useful question is never &ldquo;should we adopt AI&rdquo; but &ldquo;which work is
+              worth it at <em>our</em> fee structure, and which is worth deferring&rdquo; &mdash;
+              and that answer is firm-specific, which is why the advisory layer asks for your
+              pricing model before it tells you what to do.
+            </p>
+          </div>
+        </div>
         <div className="mt-5 pt-3 border-t border-[var(--border)]">
           <Link
             href="/radar/advisory"
             className="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--primary)] hover:underline"
           >
-{copy.seq_cta} →
+            {copy.seq_cta} →
           </Link>
         </div>
       </section>

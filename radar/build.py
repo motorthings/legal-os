@@ -318,6 +318,35 @@ def render(data):
                   f'{", ".join(cd["prior_called_without_post_event"])}]</span>')
         return s
     cond_line = _cond_txt("L1_to_L2") + " &nbsp;·&nbsp; " + _cond_txt("L2_to_L3")
+    # --- Why this is worth your time -----------------------------------------
+    # The page asserts throughout and never says why it should be believed, or why the
+    # firm-specific answer is worth more than the general one. Same copy as the app page.
+    why_panel = f"""
+    <div class="cal">
+      <h2>Why this is worth your time</h2>
+      <p class="eyebrow">How it works</p>
+      <p class="small">Every reading comes from primary sources &mdash; court orders, statutes, bar
+        opinions &mdash; weighted by who said it rather than by how many said it. A vendor blog
+        carries about a hundredth the weight of a bar opinion, so a reading cannot be moved by
+        whoever publishes most. Before anything is admitted, three independent reviews try to break
+        the claim; what does not survive is dropped rather than softened. Every number here links to
+        the sources behind it, so you can check the working instead of trusting the summary.</p>
+      <p class="eyebrow">Why the advice is useful</p>
+      <p class="small">This is a duty map, not a forecast. It reports what the law has already moved
+        on, so acting on it is compliance rather than a bet on a prediction. The order is a sort for
+        attention across controls you cannot all stand up at once, and it is graded against its own
+        record rather than asserted. Where the evidence is thin, it says so; where a control is not
+        required yet, this page does not pretend otherwise.</p>
+      <p class="eyebrow">Why your fee structure changes the answer</p>
+      <p class="small">The same control costs different firms different amounts, and whether it pays
+        to put AI on a piece of work depends entirely on how you bill. On hourly billing, AI that cuts
+        time cuts your revenue and the saving goes to the client, so adopting it is a net loss however
+        good the tool is. On a fixed fee the same tool is margin. So the useful question is never
+        &ldquo;should we adopt AI&rdquo; but &ldquo;which work is worth it at <em>our</em> fee
+        structure, and which is worth deferring&rdquo; &mdash; and that answer is firm-specific, which
+        is why the advisory layer asks for your pricing model before it tells you what to do.</p>
+    </div>"""
+
     cal_panel = f"""
     <div class="cal">
       <h2>Calibration <span class="meta">grading the ranking across three orders, not asserting the future</span></h2>
@@ -408,6 +437,8 @@ def render(data):
   .cal {{ background:#12171d; border:1px solid var(--line); border-radius:10px;
     padding:1rem 1.1rem; margin:0 0 1.6rem; }}
   .cal h2 {{ font-family:Fraunces,serif; font-size:1.28rem; font-weight:600; margin:0 0 .35rem; }}
+  .cal .eyebrow {{ font-size:.68rem; font-weight:700; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--dim); margin:.9rem 0 .25rem; }}
   .cal .small {{ color:var(--dim); font-size:.78rem; margin:.3rem 0 .7rem; }}
   /* Action list — the answer, before the working. */
   .acts {{ list-style:none; margin:.9rem 0 0; padding:0; }}
@@ -480,6 +511,7 @@ def render(data):
     <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
   {rank_panel}
   {duty_panel}
+  {why_panel}
   {''.join(rows)}
   {cal_panel}
   <footer>
