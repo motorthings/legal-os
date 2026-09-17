@@ -10,6 +10,7 @@ from pathlib import Path
 from score import score
 import calibration
 import milestones
+import actions
 import kb
 import advisory
 
@@ -37,6 +38,20 @@ def _pressure_color(p):
 
 def _trend_glyph(t):
     return {"rising": "▲ rising", "steady": "► steady", "quiet": "· quiet"}.get(t, t)
+
+
+def _strength_line(d, lead_by_line):
+    """How we know, stated at the claim: source counts by kind, plus the warning window."""
+    s = d["strength"]
+    bits = [f'{s["total"]} sources']
+    for key, label in (("appellate", "appellate"), ("trial", "trial court"),
+                       ("primary", "statute/rule"), ("guidance", "bar guidance")):
+        if s[key]:
+            bits.append(f'{s[key]} {label}')
+    lead = _lead_cell(lead_by_line.get(d["id"]))
+    if lead != "—":
+        bits.append(f"first signal {lead} before it bound")
+    return " · ".join(bits)
 
 
 def _lead_cell(days_list):
@@ -163,26 +178,38 @@ def render(data):
     for m in ms["milestones"]:
         if m["status"] == "landed" and m["lead_days"] is not None:
             lead_by_line.setdefault(m["fault_line"], []).append(m["lead_days"])
+    # Ordered by how well-supported each duty is, not by meter height: a duty resting on
+    # seven circuit courts is a different claim from one resting on two trial orders, and a
+    # single ranking must not present them as equals.
     duties = sorted(
         [fl for fl in fls if fl["pressure"] >= calibration.CALL_THRESHOLD],
-        key=lambda r: r["pressure"], reverse=True)
+        key=lambda r: r["rank_key"])
     duty_rows = "".join(
-        f'<tr><td><b>{_esc(d["control"])}</b><div class="src">{_esc(d["title"])}</div></td>'
-        f'<td class="c">{d["pressure"]}</td>'
-        f'<td class="c">{d["n_ruling_evidence"]}</td>'
-        f'<td class="c">{_lead_cell(lead_by_line.get(d["id"]))}</td></tr>'
-        for d in duties
-    ) or '<tr><td colspan="4" class="src">No control on the record is required yet.</td></tr>'
+        f'<li class="act">'
+        f'<div class="act-h"><span class="act-n">{i}</span>'
+        f'<span class="act-t">{_esc(d["action"])}</span>'
+        f'<span class="act-s {_esc(d["strength"]["label"])}">{_esc(d["strength"]["label"])}</span></div>'
+        f'{f"<p class=\'act-k\'>{_esc(d['stakes'])}</p>" if d.get("stakes") else ""}'
+        f'<p class="act-m">{_strength_line(d, lead_by_line)}</p>'
+        f'<details><summary>See the {d["strength"]["total"]} sources</summary>'
+        f'<div class="act-ev">'
+        + "".join(
+            f'<div><span class="d">{_esc(e["date"])}</span> {_esc(e["title"])}'
+            f'<span class="src">{_esc(e["source"])} · {_esc(e["tier"])}</span></div>'
+            for e in d["evidence"][:12])
+        + f'{"<p class=\'src\'>+ more, listed in full below</p>" if len(d["evidence"]) > 12 else ""}'
+        f'</div></details></li>'
+        for i, d in enumerate(duties, 1)
+    ) or '<li class="src">No control on the record is required yet.</li>'
     duty_panel = f"""
     <div class="cal">
-      <h2>What the record already requires
-        <span class="meta">{len(duties)} of {len(fls)} controls, from ruling evidence alone</span></h2>
-      <p class="small">These are duties, not forecasts. Each one is a control the law has already
-        moved on, at or above the flag threshold of {calibration.CALL_THRESHOLD} on ruling evidence
-        only. This list does not depend on who you are. Sequencing it against a specific firm's
-        readiness is what the advisory layer does.</p>
-      <table class="ev"><thead><tr><th>Control</th><th>L2 ruling</th><th>Items</th>
-        <th>Antecedent lead</th></tr></thead><tbody>{duty_rows}</tbody></table>
+      <h2>What to do
+        <span class="meta">{len(duties)} controls already required of any firm</span></h2>
+      <p class="small">Each of these is a control the law has already moved on, at or above the
+        flag threshold of {calibration.CALL_THRESHOLD} on ruling evidence only, so the list does not
+        depend on which jurisdiction you practise in. Ordered by how well the record supports each
+        one. Open any of them to read the sources yourself.</p>
+      <ol class="acts">{duty_rows}</ol>
     </div>"""
     ms_rows = "".join(
         f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
@@ -323,6 +350,24 @@ def render(data):
     padding:1rem 1.1rem; margin:0 0 1.6rem; }}
   .cal h2 {{ font-family:Fraunces,serif; font-size:1.1rem; margin:0 0 .3rem; }}
   .cal .small {{ color:var(--dim); font-size:.78rem; margin:.3rem 0 .7rem; }}
+  /* Action list — the answer, before the working. */
+  .acts {{ list-style:none; margin:.9rem 0 0; padding:0; }}
+  .act {{ border:1px solid var(--line); border-radius:8px; padding:.8rem .9rem; margin:0 0 .6rem; }}
+  .act-h {{ display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }}
+  .act-n {{ font-family:'Source Code Pro',monospace; color:var(--dim); font-weight:700; }}
+  .act-t {{ font-size:.95rem; font-weight:700; color:var(--fg); }}
+  .act-s {{ font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+    padding:.1rem .4rem; border-radius:4px; }}
+  .act-s.strong {{ background:#1f3326; color:#8fd3b0; }}
+  .act-s.moderate {{ background:#33291a; color:#e8b04b; }}
+  .act-s.thin {{ background:#2a2436; color:#c7b3e0; }}
+  .act-k {{ color:var(--fg); font-size:.82rem; margin:.45rem 0 .3rem; }}
+  .act-m {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
+    margin:.2rem 0 .45rem; }}
+  .act details summary {{ cursor:pointer; font-size:.72rem; font-weight:700; color:#7fb0e8; }}
+  .act-ev {{ margin:.5rem 0 0; font-size:.75rem; color:var(--fg); }}
+  .act-ev .d {{ font-family:'Source Code Pro',monospace; color:var(--dim); margin-right:.35rem; }}
+  .act-ev .src {{ display:block; color:var(--dim); font-size:.68rem; margin:.1rem 0 .5rem .4rem; }}
   .hit {{ color:#8fd3b0; font-weight:700; }}
   .miss {{ color:#e0a0a0; font-weight:700; }}
   .p.a {{ background:transparent !important; color:#8fd3b0; border:1px solid #2a4a3a; }}
@@ -364,8 +409,85 @@ def milestone_report():
     return ms
 
 
+# --- Evidence strength: how well-supported is each duty? ---------------------
+# A firm owner needs to know whether a duty rests on twenty appellate rulings or on two
+# trial-court orders, and the page was presenting both identically. Classified from the
+# item's `source` string, which is the only court-level signal the feed carries.
+#
+# Checked in this order on purpose: "District Court of Appeal of Florida" is APPELLATE and
+# contains "District Court", so an appellate-first test is required or Florida's DCAs get
+# filed as trial courts.
+# First pass missed "Sixth Circuit", "Tenth Circuit" and "California Court of Appeal", all of
+# which fell through to `other` and made `verification` read `moderate` off 20 sources
+# including five circuit courts. The markers are matched on the operator's short court
+# strings, not on reporter-style citations, so they have to include bare "circuit".
+_APPELLATE = ("cir.", "circuit", "court of appeal", "supreme court", "supreme judicial",
+              "appellate")
+_TRIAL = ("d. ", "s.d.", "e.d.", "n.d.", "m.d.", "w.d.", "district court", "chancery",
+          "bankr.", "trial court", "magistrate")
+
+
+def _court_class(source, tier):
+    """What KIND of authority is this? Tier first, because a T2 ethics opinion from an
+    office whose name contains "Supreme Court" is guidance, not an appellate ruling."""
+    if tier != "T1":
+        return "guidance"
+    s = (source or "").lower()
+    if any(m in s for m in _APPELLATE):
+        return "appellate"
+    if any(m in s for m in _TRIAL):
+        return "trial"
+    return "primary"   # statutes, regulations, court rules, unattributed orders
+
+
+def evidence_strength(fl):
+    """Counts + a label, from the line's ruling-eligible evidence only.
+
+    Ruling-eligible is the right basis: it is the set that actually moved the grade, so
+    counting provenance instead would inflate strength with T4/T5 commentary nobody acted on.
+    """
+    items = [e for e in fl.get("evidence", []) if e.get("ruling_eligible")]
+    counts = {"appellate": 0, "trial": 0, "primary": 0, "guidance": 0}
+    for e in items:
+        counts[_court_class(e.get("source"), e.get("tier"))] += 1
+    dated = sorted((e["date"] for e in items), reverse=True)
+    # A statute or regulation is binding primary law even though no court decided anything,
+    # which is why `convergence` (all EU/state statutes) must not read as thin.
+    if counts["appellate"] >= 3:
+        label = "strong"
+    elif counts["appellate"] >= 1 or counts["primary"] >= 3:
+        label = "moderate"
+    else:
+        label = "thin"
+    return {
+        **counts,
+        "total": len(items),
+        "label": label,
+        "newest": dated[0] if dated else None,
+        "oldest": dated[-1] if dated else None,
+    }
+
+
+def enrich(data):
+    """Presentation enrichment, applied after scoring and before writing.
+
+    Kept OUT of `score.py` on purpose: that file is a frozen input to the forecast
+    experiment, and a sorting aid for a web page must not cost a re-freeze.
+    """
+    for fl in data["fault_lines"]:
+        fl["action"] = actions.plain_action(fl["id"], fl.get("control", ""))
+        fl["stakes"] = actions.plain_stakes(fl["id"])
+        fl["strength"] = evidence_strength(fl)
+        fl["rank_key"] = (
+            -fl["strength"]["appellate"],
+            -fl["strength"]["total"],
+            -fl["pressure"],
+        )
+    return data
+
+
 def build(as_of=None):
-    data = score(as_of=as_of)
+    data = enrich(score(as_of=as_of))
     kbd = kb.compose()  # the full source library: what + derived why, per doc
     msr = milestone_report()
 

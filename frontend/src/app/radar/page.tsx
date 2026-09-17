@@ -33,6 +33,19 @@ interface FaultLine {
   n_evidence: number;
   n_ruling_evidence: number;
   n_adoption_evidence: number;
+  // Presentation enrichment, computed in radar/build.py (not in the frozen scorer).
+  action: string;
+  stakes: string | null;
+  strength: {
+    appellate: number;
+    trial: number;
+    primary: number;
+    guidance: number;
+    total: number;
+    label: 'strong' | 'moderate' | 'thin';
+    newest: string | null;
+    oldest: string | null;
+  };
   trend: string;
   evidence: Evidence[];
   adoption_seed: number;
@@ -380,6 +393,7 @@ export default function RadarPage() {
   // Python side already shipped one drift bug from a hardcoded threshold whose comment
   // claimed to be this number; there is no reason for the frontend to repeat it.
   const [callThreshold, setCallThreshold] = useState<number | null>(null);
+  const [openAction, setOpenAction] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -407,9 +421,15 @@ export default function RadarPage() {
   // Duties: the law has moved, which does not depend on who is reading. `mandated` on the
   // advisory side uses the same number, imported from the same place.
   const threshold = callThreshold ?? 8.0;
+  // Ordered by how well-supported the duty is, not by how high the meter reads: a duty
+  // resting on seven circuit courts is a different claim from one resting on two trial
+  // orders, and a single ranking should not present them as equals.
   const duties = [...data.fault_lines]
     .filter((f) => f.pressure >= threshold)
-    .sort((a, b) => b.pressure - a.pressure);
+    .sort((a, b) =>
+      (b.strength?.appellate ?? 0) - (a.strength?.appellate ?? 0) ||
+      (b.strength?.total ?? 0) - (a.strength?.total ?? 0) ||
+      b.pressure - a.pressure);
 
   const leadFor = (id: string): number | null => {
     const ds = (ms?.milestones ?? [])
@@ -499,42 +519,104 @@ export default function RadarPage() {
         </div>
       )}
 
-      {/* what the record already requires — duties, not forecasts */}
+      {/* WHAT TO DO — the answer, first, with the evidence attached to each item */}
       <section className="card p-4 md:p-6">
-        <p className="eyebrow mb-2">What the record already requires</p>
-        <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px] mb-3">
-          {duties.length} of {data.fault_lines.length}{' '}
-          controls are at or above the flag threshold on
-          ruling evidence alone. Each is a control the law has already moved on, so this list does
-          not depend on who you are. Sequencing it against a specific firm&apos;s readiness is the
-          advisory layer&apos;s job.
+        <p className="eyebrow mb-2">What to do</p>
+        <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
+          {duties.length} controls are already required of any firm, whichever jurisdiction you
+          practise in. Ordered by how well the record supports each one, strongest first. Follow
+          the authority link on any of them to check the sources yourself.
         </p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)] border-b border-[var(--border)]">
-                <th className="py-2 pr-3">Control</th>
-                <th className="py-2 pr-3 text-right">L2 ruling</th>
-                <th className="py-2 pr-3 text-right">Items</th>
-                <th className="py-2 pr-3 text-right">Antecedent lead</th>
-              </tr>
-            </thead>
-            <tbody>
-              {duties.map((d) => (
-                <tr key={d.id} className="border-b border-[var(--border)] last:border-0">
-                  <td className="py-2 pr-3">
-                    <span className="text-[13px] font-semibold text-[var(--text-strong)]">{d.control}</span>
-                    <span className="block text-[11px] text-[var(--text-muted)]">{d.title}</span>
-                  </td>
-                  <td className="py-2 pr-3 text-right font-mono text-[12px] text-[var(--text)]">{d.pressure}</td>
-                  <td className="py-2 pr-3 text-right font-mono text-[12px] text-[var(--text-muted)]">{d.n_ruling_evidence}</td>
-                  <td className="py-2 pr-3 text-right font-mono text-[12px] text-[var(--text-muted)]">
-                    {leadFor(d.id) != null ? `${leadFor(d.id)}d` : '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        <ol className="space-y-3">
+          {duties.map((d, i) => {
+            const open = openAction === d.id;
+            const s = d.strength;
+            return (
+              <li key={d.id} className="border border-[var(--border)] rounded-lg overflow-hidden">
+                <div className="p-3.5">
+                  <div className="flex items-start gap-3">
+                    <span className="font-mono text-[13px] font-bold text-[var(--text-muted)] pt-0.5">
+                      {i + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="text-[15px] font-bold text-[var(--text-strong)]">
+                          {d.action}
+                        </span>
+                        <span
+                          className="pill text-[9px]"
+                          style={{
+                            background: `var(--${s.label === 'strong' ? 'metric-dim' : s.label === 'moderate' ? 'amber-dim' : 'brand-tint'})`,
+                            color: `var(--${s.label === 'strong' ? 'metric' : s.label === 'moderate' ? 'amber' : 'primary'})`,
+                          }}
+                          title="How well the record supports this duty"
+                        >
+                          {s.label}
+                        </span>
+                      </div>
+
+                      {d.stakes && (
+                        <p className="text-[12.5px] text-[var(--text)] leading-relaxed mt-1.5">
+                          {d.stakes}
+                        </p>
+                      )}
+
+                      {/* HOW WE KNOW — the strength, stated at the claim, not one click away */}
+                      <p className="font-mono text-[10.5px] text-[var(--text-muted)] mt-2">
+                        {s.total} sources
+                        {s.appellate > 0 && ` · ${s.appellate} appellate`}
+                        {s.trial > 0 && ` · ${s.trial} trial court`}
+                        {s.primary > 0 && ` · ${s.primary} statute/rule`}
+                        {s.guidance > 0 && ` · ${s.guidance} bar guidance`}
+                        {leadFor(d.id) != null && ` · first signal ${leadFor(d.id)}d before it bound`}
+                      </p>
+
+                      <button
+                        onClick={() => setOpenAction(open ? null : d.id)}
+                        className="mt-2 text-[11px] font-semibold text-[var(--primary)] hover:underline"
+                      >
+                        {open ? 'Hide the sources' : `See the ${s.total} sources`}
+                      </button>
+                    </div>
+                  </div>
+
+                  {open && (
+                    <div className="mt-3 pl-7 space-y-2">
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                        Model Rules: {d.model_rules.join(' · ')} · our shorthand for this line is
+                        &ldquo;{d.control}&rdquo;
+                      </p>
+                      {d.evidence.slice(0, 12).map((e, k) => (
+                        <div key={k} className="text-[11.5px] leading-snug">
+                          <span className="font-mono text-[10.5px] text-[var(--text-muted)]">{e.date}</span>{' '}
+                          <span className="text-[var(--text)]">{e.title}</span>
+                          <span className="block text-[10.5px] text-[var(--text-muted)] pl-1">
+                            {e.source} · {e.tier}
+                          </span>
+                        </div>
+                      ))}
+                      {d.evidence.length > 12 && (
+                        <p className="text-[10.5px] text-[var(--text-muted)]">
+                          + {d.evidence.length - 12} more, shown in full further down the page
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+        <div className="mt-4 pt-3 border-t border-[var(--border)]">
+          <Link
+            href="/radar/advisory"
+            className="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--primary)] hover:underline"
+          >
+            Now sequence these for your firm — name your pricing model, your carriers, and your
+            readiness, and we&apos;ll order them and tell you which to defer →
+          </Link>
         </div>
       </section>
 

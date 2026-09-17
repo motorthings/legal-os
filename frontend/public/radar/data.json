@@ -571,7 +571,24 @@
       },
       "lanes_populated": 4,
       "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_days": null,
+      "action": "Check every AI-assisted filing before it goes out",
+      "stakes": "Sanctions run to six figures, and they land on the signing lawyer.",
+      "strength": {
+        "appellate": 7,
+        "trial": 6,
+        "primary": 2,
+        "guidance": 5,
+        "total": 20,
+        "label": "strong",
+        "newest": "2026-08-31",
+        "oldest": "2023-06-22"
+      },
+      "rank_key": [
+        -7,
+        -20,
+        -9.7
+      ]
     },
     {
       "id": "disclosure",
@@ -869,7 +886,24 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-17",
-      "reviewed_days": 0
+      "reviewed_days": 0,
+      "action": "Be able to prove who checked it, and when",
+      "stakes": "Courts are beginning to order disclosure up front, not just punish after.",
+      "strength": {
+        "appellate": 4,
+        "trial": 3,
+        "primary": 3,
+        "guidance": 4,
+        "total": 14,
+        "label": "strong",
+        "newest": "2026-06-01",
+        "oldest": "2023-06-22"
+      },
+      "rank_key": [
+        -4,
+        -14,
+        -9.5
+      ]
     },
     {
       "id": "confidentiality",
@@ -1169,7 +1203,24 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-17",
-      "reviewed_days": 0
+      "reviewed_days": 0,
+      "action": "Map where client data goes, and get no-training commitments in writing",
+      "stakes": "Protective orders increasingly name which tools are allowed, and how.",
+      "strength": {
+        "appellate": 2,
+        "trial": 0,
+        "primary": 1,
+        "guidance": 10,
+        "total": 13,
+        "label": "moderate",
+        "newest": "2026-06-10",
+        "oldest": "2023-12-12"
+      },
+      "rank_key": [
+        -2,
+        -13,
+        -9.4
+      ]
     },
     {
       "id": "competence",
@@ -1569,7 +1620,24 @@
       },
       "lanes_populated": 3,
       "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_days": null,
+      "action": "Train your lawyers on AI, and keep a record that you did",
+      "stakes": "Bars are treating AI competence as a program requirement, not a personal one.",
+      "strength": {
+        "appellate": 5,
+        "trial": 0,
+        "primary": 0,
+        "guidance": 7,
+        "total": 12,
+        "label": "strong",
+        "newest": "2026-08-04",
+        "oldest": "2024-04-25"
+      },
+      "rank_key": [
+        -5,
+        -12,
+        -9.3
+      ]
     },
     {
       "id": "convergence",
@@ -1847,7 +1915,24 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-17",
-      "reviewed_days": 0
+      "reviewed_days": 0,
+      "action": "Run one AI policy, built to the strictest standard you operate under",
+      "stakes": "Operating to the strictest rule you touch is cheaper than tracking every patchwork.",
+      "strength": {
+        "appellate": 0,
+        "trial": 0,
+        "primary": 10,
+        "guidance": 0,
+        "total": 10,
+        "label": "moderate",
+        "newest": "2026-08-01",
+        "oldest": "2021-01-01"
+      },
+      "rank_key": [
+        0,
+        -10,
+        -9.3
+      ]
     },
     {
       "id": "vendor_liability",
@@ -2109,7 +2194,24 @@
       },
       "lanes_populated": 3,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 2
+      "reviewed_days": 2,
+      "action": "Document which AI tool produced which work",
+      "stakes": "When a tool fails, the first question is what you can show about which one.",
+      "strength": {
+        "appellate": 0,
+        "trial": 1,
+        "primary": 4,
+        "guidance": 1,
+        "total": 6,
+        "label": "moderate",
+        "newest": "2026-05-19",
+        "oldest": "2024-12-08"
+      },
+      "rank_key": [
+        0,
+        -6,
+        -8.3
+      ]
     },
     {
       "id": "judicial_analytics",
@@ -2221,7 +2323,24 @@
       },
       "lanes_populated": 1,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 2
+      "reviewed_days": 2,
+      "action": "Stress-test strategy under uncertainty; never claim to predict a judge",
+      "stakes": "France criminalized judicial profiling; US direction is toward rules.",
+      "strength": {
+        "appellate": 2,
+        "trial": 0,
+        "primary": 1,
+        "guidance": 0,
+        "total": 3,
+        "label": "moderate",
+        "newest": "2025-02-20",
+        "oldest": "2019-03-23"
+      },
+      "rank_key": [
+        -2,
+        -3,
+        -7.8
+      ]
     },
     {
       "id": "benchmark",
@@ -2838,7 +2957,24 @@
       },
       "lanes_populated": 5,
       "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_days": null,
+      "action": "Benchmark an AI tool before you rely on it",
+      "stakes": "A named benchmark turns a vendor claim into something you can check.",
+      "strength": {
+        "appellate": 0,
+        "trial": 0,
+        "primary": 1,
+        "guidance": 1,
+        "total": 2,
+        "label": "thin",
+        "newest": "2026-08-18",
+        "oldest": "2026-03-13"
+      },
+      "rank_key": [
+        0,
+        -2,
+        -7.6
+      ]
     },
     {
       "id": "agentic",
@@ -3471,7 +3607,24 @@
       },
       "lanes_populated": 5,
       "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_days": null,
+      "action": "Put human approval gates on any AI that acts on its own",
+      "stakes": "Scope-limiting and logging is the control that makes autonomy defensible.",
+      "strength": {
+        "appellate": 0,
+        "trial": 0,
+        "primary": 0,
+        "guidance": 1,
+        "total": 1,
+        "label": "thin",
+        "newest": "2026-05-19",
+        "oldest": "2026-05-19"
+      },
+      "rank_key": [
+        0,
+        -1,
+        -7.2
+      ]
     },
     {
       "id": "fees",
@@ -3596,7 +3749,24 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 2
+      "reviewed_days": 2,
+      "action": "Measure value delivered, not hours saved",
+      "stakes": "Billing on hours saved is what makes AI a net loss for an hourly firm.",
+      "strength": {
+        "appellate": 0,
+        "trial": 1,
+        "primary": 0,
+        "guidance": 1,
+        "total": 2,
+        "label": "thin",
+        "newest": "2025-11-24",
+        "oldest": "2024-12-26"
+      },
+      "rank_key": [
+        0,
+        -2,
+        -6.7
+      ]
     },
     {
       "id": "insurance",
@@ -3759,7 +3929,24 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 2
+      "reviewed_days": 2,
+      "action": "Be able to show your carrier the governance you actually run",
+      "stakes": "Carriers are moving AI governance into underwriting and renewals.",
+      "strength": {
+        "appellate": 0,
+        "trial": 0,
+        "primary": 0,
+        "guidance": 0,
+        "total": 0,
+        "label": "thin",
+        "newest": null,
+        "oldest": null
+      },
+      "rank_key": [
+        0,
+        0,
+        -6.5
+      ]
     }
   ],
   "tiers": {
