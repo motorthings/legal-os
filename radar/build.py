@@ -104,7 +104,7 @@ def _staleness(r):
 def render(data):
     fls = data["fault_lines"]
     rows = []
-    for r in fls:
+    for r in [x for x in fls if x["is_duty"]]:
         ev_rows = "".join(
             f'<tr><td class="d">{_esc(e["date"])}</td>'
             f'<td><span class="tier" style="color:{TIER_COLOR[e["tier"]]}">{e["tier"]}</span></td>'
@@ -163,7 +163,9 @@ def render(data):
         </details>""")
 
     # --- Operating-model queue: the intersection, sorted by both meters high ---
-    q_sorted = sorted(fls, key=lambda r: r["queue"], reverse=True)
+    # Duties only. The five watching lines live in their own collapsed section and nowhere
+    # else, so this panel does not re-present them under a different ordering.
+    q_sorted = sorted([r for r in fls if r["is_duty"]], key=lambda r: r["queue"], reverse=True)
     q_rows = "".join(
         f'<tr><td>{_esc(r["control"])}</td>'
         f'<td class="c">{r["capability"]}</td>'
@@ -174,7 +176,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2><details class="det"><summary class="det-s">show &mdash; {_c("detail_heading_suffix")}</summary></details></h2>
+      <h2><details class="det"><summary class="det-s">show &mdash; the six required now, in detail</summary></details></h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
@@ -290,7 +292,6 @@ def render(data):
         threshold, so nothing yet obliges you to act, but they are on the same list because a
         control can be worth building before it is required. The reason differs per line: a bill
         in Congress is a fact, while a reading near the line is only our own dial moving.</p>
-      <div class="rk" style="margin-bottom:1rem;">{_bars_for(_watching, len(duties) + 1)}</div>
       <ul class="acts">{watch_rows}</ul></details>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">

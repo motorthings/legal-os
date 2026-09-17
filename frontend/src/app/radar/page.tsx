@@ -576,11 +576,13 @@ export default function RadarPage() {
   );
   const watch = byQueue.slice(3).filter((f) => leadBucket(f.lead) === 'later');
 
-  const queueRows = [...data.fault_lines].sort((a, b) =>
+  const queueRows = data.fault_lines.filter((f) => f.is_duty).sort((a, b) =>
     sort === 'urgency' ? b.queue - a.queue : queueDelta(b) - queueDelta(a)
   );
-  const gapRows = [...data.fault_lines].sort((a, b) => (b.adoption - b.enable) - (a.adoption - a.enable));
+  const gapRows = data.fault_lines.filter((f) => f.is_duty).sort((a, b) => (b.adoption - b.enable) - (a.adoption - a.enable));
   const gapRanks = new Map(gapRows.map((f, i) => [f.id, i + 1]));
+  // Duties only: the five watching lines live in their own collapsed section and nowhere
+  // else, so no other panel re-presents them under a different ordering.
   const tableRows = view === 'gap' ? gapRows : queueRows;
   const rowRanks = view === 'gap' ? gapRanks : ranks;
 
@@ -767,12 +769,6 @@ export default function RadarPage() {
               </h3>
             </button>
             {showWatch && (
-              <div className="mt-3 mb-4">
-                <RankChart duties={[]} watched={watched} startAt={duties.length + 1}
-                           splitLabel={copy.watch_lead} />
-              </div>
-            )}
-            {showWatch && (
               <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
                 The same single ranking continues below the line. These sit under the threshold, so
                 nothing yet obliges you to act, but they are on the same list because a control can
@@ -859,9 +855,9 @@ export default function RadarPage() {
           ))}
         </div>
         {view === 'urgency' ? (
-          <Chart lines={data.fault_lines} ranks={ranks} hovered={hovered} onHover={setHovered} onPick={pick} />
+          <Chart lines={duties} ranks={ranks} hovered={hovered} onHover={setHovered} onPick={pick} />
         ) : (
-          <GapChart lines={data.fault_lines} ranks={gapRanks} hovered={hovered} onHover={setHovered} onPick={pick} />
+          <GapChart lines={duties} ranks={gapRanks} hovered={hovered} onHover={setHovered} onPick={pick} />
         )}
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3 text-[11px] text-[var(--text-muted)]">
           {view === 'urgency' ? (
@@ -895,7 +891,7 @@ export default function RadarPage() {
             <p className="eyebrow">
               {view === 'gap'
                 ? '▸ build vs buy — a different question, ranked by supply against demand'
-                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — ${copy.detail_heading_suffix}. ${copy.detail_hint}`}
+                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — the six required now, in detail`}
             </p>
           </button>
           {view === 'gap' ? (
