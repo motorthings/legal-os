@@ -176,7 +176,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2><details class="det"><summary class="det-s">show &mdash; the six required now, in detail</summary></details></h2>
+      <h2><details class="det"><summary class="det-s">show &mdash; {_c("detail_heading_suffix")}</summary></details></h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).

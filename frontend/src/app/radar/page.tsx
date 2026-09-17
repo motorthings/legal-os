@@ -891,7 +891,7 @@ export default function RadarPage() {
             <p className="eyebrow">
               {view === 'gap'
                 ? '▸ build vs buy — a different question, ranked by supply against demand'
-                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — the six required now, in detail`}
+                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — ${copy.detail_heading_suffix}`}
             </p>
           </button>
           {view === 'gap' ? (
