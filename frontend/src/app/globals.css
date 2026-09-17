@@ -124,6 +124,9 @@ h1, h2, h3, h4 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  /* A pill hugs its label. As a grid item it was stretching to fill its column, so
+     'build-capacity-first' rendered as a long empty bar with the text at one end. */
+  justify-self: start;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
