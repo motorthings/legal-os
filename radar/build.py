@@ -228,14 +228,53 @@ def render(data):
     watch_rows = "".join(_watch_item(w, i) for i, w in
                          enumerate((x for x in watching if x.get("watch_reason")),
                                    len(duties) + 1))
+    # --- The whole board: the same eleven, one bar each ----------------------
+    # The app page leads with this; the static page had no equivalent at all, so the only
+    # overview here was the meter table at the bottom. Bar length is the number of sources,
+    # coloured by KIND of authority: seven circuit courts and seven bar opinions are not
+    # the same claim even when the totals match.
+    _seg_order = [("appellate", "appellate court", "var(--primary)"),
+                  ("trial", "trial court", "var(--amber)"),
+                  ("primary", "statute or rule", "var(--metric)"),
+                  ("guidance", "bar guidance", "var(--dim)")]
+    _all = duties + [w for w in watching if w.get("watch_reason")]
+    _max = max([x["strength"]["total"] for x in _all] or [1])
+    _bars = []
+    for _i, x in enumerate(_all, 1):
+        if _i == len(duties) + 1 and len(duties) < len(_all):
+            _bars.append('<div class="rk-split"><span></span>'
+                         '<em>not required yet</em><span></span></div>')
+        _st = x["strength"]
+        _segs = "".join(
+            f'<i style="width:{(_st[k] / (_st["total"] or 1)) * 100:.1f}%;'
+            f'background:{col}" title="{_st[k]} {lab}"></i>'
+            for k, lab, col in _seg_order if _st[k])
+        _bars.append(
+            f'<div class="rk-row"><span class="rk-n">{_i}</span>'
+            f'<span class="rk-l" title="{_esc(x["action"])}">{_esc(x["action"])}</span>'
+            f'<span class="rk-b"><i class="rk-fill" style="width:{(_st["total"] / _max) * 100:.1f}%">'
+            f'{_segs}</i></span>'
+            f'<span class="rk-t">{_st["total"]}</span></div>')
+    _legend = "".join(f'<span><i style="background:{col}"></i>{lab}</span>'
+                      for _k, lab, col in _seg_order)
+    rank_panel = f"""
+    <div class="cal">
+      <h2>The whole board <span class="meta">the same eleven in the same order, one bar each</span></h2>
+      <p class="small">Bar length is how many sources stand behind the duty; the colours are what
+        kind of authority they are, because seven circuit courts and seven bar opinions are not
+        the same claim.</p>
+      <div class="rk">{''.join(_bars)}</div>
+      <div class="rk-legend">{_legend}<span class="src">&middot; trailing number = total sources</span></div>
+    </div>"""
+
     watch_block = f"""
-      <h3 class="watch-h">{len(duties) + 1} to {len(duties) + len(watching)} &mdash;
-        not required yet</h3>
+      <details class="watch-d"><summary class="watch-h">{len(duties) + 1} to
+        {len(duties) + len(watching)} &mdash; not required yet</summary>
       <p class="small">The same single ranking continues below the line. These sit under the
         threshold, so nothing yet obliges you to act, but they are on the same list because a
         control can be worth building before it is required. The reason differs per line: a bill
         in Congress is a fact, while a reading near the line is only our own dial moving.</p>
-      <ul class="acts">{watch_rows}</ul>""" if watch_rows else ""
+      <ul class="acts">{watch_rows}</ul></details>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
       <h2>What to do
@@ -246,6 +285,7 @@ def render(data):
         one. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
       {watch_block}
+      {rank_panel}
     </div>"""
     ms_rows = "".join(
         f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
@@ -407,9 +447,30 @@ def render(data):
   .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;
     padding-top:.9rem; border-top:1px solid var(--line); }}
   .act.watch {{ opacity:.86; }}
-  .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;
-    padding-top:.9rem; border-top:1px solid var(--line); }}
-  .act.watch {{ opacity:.86; }}
+  .watch-d summary {{ cursor:pointer; }}
+  .watch-d summary::marker {{ color:var(--dim); }}
+  /* The whole board — one stacked bar per duty, in list order. */
+  .rk {{ margin:.9rem 0 0; }}
+  .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(9rem,1fr) 3fr 2rem;
+    gap:.6rem; align-items:center; margin:0 0 .32rem; }}
+  .rk-n {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
+    text-align:right; }}
+  .rk-l {{ font-size:.76rem; color:var(--fg); white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; }}
+  .rk-b {{ display:block; }}
+  .rk-fill {{ display:flex; height:8px; border-radius:2px; overflow:hidden;
+    background:var(--line); }}
+  .rk-fill i {{ display:block; height:100%; }}
+  .rk-t {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
+    text-align:right; }}
+  .rk-split {{ display:flex; align-items:center; gap:.6rem; margin:.7rem 0 .5rem; }}
+  .rk-split span {{ flex:1; border-top:1px dashed var(--line); }}
+  .rk-split em {{ font-style:normal; font-size:.6rem; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--dim); }}
+  .rk-legend {{ display:flex; flex-wrap:wrap; gap:.9rem; margin-top:.9rem;
+    padding-top:.7rem; border-top:1px solid var(--line); font-size:.68rem; color:var(--dim); }}
+  .rk-legend span {{ display:inline-flex; align-items:center; gap:.35rem; }}
+  .rk-legend i {{ width:9px; height:9px; border-radius:2px; display:inline-block; }}
   .hit {{ color:#8fd3b0; font-weight:700; }}
   .miss {{ color:#e0a0a0; font-weight:700; }}
   .p.a {{ background:transparent !important; color:#8fd3b0; border:1px solid #2a4a3a; }}

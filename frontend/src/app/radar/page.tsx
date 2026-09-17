@@ -174,6 +174,90 @@ function Meter({ label, seed, now }: { label: string; seed: number; now: number 
   );
 }
 
+/* -------------------------------------------------------------- rank chart */
+
+// The overview chart. Where the scatter answers "how far has the law moved versus the
+// market", this answers the question the page leads with: what is the order, and how well
+// is each one supported. Stacked per control so the bar carries BOTH the amount of
+// evidence and what kind of authority it is — a duty resting on seven circuit courts must
+// not look like one resting on two trial orders and five bar opinions when the totals match.
+const STRENGTH_SEGMENTS: { key: keyof FaultLine['strength']; label: string; color: string }[] = [
+  { key: 'appellate', label: 'appellate court', color: 'var(--primary)' },
+  { key: 'trial', label: 'trial court', color: 'var(--amber)' },
+  { key: 'primary', label: 'statute or rule', color: 'var(--metric)' },
+  { key: 'guidance', label: 'bar guidance', color: 'var(--text-muted)' },
+];
+
+function RankChart({ duties, watched }: { duties: FaultLine[]; watched: FaultLine[] }) {
+  const rows = [...duties, ...watched];
+  const max = Math.max(...rows.map((f) => f.strength?.total ?? 0), 1);
+  const short = (s: string) => (s.length > 44 ? s.slice(0, 43).trimEnd() + '…' : s);
+
+  return (
+    <div>
+      <div className="space-y-1.5">
+        {rows.map((f, i) => {
+          const s = f.strength;
+          const total = s?.total ?? 0;
+          return (
+            <div key={f.id}>
+              {i === duties.length && (
+                <div className="flex items-center gap-2 my-2.5">
+                  <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    not required yet
+                  </span>
+                  <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
+                </div>
+              )}
+              <div className="grid grid-cols-[1.3rem_1fr_2rem] gap-2 items-center">
+                <span className="font-mono text-[11px] font-bold text-[var(--text-muted)] text-right">
+                  {i + 1}
+                </span>
+                <div className="min-w-0">
+                  <div className="text-[11.5px] text-[var(--text)] truncate" title={f.action}>
+                    {short(f.action)}
+                  </div>
+                  <div
+                    className="flex h-[7px] mt-1 rounded-sm overflow-hidden bg-[var(--sunken)]"
+                    style={{ width: `${(total / max) * 100}%`, minWidth: '4px' }}
+                  >
+                    {STRENGTH_SEGMENTS.map((seg) => {
+                      const v = (s?.[seg.key] as number) ?? 0;
+                      if (!v || !total) return null;
+                      return (
+                        <span
+                          key={seg.key}
+                          style={{ width: `${(v / total) * 100}%`, background: seg.color }}
+                          title={`${v} ${seg.label}`}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <span className="font-mono text-[11px] text-[var(--text-muted)] text-right">
+                  {total}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-4 pt-3 border-t border-[var(--border)]">
+        {STRENGTH_SEGMENTS.map((seg) => (
+          <span key={seg.key} className="inline-flex items-center gap-1.5 text-[10.5px] text-[var(--text-muted)]">
+            <span className="w-2.5 h-2.5 rounded-sm" style={{ background: seg.color }} />
+            {seg.label}
+          </span>
+        ))}
+        <span className="text-[10.5px] text-[var(--text-muted)]">
+          &middot; bar length = total sources, trailing number = same
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------- chart */
 
 function Chart({
@@ -406,6 +490,10 @@ export default function RadarPage() {
   // claimed to be this number; there is no reason for the frontend to repeat it.
   const [callThreshold, setCallThreshold] = useState<number | null>(null);
   const [openAction, setOpenAction] = useState<string | null>(null);
+  // Both detail sections fold by default: the action list is the answer, and the watch list
+  // and the scatter are depth for a reader who wants it.
+  const [showWatch, setShowWatch] = useState(false);
+  const [showScatter, setShowScatter] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -630,20 +718,39 @@ export default function RadarPage() {
           })}
         </ol>
 
+      {/* THE WHOLE BOARD — the shape of the list above, before the detail */}
+      <section className="card p-4 md:p-6">
+        <p className="eyebrow mb-2">The whole board</p>
+        <p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
+          The same eleven in the same order, one bar each. Bar length is how many sources stand
+          behind the duty; the colours are what kind of authority they are, because seven
+          circuit courts and seven bar opinions are not the same claim.
+        </p>
+        <RankChart duties={duties} watched={watched} />
+      </section>
+
         {/* NOT REQUIRED YET — suppressing these made the page read as if agentic supervision
             did not exist, when it is the one line with a live bill in Congress. */}
         {watched.length > 0 && (
           <>
-            <h3 className="text-[15px] font-bold text-[var(--text-strong)] mt-6 pt-4 border-t-2 border-dashed border-[var(--border-bright)]">
-              {duties.length + 1} to {duties.length + watched.length} &mdash; not required yet
-            </h3>
-            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
-              The same single ranking continues below the line. These sit under the threshold, so
-              nothing yet obliges you to act, but they are on the same list because a control can
-              be worth building before it is required. The reason differs per line: a bill in
-              Congress is a fact, while a reading near the line is only our own dial moving.
-            </p>
-            <ul className="space-y-2">
+            <button
+              onClick={() => setShowWatch((v) => !v)}
+              className="w-full text-left mt-6 pt-4 border-t-2 border-dashed border-[var(--border-bright)]"
+            >
+              <h3 className="text-[15px] font-bold text-[var(--text-strong)]">
+                {showWatch ? '▾' : '▸'} {duties.length + 1} to {duties.length + watched.length}
+                &mdash; not required yet
+              </h3>
+            </button>
+            {showWatch && (
+              <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
+                The same single ranking continues below the line. These sit under the threshold, so
+                nothing yet obliges you to act, but they are on the same list because a control can
+                be worth building before it is required. The reason differs per line: a bill in
+                Congress is a fact, while a reading near the line is only our own dial moving.
+              </p>
+            )}
+            <ul className="space-y-2" style={{ display: showWatch ? undefined : 'none' }}>
               {watched.map((w, i) => (
                 <li key={w.id} className="border border-[var(--border)] rounded-lg p-3 opacity-90">
                   <div className="flex items-baseline gap-2 flex-wrap">
@@ -734,7 +841,22 @@ export default function RadarPage() {
 
       {/* chart — scoring provenance, below the fold */}
       <section className="card p-4 md:p-6">
-        <p className="eyebrow mb-3">Scoring provenance <span className="font-normal normal-case tracking-normal text-[var(--text-muted)]">how the readings above were computed</span></p>
+        <button onClick={() => setShowScatter((v) => !v)} className="w-full text-left">
+          <p className="eyebrow mb-3">
+            {showScatter ? '▾' : '▸'} Where each reading sits &mdash; law against market
+            <span className="font-normal normal-case tracking-normal text-[var(--text-muted)]">
+              {' '}· the relationship view, and how the numbers above were computed
+            </span>
+          </p>
+        </button>
+        {!showScatter && (
+          <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
+            Expand to see the eleven plotted against each other: right is how far the law has moved,
+            up is how far the market has. The same numbers as the list, so you can find any duty on
+            the board.
+          </p>
+        )}
+        <div style={{ display: showScatter ? undefined : 'none' }}>
         {/* The chart and the list above use ONE numbering now, so say it, and say which
             mark means which tier — otherwise the reader has to infer the encoding twice. */}
         <p className="text-[11.5px] text-[var(--text-muted)] leading-relaxed mb-3 max-w-[880px]">
@@ -778,7 +900,8 @@ export default function RadarPage() {
               ))}
             </>
           )}
-          <span>Dot size = queue score · number = queue rank · hover to inspect, click to expand</span>
+          <span>Dot size = queue score · number = its position in the list above · hover to inspect, click to expand</span>
+        </div>
         </div>
       </section>
 
