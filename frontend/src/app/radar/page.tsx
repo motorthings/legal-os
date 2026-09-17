@@ -464,7 +464,6 @@ export default function RadarPage() {
   const ranks = new Map(
     [...duties, ...watched].map((f, i) => [f.id, i + 1] as const),
   );
-  const buildNow = byQueue.slice(0, 3);
   const watch = byQueue.slice(3).filter((f) => leadBucket(f.lead) === 'later');
 
   const queueRows = [...data.fault_lines].sort((a, b) =>
@@ -635,19 +634,22 @@ export default function RadarPage() {
             did not exist, when it is the one line with a live bill in Congress. */}
         {watched.length > 0 && (
           <>
-            <h3 className="text-[15px] font-bold text-[var(--text-strong)] mt-6 pt-4 border-t border-[var(--border)]">
-              Not required yet, but worth watching
+            <h3 className="text-[15px] font-bold text-[var(--text-strong)] mt-6 pt-4 border-t-2 border-dashed border-[var(--border-bright)]">
+              {duties.length + 1} to {duties.length + watched.length} &mdash; not required yet
             </h3>
             <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
-              These sit below the threshold, so nothing yet obliges you to act. They are listed
-              because a control can be worth building before it is required, and the reason
-              differs per line: a bill in Congress is a fact, while a reading near the line is
-              only our own dial moving.
+              The same single ranking continues below the line. These sit under the threshold, so
+              nothing yet obliges you to act, but they are on the same list because a control can
+              be worth building before it is required. The reason differs per line: a bill in
+              Congress is a fact, while a reading near the line is only our own dial moving.
             </p>
             <ul className="space-y-2">
-              {watched.map((w) => (
+              {watched.map((w, i) => (
                 <li key={w.id} className="border border-[var(--border)] rounded-lg p-3 opacity-90">
                   <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">
+                      {duties.length + i + 1}
+                    </span>
                     <span className="text-[13.5px] font-bold text-[var(--text-strong)]">
                       {w.action}
                     </span>
@@ -714,10 +716,10 @@ export default function RadarPage() {
           </div>
 
           <div className="border-t border-[var(--border)] pt-3">
-            <p className="eyebrow mb-2">What a forecast would have to add</p>
+            <p className="eyebrow mb-2">What this list does not claim</p>
             <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
-              The ranking is a sort for attention across eleven controls, not a claim about which
-              ruling lands next. Graded on its own: the engine flagged{' '}
+              The order is a sort for attention, not a claim about which ruling lands next, and the
+              numbers are positions in that sort rather than a confidence score. Graded on its own: the engine flagged{' '}
               <b>{ms.engine_grade.called}/{ms.engine_grade.n}</b> of these lines {ms.engine_grade.question}
               {ms.engine_grade.hit_rate != null && <> · {Math.round(ms.engine_grade.hit_rate * 100)}%</>}.
               Blindside rate {Math.round((ms.blindside.blindside_rate ?? 0) * 100)}% (
@@ -780,42 +782,10 @@ export default function RadarPage() {
         </div>
       </section>
 
-      {/* build now */}
-      <section>
-        <p className="eyebrow mb-3">Build now — force-ranked</p>
-        <div className="grid md:grid-cols-3 gap-4">
-          {buildNow.map((f) => {
-            const lead = leadBucket(f.lead);
-            return (
-              <div key={f.id} className="card p-4 flex flex-col">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-lg font-extrabold text-[var(--primary)]">#{ranks.get(f.id)}</span>
-                  <span className="pill" style={{ background: LEAD_COLOR[lead], color: lead === 'soon' ? '#1F1A1C' : '#fff' }}>{LEAD_LABEL[lead]}</span>
-                </div>
-                <h3 className="text-[15px] font-bold text-[var(--text-strong)] leading-snug mb-1.5">{f.control}</h3>
-                <p className="text-[12px] text-[var(--text)] leading-relaxed line-clamp-3 flex-1">{f.vector}</p>
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border)]">
-                  <span className="font-mono text-[12px] text-[var(--text-muted)]">
-                    L2 {dec(f.pressure)} <span className="text-[var(--primary)]">{signed(f.pressure - f.pressure_seed)}</span> · L3 {dec(f.adoption)} <span className="text-[var(--primary)]">{signed(f.adoption - f.adoption_seed)}</span>
-                  </span>
-                  <button onClick={() => { setExpanded(f.id); document.getElementById(`row-${f.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} className="text-[12px] font-semibold text-[var(--primary)] hover:underline">evidence →</button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        {watch.length > 0 && (
-          <p className="text-[12px] text-[var(--text-muted)] mt-3">
-            <span className="font-semibold text-[var(--text)]">Just watch:</span>{' '}
-            {watch.map((f) => f.control).join(', ')} — real but years out.
-          </p>
-        )}
-      </section>
-
       {/* full queue */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <p className="eyebrow">{view === 'gap' ? 'Build vs buy — force-ranked' : 'The full queue'}</p>
+          <p className="eyebrow">{view === 'gap' ? 'Build vs buy — a different question, ranked by supply against demand' : 'The same eleven, in detail'}</p>
           {view === 'gap' ? (
             <span className="text-[11px] text-[var(--text-muted)]">sorted by gap (demand − supply)</span>
           ) : (
