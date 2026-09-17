@@ -14,6 +14,9 @@ const SLUG_TO_TARGET: Record<string, string> = {
   "nlp-preprocessing": `${DIAGRAMS_BASE}/legal-os-nlp-preprocessing.html`,
   "simulation-how-it-works": `${DIAGRAMS_BASE}/law-firm-sim-how-it-works.html`,
   "law-firm-sim": `${DIAGRAMS_BASE}/law-firm-sim.html`,
+  "radar": `${DIAGRAMS_BASE}/legal-os-radar.html`,
+  "radar-how-it-works": `${DIAGRAMS_BASE}/legal-os-fault-line-radar-how-it-works.html`,
+  "radar-master-reference": `${DIAGRAMS_BASE}/legal-os-radar-master-reference.html`,
   // Guides — local to the app
   "how-it-works": "how-it-works.html",
   "contract-review-showcase": "contract-review-showcase.html",
