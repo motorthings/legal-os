@@ -605,7 +605,6 @@ export default function RadarPage() {
         </div>
         <div className="flex items-center gap-2">
           <Link href="/radar/advisory" className="btn-secondary no-underline">Sequence for your firm →</Link>
-          <Link href="/radar/calibration" className="btn-secondary no-underline">Calibration →</Link>
           <button onClick={() => setShowPrimer((s) => !s)} className="btn-secondary">
             {showPrimer ? 'Hide' : 'How this works'}
           </button>
@@ -808,8 +807,22 @@ export default function RadarPage() {
               This is a duty map, not a forecast. It reports what the law has already moved on, so
               acting on it is compliance rather than a bet on a prediction. The order is a sort for
               attention across controls you cannot all stand up at once, and it is graded against
-              its own record rather than asserted. Where the evidence is thin, it says so; where a
-              control is not required yet, this page does not pretend otherwise.
+              its own record{' '}
+              <span
+                className="underline decoration-dotted cursor-help text-[var(--text)]"
+                title={
+                  'How it is graded: for every event that landed, the engine replays itself 90 ' +
+                  'days earlier using only evidence available then, and checks whether the right ' +
+                  'line was already flagged. It flagged 2 of 12. Those results are retrodiction ' +
+                  'rather than a track record, because the feed was curated by people who knew how ' +
+                  'the events turned out. Real forward skill only starts from a ruling dated after ' +
+                  'the 2026-09-17 freeze, and none has landed yet.'
+                }
+              >
+                rather than asserted
+              </span>
+              . Where the evidence is thin, it says so; where a control is not required yet, this
+              page does not pretend otherwise.
             </p>
           </div>
           <div>
