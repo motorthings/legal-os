@@ -54,7 +54,7 @@ def _strength_line(d, lead_by_line):
     return " · ".join(bits)
 
 
-def _watch_item(w):
+def _watch_item(w, n):
     """One row of the 'not required yet' list. Built here rather than inline: nested
     f-strings with escaped quotes are a syntax error in the expression part, and the
     stakes line is conditional."""
@@ -62,7 +62,8 @@ def _watch_item(w):
     label = _esc(w["strength"]["label"])
     return (
         f'<li class="act watch">'
-        f'<div class="act-h"><span class="act-t">{_esc(w["action"])}</span>'
+        f'<div class="act-h"><span class="act-n">{n}</span>'
+        f'<span class="act-t">{_esc(w["action"])}</span>'
         f'<span class="act-s thin">{label}</span></div>'
         f'{stakes}'
         f'<p class="act-m">{_esc(w["watch_reason"])}</p>'
@@ -164,7 +165,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2>Scoring provenance <span class="meta">how each reading above was computed</span></h2>
+      <h2>The same eleven, in detail <span class="meta">the same numbering, with each meter shown</span></h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
@@ -224,13 +225,16 @@ def render(data):
     # near list as much as the now list; it just has to be labelled as not-yet-required.
     watching = sorted([fl for fl in fls if not fl["is_duty"]],
                       key=lambda r: (-r["pressure"], -r["strength"]["total"]))
-    watch_rows = "".join(_watch_item(w) for w in watching if w.get("watch_reason"))
+    watch_rows = "".join(_watch_item(w, i) for i, w in
+                         enumerate((x for x in watching if x.get("watch_reason")),
+                                   len(duties) + 1))
     watch_block = f"""
-      <h3 class="watch-h">Not required yet, but worth watching</h3>
-      <p class="small">These sit below the threshold, so nothing yet obliges you to act. They are
-        listed because a control can be worth building before it is required, and the reason
-        differs per line: a bill in Congress is a fact, while a reading near the line is only
-        our own dial moving.</p>
+      <h3 class="watch-h">{len(duties) + 1} to {len(duties) + len(watching)} &mdash;
+        not required yet</h3>
+      <p class="small">The same single ranking continues below the line. These sit under the
+        threshold, so nothing yet obliges you to act, but they are on the same list because a
+        control can be worth building before it is required. The reason differs per line: a bill
+        in Congress is a fact, while a reading near the line is only our own dial moving.</p>
       <ul class="acts">{watch_rows}</ul>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
