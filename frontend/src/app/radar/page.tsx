@@ -503,7 +503,8 @@ export default function RadarPage() {
       <section className="card p-4 md:p-6">
         <p className="eyebrow mb-2">What the record already requires</p>
         <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px] mb-3">
-          {duties.length} of {data.fault_lines.length} controls are at or above the flag threshold on
+          {duties.length} of {data.fault_lines.length}{' '}
+          controls are at or above the flag threshold on
           ruling evidence alone. Each is a control the law has already moved on, so this list does
           not depend on who you are. Sequencing it against a specific firm&apos;s readiness is the
           advisory layer&apos;s job.
