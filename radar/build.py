@@ -132,6 +132,7 @@ def render(data):
             <span class="p a" title="L3 adoption">{r['adoption']}</span>
             <span class="t">{_esc(r['title'])}</span>
             <span class="meta">{_trend_glyph(r['trend'])} · {_esc(r['horizon'])} · {_esc(r['layer'])} {_staleness(r)}</span>
+            <span class="chev">&#9656;</span>
           </summary>
           <div class="body">
             <p class="vec"><b>Fault line:</b> {_esc(r['vector'])}</p>
@@ -165,7 +166,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2>The same eleven, in detail <span class="meta">the same numbering, with each meter shown</span></h2>
+      <h2>The same eleven, in detail <span class="meta">open any row for its meters and evidence</span></h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
@@ -237,19 +238,26 @@ def render(data):
                   ("trial", "trial court", "var(--amber)"),
                   ("primary", "statute or rule", "var(--metric)"),
                   ("guidance", "bar guidance", "var(--dim)")]
-    _all = duties + [w for w in watching if w.get("watch_reason")]
+    _watching = [w for w in watching if w.get("watch_reason")]
+    _all = duties + _watching
     _max = max([x["strength"]["total"] for x in _all] or [1])
-    _bars = []
-    for _i, x in enumerate(_all, 1):
-        if _i == len(duties) + 1 and len(duties) < len(_all):
-            _bars.append('<div class="rk-split"><span></span>'
-                         '<em>not required yet</em><span></span></div>')
+
+    def _bars_for(rows, start, split_at=None):
+        out = []
+        for _i, x in enumerate(rows, start):
+            if split_at is not None and _i == split_at:
+                out.append('<div class="rk-split"><span></span>'
+                           '<em>not required yet</em><span></span></div>')
+            out.append(_bar(x, _i))
+        return "".join(out)
+
+    def _bar(x, _i):
         _st = x["strength"]
         _segs = "".join(
             f'<i style="width:{(_st[k] / (_st["total"] or 1)) * 100:.1f}%;'
             f'background:{col}" title="{_st[k]} {lab}"></i>'
             for k, lab, col in _seg_order if _st[k])
-        _bars.append(
+        return (
             f'<div class="rk-row"><span class="rk-n">{_i}</span>'
             f'<span class="rk-l" title="{_esc(x["action"])}">{_esc(x["action"])}</span>'
             f'<span class="rk-b"><i class="rk-fill" style="width:{(_st["total"] / _max) * 100:.1f}%">'
@@ -263,7 +271,7 @@ def render(data):
       <p class="small">Bar length is how many sources stand behind the duty; the colours are what
         kind of authority they are, because seven circuit courts and seven bar opinions are not
         the same claim.</p>
-      <div class="rk">{''.join(_bars)}</div>
+      <div class="rk">{_bars_for(duties, 1)}</div>
       <div class="rk-legend">{_legend}<span class="src">&middot; trailing number = total sources</span></div>
     </div>"""
 
@@ -274,6 +282,7 @@ def render(data):
         threshold, so nothing yet obliges you to act, but they are on the same list because a
         control can be worth building before it is required. The reason differs per line: a bill
         in Congress is a fact, while a reading near the line is only our own dial moving.</p>
+      <div class="rk" style="margin-bottom:1rem;">{_bars_for(_watching, len(duties) + 1)}</div>
       <ul class="acts">{watch_rows}</ul></details>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
@@ -285,7 +294,6 @@ def render(data):
         one. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
       {watch_block}
-      {rank_panel}
     </div>"""
     ms_rows = "".join(
         f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
@@ -303,31 +311,27 @@ def render(data):
         for a in ms["actionable_now"]
     ) or '<li class="src">none — every control with a precursor has since bound</li>'
     hr_ms = "n/a" if ms["engine_grade"]["hit_rate"] is None else f'{int(ms["engine_grade"]["hit_rate"]*100)}%'
+    # --- What this list does not claim ---------------------------------------
+    # The lead-time prose and the actionable-now list were cut: every row on the board
+    # already carries its own "first signal Nd before it bound", and the two precursor
+    # entries already appear in the watch list. This keeps only the limit, restated so it
+    # reads as a sentence -- the old version interpolated engine_grade.question, which is a
+    # QUESTION string, mid-sentence and produced "flagged 2/12 of these lines was the line
+    # flagged 90d before the antecedent appeared?".
+    _bs = bs
     ms_panel = f"""
     <div class="cal">
-      <h2>Lead time <span class="meta">measured on the record, antecedent to binding event</span></h2>
-      <p class="small">Most binding events do not arrive unannounced. A rule has a proposal, a comment
-        period, a bar committee, a first court. Those are dated facts already on the record, so the
-        window to act on them is measurable today rather than in December. Across the
-        <b>{ms['n_landed']}</b> landed pairs on this record the antecedent preceded the binding event by a
-        median of <b>{lt['median']} days</b> (min {lt['min']}d, max {lt['max']}d).</p>
-      <p class="small"><b>Actionable now</b> — a precursor is on the record and nothing has bound yet:</p>
-      <ul class="small">{actionable}</ul>
-      <p class="small">{ms['n_superseded']} superseded (an antecedent that led somewhere other than the
-        expected binding event — the honest counter-case), {ms['n_pending']} pending. The radar does not
-        forecast which way a precursor resolves; the Colorado AI Act was enacted in February and repealed
-        by May.</p>
-      <p class="small"><b>The residual forecast half:</b> the engine flagged
-        <b>{hr_ms}</b> ({ms['engine_grade']['called']}/{ms['engine_grade']['n']}) of these lines
-        {ms['engine_grade']['question']}. That column grades the engine, not the record, and it is
-        reported separately for that reason. Blindside rate
-        {int((bs['blindside_rate'] or 0)*100)}% ({bs['n_no_precursor']}/{bs['n_standing_events']}) —
-        a floor, not an exact figure: this scan runs over a feed curated with hindsight, so it reads
-        low by construction.</p>
-      <table class="ev"><thead><tr><th>Precursor</th><th>Fault line</th><th>Antecedent on the record</th>
-        <th>Lead</th><th>Status</th><th>Binding event</th><th>Flagged early</th></tr></thead>
-        <tbody>{ms_rows}</tbody></table>
+      <h2>What this list does not claim</h2>
+      <p class="small">The order is a sort for attention, not a view about which ruling lands
+        next, and the numbers are positions in that sort rather than a confidence score. On its own
+        record the engine flagged <b>{ms["engine_grade"]["called"]} of {ms["engine_grade"]["n"]}</b>
+        lines, read as retrodiction rather than as a track record, since the feed was curated by
+        people who knew how those events turned out. The blindside rate,
+        {int((_bs["blindside_rate"] or 0) * 100)}% ({_bs["n_no_precursor"]}/{_bs["n_standing_events"]}),
+        is a floor rather than an exact figure: that scan runs over a hindsight-curated feed and so
+        reads low by construction.</p>
     </div>"""
+
     cal = calibration.report()
     cal_rows = "".join(
         f'<tr><td class="d">{_esc(r["date"])}</td>'
@@ -397,6 +401,9 @@ def render(data):
   summary {{ cursor:pointer; list-style:none; padding:.85rem 1rem; display:flex;
     align-items:center; gap:.7rem; flex-wrap:wrap; }}
   summary::-webkit-details-marker {{ display:none; }}
+  .chev {{ margin-left:auto; color:var(--dim); font-size:.8rem; transition:transform .15s; }}
+  details[open] > summary .chev {{ transform:rotate(90deg); }}
+  @media (prefers-reduced-motion: reduce) {{ .chev {{ transition:none; }} }}
   .p {{ font-weight:700; color:#111; border-radius:6px; padding:.1rem .5rem; min-width:2.6rem;
     text-align:center; font-family:Fraunces,serif; }}
   .t {{ font-family:Fraunces,serif; font-size:1.06rem; }}
@@ -487,6 +494,7 @@ def render(data):
   <div class="legend"><b>Source authority</b> (weight): &nbsp; {tier_legend}
     <br>Volume never moves a reading. A vendor blog (T5) carries ~1/100 of an ABA opinion (T2) and ~1/125 of a binding ruling (T1).
     <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
+  {rank_panel}
   {duty_panel}
   {ms_panel}
   {''.join(rows)}

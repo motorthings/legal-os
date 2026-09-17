@@ -628,6 +628,17 @@ export default function RadarPage() {
         </div>
       )}
 
+      {/* THE WHOLE BOARD — the shape of the list above, before the detail */}
+      <section className="card p-4 md:p-6">
+        <p className="eyebrow mb-2">The whole board</p>
+        <p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
+          The same eleven in the same order, one bar each. Bar length is how many sources stand
+          behind the duty; the colours are what kind of authority they are, because seven
+          circuit courts and seven bar opinions are not the same claim.
+        </p>
+        <RankChart duties={duties} watched={watched} />
+      </section>
+
       {/* WHAT TO DO — the answer, first, with the evidence attached to each item */}
       <section className="card p-4 md:p-6">
         <p className="eyebrow mb-2">What to do</p>
@@ -718,16 +729,7 @@ export default function RadarPage() {
           })}
         </ol>
 
-      {/* THE WHOLE BOARD — the shape of the list above, before the detail */}
-      <section className="card p-4 md:p-6">
-        <p className="eyebrow mb-2">The whole board</p>
-        <p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
-          The same eleven in the same order, one bar each. Bar length is how many sources stand
-          behind the duty; the colours are what kind of authority they are, because seven
-          circuit courts and seven bar opinions are not the same claim.
-        </p>
-        <RankChart duties={duties} watched={watched} />
-      </section>
+
 
         {/* NOT REQUIRED YET — suppressing these made the page read as if agentic supervision
             did not exist, when it is the one line with a live bill in Congress. */}
@@ -787,55 +789,23 @@ export default function RadarPage() {
         </div>
       </section>
 
-      {/* lead time + actionable now + what a forecast would have to add */}
+      {/* WHAT THIS DOES NOT CLAIM — the only part of the old milestone block worth keeping.
+          The lead-time prose went because every item now carries its own "first signal Nd
+          before it bound" on the board, and the actionable-now list repeated two entries that
+          are already on the list above. */}
       {ms && (
-        <section className="card p-4 md:p-6 space-y-4">
-          <div>
-            <p className="eyebrow mb-2">How much warning the record gave</p>
-            <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px]">
-              Most binding events do not arrive unannounced. Across {ms.n_landed} landed pairs the
-              antecedent preceded the binding event by a median of{' '}
-              <b>{ms.lead_time_days.median} days</b>
-              {ms.lead_time_days.min != null && ms.lead_time_days.max != null && (
-                <> (min {ms.lead_time_days.min}d, max {ms.lead_time_days.max}d)</>
-              )}
-              . That window is a fact about the past, verifiable by reading the record, and needs no
-              prediction to act on.
-            </p>
-          </div>
-
-          <div>
-            <p className="eyebrow mb-2">Actionable now
-              <span className="ml-2 font-normal normal-case tracking-normal text-[var(--text-muted)]">
-                a precursor is on the record and nothing has bound yet
-              </span>
-            </p>
-            <ul className="text-[13px] text-[var(--text)] space-y-1">
-              {ms.actionable_now.map((a) => (
-                <li key={a.fault_line}>
-                  <b>{a.fault_line}</b> — precursor on the record {a.precursor_date}: {a.precursor}
-                </li>
-              ))}
-              {ms.actionable_now.length === 0 && (
-                <li className="text-[var(--text-muted)]">none — every control with a precursor has since bound</li>
-              )}
-            </ul>
-          </div>
-
-          <div className="border-t border-[var(--border)] pt-3">
-            <p className="eyebrow mb-2">What this list does not claim</p>
-            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
-              The order is a sort for attention, not a claim about which ruling lands next, and the
-              numbers are positions in that sort rather than a confidence score. Graded on its own: the engine flagged{' '}
-              <b>{ms.engine_grade.called}/{ms.engine_grade.n}</b> of these lines {ms.engine_grade.question}
-              {ms.engine_grade.hit_rate != null && <> · {Math.round(ms.engine_grade.hit_rate * 100)}%</>}.
-              Blindside rate {Math.round((ms.blindside.blindside_rate ?? 0) * 100)}% (
-              {ms.blindside.n_no_precursor}/{ms.blindside.n_standing_events}) — a floor, not an exact
-              figure, because the scan runs over a feed curated with hindsight and so reads low by
-              construction. Of {ms.n_milestones} milestones on record, {ms.n_pending} are pending and{' '}
-              {ms.n_superseded} superseded: a precursor does not guarantee a binding event.
-            </p>
-          </div>
+        <section className="card p-4 md:p-6">
+          <p className="eyebrow mb-2">What this list does not claim</p>
+          <p className="text-[12.5px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
+            The order is a sort for attention, not a view about which ruling lands next, and the
+            numbers are positions in that sort rather than a confidence score. On its own record
+            the engine flagged <b>{ms.engine_grade.called} of {ms.engine_grade.n}</b> lines, read
+            as retrodiction rather than as a track record, since the feed was curated by people
+            who knew how those events turned out. The blindside rate,{' '}
+            {Math.round((ms.blindside.blindside_rate ?? 0) * 100)}% ({ms.blindside.n_no_precursor}
+            /{ms.blindside.n_standing_events}), is a floor rather than an exact figure: that scan
+            runs over a hindsight-curated feed and so reads low by construction.
+          </p>
         </section>
       )}
 
@@ -908,7 +878,8 @@ export default function RadarPage() {
       {/* full queue */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <p className="eyebrow">{view === 'gap' ? 'Build vs buy — a different question, ranked by supply against demand' : 'The same eleven, in detail'}</p>
+          <p className="eyebrow">{view === 'gap' ? 'Build vs buy — a different question, ranked by supply against demand'
+            : 'The same eleven, in detail — click any row to open its evidence'}</p>
           {view === 'gap' ? (
             <span className="text-[11px] text-[var(--text-muted)]">sorted by gap (demand − supply)</span>
           ) : (
@@ -930,7 +901,7 @@ export default function RadarPage() {
             const open = expanded === f.id;
             return (
               <div key={f.id} id={`row-${f.id}`} className={`border-b border-[var(--border)] last:border-0 ${hovered === f.id ? 'bg-[var(--brand-tint)]' : ''}`}>
-                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
+                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem_1.5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
                   <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{rowRanks.get(f.id)}</span>
                   <span>
                     <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
@@ -954,6 +925,7 @@ export default function RadarPage() {
                       ? `${whole(f.adoption)}·${whole(f.enable ?? f.enable_seed ?? 0)}·${whole(f.software ?? f.software_seed ?? 0)}`
                       : `${whole(f.capability)}·${whole(f.pressure)}·${whole(f.adoption)}·${whole(f.enable ?? f.enable_seed ?? 0)}`}
                   </span>
+                  <span className="text-[13px] text-[var(--text-muted)] text-center">{open ? '\u25be' : '\u25b8'}</span>
                   <span className="font-mono text-[13px] font-bold text-[var(--text-strong)]">
                     {view === 'gap' ? (
                       <>{signed(f.adoption - (f.enable ?? f.enable_seed ?? 0))} <span className="text-[10px] text-[var(--primary)]">gap</span></>
