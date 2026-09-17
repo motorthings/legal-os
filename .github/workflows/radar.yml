@@ -23,6 +23,11 @@ jobs:
           python-version: "3.12"
       - name: Regenerate radar
         run: python radar/run.py
+      - name: Run the radar test suite
+        # Includes the copy contract, which fails if the static page and the in-app page
+        # stop agreeing on the headings they share. That divergence happened three times on
+        # 2026-09-17 and was caught by a person reading a live page each time, not by CI.
+        run: python -m pytest radar/tests/ -q
       - name: Build the live advisory landscape
         # The advisory reads a separate, refreshable corpus (see radar/live.py). Building
         # it here keeps the firm-facing landscape current without ever touching the

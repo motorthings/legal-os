@@ -19,6 +19,14 @@ OUT_DIR = Path(__file__).resolve().parents[1] / "docs" / "radar"
 # frontend/, so docs/radar isn't bundled). The in-app /radar page reads these.
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend" / "public" / "radar"
 
+COPY = json.loads((Path(__file__).resolve().parent / "copy.json").read_text())
+
+
+def _c(key):
+    """Shared copy. Both renderers read copy.json so a heading cannot drift."""
+    return COPY[key]
+
+
 TIER_COLOR = {"T1": "#e8b04b", "T2": "#c9a227", "T3": "#6fae8f", "T4": "#7a8aa0", "T5": "#8a5a5a"}
 
 
@@ -166,7 +174,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2><details class="det"><summary class="det-s">show &mdash; the same eleven, in detail</summary></details></h2>
+      <h2><details class="det"><summary class="det-s">show &mdash; {_c("detail_heading_suffix")}</summary></details></h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
@@ -269,10 +277,8 @@ def render(data):
                       for _k, lab, col in _seg_order)
     rank_panel = f"""
     <div class="cal">
-      <h2>The whole board <span class="meta">the same eleven in the same order, one bar each</span></h2>
-      <p class="small">Bar length is how many sources stand behind the duty; the colours are what
-        kind of authority they are, because seven circuit courts and seven bar opinions are not
-        the same claim.</p>
+      <h2>{_c("board_heading")} <span class="meta">{_c("board_sub")}</span></h2>
+      <p class="small">{_c("board_blurb")}</p>
       <div class="rk">{_bars_for(duties, 1)}</div>
       <div class="rk-legend">{_legend}<span class="src">&middot; trailing number = total sources</span></div>
     </div>"""
@@ -288,8 +294,8 @@ def render(data):
       <ul class="acts">{watch_rows}</ul></details>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
-      <h2>What to do
-        <span class="meta">{len(duties)} controls already required of any firm</span></h2>
+      <h2>{_c("actions_heading")}
+        <span class="meta">{len(duties)} controls already required of any firm, whichever jurisdiction you practise in</span></h2>
       <p class="small">Each of these is a control the law has already moved on, at or above the
         flag threshold of {calibration.CALL_THRESHOLD} on ruling evidence only, so the list does not
         depend on which jurisdiction you practise in. Ordered by how well the record supports each
@@ -637,6 +643,7 @@ def build(as_of=None):
     msr = milestone_report()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    data["copy"] = COPY
     (OUT_DIR / "data.json").write_text(json.dumps(data, indent=2))
     (OUT_DIR / "index.html").write_text(render(data))
     (OUT_DIR / "kb.json").write_text(json.dumps(kbd, indent=2))

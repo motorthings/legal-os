@@ -98,7 +98,19 @@ interface Milestones {
   not_a_forecast: string;
 }
 
+interface Copy {
+  board_heading: string;
+  board_sub: string;
+  board_blurb: string;
+  actions_heading: string;
+  watch_lead: string;
+  detail_heading_suffix: string;
+  detail_hint: string;
+  seq_cta: string;
+}
+
 interface RadarData {
+  copy?: Copy;
   as_of: string;
   fault_lines: FaultLine[];
   n_items: number;
@@ -188,7 +200,8 @@ const STRENGTH_SEGMENTS: { key: keyof FaultLine['strength']; label: string; colo
   { key: 'guidance', label: 'bar guidance', color: 'var(--rk-guide)' },
 ];
 
-function RankChart({ duties, watched }: { duties: FaultLine[]; watched: FaultLine[] }) {
+function RankChart({ duties, watched, startAt = 1, splitLabel }:
+  { duties: FaultLine[]; watched: FaultLine[]; startAt?: number; splitLabel: string }) {
   const rows = [...duties, ...watched];
   const max = Math.max(...rows.map((f) => f.strength?.total ?? 0), 1);
   const short = (s: string) => (s.length > 44 ? s.slice(0, 43).trimEnd() + '…' : s);
@@ -205,7 +218,7 @@ function RankChart({ duties, watched }: { duties: FaultLine[]; watched: FaultLin
                 <div className="flex items-center gap-2 my-2.5">
                   <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                    not required yet
+                    {splitLabel}
                   </span>
                   <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
                 </div>
@@ -521,6 +534,14 @@ export default function RadarPage() {
 
   // Duties: the law has moved, which does not depend on who is reading. `mandated` on the
   // advisory side uses the same number, imported from the same place.
+  // Shared copy, published inside data.json by radar/build.py so both renderers read the
+  // same strings. Fallback keeps the page readable if an older data.json is served.
+  const copy: Copy = data.copy ?? {
+    board_heading: 'The whole board', board_sub: '', board_blurb: '',
+    actions_heading: 'What to do', watch_lead: 'not required yet',
+    detail_heading_suffix: 'the same eleven, in detail', detail_hint: '', seq_cta: '',
+  };
+
   const threshold = callThreshold ?? 8.0;
   // Ordered by how well-supported the duty is, not by how high the meter reads: a duty
   // resting on seven circuit courts is a different claim from one resting on two trial
@@ -631,18 +652,18 @@ export default function RadarPage() {
 
       {/* THE WHOLE BOARD — the shape of the list above, before the detail */}
       <section className="card p-4 md:p-6">
-        <p className="eyebrow mb-2">The whole board</p>
+        <p className="eyebrow mb-2">{copy.board_heading}</p>
         <p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
           The same eleven in the same order, one bar each. Bar length is how many sources stand
           behind the duty; the colours are what kind of authority they are, because seven
           circuit courts and seven bar opinions are not the same claim.
         </p>
-        <RankChart duties={duties} watched={watched} />
+        <RankChart duties={duties} watched={watched} splitLabel={copy.watch_lead} />
       </section>
 
       {/* WHAT TO DO — the answer, first, with the evidence attached to each item */}
       <section className="card p-4 md:p-6">
-        <p className="eyebrow mb-2">What to do</p>
+        <p className="eyebrow mb-2">{copy.actions_heading}</p>
         <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
           {duties.length} controls are already required of any firm, whichever jurisdiction you
           practise in. Ordered by how well the record supports each one, strongest first. Follow
@@ -742,7 +763,7 @@ export default function RadarPage() {
             >
               <h3 className="text-[15px] font-bold text-[var(--text-strong)]">
                 {showWatch ? '▾ hide' : '▸ show'} {duties.length + 1} to{' '}
-                {duties.length + watched.length} &mdash; not required yet
+                {duties.length + watched.length} &mdash; {copy.watch_lead}
               </h3>
             </button>
             {showWatch && (
@@ -868,7 +889,7 @@ export default function RadarPage() {
             <p className="eyebrow">
               {view === 'gap'
                 ? '▸ build vs buy — a different question, ranked by supply against demand'
-                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — the same eleven, in detail. Each row opens to its meters and evidence`}
+                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — ${copy.detail_heading_suffix}. ${copy.detail_hint}`}
             </p>
           </button>
           {view === 'gap' ? (
