@@ -51,8 +51,11 @@ interface PlanItem {
 }
 interface Advisory {
   as_of: string;
-  firm: { name: string; pricing: string; refill: number; enablement: number };
-  economic_gate: { delta_per_lawyer: number; mode: string };
+  firm: {
+    name: string; pricing: string; refill: number; enablement: number;
+    lawyers?: number; carriers?: string[]; key_clients?: string[];
+  };
+  economic_gate: { delta_per_lawyer: number; firm_delta?: number; mode: string };
   verdict_counts: { govern: Record<string, number>; deploy: Record<string, number> };
   plan: PlanItem[];
   rows: Row[];
@@ -118,6 +121,10 @@ export default function RadarAdvisoryPage() {
 
   const gc = a.verdict_counts.govern;
   const dc = a.verdict_counts.deploy;
+  // `deploy` is null where the control is market-driven governance and AI is not doing the
+  // billed work. Those lines were invisible in the counts, which is why the numbers did not
+  // add up to the size of the board.
+  const noDeploy = a.rows.filter((r) => r.deploy === null).length;
 
   const lane = (v: string | null, map: Record<string, string>) =>
     v === null ? '—' : (
@@ -127,7 +134,7 @@ export default function RadarAdvisoryPage() {
   return (
     <div className="px-4 md:px-8 py-6 max-w-[1400px] mx-auto space-y-6">
       <header>
-        <p className="eyebrow">Fault-Line Radar · advisory</p>
+        <p className="eyebrow">Fault-Line Radar · firm advisory</p>
         <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight">
           Do you have to do this, and does it pay to put AI on it
         </h1>
@@ -173,18 +180,38 @@ export default function RadarAdvisoryPage() {
       {/* headline economics */}
       <div className="card p-4 space-y-3">
         <div>
-          <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Economic gate</p>
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+            <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Economic gate</p>
+            <p className="font-mono text-[11px] text-[var(--text-muted)]">
+              {a.firm.name} · {a.firm.pricing.replace(/_/g, '-')} · {Math.round(a.firm.refill * 100)}% refill · readiness {a.firm.enablement.toFixed(1)} of 10
+              {a.firm.carriers?.length ? ` · carriers ${a.firm.carriers.join(', ')}` : ''}
+              {a.firm.key_clients?.length ? ` · key clients ${a.firm.key_clients.join(', ')}` : ''}
+            </p>
+          </div>
           <p className="font-mono text-lg font-extrabold text-[var(--text-strong)]">
-            {money(a.economic_gate.delta_per_lawyer)}<span className="text-[11px] font-normal text-[var(--text-muted)]"> / lawyer / yr under {a.firm.pricing}</span>
+            {money(a.economic_gate.delta_per_lawyer)}<span className="text-[11px] font-normal text-[var(--text-muted)]"> / lawyer / yr</span>
+            {typeof a.economic_gate.firm_delta === 'number' && a.firm.lawyers ? (
+              <span className="text-[11px] font-normal text-[var(--text-muted)]"> · {money(a.economic_gate.firm_delta)} firm-wide</span>
+            ) : null}
+          </p>
+          <p className="text-[11px] text-[var(--text-muted)] leading-relaxed max-w-[620px] mt-1">
+            This is the ceiling, at full capture with every control built. It is not a forecast and it
+            is not a gate on any one line: two firms with the same economics and different readiness
+            show the same number here while their verdicts differ. What each line actually clears is
+            in the DEPLOY column below.
           </p>
         </div>
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Govern</p>
-          <p className="font-mono text-[13px] text-[var(--text-strong)]">{gc['stand-up-now'] ?? 0} stand up · {gc['build-capacity-first'] ?? 0} build capacity · {gc['match-the-market'] ?? 0} match market{gc['no-mandate'] ? ` · ${gc['no-mandate']} with nothing to do, not shown` : ''}</p>
+          <p className="font-mono text-[13px] text-[var(--text-strong)]">{gc['stand-up-now'] ?? 0} stand up · {gc['build-capacity-first'] ?? 0} build capacity · {gc['match-the-market'] ?? 0} match market · {gc['no-mandate'] ?? 0} nothing required yet</p>
         </div>
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Deploy</p>
-          <p className="font-mono text-[13px] text-[var(--text-strong)]">{dc['deploy-now'] ?? 0} deploy · {dc['fix-pricing-first'] ?? 0} fix pricing · {dc['defer'] ?? 0} defer</p>
+          {/* Reconciles to the full board. It previously showed deploy-now / fix-pricing-first /
+              defer and silently dropped `watch` and the lines where AI is not the question at
+              all, so the three numbers never added to eleven and the missing rows had no
+              explanation on the page. */}
+          <p className="font-mono text-[13px] text-[var(--text-strong)]">{dc['deploy-now'] ?? 0} put AI on it · {dc['fix-pricing-first'] ?? 0} fix pricing first · {dc['defer'] ?? 0} defer · {dc['watch'] ?? 0} watch · {noDeploy} no AI question on the line</p>
         </div>
       </div>
 

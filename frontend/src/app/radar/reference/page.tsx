@@ -168,7 +168,7 @@ export default function ReferencePage() {
       {/* hero */}
       <Reveal>
         <header className="pt-2 pb-4">
-          <p className="eyebrow">Fault-Line Radar · master reference</p>
+          <p className="eyebrow">Fault-Line Radar · reference</p>
           <h1 className="text-3xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight mt-1">
             The whole picture, in one scroll
           </h1>

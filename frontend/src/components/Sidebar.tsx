@@ -45,9 +45,13 @@ const ALL_FUNCTIONS: NavItem[] = [
   { href: '/reporting', label: 'Value Reporting', icon: Scale3D },
   { href: '/simulation', label: 'Firm Simulation', icon: Building2 },
   { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
-  { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
-  { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
-  { href: '/radar/reference', label: 'Master reference', icon: BookOpen },
+  // Named for what it does, not for the section it lives in. This is the only surface that
+  // takes a firm posture; every other radar page is firm-agnostic by construction. "Radar
+  // advisory" described the parent and left a leader scanning the sidebar with nowhere to
+  // land. The route is unchanged.
+  { href: '/radar/advisory', label: 'Firm advisory', icon: ClipboardCheck },
+  { href: '/radar/kb', label: 'Radar KB', icon: Database },
+  { href: '/radar/reference', label: 'Reference', icon: BookOpen },
 ];
 
 const NAV: Record<Persona, NavGroup[]> = {
@@ -91,9 +95,9 @@ const NAV: Record<Persona, NavGroup[]> = {
       label: 'Fault lines',
       items: [
         { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
-              { href: '/radar/advisory', label: 'Radar advisory', icon: ClipboardCheck },
-        { href: '/radar/kb', label: 'Radar Knowledge Base', icon: Database },
-        { href: '/radar/reference', label: 'Master reference', icon: BookOpen },
+              { href: '/radar/advisory', label: 'Firm advisory', icon: ClipboardCheck },
+        { href: '/radar/kb', label: 'Radar KB', icon: Database },
+        { href: '/radar/reference', label: 'Reference', icon: BookOpen },
       ],
     },
   ],

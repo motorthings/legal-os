@@ -88,7 +88,7 @@ const GUIDES: Guide[] = [
   {
     title: 'Fault-Line Radar',
     slug: 'radar',
-    desc: 'What the record already requires of a firm, how well each duty is supported, and how much warning it gave. The hub fans out to the scoring engine, the app screen, the source library and the master reference.',
+    desc: 'What the record already requires of a firm, and how much warning it gave. The hub fans out to the scoring engine, the app screen, the source library and the reference.',
     icon: BarChart3,
     category: 'Fault-Line Radar',
     external: true,
