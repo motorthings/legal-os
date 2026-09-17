@@ -4,10 +4,45 @@
 > engine's design intent, as-built v1, known gaps, and planned confluence model. This README
 > is the run + backlog log.
 
-Forecasts *where the next legal-AI rulings land* by tracking **fault lines** — the
-places where an AI capability stresses an existing legal duty. It scores each fault
-line's pressure from evidence weighted by **source authority, not volume**, so the
-forecast can't be captured by whoever publishes most (usually vendors).
+Maps **fault lines** — the places where an AI capability stresses an existing legal duty —
+and ranks them by what the record already shows, weighted by **source authority, not
+volume**, so a reading can't be captured by whoever publishes most (usually vendors).
+
+**What the ranking is for.** Eleven controls are on the board and a firm cannot stand all
+of them up at once, so the ordering is a sort for attention. It is graded on its own
+(`calibration.py`) and is *not* a public claim about which ruling lands next. The
+firm-facing claim is narrower and checkable: **most binding events have an antecedent on
+the record, and the median lead time from antecedent to binding event is ~20 months**
+(`milestones.py`). That is a fact about the past, verifiable by reading the record, and it
+requires no prediction to act on.
+
+### What the pages lead with
+
+Both the public page (`docs/radar/index.html`) and the in-app `/radar` lead with the firm-facing
+output rather than the meters (§5.11): **what the record already requires** → **actionable now** →
+**how much warning it gave** → the evidence per line → then the meters, demoted to *scoring
+provenance* alongside the calibration honesty layer.
+
+The **sequenced plan** lives on `/radar/advisory`, because ordering needs a firm posture. `/radar`
+shows what is required of everyone and links there for the ordering.
+
+### Two corpora, one engine
+
+| consumer | corpus | refreshed? |
+|---|---|---|
+| the frozen experiment (`FREEZE.md`) | `sources/feed.jsonl` + `sources/harvested.jsonl` | **never** |
+| the advisory (`advisory.py`) | the above **+** `sources/feed_live.jsonl` + `sources/harvested_live.jsonl` | freely |
+
+The advisory answers a present-tense question, so it wants a current record. The
+experiment can only prove anything if its inputs never move. `live.py` builds the
+advisory corpus as a superset of the frozen one and refuses to write into it, so
+re-curating for a firm engagement cannot void the out-of-sample column.
+
+```bash
+python radar/live.py                 # build the live landscape (docs/radar/live.json)
+RADAR_LIVE_FETCH=1 python radar/live.py --harvest   # harvest, into the LIVE store only
+python radar/milestones.py           # lead time + actionable-now + blindside rate
+```
 
 Lives in legal-os as a Layer 1/2 governance-monitoring function. Honors the repo
 pillars: deterministic score replay, explainable (every score cites its evidence
@@ -28,7 +63,24 @@ RADAR_LIVE_FETCH=1 python radar/run.py --ingest   # fetch allowlisted sources fo
 
 **Advisory seam** (`advisory.py` — returns TWO verdicts per fault line: GOVERN = stand up the
 control, DEPLOY = put AI on the work; E gates DEPLOY, never GOVERN. Design: `docs/radar/radar-design.md`
-§8. Four effect-orders mapped against firm posture.)
+§8, and §5.8 for the duty/norm rebuild. Four effect-orders mapped against firm posture.)
+
+GOVERN separates a **duty** (the law moved — comply or risk sanction) from a **market norm**
+(table stakes — compete or lose work); remedies differ, so the verdicts do too. Verdicts:
+`stand-up-now` (duty, ready) · `build-capacity-first` (duty or norm the firm can't meet yet) ·
+`match-the-market` (norm, ready) · `no-mandate`. Calls resting on thin evidence are marked
+**thin**. Output includes a `plan`: the order to work them in, duties first and shortest
+measured lead first.
+
+A norm requires a **named actor who can withhold something** to require the control, not a high
+adoption score (`leverage.py`, `history/leverage.jsonl` — §5.10). `EXPECTED_ADOPTION` is retired
+from the gate and `expected_adoption_gates_anything: false` records that. Name the firm's own
+leverage actors to get the firm-relative read:
+
+```bash
+python radar/advisory.py --pricing fixed_fee --carrier CNA --carrier Chubb --enablement 7
+python radar/leverage.py     # what leverage is on the record, and what was reviewed out
+```
 
 ```bash
 python radar/advisory.py --pricing fixed_fee --enablement 7 --name "Your firm"  # GOVERN + DEPLOY

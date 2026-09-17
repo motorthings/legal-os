@@ -30,6 +30,9 @@ interface FaultLine {
   capability_evidence: Evidence[];
   pressure_seed: number;
   pressure: number;
+  n_evidence: number;
+  n_ruling_evidence: number;
+  n_adoption_evidence: number;
   trend: string;
   evidence: Evidence[];
   adoption_seed: number;
@@ -54,6 +57,31 @@ interface FaultLine {
   seam?: string;
   driver?: string;
 }
+interface Milestone {
+  fault_line: string;
+  status: 'landed' | 'pending' | 'superseded';
+  antecedent: string | null;
+  antecedent_date: string | null;
+  antecedent_tier: string | null;
+  binding: string | null;
+  binding_date: string | null;
+  lead_days: number | null;
+  called_before_antecedent: boolean | null;
+  note: string;
+}
+interface Milestones {
+  milestones: Milestone[];
+  n_milestones: number;
+  n_landed: number;
+  n_pending: number;
+  n_superseded: number;
+  lead_time_days: { median: number | null; min: number | null; max: number | null };
+  actionable_now: { fault_line: string; precursor: string; precursor_date: string }[];
+  engine_grade: { n: number; called: number; hit_rate: number | null; question: string };
+  blindside: { n_no_precursor: number; n_standing_events: number; blindside_rate: number | null };
+  not_a_forecast: string;
+}
+
 interface RadarData {
   as_of: string;
   fault_lines: FaultLine[];
@@ -347,13 +375,25 @@ export default function RadarPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [sort, setSort] = useState<'urgency' | 'move'>('urgency');
   const [view, setView] = useState<'urgency' | 'gap'>('urgency');
+  const [ms, setMs] = useState<Milestones | null>(null);
+  // Read the flag threshold from the calibration output rather than restating it here. The
+  // Python side already shipped one drift bug from a hardcoded threshold whose comment
+  // claimed to be this number; there is no reason for the frontend to repeat it.
+  const [callThreshold, setCallThreshold] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const d = await fetch('/radar/data.json').then((r) => r.json());
-        if (!cancelled) setData(d);
+        const [d, m, c] = await Promise.all([
+          fetch('/radar/data.json').then((r) => r.json()),
+          // The firm-facing half: what the record already requires, how much warning it gave,
+          // and what a forecast would have to add. Failing to load it must not blank the page,
+          // since the meters below are still useful on their own.
+          fetch('/radar/milestones.json').then((r) => r.json()).catch(() => null),
+          fetch('/radar/calibration.json').then((r) => r.json()).catch(() => null),
+        ]);
+        if (!cancelled) { setData(d); setMs(m); setCallThreshold(c?.call_threshold ?? null); }
       } catch {
         if (!cancelled) setError('Could not load radar data.');
       }
@@ -363,6 +403,22 @@ export default function RadarPage() {
 
   if (error) return <div className="p-8 text-[var(--rose)]">{error}</div>;
   if (!data) return <div className="p-8 text-[var(--text-muted)] font-mono text-sm">Loading radar…</div>;
+
+  // Duties: the law has moved, which does not depend on who is reading. `mandated` on the
+  // advisory side uses the same number, imported from the same place.
+  const threshold = callThreshold ?? 8.0;
+  const duties = [...data.fault_lines]
+    .filter((f) => f.pressure >= threshold)
+    .sort((a, b) => b.pressure - a.pressure);
+
+  const leadFor = (id: string): number | null => {
+    const ds = (ms?.milestones ?? [])
+      .filter((m) => m.fault_line === id && m.status === 'landed' && m.lead_days != null)
+      .map((m) => m.lead_days as number);
+    if (!ds.length) return null;
+    ds.sort((a, b) => a - b);
+    return ds[Math.floor(ds.length / 2)];
+  };
 
   const byQueue = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
   const ranks = new Map(byQueue.map((f, i) => [f.id, i + 1]));
@@ -393,13 +449,14 @@ export default function RadarPage() {
         <div>
           <p className="eyebrow">Fault-Line Radar</p>
           <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight">
-            Where legal-AI rules are heading — and what to build before they land
+            What the record already requires — and how much warning it gave
           </h1>
           <p className="font-mono text-[12px] text-[var(--text-muted)] mt-1.5">
             {data.as_of} · {data.n_items} tracked items · deterministic, replayable
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/radar/advisory" className="btn-secondary no-underline">Sequence for your firm →</Link>
           <Link href="/radar/calibration" className="btn-secondary no-underline">Calibration →</Link>
           <button onClick={() => setShowPrimer((s) => !s)} className="btn-secondary">
             {showPrimer ? 'Hide' : 'How this works'}
@@ -442,8 +499,99 @@ export default function RadarPage() {
         </div>
       )}
 
-      {/* chart */}
+      {/* what the record already requires — duties, not forecasts */}
       <section className="card p-4 md:p-6">
+        <p className="eyebrow mb-2">What the record already requires</p>
+        <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px] mb-3">
+          {duties.length} of {data.fault_lines.length} controls are at or above the flag threshold on
+          ruling evidence alone. Each is a control the law has already moved on, so this list does
+          not depend on who you are. Sequencing it against a specific firm&apos;s readiness is the
+          advisory layer&apos;s job.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)] border-b border-[var(--border)]">
+                <th className="py-2 pr-3">Control</th>
+                <th className="py-2 pr-3 text-right">L2 ruling</th>
+                <th className="py-2 pr-3 text-right">Items</th>
+                <th className="py-2 pr-3 text-right">Antecedent lead</th>
+              </tr>
+            </thead>
+            <tbody>
+              {duties.map((d) => (
+                <tr key={d.id} className="border-b border-[var(--border)] last:border-0">
+                  <td className="py-2 pr-3">
+                    <span className="text-[13px] font-semibold text-[var(--text-strong)]">{d.control}</span>
+                    <span className="block text-[11px] text-[var(--text-muted)]">{d.title}</span>
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono text-[12px] text-[var(--text)]">{d.pressure}</td>
+                  <td className="py-2 pr-3 text-right font-mono text-[12px] text-[var(--text-muted)]">{d.n_ruling_evidence}</td>
+                  <td className="py-2 pr-3 text-right font-mono text-[12px] text-[var(--text-muted)]">
+                    {leadFor(d.id) != null ? `${leadFor(d.id)}d` : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* lead time + actionable now + what a forecast would have to add */}
+      {ms && (
+        <section className="card p-4 md:p-6 space-y-4">
+          <div>
+            <p className="eyebrow mb-2">How much warning the record gave</p>
+            <p className="text-[13px] text-[var(--text)] leading-relaxed max-w-[880px]">
+              Most binding events do not arrive unannounced. Across {ms.n_landed} landed pairs the
+              antecedent preceded the binding event by a median of{' '}
+              <b>{ms.lead_time_days.median} days</b>
+              {ms.lead_time_days.min != null && ms.lead_time_days.max != null && (
+                <> (min {ms.lead_time_days.min}d, max {ms.lead_time_days.max}d)</>
+              )}
+              . That window is a fact about the past, verifiable by reading the record, and needs no
+              prediction to act on.
+            </p>
+          </div>
+
+          <div>
+            <p className="eyebrow mb-2">Actionable now
+              <span className="ml-2 font-normal normal-case tracking-normal text-[var(--text-muted)]">
+                a precursor is on the record and nothing has bound yet
+              </span>
+            </p>
+            <ul className="text-[13px] text-[var(--text)] space-y-1">
+              {ms.actionable_now.map((a) => (
+                <li key={a.fault_line}>
+                  <b>{a.fault_line}</b> — precursor on the record {a.precursor_date}: {a.precursor}
+                </li>
+              ))}
+              {ms.actionable_now.length === 0 && (
+                <li className="text-[var(--text-muted)]">none — every control with a precursor has since bound</li>
+              )}
+            </ul>
+          </div>
+
+          <div className="border-t border-[var(--border)] pt-3">
+            <p className="eyebrow mb-2">What a forecast would have to add</p>
+            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
+              The ranking is a sort for attention across eleven controls, not a claim about which
+              ruling lands next. Graded on its own: the engine flagged{' '}
+              <b>{ms.engine_grade.called}/{ms.engine_grade.n}</b> of these lines {ms.engine_grade.question}
+              {ms.engine_grade.hit_rate != null && <> · {Math.round(ms.engine_grade.hit_rate * 100)}%</>}.
+              Blindside rate {Math.round((ms.blindside.blindside_rate ?? 0) * 100)}% (
+              {ms.blindside.n_no_precursor}/{ms.blindside.n_standing_events}) — a floor, not an exact
+              figure, because the scan runs over a feed curated with hindsight and so reads low by
+              construction. Of {ms.n_milestones} milestones on record, {ms.n_pending} are pending and{' '}
+              {ms.n_superseded} superseded: a precursor does not guarantee a binding event.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* chart — scoring provenance, below the fold */}
+      <section className="card p-4 md:p-6">
+        <p className="eyebrow mb-3">Scoring provenance <span className="font-normal normal-case tracking-normal text-[var(--text-muted)]">how the readings above were computed</span></p>
         <div className="inline-flex rounded-lg border border-[var(--border)] overflow-hidden text-left mb-3">
           {(['urgency', 'gap'] as const).map((v) => (
             <button key={v} onClick={() => setView(v)} className={`px-3 py-1.5 ${view === v ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>

@@ -43,17 +43,31 @@ from pathlib import Path
 # --- Where the radar landscape lives ----------------------------------------
 HERE = Path(__file__).resolve().parent                 # legal-os/radar
 REPO = HERE.parent                                      # legal-os
-DATA_JSON = REPO / "docs" / "radar" / "data.json"
+DATA_JSON = REPO / "docs" / "radar" / "data.json"       # frozen experiment landscape
+LIVE_JSON = REPO / "docs" / "radar" / "live.json"       # refreshable advisory landscape
 FRONTEND_RADAR = REPO / "frontend" / "public" / "radar"
 
+sys.path.insert(0, str(HERE))   # allow flat imports when run as a script
+from calibration import CALL_THRESHOLD          # noqa: E402  (the mandate threshold)
+import fault_lines as K                         # noqa: E402  (leverage classes)
+import milestones                               # noqa: E402  (lead time, for sequencing)
+import leverage                                 # noqa: E402  (who withholds what)
+
 # --- Order 4 gate: reuse the paradox identity from legal-sim (single source) --
-PRICING_DIR = HERE.parents[2] / "legal-sim" / "pricing"  # GitHub/legal-sim/pricing
+# HERE = legal-os/radar, so parents[1] = the directory holding the sibling repos
+# (GitHub/). This was parents[2], which pointed one level above the repos and made the
+# import fail silently: the seam then ran on the mirror constants below while still
+# reporting legal-sim as its source. Keep the index at 1, and keep the fallback loud.
+PRICING_DIR = HERE.parents[1] / "legal-sim" / "pricing"  # GitHub/legal-sim/pricing
 sys.path.insert(0, str(PRICING_DIR))
 try:
     from pricing_model import evaluate, ParadoxInputs, REFILL_BENCHMARK
     PRICING_OK = True
-except Exception:  # pragma: no cover - mirror so the seam still runs standalone
+    PRICING_SOURCE = "AI Profit Paradox (legal-sim/pricing, imported)"
+except Exception as _e:  # pragma: no cover - mirror so the seam still runs standalone
     PRICING_OK = False
+    PRICING_SOURCE = (f"AI Profit Paradox (MIRROR CONSTANTS — legal-sim not importable: "
+                      f"{type(_e).__name__}: {_e})")
     REFILL_BENCHMARK = 0.25
 
     @dataclass(frozen=True)
@@ -70,11 +84,36 @@ except Exception:  # pragma: no cover - mirror so the seam still runs standalone
         return _R()
 
 # --- Decision thresholds (explicit, replayable) ------------------------------
-MANDATORY_PRESSURE = 7.0     # rule pressure at/above = the law has moved (radar call threshold)
-MANDATORY_ADOPTION = 7.0     # control-adoption at/above = table stakes already
+# Two DIFFERENT reasons a control lands on a firm, kept apart because the remedies are
+# different. A duty is comply-or-risk-sanction. A norm is compete-or-lose-work. The old
+# `required = pressure OR adoption` fused them, which produced the same `stand-up-now`
+# for `confidentiality` (13 ruling items, a binding rule) and for `insurance` (zero
+# ruling items, two CNA renewal questionnaires).
+MANDATED_PRESSURE = CALL_THRESHOLD   # a DUTY: the law has moved. IMPORTED, not restated —
+                                      # this constant used to be a hardcoded 7.0 whose own
+                                      # comment called it "the radar call threshold" while
+                                      # calibration.CALL_THRESHOLD had moved to 8.0. Two
+                                      # modules disagreeing about what "the law moved" means
+                                      # is a bug, so there is now one source.
+EXPECTED_ADOPTION = 7.0      # RETIRED FROM THE GATE 2026-09-17. Kept only so the number
+                             # remains visible and comparable; nothing reads it to decide.
+                             # Why it could not be calibrated: with leverage gating in place
+                             # it reached only two lines (`insurance` 8.1, `fees` 5.3) and
+                             # sweeping it 0-10 moved at most two verdicts; the adoption
+                             # ground truth is one clean event; and the meter it thresholded
+                             # rested on three items across eleven lines, two of them the same
+                             # carrier. A control is table stakes when a NAMED ACTOR who can
+                             # withhold something requires it (`leverage.py`), which is a
+                             # countable fact rather than a fitted parameter.
 OPPORTUNE_CAPABILITY = 6.5   # capability high enough to build value before it is mandatory
-READY_ENABLEMENT = 6.0       # firm enablement (tools + skills + data) at/above = can deploy now
+READY_ENABLEMENT = 6.0       # firm enablement (tools + skills + data) at/above = can act now
 ENABLE_READY = 6.0           # market enablement E at/above = the market can supply mature tooling
+MIN_DRIVING_EVIDENCE = 3     # the lane driving a verdict must carry at least this many items
+                             # or the verdict is marked `thin`. `agentic` was being called
+                             # `stand-up-now` off a single ruling item; n=1 is a signal to
+                             # watch, not one to stand a control up over. Reported, not
+                             # suppressed: the firm sees "mandated, thin evidence", which is
+                             # exactly true.
 
 SEAM_CAPTURE = {"codifiable": 1.0, "mixed": 0.6, "tacit": 0.35}   # work AI can free, per seam
 MIN_CAPTURE = 0.05           # never let addressable go to zero (keep the math defined)
@@ -96,6 +135,12 @@ class FirmPosture:
     ai_cost: float = 6000.0
     lawyers: int = 900
     pass_through: float = 0.25
+    # Who can withhold something from THIS firm. Leverage is firm-relative: if your carrier
+    # requires a control, it is table stakes for you, and a carrier requiring it in the trade
+    # press is only a proxy for that. Same category as pricing and enablement — a stated firm
+    # fact, not something to be estimated.
+    carriers: tuple = ()          # malpractice carriers, e.g. ("CNA", "Chubb")
+    key_clients: tuple = ()       # clients whose requirements bind, e.g. ("Acme Corp",)
 
 
 def _delta(f: FirmPosture, addressable: float, mode: str):
@@ -112,7 +157,7 @@ def _base_gate(f: FirmPosture):
     mode_delta, hourly_full = _delta(f, full, f.pricing)
     return {"delta_per_lawyer": round(mode_delta), "firm_delta": round(mode_delta * f.lawyers),
             "hourly_full_capture": round(hourly_full), "mode": f.pricing, "refill": f.refill,
-            "source": "AI Profit Paradox (legal-sim/pricing)"}
+            "pricing_model_imported": PRICING_OK, "source": PRICING_SOURCE}
 
 
 def _capture(seam: str, capability: float) -> float:
@@ -127,29 +172,72 @@ def _decide(fl, gate, base_hourly_full, f: FirmPosture):
     seam, driver = fl.get("seam", "codifiable"), fl.get("driver", "market")
     ai_work = driver in AI_WORK_DRIVERS
 
-    required = press >= MANDATORY_PRESSURE or adopt >= MANDATORY_ADOPTION
-    opportune = (not required) and cap >= OPPORTUNE_CAPABILITY
-    actionable = required or opportune
+    # --- Why this control is on the board: duty, norm, or opportunity --------
+    # `mandated` wins over `expected` when both trip: a duty outranks a market norm, and a
+    # firm reading one label should see the heavier one.
+    n_ruling = fl.get("n_ruling_evidence", 0)
+    n_adopt = fl.get("n_adoption_evidence", 0)
+    mandated = press >= MANDATED_PRESSURE
+    # A market norm requires LEVERAGE, not a score: a NAMED ACTOR who can withhold something
+    # (coverage, the engagement, the docket) must be requiring the control. `EXPECTED_ADOPTION`
+    # is no longer read here — see its docstring for why it could not be calibrated.
+    reqs = _leverage_facts()["by_fault_line"].get(fl["id"], {})
+    actors = sorted(reqs)
+    named = tuple(f.carriers) + tuple(f.key_clients)
+    your_actors = [a for a in actors if leverage.actor_match(a, named)]
+    expected = (not mandated) and bool(actors)
+    opportune = (not mandated) and (not expected) and cap >= OPPORTUNE_CAPABILITY
+
+    # GOVERN is gated on duty and norm ONLY. Opportunity is a DEPLOY input: it answers
+    # "would this pay", not "is this required", and answering the second question with the
+    # first produced GOVERN verdicts reading "required/open" for lines that were neither.
+    govern_actionable = mandated or expected
+    deploy_actionable = mandated or expected or opportune
+
+    # Evidence floor: a verdict is only as good as the lane driving it. For a norm, an actor
+    # the firm NAMED clears the floor by itself — one carrier requiring a control of you is
+    # decisive in a way that two carriers requiring it of the market are not.
+    driving_n = n_ruling if mandated else (n_adopt if expected else 0)
+    if mandated:
+        confidence = "supported" if driving_n >= MIN_DRIVING_EVIDENCE else "thin"
+    elif expected:
+        confidence = ("supported" if (your_actors or driving_n >= MIN_DRIVING_EVIDENCE)
+                      else "thin")
+    else:
+        confidence = None
 
     # Per-control effective economics: capture-scaled (for the deploy axis only).
     capture = _capture(seam, cap) if ai_work else 1.0
     eff_delta, _ = _delta(f, max(f.addressable * capture, MIN_CAPTURE), f.pricing)
 
     # --- GOVERN: stand up the control? (governance, not economics) ----------
-    if not actionable:
-        govern, gnote = "no-mandate", "not yet required or open — nothing forces it now"
-    elif f.enablement < READY_ENABLEMENT:
-        govern, gnote = ("build-capacity-first",
-                         "required/open but the firm can't meet it yet (Order 2 readiness low)")
+    ready = f.enablement >= READY_ENABLEMENT
+    if not govern_actionable:
+        govern = "no-mandate"
+        gnote = "nothing on the record requires or expects this yet"
+    elif not ready:
+        govern = "build-capacity-first"
+        gnote = (f"{'a duty' if mandated else 'a market norm'} the firm can't meet yet "
+                 f"(Order 2 readiness below {READY_ENABLEMENT})")
+    elif mandated:
+        govern = "stand-up-now"
+        gnote = "the law has moved and the firm is ready — stand the control up"
     else:
-        govern, gnote = ("stand-up-now",
-                         "required/open and the firm is ready — stand the control up")
+        govern = "match-the-market"
+        if your_actors:
+            gnote = (f"not a duty, but {', '.join(your_actors)} — an actor you named — "
+                     f"requires it: match it or lose {'coverage' if not f.key_clients else 'work'}")
+        else:
+            gnote = (f"not a duty — {', '.join(actors)} requires it of firms like yours: "
+                     f"match it or lose work")
+    if confidence == "thin":
+        gnote += (f" [thin: {driving_n} item(s) drive this, floor is {MIN_DRIVING_EVIDENCE}]")
 
     # --- DEPLOY: put AI on the underlying work? (economics) ------------------
     if not ai_work:
         deploy, dnote = None, "not an AI-deployment question (market-driven governance control)"
-    elif not actionable:
-        deploy, dnote = "watch", "no deploy case yet — not required or opportunistic"
+    elif not deploy_actionable:
+        deploy, dnote = "watch", "no deploy case yet — not required, expected, or opportunistic"
     elif f.pricing == "hourly" and base_hourly_full <= 0:
         deploy, dnote = ("fix-pricing-first",
                          f"hourly billing makes AI adoption a net loss "
@@ -173,8 +261,19 @@ def _decide(fl, gate, base_hourly_full, f: FirmPosture):
         "lead": fl["lead"],
         "seam": seam,
         "driver": driver,
-        "required": required,
+        # Why it is on the board. `required` is kept as the union for back-compat, but the
+        # two halves are now carried separately because they are different claims.
+        "mandated": mandated,
+        "expected": expected,
+        # Who requires it, and whether that is someone the firm named. Empty on a line with
+        # no leverage requirement, which is 9 of 11 lines today.
+        "leverage_actors": actors,
+        "leverage_is_yours": bool(your_actors),
+        "leverage_requirements": [r["requirement"] for a in actors for r in reqs[a]],
         "opportunistic": opportune,
+        "required": mandated or expected,
+        "confidence": confidence,
+        "driving_evidence": driving_n,
         "govern": govern,
         "govern_note": gnote,
         "deploy": deploy,
@@ -191,11 +290,170 @@ def _decide(fl, gate, base_hourly_full, f: FirmPosture):
     }
 
 
-def run(firm: FirmPosture | None = None, data_path=DATA_JSON, as_of=None):
+def landscape_path(prefer_live=True):
+    """The advisory reads the LIVE landscape when one exists.
+
+    The advisory answers a present-tense question ("what does the record oblige this firm
+    to do now"), so it wants the freshest corpus. The frozen `data.json` is the
+    experiment's landscape and stays frozen; preferring it here would sell a firm a stale
+    answer to keep a research artifact clean. Falls back to the frozen landscape before
+    the first live build, so nothing breaks on day one.
+    """
+    if prefer_live and LIVE_JSON.exists():
+        return LIVE_JSON
+    return DATA_JSON
+
+
+# --- Sequencing: turn the board into a plan --------------------------------
+# Ten rows all reading `stand-up-now` is a list, not direction. A firm needs an order.
+# The order comes from the two things that actually differ between controls: WHY the
+# control is on the board (duty beats norm) and whether the firm can meet it yet. Lead
+# time from `milestones` is reported alongside, because a control you have 600 days of
+# cover on is not the one to start today.
+_TIERS = [
+    ("duty-unsupported", "a duty the firm cannot yet meet — most urgent"),
+    ("duty", "a duty, and the firm is ready"),
+    ("norm-unsupported", "a market norm the firm cannot yet meet"),
+    ("norm", "a market norm, and the firm is ready"),
+    ("none", "nothing requires or expects this yet"),
+]
+
+_LEAD_CACHE = {}
+
+
+def _milestone_facts():
+    """Lead time per fault line + the pending precursors, read once.
+
+    Memoized: grading replays the engine once per milestone, so recomputing this per
+    posture would multiply that work by the number of demo postures for no new
+    information.
+    """
+    if "v" in _LEAD_CACHE:
+        return _LEAD_CACHE["v"]
+    lead, overall, pending = {}, [], {}
+    try:
+        report = milestones.grade()
+        buckets = {}
+        for m in report["milestones"]:
+            if m["status"] == "landed" and m["lead_days"] is not None:
+                buckets.setdefault(m["fault_line"], []).append(m["lead_days"])
+                overall.append(m["lead_days"])
+            elif m["status"] == "pending" and m["antecedent_date"]:
+                pending.setdefault(m["fault_line"], {"date": m["antecedent_date"],
+                                                     "title": m["antecedent"]})
+        for fid, ds in buckets.items():
+            lead[fid] = sorted(ds)[len(ds) // 2]
+    except Exception:
+        pass
+    facts = {"lead": lead,
+             "overall": sorted(overall)[len(overall) // 2] if overall else None,
+             "pending": pending}
+    _LEAD_CACHE["v"] = facts
+    return facts
+
+
+_LEV_CACHE = {}
+
+
+def _leverage_facts():
+    """Resolved leverage requirements, read once. Memoized for the same reason as the
+    milestone facts: `run()` is called per demo posture and this resolves against the
+    corpus every time."""
+    if "v" not in _LEV_CACHE:
+        try:
+            _LEV_CACHE["v"] = leverage.facts()
+        except Exception as e:   # a bad reference must not take the whole advisory down
+            _LEV_CACHE["v"] = {"requirements": [], "excluded": [], "by_fault_line": {},
+                               "actors_by_line": {}, "error": f"{type(e).__name__}: {e}"}
+    return _LEV_CACHE["v"]
+
+
+def lead_by_line():
+    """Median antecedent -> binding lead per fault line, plus the `_overall` median."""
+    f = _milestone_facts()
+    out = dict(f["lead"])
+    out["_overall"] = f["overall"]
+    return out
+
+
+def _tier_of(row):
+    if row["mandated"]:
+        return 0 if row["govern"] == "build-capacity-first" else 1
+    if row["expected"]:
+        return 2 if row["govern"] == "build-capacity-first" else 3
+    return 4
+
+
+def sequence(rows):
+    """Order the GOVERN board into a plan.
+
+    The sort is, in order of precedence:
+
+      1. tier        — duty before norm, and un-met before met
+      2. confidence  — thin-evidence calls sort below supported ones
+      3. urgency     — SHORTEST measured lead first. A line whose antecedents historically
+                       bind in 192 days gives less warning than one that binds in 907, so it
+                       is the one to start on. This is the axis that makes the output a plan
+                       rather than a list.
+      4. pressure    — tiebreak
+
+    A line with no milestone of its own has no measured lead. It is REPORTED with the record
+    median (labeled `lead_source="record median"`) but deliberately NOT ranked by it: an
+    invented 601 would place it against lines that were actually measured. Those lines sort
+    after the measured ones within their tier, ordered by pressure.
+    """
+    facts = _milestone_facts()
+    leads = dict(facts["lead"]); leads["_overall"] = facts["overall"]
+    ordered = sorted(
+        rows,
+        key=lambda r: (_tier_of(r),
+                       0 if r["confidence"] != "thin" else 1,
+                       0 if r["fault_line"] in leads else 1,
+                       leads.get(r["fault_line"], 0),
+                       -r["orders"]["3_pressure"]),
+    )
+    plan = []
+    for i, r in enumerate(ordered, 1):
+        t = _tier_of(r)
+        r["tier"] = _TIERS[t][0]
+        r["tier_note"] = _TIERS[t][1]
+        r["sequence"] = i
+        r["lead_days"] = leads.get(r["fault_line"], leads.get("_overall"))
+        r["lead_source"] = ("this line" if r["fault_line"] in facts["lead"]
+                            else "record median" if facts["overall"] else None)
+        # A precursor on the record with nothing bound yet. GOVERN correctly says this is
+        # not required of the firm, but saying only "no-mandate" read as "ignore it" for
+        # `agentic`, which milestones.py simultaneously flags as actionable now. Both
+        # statements are true; the row has to carry both or the two artifacts disagree.
+        r["precursor"] = facts["pending"].get(r["fault_line"])
+        if r["precursor"] and r["govern"] == "no-mandate":
+            r["govern_note"] = (f"not required yet, but a precursor is on the record "
+                                f"({r['precursor']['date']}): {r['precursor']['title']}")
+        plan.append({
+            "sequence": i,
+            "fault_line": r["fault_line"],
+            "control": r["control"],
+            "tier": r["tier"],
+            "govern": r["govern"],
+            "confidence": r["confidence"],
+            "lead_days": r["lead_days"],
+            "why": (f"not required yet — precursor on the record "
+                    f"({r['precursor']['date']})" if r["precursor"] and
+                    r["govern"] == "no-mandate"
+                    else r["govern_note"] if r["expected"] else r["tier_note"]),
+            "precursor": r["precursor"],
+        })
+    return ordered, plan
+
+
+def run(firm: FirmPosture | None = None, data_path=None, as_of=None):
     firm = firm or FirmPosture()
+    data_path = data_path or landscape_path()
     data = json.loads(Path(data_path).read_text())
     gate = _base_gate(firm)
     rows = [_decide(fl, gate, gate["hourly_full_capture"], firm) for fl in data["fault_lines"]]
+    rows, plan = sequence(rows)
+
     def _counts(key):
         c = {}
         for r in rows:
@@ -206,14 +464,33 @@ def run(firm: FirmPosture | None = None, data_path=DATA_JSON, as_of=None):
         return c
     return {
         "as_of": as_of or data["as_of"],
+        # Provenance of the record these verdicts rest on. A firm should be able to see
+        # which corpus answered, and how current it is, without reading a log.
+        "landscape": {
+            "path": str(Path(data_path).name),
+            "corpus": data.get("corpus", "frozen experiment landscape"),
+            "n_items": data.get("n_items"),
+            "freshness": data.get("freshness"),
+        },
         "firm": {k: v for k, v in asdict(firm).items()},
         "economic_gate": gate,
-        "thresholds": {"mandatory_pressure": MANDATORY_PRESSURE,
-                       "mandatory_adoption": MANDATORY_ADOPTION,
+        "thresholds": {"mandated_pressure": MANDATED_PRESSURE,
+                       "mandated_pressure_source": "calibration.CALL_THRESHOLD (imported)",
+                       "expected_adoption": EXPECTED_ADOPTION,
+                       "expected_adoption_calibrated": False,
+                       "expected_adoption_gates_anything": False,
                        "opportune_capability": OPPORTUNE_CAPABILITY,
-                       "ready_enablement": READY_ENABLEMENT},
+                       "ready_enablement": READY_ENABLEMENT,
+                       "min_driving_evidence": MIN_DRIVING_EVIDENCE},
+        # The gate that replaced the number, stated so a reader can see what decided.
+        "leverage_gate": {"rule": "a named actor who can withhold something requires it",
+                          "actors_on_record": _leverage_facts()["actors_by_line"],
+                          "reviewed_not_leverage":
+                              [r["title"] for r in _leverage_facts()["excluded"]],
+                          "your_actors": sorted(set(firm.carriers) | set(firm.key_clients))},
         "pricing_model_source": PRICING_OK,
         "verdict_counts": {"govern": _counts("govern"), "deploy": _counts("deploy")},
+        "plan": plan,
         "rows": rows,
     }
 
@@ -230,17 +507,27 @@ def render_text(result):
     L.append(f"  Order 4 full-capture (AI Profit Paradox) = {_money(gate['delta_per_lawyer'])}/lawyer/yr "
              f"[{gate['source']}]")
     L.append("")
-    hdr = (f"{'FAULT LINE':<15}{'GOVERN':<20}{'DEPLOY':<20}  req opp  O1  O3p O3a")
-    L.append(hdr); L.append("-" * len(hdr))
+    L.append("PLAN — the order to do them in")
+    L.append(f"  {'#':<3}{'FAULT LINE':<19}{'GOVERN':<22}{'CONF':<11}{'LEAD':>7}  WHY")
+    L.append("  " + "-" * 92)
+    for p in result["plan"]:
+        lead = f"{p['lead_days']}d" if p["lead_days"] else "—"
+        L.append(f"  {p['sequence']:<3}{p['fault_line'][:18]:<19}{p['govern']:<22}"
+                 f"{(p['confidence'] or '—'):<11}{lead:>7}  {p['why']}")
+    L.append("")
+    L.append(f"  {'FAULT LINE':<19}{'DEPLOY':<20}  O1  O3p O3a")
     for r in result["rows"]:
         o = r["orders"]
-        gov = r["govern"]; dep = r["deploy"] if r["deploy"] else "—"
-        L.append(f"{r['fault_line'][:15]:<15}{gov:<20}{dep:<20}  "
-                 f"{'Y' if r['required'] else '.':<3} {'Y' if r['opportunistic'] else '.':<3}"
-                 f" {o['1_capability']:>3} {o['3_pressure']:>3} {o['3_adoption']:>3}")
+        dep = r["deploy"] if r["deploy"] else "—"
+        L.append(f"  {r['fault_line'][:18]:<19}{dep:<20}  "
+                 f"{o['1_capability']:>3} {o['3_pressure']:>3} {o['3_adoption']:>3}")
     L.append("")
-    L.append("GOVERN = stand up the control (required + ready; economics never block a required "
-             "control). DEPLOY = put AI on the work (pricing/capability gated; only AI-work lines).")
+    L.append("GOVERN = stand the control up. A DUTY (the law moved, pressure >= "
+             f"{MANDATED_PRESSURE:.0f}) is comply-or-risk-sanction and is never blocked by "
+             "economics. A NORM (table stakes, adoption >= "
+             f"{EXPECTED_ADOPTION:.0f}) is compete-or-lose-work. `thin` = fewer than "
+             f"{MIN_DRIVING_EVIDENCE} items drive the call.")
+    L.append("DEPLOY = put AI on the work (pricing/capability gated; only AI-work lines).")
     L.append("Counts: " + json.dumps(result["verdict_counts"]))
     return "\n".join(L)
 
@@ -257,7 +544,11 @@ def write(result, out_dir=DATA_JSON.parent):
 # Representative firm postures for the in-app advisory view (clear-labeled demos).
 DEMO_POSTURES = [
     FirmPosture(name="Hourly firm", pricing="hourly", refill=0.15, enablement=7.0),
-    FirmPosture(name="Fixed-fee firm", pricing="fixed_fee", refill=0.35, enablement=7.0),
+    # Carriers named, to show the firm-relative leverage read: the same norm verdict, but
+    # `supported` rather than `thin`, because an actor that can withhold THIS firm's
+    # coverage requires it. The other two demos name none, which is the generic read.
+    FirmPosture(name="Fixed-fee firm", pricing="fixed_fee", refill=0.35, enablement=7.0,
+                carriers=("CNA",)),
     FirmPosture(name="Fixed-fee, building capacity", pricing="fixed_fee", refill=0.35, enablement=2.0),
 ]
 DEMO_SLUGS = ["hourly", "fixed-fee", "fixed-fee-building"]
@@ -284,9 +575,15 @@ if __name__ == "__main__":
     p.add_argument("--refill", type=float, default=REFILL_BENCHMARK)
     p.add_argument("--enablement", type=float, default=4.0, help="Order 2 readiness, 0-10")
     p.add_argument("--name", default="Unnamed firm")
+    p.add_argument("--carrier", action="append", default=[],
+                   help="a malpractice carrier that can withhold coverage (repeatable)")
+    p.add_argument("--client", action="append", default=[],
+                   help="a client whose requirements bind (repeatable)")
     p.add_argument("--write", action="store_true", help="write advisory.json next to data.json")
     a = p.parse_args()
-    firm = FirmPosture(name=a.name, pricing=a.pricing, refill=a.refill, enablement=a.enablement)
+    firm = FirmPosture(name=a.name, pricing=a.pricing, refill=a.refill,
+                       enablement=a.enablement,
+                       carriers=tuple(a.carrier), key_clients=tuple(a.client))
     out = run(firm)
     print(render_text(out))
     if a.write:

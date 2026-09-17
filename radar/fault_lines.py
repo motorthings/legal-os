@@ -53,10 +53,17 @@ RULING_TIERS = {"T1", "T2"}
 # graded as `in_sample` (retrodiction, reported but not claimed as skill), and only
 # resolutions dated AFTER the freeze count as an out-of-sample forecast track record.
 # Bump this date only when knobs/seeds/feed curation change, and record why.
-KNOBS_FROZEN_AT = "2026-09-15"   # bumped: seeds capped below the call threshold and the flag
-                                  # threshold raised to 9.5 — a knob change that re-baselines the
-                                  # in-sample/out-of-sample split. Everything before this date is
-                                  # retrodiction; only post-this-date rulings count as real calls.
+KNOBS_FROZEN_AT = "2026-09-17"   # RE-FROZEN. Was 2026-09-15 (seeds capped below the call
+                                  # threshold, flag threshold raised). Bumped again to land the
+                                  # adoption lane-isolation fix (ADOPTION_EXCLUDED below): a
+                                  # rule-derived class was feeding BOTH the ruling meter and the
+                                  # adoption meter, so the two were correlated by construction.
+                                  # Any scoring change re-baselines the split, so the clock
+                                  # restarts. Cost of this re-freeze: two days, and the
+                                  # out-of-sample column was 0/0 (no post-2026-09-15 ruling had
+                                  # landed yet), so nothing measurable was discarded. Deliberate
+                                  # and recorded per FREEZE.md; do not bump again without the
+                                  # same reasoning.
 
 # Neutral seed used by the seed-ablation backtest: replaces every analyst seed with a
 # single midpoint so the ablation shows how much of a "call" is evidence vs seed choice.
@@ -145,6 +152,27 @@ MARKET_WEIGHTS = {
     "commentary": 0.20,       # trade press noting the trend
     "pundit": 0.02,           # speculation. narrative signal only.
 }
+
+# --- Lane isolation for the adoption meter (2026-09-17) ----------------------
+# G5 isolated the ruling meter: a T3 market action must never lift the ruling grade. The
+# symmetric bug was never fixed — a T1/T2 ruling was lifting the ADOPTION grade, reading the
+# same evidence twice. Measured before the fix: 10 ruling-eligible items scored in both lanes
+# across 6 lines (verification, disclosure, confidentiality, competence, convergence,
+# benchmark). The two meters were correlated by construction, which is why
+# `pressure OR adoption` barely discriminated. (Count only RULING-ELIGIBLE items when
+# auditing this: provenance overlap is larger and does not score.)
+#
+# A rule mandating a process is a DUTY. The ruling lane already owns it. It leaves the
+# adoption meter to things a MARKET ACTOR did, which is what "table stakes" means.
+ADOPTION_EXCLUDED = {"process_mandate"}
+#
+# A control is table stakes when an actor who can WITHHOLD something requires it: the
+# insurer withholds coverage, the client withholds the engagement, the court withholds the
+# docket. `cert` and below are things people wrote down, not leverage — nobody yet loses
+# anything over a benchmark existing. This is the structural definition the numeric
+# EXPECTED_ADOPTION threshold is a (weak) proxy for; advisory.py gates the norm verdict on
+# it directly, so the threshold becomes a tiebreak rather than the load-bearing claim.
+LEVERAGE_CLASSES = {"insurer", "procurement", "deployment"}
 
 # The control each fault line maps to: the operating-model move that neutralizes it.
 # (Short label; the long form lives in each fault line's `build_now`.)

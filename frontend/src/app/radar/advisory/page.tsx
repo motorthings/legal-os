@@ -21,18 +21,40 @@ interface Row {
   seam: string;
   driver: string;
   required: boolean;
+  mandated: boolean;
+  expected: boolean;
+  leverage_actors: string[];
+  leverage_is_yours: boolean;
+  leverage_requirements: string[];
   opportunistic: boolean;
+  confidence: string | null;
   govern: string;
   govern_note: string;
   deploy: string | null;
   deploy_note: string;
   orders: OrderVals;
+  sequence: number;
+  tier: string;
+  tier_note: string;
+  lead_days: number | null;
+  precursor: { date: string; title: string } | null;
+}
+interface PlanItem {
+  sequence: number;
+  fault_line: string;
+  control: string;
+  tier: string;
+  govern: string;
+  confidence: string | null;
+  lead_days: number | null;
+  why: string;
 }
 interface Advisory {
   as_of: string;
   firm: { name: string; pricing: string; refill: number; enablement: number };
   economic_gate: { delta_per_lawyer: number; mode: string };
   verdict_counts: { govern: Record<string, number>; deploy: Record<string, number> };
+  plan: PlanItem[];
   rows: Row[];
 }
 
@@ -43,13 +65,17 @@ const SLUG_LABEL: Record<string, string> = {
   'fixed-fee-building': 'Fixed-fee, building capacity',
 };
 
+// NOTE: these maps previously referenced --emerald, --indigo, and --sky, none of which
+// are defined in globals.css — so every verdict pill had been rendering with no accent.
+// Mapped onto tokens that actually exist; keep new entries to this list.
 const GOV_ACCENT: Record<string, string> = {
-  'stand-up-now': 'var(--emerald)',
-  'build-capacity-first': 'var(--indigo)',
+  'stand-up-now': 'var(--metric)',       // a duty, and the firm is ready
+  'build-capacity-first': 'var(--amber)', // a duty or norm the firm can't meet yet
+  'match-the-market': 'var(--secondary)', // table stakes, not a duty
   'no-mandate': 'var(--slate)',
 };
 const DEP_ACCENT: Record<string, string> = {
-  'deploy-now': 'var(--emerald)',
+  'deploy-now': 'var(--metric)',
   'fix-pricing-first': 'var(--rose)',
   'defer': 'var(--amber)',
   'watch': 'var(--slate)',
@@ -104,7 +130,13 @@ export default function RadarAdvisoryPage() {
         <p className="text-[13px] text-[var(--text)] max-w-[820px] mt-1.5 leading-relaxed">
           A required control is never deferred because the AI economics are poor; deploying AI is
           never forced by a rule. Each fault line gets a <b>GOVERN</b> answer (compliance calendar)
-          and a <b>DEPLOY</b> answer (build &amp; buy budget), kept apart.
+          and a <b>DEPLOY</b> answer (build &amp; buy budget), kept apart. GOVERN separates a{' '}
+          <b>duty</b> (the law moved — comply or risk sanction) from a <b>market norm</b> (table
+          stakes — compete or lose work); the two have different remedies and are never averaged
+          into one verdict. A norm requires a <b>named actor who can withhold something</b>{' '}
+          (an insurer withholding coverage, a client withholding the engagement) to require it,
+          not just a high adoption score. Calls resting on thin evidence are marked <b>thin</b>;
+          a requirement from a carrier the firm itself named clears that floor.
         </p>
       </header>
 
@@ -134,7 +166,7 @@ export default function RadarAdvisoryPage() {
         </div>
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Govern</p>
-          <p className="font-mono text-[13px] text-[var(--text-strong)]">{gc['stand-up-now'] ?? 0} stand up · {gc['build-capacity-first'] ?? 0} build capacity · {gc['no-mandate'] ?? 0} no mandate</p>
+          <p className="font-mono text-[13px] text-[var(--text-strong)]">{gc['stand-up-now'] ?? 0} stand up · {gc['build-capacity-first'] ?? 0} build capacity · {gc['match-the-market'] ?? 0} match market · {gc['no-mandate'] ?? 0} no mandate</p>
         </div>
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Deploy</p>
@@ -142,17 +174,40 @@ export default function RadarAdvisoryPage() {
         </div>
       </div>
 
+      {/* plan — the order to do them in */}
+      <div className="card p-4">
+        <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold mb-2">
+          Sequence · duties first, shortest measured lead first
+        </p>
+        <ol className="space-y-1">
+          {a.plan.map((p) => (
+            <li key={p.fault_line} className="grid grid-cols-[1.5rem_1fr_9rem_4.5rem_1fr] gap-2 items-center">
+              <span className="font-mono text-[11px] text-[var(--text-muted)]">{p.sequence}</span>
+              <span className="text-[12px] text-[var(--text)] truncate">{p.control}</span>
+              {lane(p.govern, GOV_ACCENT)}
+              <span className="font-mono text-[10.5px] text-[var(--text-muted)]">
+                {p.lead_days ? `${p.lead_days}d` : '—'}
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)] truncate">{p.why}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
       {/* rows */}
       <div className="card overflow-hidden">
         <div className="grid grid-cols-[1fr_9rem_9rem_7rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
           <span>Control · fault line</span><span>GOVERN · stand up?</span><span>DEPLOY · put AI on it?</span><span>L2 · L3 · E</span>
         </div>
-        {[...a.rows].sort((x, y) => (y.required ? 1 : 0) - (x.required ? 1 : 0)).map((r) => (
+        {[...a.rows].sort((x, y) => x.sequence - y.sequence).map((r) => (
           <div key={r.fault_line} className="grid grid-cols-[1fr_9rem_9rem_7rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0 hover:bg-[var(--sunken)]">
             <span>
               <span className="text-[13px] font-semibold text-[var(--text-strong)]">
                 {r.control}
-                {r.required && <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--rose)]">required</span>}
+                {r.mandated && <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--rose)]">duty</span>}
+                {r.expected && <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--amber)]">norm</span>}
+                {r.leverage_is_yours && <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--metric)]">your carrier</span>}
+                {r.confidence === 'thin' && <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--slate)]">thin</span>}
               </span>
               <span className="block text-[11px] text-[var(--text-muted)]">{r.title}</span>
             </span>

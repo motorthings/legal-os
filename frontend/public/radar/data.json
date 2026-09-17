@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-15",
+  "as_of": "2026-09-17",
   "fault_lines": [
     {
       "id": "verification",
@@ -357,7 +357,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.394,
+          "weight": 0.391,
           "matched": [
             "verification",
             "reasonable inquiry"
@@ -373,7 +373,7 @@
           "tier": "T3",
           "source": "arXiv 2510.20941",
           "url": "https://ar5iv.labs.arxiv.org/html/2510.20941",
-          "weight": 0.206,
+          "weight": 0.205,
           "matched": [
             "verification"
           ],
@@ -388,7 +388,7 @@
           "tier": "T3",
           "source": "Lighthouse / FTI Consulting (adoption reporting)",
           "url": "https://www.lighthouseglobal.com/ai-in-ediscovery-report-2025",
-          "weight": 0.174,
+          "weight": 0.173,
           "matched": [
             "verification"
           ],
@@ -462,7 +462,7 @@
           "tier": "T5",
           "source": "EDRM",
           "url": "https://edrm.net/2024/09/26/relativity-announces-general-availability-of-relativity-air-for-review/",
-          "weight": 0.001,
+          "weight": 0.0,
           "matched": [
             "verification"
           ],
@@ -476,42 +476,11 @@
       "seam": "codifiable",
       "driver": "deployment",
       "adoption_seed": 6.5,
-      "adoption": 8.2,
-      "adoption_weighted": 1.79,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 3,
-      "adoption_evidence": [
-        {
-          "date": "2026-08-31",
-          "title": "Federal court excludes expert for AI-hallucinated citations",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.688,
-          "matched": [
-            "verification"
-          ]
-        },
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": []
-        },
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "human review"
-          ]
-        }
-      ],
+      "adoption": 6.5,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
       "enable_seed": 6.5,
       "enable": 8.4,
       "enable_weighted": 2.47,
@@ -589,18 +558,18 @@
           "flag": "origination"
         }
       ],
-      "queue": 8.0,
+      "queue": 6.3,
       "lead": "~2 quarters",
       "last_evidence_date": "2026-08-31",
-      "stale_days": 15,
+      "stale_days": 17,
       "lanes": {
         "capability": 3,
         "ruling": 20,
-        "adoption": 3,
+        "adoption": 0,
         "enable": 2,
         "software": 3
       },
-      "lanes_populated": 5,
+      "lanes_populated": 4,
       "reviewed_on": null,
       "reviewed_days": null
     },
@@ -844,7 +813,7 @@
           "tier": "T3",
           "source": "EDRM / ComplexDiscovery",
           "url": "https://complexdiscovery.com/the-ai-sanction-wave-145k-in-q1-penalties-signals-courts-have-lost-patience-with-genai-filing-failures/",
-          "weight": 0.394,
+          "weight": 0.391,
           "matched": [
             "disclosure"
           ],
@@ -858,22 +827,11 @@
       "seam": "codifiable",
       "driver": "deployment",
       "adoption_seed": 6.0,
-      "adoption": 6.9,
-      "adoption_weighted": 0.55,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": []
-        }
-      ],
+      "adoption": 6.0,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
       "enable_seed": 6.0,
       "enable": 7.2,
       "enable_weighted": 0.9,
@@ -898,18 +856,18 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 6.6,
+      "queue": 5.7,
       "lead": "now",
       "last_evidence_date": "2026-06-01",
-      "stale_days": 106,
+      "stale_days": 108,
       "lanes": {
         "capability": 0,
         "ruling": 14,
-        "adoption": 1,
+        "adoption": 0,
         "enable": 1,
         "software": 0
       },
-      "lanes_populated": 3,
+      "lanes_populated": 2,
       "reviewed_on": null,
       "reviewed_days": null
     },
@@ -1149,7 +1107,7 @@
           "tier": "T3",
           "source": "CaseClerk / Baker McKenzie (vendor data-governance practice)",
           "url": "https://caseclerk.ai/blog/is-harvey-ai-safe-for-law-firms-confidentiality-data-retention-and-admin-controls-for-2025",
-          "weight": 0.098,
+          "weight": 0.097,
           "matched": [
             "confidential",
             "no-training",
@@ -1165,24 +1123,11 @@
       "seam": "codifiable",
       "driver": "deployment",
       "adoption_seed": 6.0,
-      "adoption": 6.9,
-      "adoption_weighted": 0.55,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "confidential"
-          ]
-        }
-      ],
+      "adoption": 6.0,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
       "enable_seed": 5.5,
       "enable": 6.6,
       "enable_weighted": 0.65,
@@ -1211,18 +1156,18 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 6.5,
+      "queue": 5.6,
       "lead": "now",
       "last_evidence_date": "2026-06-10",
-      "stale_days": 97,
+      "stale_days": 99,
       "lanes": {
         "capability": 0,
         "ruling": 13,
-        "adoption": 1,
+        "adoption": 0,
         "enable": 1,
         "software": 0
       },
-      "lanes_populated": 3,
+      "lanes_populated": 2,
       "reviewed_on": null,
       "reviewed_days": null
     },
@@ -1488,7 +1433,7 @@
           "tier": "T3",
           "source": "Practising Law Institute",
           "url": "https://www.globenewswire.com/fr/news-release/2026/05/05/3288064/0/en/PLI-Introduces-Industry-First-AI-Competency-Framework.html",
-          "weight": 0.36,
+          "weight": 0.357,
           "matched": [
             "competence",
             "training",
@@ -1505,7 +1450,7 @@
           "tier": "T3",
           "source": "arXiv 2504.01840",
           "url": "https://ar5iv.labs.arxiv.org/html/2504.01840",
-          "weight": 0.097,
+          "weight": 0.096,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1569,46 +1514,11 @@
       "seam": "codifiable",
       "driver": "deployment",
       "adoption_seed": 5.5,
-      "adoption": 7.5,
-      "adoption_weighted": 1.65,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 3,
-      "adoption_evidence": [
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": []
-        },
-        {
-          "date": "2025-04-01",
-          "title": "New Jersey requires technology CLE including AI \u2014 competence as a program requirement",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "competence",
-            "cle",
-            "training",
-            "continuing legal education",
-            "technological competence"
-          ]
-        },
-        {
-          "date": "2024-07-29",
-          "title": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "competence"
-          ]
-        }
-      ],
+      "adoption": 5.5,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
       "enable_seed": 6.0,
       "enable": 7.9,
       "enable_weighted": 1.8,
@@ -1646,18 +1556,18 @@
       "software_classes": [],
       "n_software_evidence": 0,
       "software_evidence": [],
-      "queue": 7.0,
+      "queue": 5.1,
       "lead": "~1 year",
       "last_evidence_date": "2026-08-04",
-      "stale_days": 42,
+      "stale_days": 44,
       "lanes": {
         "capability": 5,
         "ruling": 12,
-        "adoption": 3,
+        "adoption": 0,
         "enable": 2,
         "software": 0
       },
-      "lanes_populated": 4,
+      "lanes_populated": 3,
       "reviewed_on": null,
       "reviewed_days": null
     },
@@ -1848,7 +1758,7 @@
           "tier": "T3",
           "source": "ABA Journal",
           "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
-          "weight": 0.228,
+          "weight": 0.226,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1861,7 +1771,7 @@
           "tier": "T3",
           "source": "Clio",
           "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
-          "weight": 0.137,
+          "weight": 0.136,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -1873,27 +1783,11 @@
       "seam": "codifiable",
       "driver": "market",
       "adoption_seed": 6.0,
-      "adoption": 6.9,
-      "adoption_weighted": 0.55,
-      "market_classes": [
-        "process_mandate"
-      ],
-      "n_adoption_evidence": 1,
-      "adoption_evidence": [
-        {
-          "date": "2026-08-01",
-          "title": "EU AI Act obligations take effect",
-          "tier": "T1",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": [
-            "eu ai act",
-            "conformity assessment",
-            "risk management system",
-            "convergence"
-          ]
-        }
-      ],
+      "adoption": 6.0,
+      "adoption_weighted": 0.0,
+      "market_classes": [],
+      "n_adoption_evidence": 0,
+      "adoption_evidence": [],
       "enable_seed": 4.0,
       "enable": 4.0,
       "enable_weighted": 0.0,
@@ -1934,24 +1828,24 @@
           "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
           "tier": "T1",
           "software": "regulatory_room",
-          "weight": 0.131,
+          "weight": 0.13,
           "matched": [],
           "empirical": false,
           "flag": "direction_shift"
         }
       ],
-      "queue": 6.4,
+      "queue": 5.6,
       "lead": "now",
       "last_evidence_date": "2026-08-01",
-      "stale_days": 45,
+      "stale_days": 47,
       "lanes": {
         "capability": 0,
         "ruling": 10,
-        "adoption": 1,
+        "adoption": 0,
         "enable": 0,
         "software": 3
       },
-      "lanes_populated": 3,
+      "lanes_populated": 2,
       "reviewed_on": null,
       "reviewed_days": null
     },
@@ -1974,7 +1868,7 @@
       "capability_evidence": [],
       "pressure_seed": 3.5,
       "pressure": 8.3,
-      "trend": "rising",
+      "trend": "steady",
       "weighted_evidence": 8.41,
       "weighted_positive": 8.41,
       "weighted_negative": 0.0,
@@ -2071,7 +1965,7 @@
           "tier": "T3",
           "source": "N.D. Ill. (No. 1:26-cv-02448)",
           "url": "https://natlawreview.com/article/lawsuit-alleges-ai-chatbot-engages-unauthorized-practice-law",
-          "weight": 0.283,
+          "weight": 0.281,
           "matched": [
             "tort"
           ],
@@ -2086,7 +1980,7 @@
           "tier": "T3",
           "source": "U.S. Senate (proposed) \u2014 Sens. Durbin & Hawley",
           "url": "https://natlawreview.com/article/new-federal-legislation-proposes-product-liability-standards-ai-systems",
-          "weight": 0.155,
+          "weight": 0.154,
           "matched": [
             "vendor liability",
             "product liability"
@@ -2102,7 +1996,7 @@
           "tier": "T4",
           "source": "Litle/Morris/Das; Kildeev (law review)",
           "url": "https://www.private-law-theory.org/2026/05/26/austin-litle-morris-and-das-when-the-tool-breaks-product-liability-and-the-legal-ai-vendor/",
-          "weight": 0.227,
+          "weight": 0.226,
           "matched": [
             "product liability"
           ],
@@ -2141,7 +2035,7 @@
           "title": "Law review proposes strict product liability for legal-AI vendors",
           "tier": "T4",
           "market": "commentary",
-          "weight": 0.13,
+          "weight": 0.129,
           "matched": [
             "product liability"
           ]
@@ -2186,7 +2080,7 @@
           "title": "EU Digital Omnibus: Annex III high-risk deferred to 2026-12-02, Annex I to 2028-08-02",
           "tier": "T1",
           "software": "regulatory_room",
-          "weight": 0.131,
+          "weight": 0.13,
           "matched": [],
           "empirical": false,
           "flag": "direction_shift"
@@ -2205,7 +2099,7 @@
       "queue": 2.7,
       "lead": "later",
       "last_evidence_date": "2026-05-26",
-      "stale_days": 112,
+      "stale_days": 114,
       "lanes": {
         "capability": 0,
         "ruling": 6,
@@ -2215,7 +2109,7 @@
       },
       "lanes_populated": 3,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 0
+      "reviewed_days": 2
     },
     {
       "id": "judicial_analytics",
@@ -2317,7 +2211,7 @@
       "queue": 2.3,
       "lead": "~1 year",
       "last_evidence_date": "2025-02-20",
-      "stale_days": 572,
+      "stale_days": 574,
       "lanes": {
         "capability": 0,
         "ruling": 3,
@@ -2327,7 +2221,7 @@
       },
       "lanes_populated": 1,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 0
+      "reviewed_days": 2
     },
     {
       "id": "benchmark",
@@ -2447,7 +2341,7 @@
           "tier": "T3",
           "source": "Stanford (research)",
           "url": "https://www.cpomagazine.com/data-protection/2026-ai-legal-forecast-from-innovation-to-compliance/",
-          "weight": 0.499,
+          "weight": 0.495,
           "matched": [
             "benchmark",
             "error rate",
@@ -2465,7 +2359,7 @@
           "tier": "T3",
           "source": "Bloomberg/CNBC/GIC",
           "url": "",
-          "weight": 0.384,
+          "weight": 0.381,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2478,7 +2372,7 @@
           "tier": "T3",
           "source": "The Globe and Mail",
           "url": "https://www.theglobeandmail.com/business/article-spellbook-secures-us40-million-from-rbc-to-snap-up-smaller-generative/",
-          "weight": 0.354,
+          "weight": 0.351,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2491,7 +2385,7 @@
           "tier": "T3",
           "source": "ABA Journal",
           "url": "https://www.abajournal.com/news/article/clio-completes-1b-acquisition-of-vlex-and-announces-5b-company-valuation",
-          "weight": 0.228,
+          "weight": 0.226,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2504,7 +2398,7 @@
           "tier": "T3",
           "source": "Bloomberg/Forbes",
           "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
-          "weight": 0.218,
+          "weight": 0.216,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2517,7 +2411,7 @@
           "tier": "T3",
           "source": "Clio",
           "url": "https://clio.com/about/press/clio-signs-definitive-agreement-to-acquire-vlex/",
-          "weight": 0.137,
+          "weight": 0.136,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2530,7 +2424,7 @@
           "tier": "T3",
           "source": "Fortune / verified",
           "url": "",
-          "weight": 0.133,
+          "weight": 0.132,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -2713,34 +2607,25 @@
       "seam": "codifiable",
       "driver": "capability",
       "adoption_seed": 5.5,
-      "adoption": 7.2,
-      "adoption_weighted": 1.21,
+      "adoption": 6.4,
+      "adoption_weighted": 0.49,
       "market_classes": [
-        "cert",
-        "process_mandate"
+        "cert"
       ],
-      "n_adoption_evidence": 2,
+      "n_adoption_evidence": 1,
       "adoption_evidence": [
         {
           "date": "2026-06-01",
           "title": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
           "tier": "T3",
           "market": "cert",
-          "weight": 0.499,
+          "weight": 0.495,
           "matched": [
             "benchmark",
             "error rate",
             "hallucination rate",
             "stanford"
           ]
-        },
-        {
-          "date": "2026-03-13",
-          "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct",
-          "tier": "T2",
-          "market": "process_mandate",
-          "weight": 0.55,
-          "matched": []
         }
       ],
       "enable_seed": 6.5,
@@ -2777,7 +2662,7 @@
       ],
       "software_seed": 5.0,
       "software": 7.0,
-      "software_weighted": 1.65,
+      "software_weighted": 1.63,
       "software_classes": [
         "acquisition",
         "capital",
@@ -2790,7 +2675,7 @@
           "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.458,
+          "weight": 0.452,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2800,7 +2685,7 @@
           "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.196,
+          "weight": 0.193,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2810,7 +2695,7 @@
           "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
           "tier": "T5",
           "software": "capital",
-          "weight": 0.174,
+          "weight": 0.172,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2820,7 +2705,7 @@
           "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.093,
+          "weight": 0.092,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2840,7 +2725,7 @@
           "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.045,
+          "weight": 0.044,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -2892,7 +2777,7 @@
           "title": "Spellbook $40M RBCx debt facility to fund acquisitions (acquirer, not acquired)",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.138,
+          "weight": 0.136,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -2940,14 +2825,14 @@
           "flag": "origination"
         }
       ],
-      "queue": 5.5,
+      "queue": 4.9,
       "lead": "~1 year",
       "last_evidence_date": "2026-08-18",
-      "stale_days": 28,
+      "stale_days": 30,
       "lanes": {
         "capability": 4,
         "ruling": 2,
-        "adoption": 2,
+        "adoption": 1,
         "enable": 2,
         "software": 15
       },
@@ -3045,7 +2930,7 @@
       ],
       "pressure_seed": 6.5,
       "pressure": 7.2,
-      "trend": "rising",
+      "trend": "steady",
       "weighted_evidence": 0.8,
       "weighted_positive": 0.8,
       "weighted_negative": 0.0,
@@ -3076,7 +2961,7 @@
           "tier": "T3",
           "source": "Federal legislation (proposed) / Reg Review",
           "url": "https://www.theregreview.org/2026/08/29/seminar-regulating-agentic-artificial-intelligence/",
-          "weight": 0.562,
+          "weight": 0.558,
           "matched": [
             "agentic",
             "ai agent act",
@@ -3095,7 +2980,7 @@
           "tier": "T3",
           "source": "tech.eu/Bloomberg",
           "url": "",
-          "weight": 0.416,
+          "weight": 0.413,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -3108,7 +2993,7 @@
           "tier": "T3",
           "source": "Bloomberg/CNBC/GIC",
           "url": "",
-          "weight": 0.384,
+          "weight": 0.381,
           "matched": [],
           "empirical": true,
           "conflict": false,
@@ -3121,7 +3006,7 @@
           "tier": "T3",
           "source": "CNBC/Crunchbase",
           "url": "",
-          "weight": 0.362,
+          "weight": 0.359,
           "matched": [
             "agentic"
           ],
@@ -3136,7 +3021,7 @@
           "tier": "T3",
           "source": "N.D. Ill. (No. 1:26-cv-02448)",
           "url": "https://natlawreview.com/article/lawsuit-alleges-ai-chatbot-engages-unauthorized-practice-law",
-          "weight": 0.283,
+          "weight": 0.281,
           "matched": [
             "agentic",
             "upl"
@@ -3152,7 +3037,7 @@
           "tier": "T3",
           "source": "BusinessWire/Sifted",
           "url": "",
-          "weight": 0.219,
+          "weight": 0.217,
           "matched": [
             "agentic"
           ],
@@ -3167,7 +3052,7 @@
           "tier": "T3",
           "source": "Bloomberg/Forbes",
           "url": "https://www.forbes.com/sites/iainmartin/2025/10/29/legal-ai-startup-harvey-raises-150-million-at-8-billion-valuation/",
-          "weight": 0.218,
+          "weight": 0.216,
           "matched": [
             "agentic"
           ],
@@ -3182,7 +3067,7 @@
           "tier": "T3",
           "source": "Fortune / verified",
           "url": "",
-          "weight": 0.133,
+          "weight": 0.132,
           "matched": [
             "agentic"
           ],
@@ -3197,7 +3082,7 @@
           "tier": "T3",
           "source": "Artificial Lawyer (deployment reporting)",
           "url": "https://www.artificiallawyer.com/2025/04/07/ao-shearman-to-profit-share-with-harvey-on-agentic-tools/",
-          "weight": 0.099,
+          "weight": 0.098,
           "matched": [
             "agentic",
             "autonomous agent",
@@ -3274,7 +3159,7 @@
           "tier": "T4",
           "source": "TechCrunch",
           "url": "https://techcrunch.com/2025/03/11/openai-launches-new-tools-to-help-businesses-build-ai-agents/",
-          "weight": 0.042,
+          "weight": 0.041,
           "matched": [
             "agentic"
           ],
@@ -3376,7 +3261,7 @@
           "title": "AI AGENT Act would require scope-limited, revocable, logged agent authorization",
           "tier": "T3",
           "market": "process_mandate",
-          "weight": 0.515,
+          "weight": 0.511,
           "matched": [
             "agentic",
             "ai agent act",
@@ -3420,8 +3305,8 @@
         }
       ],
       "software_seed": 5.0,
-      "software": 7.6,
-      "software_weighted": 2.62,
+      "software": 7.5,
+      "software_weighted": 2.59,
       "software_classes": [
         "acquisition",
         "capital",
@@ -3435,7 +3320,7 @@
           "title": "Harvey Series G ~$200M at $11B, GIC+Sequoia; ~$190M ARR",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.458,
+          "weight": 0.452,
           "matched": [],
           "empirical": true,
           "flag": "continuation"
@@ -3445,7 +3330,7 @@
           "title": "Legora Series D $550M at $5.55B, Accel-led",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.42,
+          "weight": 0.415,
           "matched": [
             "agentic"
           ],
@@ -3457,7 +3342,7 @@
           "title": "Legora Series C $150M at $1.8B",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.197,
+          "weight": 0.195,
           "matched": [
             "agentic"
           ],
@@ -3469,7 +3354,7 @@
           "title": "Harvey Series F ~$160M at $8B, a16z-led; cumulative >$1B",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.196,
+          "weight": 0.193,
           "matched": [
             "agentic"
           ],
@@ -3481,7 +3366,7 @@
           "title": "Spellbook $50M Series B, Khosla-led, $350M post-money (contract + agentic drafting)",
           "tier": "T5",
           "software": "capital",
-          "weight": 0.174,
+          "weight": 0.172,
           "matched": [
             "agentic"
           ],
@@ -3493,7 +3378,7 @@
           "title": "Harvey Series E $300M at $5B, Kleiner Perkins/Coatue",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.093,
+          "weight": 0.092,
           "matched": [
             "agentic"
           ],
@@ -3505,7 +3390,7 @@
           "title": "Harvey Series D ~$100M at $3B, Sequoia-led",
           "tier": "T3",
           "software": "capital",
-          "weight": 0.045,
+          "weight": 0.044,
           "matched": [
             "agentic"
           ],
@@ -3541,7 +3426,7 @@
           "title": "Legora ~$50M extension (Nvidia NVentures+Atlassian) + 5 acquisitions",
           "tier": "T3",
           "software": "acquisition",
-          "weight": 0.176,
+          "weight": 0.174,
           "matched": [],
           "empirical": true,
           "flag": "direction_shift"
@@ -3576,7 +3461,7 @@
       "queue": 4.5,
       "lead": "~1 year",
       "last_evidence_date": "2026-08-29",
-      "stale_days": 17,
+      "stale_days": 19,
       "lanes": {
         "capability": 6,
         "ruling": 1,
@@ -3652,7 +3537,7 @@
           "tier": "T3",
           "source": "Thomson Reuters / Clio / BigHand surveys",
           "url": "https://www.forbes.com/sites/terdawn-deboe/2026/08/19/firms-adopted-ai-in-record-numbers-selling-hours-got-harder/",
-          "weight": 0.676,
+          "weight": 0.671,
           "matched": [
             "billable hour",
             "alternative fee"
@@ -3668,7 +3553,7 @@
       "driver": "market",
       "adoption_seed": 3.0,
       "adoption": 5.3,
-      "adoption_weighted": 0.96,
+      "adoption_weighted": 0.95,
       "market_classes": [
         "procurement"
       ],
@@ -3679,7 +3564,7 @@
           "title": "AI forcing legal pricing reform \u2014 client demand for fixed fees",
           "tier": "T3",
           "market": "procurement",
-          "weight": 0.958,
+          "weight": 0.95,
           "matched": [
             "billable hour",
             "alternative fee"
@@ -3701,7 +3586,7 @@
       "queue": 3.6,
       "lead": "~1-2 years",
       "last_evidence_date": "2026-08-19",
-      "stale_days": 27,
+      "stale_days": 29,
       "lanes": {
         "capability": 0,
         "ruling": 2,
@@ -3711,7 +3596,7 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 0
+      "reviewed_days": 2
     },
     {
       "id": "insurance",
@@ -3750,7 +3635,7 @@
           "tier": "T3",
           "source": "CNA (largest US legal malpractice carrier)",
           "url": "https://www.aivortex.io/legal/ai-governance/ai-insurance-liability-law-firms/",
-          "weight": 0.526,
+          "weight": 0.522,
           "matched": [
             "insurer",
             "premium",
@@ -3771,7 +3656,7 @@
           "tier": "T3",
           "source": "CNA (USI Affinity)",
           "url": "https://lalegalethics.org/malpractice-insurer-offers-practical-ai-policy-playbook/",
-          "weight": 0.514,
+          "weight": 0.51,
           "matched": [
             "insurance",
             "malpractice carrier",
@@ -3791,7 +3676,7 @@
       "driver": "market",
       "adoption_seed": 6.5,
       "adoption": 8.1,
-      "adoption_weighted": 1.73,
+      "adoption_weighted": 1.72,
       "market_classes": [
         "insurer"
       ],
@@ -3802,7 +3687,7 @@
           "title": "CNA adds AI-governance questionnaires to malpractice renewals",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.877,
+          "weight": 0.87,
           "matched": [
             "insurer",
             "premium",
@@ -3818,7 +3703,7 @@
           "title": "CNA adds AI governance to malpractice underwriting",
           "tier": "T3",
           "market": "insurer",
-          "weight": 0.857,
+          "weight": 0.85,
           "matched": [
             "insurance",
             "malpractice carrier",
@@ -3864,7 +3749,7 @@
       "queue": 5.3,
       "lead": "now",
       "last_evidence_date": "2026-06-15",
-      "stale_days": 92,
+      "stale_days": 94,
       "lanes": {
         "capability": 0,
         "ruling": 0,
@@ -3874,7 +3759,7 @@
       },
       "lanes_populated": 2,
       "reviewed_on": "2026-09-15",
-      "reviewed_days": 0
+      "reviewed_days": 2
     }
   ],
   "tiers": {

@@ -17,6 +17,7 @@ from fault_lines import (
     CORROBORATION_STEP, CORROBORATION_CAP, HALF_LIFE_DAYS, STANDING_TIERS,
     RULING_TIERS, NEUTRAL_SEED,
     MARKET_WEIGHTS, CONTROLS, ADOPTION_SEEDS, LEAD_BY_HORIZON,
+    ADOPTION_EXCLUDED, LEVERAGE_CLASSES,
     CAPABILITY_WEIGHTS, CAPABILITY_SEEDS, FAULT_ANNOTATIONS,
     ENABLE_WEIGHTS, ENABLE_SEEDS,
     SOFTWARE_WEIGHTS, SOFTWARE_SEEDS, SOFTWARE_HALF_LIFE, FLAG_MULTIPLIER,
@@ -167,9 +168,17 @@ def _corroboration(sources):
 
 def _market_weight(item, as_of):
     """Third-order weight: how binding the item is ON THE MARKET, not on a court.
-    Only items carrying a `market` class count toward control-adoption pressure."""
+    Only items carrying a `market` class count toward control-adoption pressure.
+
+    Lane isolation: a rule-derived class (`process_mandate`) that is ALSO ruling-eligible
+    has already been counted in the ruling lane, so it is excluded here rather than read
+    twice. An item that is not ruling-eligible keeps its adoption weight — that is the only
+    lane that can count it, and dropping it would lose evidence rather than de-duplicate it.
+    """
     cls = item.get("market")
     if cls not in MARKET_WEIGHTS:
+        return 0.0, None
+    if cls in ADOPTION_EXCLUDED and item.get("tier") in RULING_TIERS:
         return 0.0, None
     w = MARKET_WEIGHTS[cls]
     if item.get("empirical"):

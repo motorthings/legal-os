@@ -23,6 +23,15 @@ jobs:
           python-version: "3.12"
       - name: Regenerate radar
         run: python radar/run.py
+      - name: Build the live advisory landscape
+        # The advisory reads a separate, refreshable corpus (see radar/live.py). Building
+        # it here keeps the firm-facing landscape current without ever touching the
+        # frozen experiment's inputs.
+        run: python radar/live.py
+      - name: Verify the freeze held
+        # Read-only check. If a frozen input changed, fail loudly here rather than let
+        # the commit step below carry the change into git as a quiet bot commit.
+        run: python radar/freeze.py --check
       - name: Detect stale/thin lines
         id: detect
         run: echo "report=$(python radar/stale_report.py)" >> "$GITHUB_OUTPUT"
@@ -42,14 +51,20 @@ jobs:
         run: |
           git config user.name "radar-bot"
           git config user.email "radar-bot@users.noreply.github.com"
-          git add docs/radar/index.html docs/radar/data.json docs/radar/kb.json
+          git add docs/radar/index.html docs/radar/data.json docs/radar/kb.json \
+                  docs/radar/milestones.json docs/radar/live.json docs/radar/advisory.json
           # Durable run-to-run memory: persist harvested feed rows, the admission
           # ledger, calibration snapshots, and run artifacts so each scheduled run
           # builds on the last (dedup memory survives across CI runs).
-          git add radar/sources/feed.jsonl radar/sources/harvested.jsonl \
+          # NOTE: radar/sources/feed.jsonl, harvested.jsonl, fault_lines.py, calibration.py
+          # and score.py are deliberately NOT auto-committed. They are the frozen inputs;
+          # the "Verify the freeze held" step above fails the run if any of them moved, so
+          # a change there should be a human decision with a KNOBS_FROZEN_AT bump, never a
+          # bot commit.
+          git add radar/sources/feed_live.jsonl radar/sources/harvested_live.jsonl \
                   radar/history/admissions.jsonl radar/history/snapshots.jsonl \
                   radar/history/runs radar/history/source_reliability.json \
-                  radar/history/reviewed.json || true
+                  radar/history/reviewed.json radar/history/milestones.jsonl || true
           if git diff --cached --quiet; then
             echo "No change in radar output."
           else

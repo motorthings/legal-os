@@ -89,7 +89,7 @@ const NAV: Record<Persona, NavGroup[]> = {
       ],
     },
     {
-      label: 'Predict',
+      label: 'Fault lines',
       items: [
         { href: '/radar', label: 'Fault-Line Radar', icon: Radar, exact: true },
         { href: '/radar/calibration', label: 'Radar calibration', icon: Target },

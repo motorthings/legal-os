@@ -1,0 +1,256 @@
+{
+  "milestones": [
+    {
+      "fault_line": "verification",
+      "status": "landed",
+      "antecedent": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations",
+      "antecedent_date": "2023-06-22",
+      "antecedent_tier": "T1",
+      "binding": "Couvrette v. Wisnovsky \u2014 ~$110K penalty for 15 fake cases, 8 fabricated quotes",
+      "binding_date": "2025-12-15",
+      "binding_tier": "T1",
+      "lead_days": 907,
+      "called_before_antecedent": false,
+      "note": "First Rule 11 sanction for fabricated citations to the first six-figure penalty. The antecedent is a T1 court order on the record 906 days before the binding escalation; no prediction was needed, only reading."
+    },
+    {
+      "fault_line": "disclosure",
+      "status": "landed",
+      "antecedent": "Ex Parte Allen Michael Lee v. the State of Texas \u2014 AI filing certification (Judge Starr standing order)",
+      "antecedent_date": "2023-07-19",
+      "antecedent_tier": "T1",
+      "binding": "California Rule of Court 10.430 \u2014 courts must adopt generative-AI policies",
+      "binding_date": "2025-07-18",
+      "binding_tier": "T1",
+      "lead_days": 730,
+      "called_before_antecedent": false,
+      "note": "A single Texas court's filing certification preceded a statewide rule requiring every California court to adopt a generative-AI policy by 730 days. One judge is a precursor, not a forecast."
+    },
+    {
+      "fault_line": "convergence",
+      "status": "landed",
+      "antecedent": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
+      "antecedent_date": "2024-12-08",
+      "antecedent_tier": "T1",
+      "binding": "EU AI Act obligations take effect",
+      "binding_date": "2026-08-01",
+      "binding_tier": "T1",
+      "lead_days": 601,
+      "called_before_antecedent": false,
+      "note": "Directive passage to obligations taking effect, 601 days. Legislative lead time is the longest and the most observable: passage is a dated, public, tier-1 fact."
+    },
+    {
+      "fault_line": "competence",
+      "status": "landed",
+      "antecedent": "Florida Bar Ethics Opinion 24-1 \u2014 self-learning AI and client confidentiality",
+      "antecedent_date": "2024-01-19",
+      "antecedent_tier": "T2",
+      "binding": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+      "binding_date": "2024-07-29",
+      "binding_tier": "T2",
+      "lead_days": 192,
+      "called_before_antecedent": false,
+      "note": "First state bar opinion on generative AI to the national opinion, 192 days. State-then-national is the standard adoption path for a professional-responsibility control."
+    },
+    {
+      "fault_line": "confidentiality",
+      "status": "landed",
+      "antecedent": "ABA Formal Opinion 512 \u2014 Generative AI Tools",
+      "antecedent_date": "2024-07-29",
+      "antecedent_tier": "T2",
+      "binding": "In Re Amendments to Arkansas RPC \u2014 AI competence under Rule 5.3",
+      "binding_date": "2025-12-11",
+      "binding_tier": "T1",
+      "lead_days": 500,
+      "called_before_antecedent": true,
+      "note": "National guidance to a binding rule amendment, 500 days. Guidance is the precursor that makes the eventual rule unsurprising."
+    },
+    {
+      "fault_line": "judicial_analytics",
+      "status": "landed",
+      "antecedent": "France criminalizes judicial profiling (Justice Reform Act, Art. 33)",
+      "antecedent_date": "2019-03-23",
+      "antecedent_tier": "T1",
+      "binding": "Ross v. United States \u2014 judicial AI competency and bias duty",
+      "binding_date": "2025-02-20",
+      "binding_tier": "T1",
+      "lead_days": 2161,
+      "called_before_antecedent": false,
+      "note": "A foreign statute to a US duty holding, 2,161 days. The longest lead on the record and the weakest to act on: foreign law is a signal, not a domestic obligation."
+    },
+    {
+      "fault_line": "vendor_liability",
+      "status": "landed",
+      "antecedent": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'",
+      "antecedent_date": "2024-12-08",
+      "antecedent_tier": "T1",
+      "binding": "Nippon Life v. OpenAI \u2014 first AI-vendor-liability lawsuit",
+      "binding_date": "2026-03-04",
+      "binding_tier": "T3",
+      "lead_days": 451,
+      "called_before_antecedent": false,
+      "note": "Treating AI software as a 'product' to the first AI-vendor-liability suit, 451 days. The liability theory predates the litigation that tests it."
+    },
+    {
+      "fault_line": "benchmark",
+      "status": "landed",
+      "antecedent": "Stanford/Yale 'Large Legal Fictions' \u2014 58\u201388% hallucination rate on legal queries",
+      "antecedent_date": "2024-01-11",
+      "antecedent_tier": "T3",
+      "binding": "Stanford: Westlaw AI 34% error rate, Lexis+ AI 17%",
+      "binding_date": "2026-06-01",
+      "binding_tier": "T3",
+      "lead_days": 872,
+      "called_before_antecedent": false,
+      "note": "An academic demonstration of the capability gap to named, per-tool error rates, 872 days. This is the L1 capability curve moving, tracked as its own order."
+    },
+    {
+      "fault_line": "fees",
+      "status": "landed",
+      "antecedent": "White v. County of Suffolk \u2014 AI availability and fee reasonableness",
+      "antecedent_date": "2024-12-26",
+      "antecedent_tier": "T1",
+      "binding": "Virginia LEO 1901 \u2014 value-based billing need not shrink when AI cuts time",
+      "binding_date": "2025-11-24",
+      "binding_tier": "T2",
+      "lead_days": 333,
+      "called_before_antecedent": false,
+      "note": "A fee-reasonableness ruling to a bar opinion holding that value-based billing need not shrink when AI cuts time, 333 days. The economic control follows the case law."
+    },
+    {
+      "fault_line": "convergence",
+      "status": "superseded",
+      "antecedent": "Colorado AI Act \u2014 NIST/ISO 42001 affirmative defense, \u00a7 6-1-1706",
+      "antecedent_date": "2026-02-01",
+      "antecedent_tier": "T1",
+      "binding": "Colorado repeals and replaces its AI Act (SB 26-189) \u2014 narrower transparency law",
+      "binding_date": "2026-05-14",
+      "binding_tier": "T1",
+      "lead_days": 102,
+      "called_before_antecedent": true,
+      "note": "NOT a landed pair. Included as the honest counter-case: a state AI act enacted in February was repealed and replaced by May. An antecedent does not guarantee the binding event; direction shifts are exactly what the radar admits it cannot forecast."
+    },
+    {
+      "fault_line": "insurance",
+      "status": "pending",
+      "antecedent": "CNA adds AI governance to malpractice underwriting",
+      "antecedent_date": "2026-06-09",
+      "antecedent_tier": "T3",
+      "binding": null,
+      "binding_date": null,
+      "binding_tier": null,
+      "lead_days": null,
+      "called_before_antecedent": false,
+      "note": "Underwriting signal with no binding event yet. The finding worth watching is the absence: as of this record no insurer requires a certified AI tool as a condition of coverage. A pending milestone is a result, not a gap."
+    },
+    {
+      "fault_line": "agentic",
+      "status": "pending",
+      "antecedent": "AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards",
+      "antecedent_date": "2025-09-29",
+      "antecedent_tier": "T3",
+      "binding": null,
+      "binding_date": null,
+      "binding_tier": null,
+      "lead_days": null,
+      "called_before_antecedent": false,
+      "note": "Two proposed federal bills (AI LEAD Act, AI AGENT Act) and an EU Commission draft on agentic systems, none binding. Highest-pressure pending control on the board; the firms that will be ready are the ones building authorization-and-logging now."
+    }
+  ],
+  "n_milestones": 12,
+  "n_landed": 9,
+  "n_pending": 2,
+  "n_superseded": 1,
+  "lead_time_days": {
+    "median": 601,
+    "min": 192,
+    "max": 2161
+  },
+  "actionable_now": [
+    {
+      "fault_line": "insurance",
+      "precursor": "CNA adds AI governance to malpractice underwriting",
+      "precursor_date": "2026-06-09"
+    },
+    {
+      "fault_line": "agentic",
+      "precursor": "AI LEAD Act (S.2937) \u2014 proposed federal AI product liability standards",
+      "precursor_date": "2025-09-29"
+    }
+  ],
+  "engine_grade": {
+    "n": 12,
+    "called": 2,
+    "hit_rate": 0.17,
+    "question": "was the line flagged 90d before the antecedent appeared?"
+  },
+  "not_a_forecast": "Lead time is measured from antecedent to binding event. It is a fact about the past, verifiable by reading the record, and requires no prediction to act on.",
+  "blindside": {
+    "n_standing_events": 83,
+    "n_no_precursor": 10,
+    "blindside_rate": 0.12,
+    "blindside_events": [
+      {
+        "date": "2019-03-23",
+        "tier": "T1",
+        "fault_line": "judicial_analytics",
+        "title": "France criminalizes judicial profiling (Justice Reform Act, Art. 33)"
+      },
+      {
+        "date": "2021-01-01",
+        "tier": "T1",
+        "fault_line": "convergence",
+        "title": "NIST AI Standards \u2014 15 U.S.C. \u00a7 278h-1"
+      },
+      {
+        "date": "2023-06-22",
+        "tier": "T1",
+        "fault_line": "disclosure",
+        "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations"
+      },
+      {
+        "date": "2023-06-22",
+        "tier": "T1",
+        "fault_line": "verification",
+        "title": "Mata v. Avianca \u2014 Rule 11 sanctions for fabricated ChatGPT citations"
+      },
+      {
+        "date": "2023-12-12",
+        "tier": "T2",
+        "fault_line": "confidentiality",
+        "title": "England & Wales judiciary guidance \u2014 first formal AI guidance for judges"
+      },
+      {
+        "date": "2024-04-25",
+        "tier": "T2",
+        "fault_line": "competence",
+        "title": "Missouri Informal Opinion 2024-11 \u2014 pre-ABA generative-AI guidance"
+      },
+      {
+        "date": "2024-12-08",
+        "tier": "T1",
+        "fault_line": "vendor_liability",
+        "title": "EU Product Liability Directive (EU) 2024/2853 \u2014 software and AI are 'products'"
+      },
+      {
+        "date": "2024-12-26",
+        "tier": "T1",
+        "fault_line": "fees",
+        "title": "White v. County of Suffolk \u2014 AI availability and fee reasonableness"
+      },
+      {
+        "date": "2026-03-13",
+        "tier": "T2",
+        "fault_line": "benchmark",
+        "title": "California COPRAC \u2014 AI duties woven into six Rules of Professional Conduct"
+      },
+      {
+        "date": "2026-05-19",
+        "tier": "T2",
+        "fault_line": "agentic",
+        "title": "EU Commission draft: agentic/coordinating systems = single high-risk system (anti-splitting)"
+      }
+    ],
+    "method": "floor, not an exact rate: 'precursor' = any earlier T1/T2 item on the same fault line, which is a proxy for a real antecedent relationship"
+  }
+}

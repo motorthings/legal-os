@@ -120,3 +120,36 @@
 {"ts": "2026-09-15T19:37:11.688904+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
 {"ts": "2026-09-15T19:37:11.690035+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
 {"ts": "2026-09-15T19:37:12.174530+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-15", "rising": 8, "hit_rate": 0.44, "snapshots": 4, "artifact": "history/runs/run-2026-09-15-20260915T193712Z.json"}
+{"ts": "2026-09-17T15:25:54.980781+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:25:54.982078+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:25:55.611836+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T152555Z.json"}
+{"ts": "2026-09-17T15:26:28.356283+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:26:28.357505+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:26:28.961187+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T152628Z.json"}
+{"ts": "2026-09-17T15:27:10.095366+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:27:10.097287+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:27:10.696131+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T152710Z.json"}
+{"ts": "2026-09-17T15:33:49.801330+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:33:49.802287+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:33:50.423938+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T153350Z.json"}
+{"ts": "2026-09-17T15:34:59.897235+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:34:59.898164+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:35:00.525580+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T153500Z.json"}
+{"ts": "2026-09-17T15:41:48.008723+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:41:48.011401+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:41:49.647754+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T154149Z.json"}
+{"ts": "2026-09-17T15:41:54.131626+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T15:41:54.132458+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T15:41:54.884602+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T154154Z.json"}
+{"ts": "2026-09-17T17:42:04.803774+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T17:42:04.805313+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T17:42:06.348289+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T174206Z.json"}
+{"ts": "2026-09-17T17:45:11.619968+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T17:45:11.621772+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T17:45:13.305881+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T174513Z.json"}
+{"ts": "2026-09-17T17:47:03.943472+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T17:47:03.945558+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T17:47:06.221473+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T174706Z.json"}
+{"ts": "2026-09-17T17:47:34.766446+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T17:47:34.767875+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T17:47:36.652397+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "history/runs/run-2026-09-17-20260917T174736Z.json"}

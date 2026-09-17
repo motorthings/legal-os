@@ -1,7 +1,10 @@
 # Fault-Line Radar — Prediction-Engine Design
 
-**Status:** canonical source of truth for the prediction engine (the "Fault-Line Radar").
-**Owner:** Charlie Fuller. **Last updated:** 2026-09-07.
+**Status:** canonical source of truth for the fault-line engine (the "Fault-Line Radar").
+**Owner:** Charlie Fuller. **Last updated:** 2026-09-17.
+**Naming note (2026-09-17):** the artifact is no longer presented as a prediction engine. The
+ranking is demoted to an internal sort function and the firm-facing claim is the record plus the
+antecedent lead time — see §5.7.
 **Siblings:** `docs/radar/build-method.md` (the canonical *method* — how this work gets made),
 `radar/README.md` (run + backlog log), `radar/sources/coverage_notes.md` and
 `radar/sources/review_queue.md` (operational gap lists). The generated page and data live in
@@ -386,6 +389,284 @@ recall. Four fixes close the gap, all deterministic and replayable:
   `single_source` items excluded and a hard ceiling — a curated feed can no longer inflate a reading
   with many tiers or re-reported echoes. This also closes the ratchet's inflation vector; standing-
   authority *persistence* (a landed sanction does not un-happen) is intentional and kept.
+
+## 5.7 The forecast demoted to a function; the record promoted to the product (2026-09-17)
+
+**The decision.** The engine makes three claims at once, and only one of them needs the forward
+test. Separating them was the whole job:
+
+| claim | rests on | needs the freeze? |
+|---|---|---|
+| the **record** — these rulings/statutes/actions happened, at these tiers | three-adversary intake, tier stamping | no |
+| the **mapping** — given that, these controls are required | Model Rules + `FAULT_ANNOTATIONS`; GOVERN gates on *is-it-required*, never on economics | no |
+| the **economics** — acting pays for *this* firm | the AI Profit Paradox identity, on the firm's own inputs | no |
+| the **ranking** — these lines, in this order, are where the next ruling lands | precision 0.10 / lift 1.59 in-sample; 0/0 out | **yes, and that is the point** |
+
+So the ranking is demoted from a public claim to a **function**: an internal sort order for
+attention across eleven controls a firm cannot stand up at once. It stays graded (§5.3), and it
+is reported as a column, not as the thesis. The firm-facing claim is the other three, all of
+which are checkable today.
+
+**Why the ranking is the weakest of the four.** Three order-2 rulings exist on the whole record.
+`LEAD_DAYS` is 90. The freeze expects 0-2 genuinely-new post-freeze rulings per quarter, so a
+defensible verdict needs 6-12 months to reach an n that means anything. A claim whose validation
+horizon outruns a typical engagement cannot anchor one.
+
+**The milestone method** (`radar/milestones.py`, `history/milestones.jsonl`). Grade a denser
+outcome variable instead: **antecedents**. Most binding events do not arrive unannounced. A rule
+has a proposal, a comment period, a bar committee, a first court, and those are dated tier-stamped
+facts already on the record. The grader reports two numbers:
+
+- **Lead time** — antecedent to binding event. Today: median **601 days** across 9 landed pairs
+  (min 192d, max 2161d). This is a fact about the past, verifiable by reading the record, and it
+  is where the 12-18 months a firm actually needs to stand up a control comes from.
+- **Blindside rate** — of standing-authority events, how many had no earlier item on their line.
+  Today **0.12** (10/83), reported as a **floor, not an exact rate**: the scan runs over a feed
+  curated with hindsight, so it reads low by construction. This is the honest measure of what a
+  forecast is *for*. A low blindside rate means the record is the product.
+
+The grader also surfaces **actionable now** — controls with a precursor on the record and no
+binding event yet (today: `insurance`, `agentic`). That list is a statement about the record, not
+a forecast. The Colorado row is kept deliberately as the counter-case: an antecedent does not
+guarantee a binding event. Enacted February, repealed May.
+
+**Two corpora, one engine** (`radar/live.py`). A frozen experiment and a firm engagement want
+opposite things from the same corpus. The experiment can only prove anything if its inputs never
+move; the advisory answers a present-tense question and wants a current record. The fork:
+
+| consumer | corpus | refreshed? |
+|---|---|---|
+| the experiment | `sources/feed.jsonl` + `sources/harvested.jsonl` | **never** |
+| the advisory | the above **+** `sources/feed_live.jsonl` + `sources/harvested_live.jsonl` | freely |
+
+The advisory corpus is a superset, so the two cannot drift apart in what they share. `live._guard`
+refuses to write a frozen input, `tests/test_live.py` asserts the fingerprint survives a live
+build, and CI runs `freeze.py --check` (read-only) so a violation **fails the run** instead of
+landing as a quiet bot commit. `harvested.jsonl` was a latent leak before this: it is a hashed
+input, `load_corpus` merges it, and CI auto-committed it. Live harvesting now targets
+`harvested_live.jsonl` and the frozen store stays empty.
+
+**Fixed in passing.** `advisory.PRICING_DIR` was `HERE.parents[2]`, one level above the repos, so
+the legal-sim import failed silently and the Order-4 gate ran on mirror constants while still
+printing `legal-sim/pricing` as its source. Now `parents[1]`, and the mirror path reports itself
+as a mirror (`PRICING_SOURCE`, `pricing_model_imported`).
+
+**Open issue found while wiring this: GOVERN did not discriminate.** With
+`MANDATORY_PRESSURE = MANDATORY_ADOPTION = 7.0`, the advisory returned `stand-up-now` for **10 of
+11** lines on every demo posture, while DEPLOY discriminated cleanly. Same "calls almost
+everything" failure that forced `CALL_THRESHOLD` up to 8.0 in `calibration.py`. Fixed below.
+
+## 5.8 GOVERN rebuilt — duty vs norm, an evidence floor, and a sequence (2026-09-17)
+
+The diagnosis, from the decision surface rather than from taste:
+
+```
+line                press  adopt   via              n_ruling  n_adopt
+verification          9.7    8.2   pressure+adoption      20        3
+confidentiality       9.4    6.9   pressure               13        1
+insurance             6.5    8.1   adoption                0        2
+agentic               7.2    6.3   pressure                1        2
+```
+
+Four defects, each fixed:
+
+**1. The threshold was stale and self-contradicting.** `MANDATORY_PRESSURE = 7.0`, and its own
+comment called it "the radar call threshold," while `calibration.CALL_THRESHOLD` had moved to 8.0.
+Two modules disagreeing about what "the law moved" means is a bug, not a tuning choice. The
+constant is now **imported** from the calibration layer, so there is one source.
+
+**2. The two triggers were fused.** `required = pressure OR adoption` gave `confidentiality` (13
+ruling items, a binding rule) and `insurance` (zero ruling items, two CNA renewal questionnaires)
+the identical `stand-up-now`. A duty is comply-or-risk-sanction; a norm is compete-or-lose-work.
+They are now separate flags with separate verdicts:
+
+| | ready | not ready |
+|---|---|---|
+| **mandated** (pressure ≥ `CALL_THRESHOLD`) | `stand-up-now` | `build-capacity-first` |
+| **expected** (adoption ≥ 7.0) | `match-the-market` | `build-capacity-first` |
+
+A duty outranks a norm when both trip. `MANDATED_PRESSURE` is calibrated; `EXPECTED_ADOPTION` is
+**not** — the backtest grades order-2 rulings only, so no threshold for the adoption lane has been
+earned. Reported as `thresholds.expected_adoption_calibrated: false` rather than passed off as
+measured.
+
+**3. Opportunity leaked into GOVERN.** `actionable = required or opportune` meant a line that was
+explicitly *not* required could still get a GOVERN verdict, with a note reading "required/open."
+Opportunity answers "would this pay," which is the DEPLOY question. GOVERN is now gated on duty
+and norm only; opportunity still opens DEPLOY.
+
+**4. No evidence floor.** `agentic` was called `stand-up-now` off a **single** ruling item. Verdicts
+now carry a `confidence`: `supported` at `MIN_DRIVING_EVIDENCE = 3` or more items in the lane
+driving the call, else `thin`. Thin does not suppress the verdict, it labels it — the firm sees
+"mandated, thin evidence," which is true.
+
+**Result:** `stand-up-now` 6 · `match-the-market` 2 · `no-mandate` 3, from 10 · 1. The two norms
+(`insurance`, `benchmark`) both read **thin**, which is the honest description of two CNA forms and
+two ruling items.
+
+**Sequencing.** Ten rows all saying "do this" is a list, not direction. GOVERN now emits a `plan`,
+ordered by tier (duty-unmet → duty → norm-unmet → norm → none), then confidence, then **shortest
+measured lead first** — a line whose antecedents historically bind in 192 days gives less warning
+than one binding in 907, so it starts first. Lines with no milestone of their own are reported with
+the record median but deliberately **not ranked** by it; an invented 601 would place them against
+lines that were actually measured.
+
+**Closing a gap between artifacts.** `agentic` computed to `no-mandate` while `milestones.py`
+simultaneously flagged it "actionable now" (AI LEAD Act proposed, nothing bound). Both true, but a
+firm reading only one would draw opposite conclusions. Rows now carry a `precursor` field, and a
+`no-mandate` row with a precursor says so: *not required yet, but a precursor is on the record*.
+
+**Fixed in passing:** the frontend `GOV_ACCENT` / `DEP_ACCENT` maps referenced `--emerald`,
+`--indigo`, and `--sky`, none of which exist in `globals.css`, so every verdict pill had been
+rendering with no accent. Mapped onto tokens that do exist.
+
+## 5.9 The adoption lane was reading the ruling lane (2026-09-17, re-freeze)
+
+`EXPECTED_ADOPTION = 7.0` was an uncalibrated prior, and the obvious fix was to calibrate it.
+Checking whether there was anything to calibrate against found a structural defect instead.
+
+**The defect.** G5 (2026-09-14) isolated the ruling meter: a T3 market action must never lift
+the ruling grade. The symmetric case was never fixed — a ruling was lifting the **adoption**
+grade. Measured on the real feed: **10 ruling-eligible items were scoring in both lanes across
+6 lines** (`verification`, `disclosure`, `confidentiality`, `competence`, `convergence`,
+`benchmark`). `verification`'s adoption of 8.2 was built entirely from ABA 512, CA COPRAC, and
+the federal expert-exclusion order, all three of which were already driving its pressure of
+9.7. The two meters were correlated by construction, which is why `pressure OR adoption`
+barely discriminated.
+
+> **Measure this correctly.** `fl["evidence"]` is the *provenance* list and holds **18** items
+> that also appear in adoption. Only 10 of those were ruling-eligible. Counting provenance
+> overstates the defect by nearly double, and it was the first number reported before being
+> checked. Audit with `ruling_eligible`, or `tier in RULING_TIERS`.
+
+**The fix.** `ADOPTION_EXCLUDED = {"process_mandate"}` — a rule mandating a process is a duty,
+and the ruling lane already owns it. Scoped to ruling-eligible items only: a T3/T4
+`process_mandate` keeps its adoption weight, because adoption is the only lane that can count
+it and dropping it would lose evidence rather than de-duplicate it. `agentic`'s AI AGENT Act
+row (T3) is that case, and survives.
+
+**Then the lane had almost nothing in it.** With rule-derived evidence removed, every line
+falls back to its seed except `insurance` (8.1, two CNA items). The entire market-adoption
+meter had independent evidence on one line, from one carrier — which is what
+`evidence-methodology.md` predicted when it called the absence of an insurer mandate the most
+valuable finding in the research.
+
+**So the threshold stopped being the point.** A control is table stakes when an actor who can
+*withhold* something requires it. `LEVERAGE_CLASSES = {"insurer", "procurement", "deployment"}`:
+the insurer withholds coverage, the client withholds the engagement, the court withholds the
+docket. `cert` and below are things people wrote down — nobody yet loses anything over a
+benchmark existing. The norm verdict now requires at least one leverage item, which makes
+`EXPECTED_ADOPTION` a tiebreak and the leverage test the actual claim. `benchmark` (adoption
+6.4, `cert` only) drops out of the norm category, correctly.
+
+**The threshold was then retired outright** — see §5.10.
+
+## 5.10 `EXPECTED_ADOPTION` retired; leverage replaces it (2026-09-17)
+
+The prior section left the number in place as a tiebreak. Trying to calibrate it showed there
+was nothing to calibrate, and the number was doing less than it appeared to.
+
+**It was nearly inert.** With leverage gating in place, sweeping `EXPECTED_ADOPTION` across its
+whole range 0 to 10 moved at most two verdicts:
+
+```
+threshold   govern verdict counts
+        0   {build-capacity-first: 8, no-mandate: 3}
+        6   {build-capacity-first: 7, no-mandate: 4}   <-- fees drops out
+      8.5   {build-capacity-first: 6, no-mandate: 5}   <-- insurance drops out
+       10   {build-capacity-first: 6, no-mandate: 5}
+```
+
+Only two lines are reachable by it at all (`insurance` 8.1, `fees` 5.3). Every other line is
+`expected=False` at any value, because it has no leverage evidence.
+
+**There was nothing to fit to.** Three order-3 rows exist. CNA insurance is a genuine leverage
+event. "Verification duty extended to expert work product" is a court broadening a duty, which
+is pressure wearing an adoption label. "AI AGENT Act codifies scope-limited authorization" is
+described in the feed itself as a proposal that *would* require it, so it has not landed. One
+clean event. And the meter it thresholded rested on **three items across eleven lines**, two of
+them the same carrier. A threshold over three datapoints is not a parameter.
+
+**So the gate became a countable fact instead of a fitted number.** A control is table stakes
+when a **named actor who can withhold something** requires it. That lives in
+`history/leverage.jsonl` (`radar/leverage.py`), a labeling layer like `resolutions.jsonl` and
+`milestones.jsonl`, so it never writes a frozen input.
+
+```json
+{"date": "2026-06-15", "match": "CNA adds AI-governance questionnaires", "fault_line": "insurance",
+ "actor": "CNA", "actor_class": "insurer", "withheld": "coverage",
+ "requirement": "AI-governance questionnaire required at malpractice renewal"}
+```
+
+The record's entire leverage evidence base is **one requirement**, from one carrier. Rows with
+`"requirement": null` are reviewed-and-excluded and kept as findings — the `fees` pricing-trend
+row is there, because a trend in client demand is not a named actor requiring anything.
+
+**Leverage is firm-relative, so the firm states it.** `FirmPosture` gained `carriers` and
+`key_clients`. If *your* carrier requires a control it is table stakes *for you*, and a carrier
+requiring it in the trade press is only a proxy for that. Same category as `pricing` and
+`enablement`: a stated fact needing no calibration. The verdict is the same either way; the
+strength of the claim is not:
+
+| firm | verdict | confidence | note |
+|---|---|---|---|
+| names no actors | `match-the-market` | thin | "CNA requires it of firms like yours" |
+| carrier is CNA | `match-the-market` | **supported** | "CNA — an actor you named — requires it: match it or lose coverage" |
+
+`EXPECTED_ADOPTION` remains in `advisory.py` as a displayed number with
+`expected_adoption_gates_anything: false` in the output, so nobody later mistakes it for
+something earned.
+
+**Bug found while testing this:** `actor_match` guarded neither side against empty, and
+`"" in "cna"` is `True`, so a leverage row with no actor would have matched every named carrier
+and quietly upgraded a generic market signal to "your own carrier requires this." Caught by the
+test suite, fixed, and the guard is now asserted for `None`, `""`, and whitespace on both sides.
+
+## 5.11 The pages follow the claim (2026-09-17)
+
+Demoting the forecast changed what the product *is*, and the pages still led with the old thing.
+Sections 5.7 through 5.10 reframed copy; this restructures the presentation.
+
+**What was stale.** `/radar` opened with "Where legal-AI rules are heading — and what to build
+before they land", which is the retired claim verbatim. The sidebar nav group holding all five
+radar pages was labelled **`Predict`**, and the KB page's eyebrow read "Predict · Knowledge
+base". And the new output had no home: the milestone panel sat wedged inside
+`docs/radar/index.html` between the queue and the calibration panels, while the sequenced plan
+lived only on `/radar/advisory`, so a reader arriving at `/radar` got the meters and had to
+already know to visit two other pages.
+
+**The restructure.** Both the public page (`build.py`) and the in-app page now lead with the
+firm-facing material and push the meters below the fold as **scoring provenance**:
+
+| | section | firm-dependent? |
+|---|---|---|
+| 1 | **What the record already requires** — controls at or above the flag threshold, ruling evidence only | no |
+| 2 | **Actionable now** — precursor on the record, nothing bound | no |
+| 3 | **How much warning the record gave** — median antecedent-to-binding lead, with n | no |
+| 4 | The evidence per fault line | no |
+| 5 | Scoring provenance — the L1 / L2 / L3 / E / S meters | no |
+| 6 | Calibration — what none of it claims | no |
+
+The **sequenced plan** stays on `/radar/advisory`, because sequencing needs firm readiness and
+that is the only page carrying a posture. `/radar` says so and links there under "Sequence for
+your firm". The split is deliberate: the generic page shows what is required of everyone, the
+advisory page orders it for one firm, and neither duplicates the other's logic.
+
+**One drift guard.** The in-app page first hardcoded `8.0` for the duty threshold. It now fetches
+`call_threshold` from `calibration.json`, because a hardcoded threshold whose comment claimed to
+be the calibrated one is precisely the bug fixed in §5.8, and it should not get a second chance
+in TypeScript.
+
+**Renames:** nav group `Predict` → `Fault lines`; KB eyebrow `Predict · Knowledge base` →
+`Fault lines · Knowledge base`. `milestones.json` is now published beside `data.json` to both
+`docs/radar/` and `frontend/public/radar/` so the two pages cannot drift, and CI commits it.
+
+**Re-freeze.** `ADOPTION_EXCLUDED` and the `score.py` gate are frozen inputs, so this was a
+deliberate re-freeze, which is the documented exception. `KNOBS_FROZEN_AT` moved 2026-09-15 →
+2026-09-17 and the fingerprint was regenerated. The cost was near zero because the
+out-of-sample column was **0/0** and the freeze was two days old; the same change in December
+would have discarded three months of the one experiment that cannot be re-run. That timing,
+not the severity of the bug, is the argument for having done it now.
 
 ## 7. Design direction — the planned three-part confluence model
 

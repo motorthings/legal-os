@@ -9,6 +9,7 @@ from pathlib import Path
 
 from score import score
 import calibration
+import milestones
 import kb
 import advisory
 
@@ -36,6 +37,14 @@ def _pressure_color(p):
 
 def _trend_glyph(t):
     return {"rising": "▲ rising", "steady": "► steady", "quiet": "· quiet"}.get(t, t)
+
+
+def _lead_cell(days_list):
+    """Median antecedent -> binding lead for a line, or a dash when none is on record."""
+    if not days_list:
+        return "—"
+    s = sorted(days_list)
+    return f"{s[len(s) // 2]}d"
 
 
 def _staleness(r):
@@ -124,8 +133,9 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2>Operating-model queue <span class="meta">where to build before it's mandatory</span></h2>
-      <p class="small">Three lanes per fault line. <b>L1 capability</b> = can AI now do the thing
+      <h2>Scoring provenance <span class="meta">how each reading above was computed</span></h2>
+      <p class="small">Not the headline — the working. Three lanes per fault line.
+        <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
         <b>L2 ruling</b> = will the law move here.
         <b>L3 adoption</b> = is the control becoming table stakes, court or no court, weighted by how
@@ -137,6 +147,84 @@ def render(data):
       <tbody>{q_rows}</tbody></table>
     </div>"""
 
+    # --- Milestone panel: the actionable half, graded on the record -----------
+    # This panel answers the question a firm actually asks ("how long do I have, and
+    # what is already required of me") without asserting a forecast. Lead time is
+    # measured antecedent -> binding event, which is a fact about the past.
+    ms = milestones.grade()
+    bs = milestones.blindside_scan()
+    lt = ms["lead_time_days"]
+
+    # --- What the record already requires of any firm -------------------------
+    # Firm-independent: `mandated` is the law having moved, which does not depend on who
+    # you are. Sequencing those against a specific firm's readiness is the advisory page's
+    # job; this is the part that is true of everyone.
+    lead_by_line = {}
+    for m in ms["milestones"]:
+        if m["status"] == "landed" and m["lead_days"] is not None:
+            lead_by_line.setdefault(m["fault_line"], []).append(m["lead_days"])
+    duties = sorted(
+        [fl for fl in fls if fl["pressure"] >= calibration.CALL_THRESHOLD],
+        key=lambda r: r["pressure"], reverse=True)
+    duty_rows = "".join(
+        f'<tr><td><b>{_esc(d["control"])}</b><div class="src">{_esc(d["title"])}</div></td>'
+        f'<td class="c">{d["pressure"]}</td>'
+        f'<td class="c">{d["n_ruling_evidence"]}</td>'
+        f'<td class="c">{_lead_cell(lead_by_line.get(d["id"]))}</td></tr>'
+        for d in duties
+    ) or '<tr><td colspan="4" class="src">No control on the record is required yet.</td></tr>'
+    duty_panel = f"""
+    <div class="cal">
+      <h2>What the record already requires
+        <span class="meta">{len(duties)} of {len(fls)} controls, from ruling evidence alone</span></h2>
+      <p class="small">These are duties, not forecasts. Each one is a control the law has already
+        moved on, at or above the flag threshold of {calibration.CALL_THRESHOLD} on ruling evidence
+        only. This list does not depend on who you are. Sequencing it against a specific firm's
+        readiness is what the advisory layer does.</p>
+      <table class="ev"><thead><tr><th>Control</th><th>L2 ruling</th><th>Items</th>
+        <th>Antecedent lead</th></tr></thead><tbody>{duty_rows}</tbody></table>
+    </div>"""
+    ms_rows = "".join(
+        f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
+        f'<td>{_esc(r["fault_line"])}</td>'
+        f'<td>{_esc((r["antecedent"] or "")[:70])}</td>'
+        f'<td class="c">{("—" if r["lead_days"] is None else str(r["lead_days"]) + "d")}</td>'
+        f'<td>{"<span class=\'hit\'>" + _esc(r["status"]) + "</span>" if r["status"] == "landed" else _esc(r["status"])}</td>'
+        f'<td>{_esc((r["binding"] or "not yet landed")[:58])}</td>'
+        f'<td class="c">{"Y" if r["called_before_antecedent"] else "·"}</td></tr>'
+        for r in sorted(ms["milestones"], key=lambda x: x["antecedent_date"] or "9999")
+    )
+    actionable = "".join(
+        f'<li><b>{_esc(a["fault_line"])}</b> — precursor on the record {_esc(a["precursor_date"])}: '
+        f'{_esc(a["precursor"])}</li>'
+        for a in ms["actionable_now"]
+    ) or '<li class="src">none — every control with a precursor has since bound</li>'
+    hr_ms = "n/a" if ms["engine_grade"]["hit_rate"] is None else f'{int(ms["engine_grade"]["hit_rate"]*100)}%'
+    ms_panel = f"""
+    <div class="cal">
+      <h2>Lead time <span class="meta">measured on the record, antecedent to binding event</span></h2>
+      <p class="small">Most binding events do not arrive unannounced. A rule has a proposal, a comment
+        period, a bar committee, a first court. Those are dated facts already on the record, so the
+        window to act on them is measurable today rather than in December. Across the
+        <b>{ms['n_landed']}</b> landed pairs on this record the antecedent preceded the binding event by a
+        median of <b>{lt['median']} days</b> (min {lt['min']}d, max {lt['max']}d).</p>
+      <p class="small"><b>Actionable now</b> — a precursor is on the record and nothing has bound yet:</p>
+      <ul class="small">{actionable}</ul>
+      <p class="small">{ms['n_superseded']} superseded (an antecedent that led somewhere other than the
+        expected binding event — the honest counter-case), {ms['n_pending']} pending. The radar does not
+        forecast which way a precursor resolves; the Colorado AI Act was enacted in February and repealed
+        by May.</p>
+      <p class="small"><b>The residual forecast half:</b> the engine flagged
+        <b>{hr_ms}</b> ({ms['engine_grade']['called']}/{ms['engine_grade']['n']}) of these lines
+        {ms['engine_grade']['question']}. That column grades the engine, not the record, and it is
+        reported separately for that reason. Blindside rate
+        {int((bs['blindside_rate'] or 0)*100)}% ({bs['n_no_precursor']}/{bs['n_standing_events']}) —
+        a floor, not an exact figure: this scan runs over a feed curated with hindsight, so it reads
+        low by construction.</p>
+      <table class="ev"><thead><tr><th>Precursor</th><th>Fault line</th><th>Antecedent on the record</th>
+        <th>Lead</th><th>Status</th><th>Binding event</th><th>Flagged early</th></tr></thead>
+        <tbody>{ms_rows}</tbody></table>
+    </div>"""
     cal = calibration.report()
     cal_rows = "".join(
         f'<tr><td class="d">{_esc(r["date"])}</td>'
@@ -164,8 +252,8 @@ def render(data):
     cond_line = _cond_txt("L1_to_L2") + " &nbsp;·&nbsp; " + _cond_txt("L2_to_L3")
     cal_panel = f"""
     <div class="cal">
-      <h2>Calibration <span class="meta">grading the engine across three orders, not asserting the future</span></h2>
-      <p class="small">The engine forecasts a cascade: <b>L1 capability</b> (AI can now do it) →
+      <h2>Calibration <span class="meta">grading the ranking across three orders, not asserting the future</span></h2>
+      <p class="small">The engine tracks a cascade: <b>L1 capability</b> (AI can now do it) →
         <b>L2 ruling</b> (a court/bar moves) → <b>L3 adoption</b> (the control becomes table stakes).
         Each order depends on the one before it. Point-in-time backtest: replay the engine
         {cal['lead_days']} days before each event, using only evidence available then; "called" = the
@@ -246,13 +334,16 @@ def render(data):
 </style></head>
 <body><div class="wrap">
   <h1>Legal-AI Fault-Line Radar</h1>
-  <p class="sub">Forecasting the cascade — capability (L1) → ruling (L2) → control adoption (L3) — weighted by authority, not volume.</p>
+  <p class="sub">Where AI stresses a legal duty, ranked by what the record already shows — capability (L1) → ruling (L2) → control adoption (L3), weighted by authority, not volume.</p>
   <p class="asof">As of {data['as_of']} · {data['n_items']} tracked items · each fault line shows L1 capability / L2 ruling / L3 adoption (0-10)</p>
   <div class="legend"><b>Source authority</b> (weight): &nbsp; {tier_legend}
-    <br>Volume never moves the forecast. A vendor blog (T5) carries ~1/100 of an ABA opinion (T2) and ~1/125 of a binding ruling (T1).</div>
+    <br>Volume never moves a reading. A vendor blog (T5) carries ~1/100 of an ABA opinion (T2) and ~1/125 of a binding ruling (T1).
+    <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
+  {duty_panel}
+  {ms_panel}
+  {''.join(rows)}
   {queue_panel}
   {cal_panel}
-  {''.join(rows)}
   <footer>
     Generated by <code>radar/</code> in legal-os. Deterministic, replayable scores; every pressure
     reading cites its evidence and weight. Figures reflect the tracked feed at generation time —
@@ -261,14 +352,28 @@ def render(data):
 </div></body></html>"""
 
 
+def milestone_report():
+    """The firm-facing output, as data.
+
+    Milestones are the claim that does not need the forward test, so the page leads with
+    them and the meters become scoring provenance. Published as JSON so the in-app page can
+    lead with the same thing the static page does, rather than the two drifting apart.
+    """
+    ms = milestones.grade()
+    ms["blindside"] = milestones.blindside_scan()
+    return ms
+
+
 def build(as_of=None):
     data = score(as_of=as_of)
     kbd = kb.compose()  # the full source library: what + derived why, per doc
+    msr = milestone_report()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "data.json").write_text(json.dumps(data, indent=2))
     (OUT_DIR / "index.html").write_text(render(data))
     (OUT_DIR / "kb.json").write_text(json.dumps(kbd, indent=2))
+    (OUT_DIR / "milestones.json").write_text(json.dumps(msr, indent=2))
 
     # Mirror the machine-readable outputs into the app's public dir so the in-app
     # /radar page can render the same deterministic scores + calibration + KB.
@@ -278,6 +383,7 @@ def build(as_of=None):
         (FRONTEND_DIR / "calibration.json").write_text(
             json.dumps(calibration.report(), indent=2))
         (FRONTEND_DIR / "kb.json").write_text(json.dumps(kbd, indent=2))
+        (FRONTEND_DIR / "milestones.json").write_text(json.dumps(msr, indent=2))
         try:
             advisory.write_demos()   # in-app /radar/advisory demo postures
         except Exception as e:       # never let a demo-generation hiccup fail the build

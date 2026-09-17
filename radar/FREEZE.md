@@ -11,9 +11,27 @@ non-circular test, and it runs in the `out_of_sample` column of the calibration 
 
 ## Freeze window
 
-**2026-09-15 → 2026-12-15** (three months). Re-evaluate at the end; extend to 6–12
+**2026-09-17 → 2026-12-17** (three months). Re-evaluate at the end; extend to 6–12
 months if fewer than a handful of post-freeze rulings have landed (expect 0–2 in a
 quarter).
+
+**Re-frozen 2026-09-17, two days after the original 2026-09-15 freeze.** The adoption lane
+was reading the same evidence twice: a rule-derived class (`process_mandate`) fed both the
+ruling meter and the adoption meter, so 10 ruling-eligible items were scoring in both lanes
+across 6 lines (`verification`, `disclosure`, `confidentiality`, `competence`, `convergence`,
+`benchmark`). Any scoring change re-baselines the split, so the clock restarts from the change
+date rather than being back-dated.
+
+(When auditing this, count only **ruling-eligible** items. `fl["evidence"]` is a provenance
+list and holds 18 items that also appear in adoption, but the T3/T4/T5 ones never moved the
+ruling grade. Counting provenance overstates the defect by nearly double.)
+
+The cost was close to zero and the timing was the whole argument for doing it now: the
+out-of-sample column was **0/0** (no ruling dated after 2026-09-15 had landed), so two days
+were discarded and no measurable call was lost. The same change in December would have
+discarded three months of the only experiment that cannot be re-run. `KNOBS_FROZEN_AT` and
+the fingerprint were both bumped deliberately, which is the documented exception, not a
+violation.
 
 ## What is frozen — do not touch
 
@@ -31,7 +49,7 @@ fingerprint below proves whether that happened.
 ## What still moves — and must
 
 - **`radar/history/resolutions.jsonl`** — this is the *ground truth*, not the evidence.
-  When a genuinely new ruling lands (a real case/statute/action dated after 2026-09-15),
+  When a genuinely new ruling lands (a real case/statute/action dated after 2026-09-17),
   **record it here in real time, as it happens.** Don't wait until December and write them
   all at once — that would re-introduce the hindsight you're trying to escape. Any ruling
   dated after `KNOBS_FROZEN_AT` is automatically graded `out_of_sample`.
@@ -40,26 +58,40 @@ fingerprint below proves whether that happened.
 
 ## What to NOT do
 
-- **Do not re-curate.** When the staleness climbs and the "Radar re-curation" GitHub issue
-  fires, **ignore it.** Running `/refresh-radar` and admitting new evidence is the one
-  action that quietly un-freezes the feed. Staleness growing is the honest signal, not a bug.
+- **Do not re-curate the frozen feed.** When the staleness climbs and the "Radar
+  re-curation" GitHub issue fires, **ignore it.** Running `/refresh-radar` and admitting
+  new evidence into `sources/feed.jsonl` is the one action that quietly un-freezes the
+  feed. Staleness growing is the honest signal, not a bug.
+
+  **Re-curating the LIVE corpus is fine and expected.** `sources/feed_live.jsonl` and
+  `sources/harvested_live.jsonl` exist so a firm-facing engagement can keep a current
+  record without touching the experiment. `live.py` never writes a frozen input and
+  refuses to if asked. If you want fresh evidence for the advisory, that is the path:
+  `RADAR_LIVE_FETCH=1 python radar/live.py --harvest`. Nothing on that path can move the
+  fingerprint.
 - **Do not edit seeds or knobs**, even to "improve" them. Every improvement is hindsight.
-- **Do not bump `KNOBS_FROZEN_AT`.** It marks the boundary; moving it moves the goalposts.
+- **Do not bump `KNOBS_FROZEN_AT` to dodge a violation.** It marks the boundary. The one
+  legitimate reason to bump it is a deliberate scoring change, and that has to be recorded
+  with its cost — as the 2026-09-17 re-freeze above does. Never bump it because the
+  fingerprint moved and you want the check to go green.
 
 ## The fingerprint — how to prove the freeze held
 
 `history/freeze_fingerprint.txt` contains the current sha256:
 
 ```
-2104e6361b2c4fc7bdffb3ae872a2e4020867c18287506b00bd129a527ce656a
+66bc0d00f627fe7410b950f8de0bab9b1a0d862c54762d18e3f664da3ea4b185
 ```
 
 To verify the freeze held (now, or in December):
 
 ```bash
-cd radar && python freeze.py   # prints the current fingerprint
-diff <(python freeze.py) history/freeze_fingerprint.txt && echo "FREEZE HELD"
+cd radar && python freeze.py --check   # read-only; exits non-zero on a violation
 ```
+
+Use `--check`, not the bare form: plain `freeze.py` REWRITES the baseline, so running it to
+"verify" a freeze silently converts a violation into a clean-looking one. CI runs the
+`--check` form and fails the build on a mismatch.
 
 If it matches, the out-of-sample calls were made with exactly the frozen inputs — no
 retro-fitting. If it differs, someone touched a frozen file and the out-of-sample column

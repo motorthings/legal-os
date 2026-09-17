@@ -1,7 +1,7 @@
 {
   "generated_from": {
     "cap_mult": 3.0,
-    "knobs_frozen_at": "2026-09-15",
+    "knobs_frozen_at": "2026-09-17",
     "lead_days": 90,
     "out_of_sample_resolutions": 0,
     "presage_step": 0.5

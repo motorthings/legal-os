@@ -3844,5 +3844,13 @@
     "direction_shift": 0.4,
     "origination": 0.0
   },
-  "n_items": 108
+  "n_items": 108,
+  "freshness": {
+    "n_curated": 108,
+    "n_live": 0,
+    "newest_evidence": "2026-08-31",
+    "newest_live_evidence": null,
+    "days_since_newest_live": null
+  },
+  "corpus": "live (frozen curated feed + live additions)"
 }

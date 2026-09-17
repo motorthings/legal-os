@@ -71,7 +71,7 @@ export default function RadarKbPage() {
     <div className="space-y-8">
       {/* header */}
       <header>
-        <p className="eyebrow">Predict · Knowledge base</p>
+        <p className="eyebrow">Fault lines · Knowledge base</p>
         <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight">
           The source library behind the radar
         </h1>

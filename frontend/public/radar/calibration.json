@@ -63,9 +63,9 @@
       "title": "Verification duty extended to expert work product (adoption)",
       "url": "",
       "meter": "adoption",
-      "reading_at_lead": 7.7,
-      "evidence_at_lead": 2,
-      "reading_at_event": 8.2,
+      "reading_at_lead": 6.5,
+      "evidence_at_lead": 0,
+      "reading_at_event": 6.5,
       "lead_days": 90,
       "called": false,
       "sample": "in_sample"
@@ -159,7 +159,7 @@
       "hit_rate": null
     }
   },
-  "knobs_frozen_at": "2026-09-15",
+  "knobs_frozen_at": "2026-09-17",
   "cascade": {
     "n_l3_called": 0,
     "n_l3_backed_by_l2": 0,
@@ -195,7 +195,7 @@
       "step_days": 30,
       "window_days": 90,
       "start": "2025-09-16",
-      "end": "2026-09-15",
+      "end": "2026-09-17",
       "n_dates": 13,
       "n_lines": 11,
       "n_cells": 143
@@ -230,16 +230,16 @@
     "top_n": 3,
     "lead_days": 90,
     "n_resolutions": 9,
-    "hits": 3,
-    "hit_rate": 0.33,
+    "hits": 4,
+    "hit_rate": 0.44,
     "rows": [
       {
         "date": "2025-12-15",
         "order": 2,
         "fault_line": "disclosure",
         "title": "Couvrette v. Wisnovsky ~$110K sanction landed",
-        "rank": 4,
-        "in_top": false
+        "rank": 3,
+        "in_top": true
       },
       {
         "date": "2026-04-15",
@@ -254,7 +254,7 @@
         "order": 2,
         "fault_line": "convergence",
         "title": "EU AI Act obligations took effect",
-        "rank": 5,
+        "rank": 4,
         "in_top": false
       },
       {
@@ -262,7 +262,7 @@
         "order": 3,
         "fault_line": "insurance",
         "title": "CNA makes AI governance a coverage condition (adoption)",
-        "rank": 7,
+        "rank": 6,
         "in_top": false
       },
       {
@@ -278,7 +278,7 @@
         "order": 3,
         "fault_line": "agentic",
         "title": "AI AGENT Act codifies scope-limited, logged agent authorization (adoption)",
-        "rank": 8,
+        "rank": 7,
         "in_top": false
       },
       {
@@ -307,5 +307,5 @@
       }
     ]
   },
-  "snapshots_recorded": 4
+  "snapshots_recorded": 5
 }
