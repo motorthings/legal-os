@@ -122,7 +122,7 @@ export default function RadarAdvisoryPage() {
 
   const lane = (v: string | null, map: Record<string, string>) =>
     v === null ? '—' : (
-      <span className="pill" style={{ background: map[v] ?? 'var(--border)', color: '#fff' }}>{v}</span>
+      <span className="pill whitespace-nowrap" style={{ background: map[v] ?? 'var(--border)', color: '#fff' }}>{v}</span>
     );
 
   return (
@@ -186,7 +186,7 @@ export default function RadarAdvisoryPage() {
         </p>
         <ol className="space-y-1">
           {a.plan.filter((p) => actionLines.has(p.fault_line)).map((p) => (
-            <li key={p.fault_line} className="grid grid-cols-[1.5rem_1fr_9rem_4.5rem_1fr] gap-2 items-center">
+            <li key={p.fault_line} className="grid grid-cols-[1.5rem_1fr_13rem_4.5rem_1fr] gap-2 items-center">
               <span className="font-mono text-[11px] text-[var(--text-muted)]">{p.sequence}</span>
               <span className="text-[12px] text-[var(--text)] truncate">{p.control}</span>
               {lane(p.govern, GOV_ACCENT)}
@@ -201,11 +201,11 @@ export default function RadarAdvisoryPage() {
 
       {/* rows */}
       <div className="card overflow-hidden">
-        <div className="grid grid-cols-[1fr_9rem_9rem_7rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+        <div className="grid grid-cols-[1fr_13rem_12rem_7rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
           <span>Control · fault line</span><span>GOVERN · stand up?</span><span>DEPLOY · put AI on it?</span><span>L2 · L3 · E</span>
         </div>
         {[...actionRows].sort((x, y) => x.sequence - y.sequence).map((r) => (
-          <div key={r.fault_line} className="grid grid-cols-[1fr_9rem_9rem_7rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0 hover:bg-[var(--sunken)]">
+          <div key={r.fault_line} className="grid grid-cols-[1fr_13rem_12rem_7rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0 hover:bg-[var(--sunken)]">
             <span>
               <span className="text-[13px] font-semibold text-[var(--text-strong)]">
                 {r.control}
