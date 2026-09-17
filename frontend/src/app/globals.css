@@ -108,12 +108,15 @@ h1, h2, h3, h4 {
 }
 
 /* Section eyebrow */
+/* Panel titles and micro-labels. Was 9.5px at #B7B2B0, which read as a caption rather than
+   a heading — Charlie's note that "the whole board" and "what to do" do not announce what
+   the panel is. Bumped app-wide (23 usages across 6 files) rather than only on the radar. */
 .eyebrow {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #B7B2B0;
+  color: var(--text-dim);
 }
 
 /* Pills — fully rounded */

@@ -265,16 +265,6 @@ def render(data):
       <div class="rk-legend">{_legend}<span class="src">&middot; trailing number = total sources</span></div>
     </div>"""
 
-    watch_panel = f"""
-    <div class="cal">
-      <details class="watch-d"><summary class="watch-h"><span class="chev">&#9656;</span> show &mdash; {len(duties) + 1} to
-        {len(duties) + len(watching)} not required yet</summary>
-      <p class="small">The same single ranking continues below the line. These sit under the
-        threshold, so nothing yet obliges you to act, but they are on the same list because a
-        control can be worth building before it is required. The reason differs per line: a bill
-        in Congress is a fact, while a reading near the line is only our own dial moving.</p>
-      <ul class="acts">{watch_rows}</ul></details>
-    </div>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
       <h2>{_c("actions_heading")}
@@ -284,6 +274,7 @@ def render(data):
         depend on which jurisdiction you practise in. Ordered by how well the record supports each
         one. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
+      <p class="seq"><a href="/radar/advisory">{_c("seq_cta")} &rarr;</a></p>
     </div>"""
     ms_rows = "".join(
         f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
@@ -415,7 +406,7 @@ def render(data):
   a {{ color:#7fb0e0; }}
   .cal {{ background:#12171d; border:1px solid var(--line); border-radius:10px;
     padding:1rem 1.1rem; margin:0 0 1.6rem; }}
-  .cal h2 {{ font-family:Fraunces,serif; font-size:1.1rem; margin:0 0 .3rem; }}
+  .cal h2 {{ font-family:Fraunces,serif; font-size:1.28rem; font-weight:600; margin:0 0 .35rem; }}
   .cal .small {{ color:var(--dim); font-size:.78rem; margin:.3rem 0 .7rem; }}
   /* Action list — the answer, before the working. */
   .acts {{ list-style:none; margin:.9rem 0 0; padding:0; }}
@@ -438,6 +429,9 @@ def render(data):
   .act-ev .src {{ display:block; color:var(--dim); font-size:.68rem; margin:.1rem 0 .5rem .4rem; }}
   .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;
     padding-top:.9rem; border-top:1px solid var(--line); }}
+  .seq {{ margin:1.1rem 0 0; padding-top:.9rem; border-top:1px solid var(--line); }}
+  .seq a {{ color:var(--primary); font-weight:700; font-size:.82rem; text-decoration:none; }}
+  .seq a:hover {{ text-decoration:underline; }}
   .act.watch {{ opacity:.86; }}
   .watch-d summary {{ cursor:pointer; }}
   .watch-d summary::marker {{ color:var(--dim); }}
@@ -481,7 +475,6 @@ def render(data):
     <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
   {rank_panel}
   {duty_panel}
-  {watch_panel}
   {''.join(rows)}
   {cal_panel}
   <footer>

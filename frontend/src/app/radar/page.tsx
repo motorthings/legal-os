@@ -103,7 +103,6 @@ interface Copy {
   board_sub: string;
   board_blurb: string;
   actions_heading: string;
-  watch_lead: string;
   seq_cta: string;
 }
 
@@ -198,8 +197,8 @@ const STRENGTH_SEGMENTS: { key: keyof FaultLine['strength']; label: string; colo
   { key: 'guidance', label: 'bar guidance', color: 'var(--rk-guide)' },
 ];
 
-function RankChart({ duties, watched, startAt = 1, splitLabel }:
-  { duties: FaultLine[]; watched: FaultLine[]; startAt?: number; splitLabel: string }) {
+function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
+  { duties: FaultLine[]; watched: FaultLine[]; startAt?: number; splitLabel?: string }) {
   const rows = [...duties, ...watched];
   const max = Math.max(...rows.map((f) => f.strength?.total ?? 0), 1);
   const short = (s: string) => (s.length > 44 ? s.slice(0, 43).trimEnd() + '…' : s);
@@ -536,7 +535,7 @@ export default function RadarPage() {
   // same strings. Fallback keeps the page readable if an older data.json is served.
   const copy: Copy = data.copy ?? {
     board_heading: 'The whole board', board_sub: '', board_blurb: '',
-    actions_heading: 'What to do', watch_lead: 'not required yet',
+    actions_heading: 'What to do',
     seq_cta: '',
   };
 
@@ -658,7 +657,7 @@ export default function RadarPage() {
           behind the duty; the colours are what kind of authority they are, because seven
           circuit courts and seven bar opinions are not the same claim.
         </p>
-        <RankChart duties={duties} watched={[]} splitLabel={copy.watch_lead} />
+        <RankChart duties={duties} watched={[]} />
       </section>
 
       {/* WHAT TO DO — the answer, first, with the evidence attached to each item */}
@@ -784,64 +783,13 @@ export default function RadarPage() {
 
 
 
-      </section>
-
-      {/* NOT REQUIRED YET — its own panel, not a child of the action list */}
-      <section className="card p-4 md:p-6">
-        {/* NOT REQUIRED YET — suppressing these made the page read as if agentic supervision
-            did not exist, when it is the one line with a live bill in Congress. */}
-        {watched.length > 0 && (
-          <>
-            <button
-              onClick={() => setShowWatch((v) => !v)}
-              className="w-full text-left mt-6 pt-4 border-t-2 border-dashed border-[var(--border-bright)]"
-            >
-              <h3 className="text-[15px] font-bold text-[var(--text-strong)]">
-                {showWatch ? '▾ hide' : '▸ show'} {duties.length + 1} to{' '}
-                {duties.length + watched.length} &mdash; {copy.watch_lead}
-              </h3>
-            </button>
-            {showWatch && (
-              <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
-                The same single ranking continues below the line. These sit under the threshold, so
-                nothing yet obliges you to act, but they are on the same list because a control can
-                be worth building before it is required. The reason differs per line: a bill in
-                Congress is a fact, while a reading near the line is only our own dial moving.
-              </p>
-            )}
-            <ul className="space-y-2" style={{ display: showWatch ? undefined : 'none' }}>
-              {watched.map((w, i) => (
-                <li key={w.id} className="border border-[var(--border)] rounded-lg p-3 opacity-90">
-                  <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">
-                      {duties.length + i + 1}
-                    </span>
-                    <span className="text-[13.5px] font-bold text-[var(--text-strong)]">
-                      {w.action}
-                    </span>
-                    <span className="pill text-[9px]" style={{ background: 'var(--brand-tint)', color: 'var(--primary)' }}>
-                      {w.strength?.label}
-                    </span>
-                  </div>
-                  {w.stakes && (
-                    <p className="text-[12px] text-[var(--text)] leading-relaxed mt-1">{w.stakes}</p>
-                  )}
-                  <p className="font-mono text-[10.5px] text-[var(--text-muted)] mt-1.5">
-                    {w.watch_reason}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
 
         <div className="mt-5 pt-3 border-t border-[var(--border)]">
           <Link
             href="/radar/advisory"
             className="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--primary)] hover:underline"
           >
-            Now sequence these for your firm — name your pricing model, your carriers, and your
-            readiness, and we&apos;ll order them and tell you which to defer →
+{copy.seq_cta} →
           </Link>
         </div>
       </section>
