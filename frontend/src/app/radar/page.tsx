@@ -740,8 +740,8 @@ export default function RadarPage() {
               className="w-full text-left mt-6 pt-4 border-t-2 border-dashed border-[var(--border-bright)]"
             >
               <h3 className="text-[15px] font-bold text-[var(--text-strong)]">
-                {showWatch ? '▾' : '▸'} {duties.length + 1} to {duties.length + watched.length}
-                &mdash; not required yet
+                {showWatch ? '▾ hide' : '▸ show'} {duties.length + 1} to{' '}
+                {duties.length + watched.length} &mdash; not required yet
               </h3>
             </button>
             {showWatch && (
@@ -811,21 +811,26 @@ export default function RadarPage() {
 
       {/* chart — scoring provenance, below the fold */}
       <section className="card p-4 md:p-6">
-        <button onClick={() => setShowScatter((v) => !v)} className="w-full text-left">
-          <p className="eyebrow mb-3">
-            {showScatter ? '▾' : '▸'} Where each reading sits &mdash; law against market
+        {/* The whole block is the toggle. Previously only the heading was a button and the
+            description sat outside it, so clicking the sentence that said "expand" did
+            nothing — which is exactly what it looked like you should click. */}
+        <button
+          onClick={() => setShowScatter((v) => !v)}
+          className="w-full text-left hover:bg-[var(--sunken)] rounded-md transition-colors -m-1 p-1"
+        >
+          <p className="eyebrow mb-2">
+            {showScatter ? '\u25be hide' : '\u25b8 show'} &mdash; where each reading sits
             <span className="font-normal normal-case tracking-normal text-[var(--text-muted)]">
-              {' '}· the relationship view, and how the numbers above were computed
+              {' '}· law against market, and how the numbers above were computed
             </span>
           </p>
+          {!showScatter && (
+            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
+              The eleven plotted against each other: right is how far the law has moved, up is how
+              far the market has. Same numbers as the list, so you can find any duty on the board.
+            </p>
+          )}
         </button>
-        {!showScatter && (
-          <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
-            Expand to see the eleven plotted against each other: right is how far the law has moved,
-            up is how far the market has. The same numbers as the list, so you can find any duty on
-            the board.
-          </p>
-        )}
         <div style={{ display: showScatter ? undefined : 'none' }}>
         {/* The chart and the list above use ONE numbering now, so say it, and say which
             mark means which tier — otherwise the reader has to infer the encoding twice. */}

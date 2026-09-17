@@ -276,8 +276,8 @@ def render(data):
     </div>"""
 
     watch_block = f"""
-      <details class="watch-d"><summary class="watch-h">{len(duties) + 1} to
-        {len(duties) + len(watching)} &mdash; not required yet</summary>
+      <details class="watch-d"><summary class="watch-h"><span class="chev">&#9656;</span> show &mdash; {len(duties) + 1} to
+        {len(duties) + len(watching)} not required yet</summary>
       <p class="small">The same single ranking continues below the line. These sit under the
         threshold, so nothing yet obliges you to act, but they are on the same list because a
         control can be worth building before it is required. The reason differs per line: a bill
