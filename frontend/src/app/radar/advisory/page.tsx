@@ -129,18 +129,28 @@ export default function RadarAdvisoryPage() {
       <header>
         <p className="eyebrow">Fault-Line Radar · advisory</p>
         <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight">
-          Two decisions per issue: stand up the control, put AI on the work
+          Do you have to do this, and does it pay to put AI on it
         </h1>
         <p className="text-[13px] text-[var(--text)] max-w-[820px] mt-1.5 leading-relaxed">
-          A required control is never deferred because the AI economics are poor; deploying AI is
-          never forced by a rule. Each fault line gets a <b>GOVERN</b> answer (compliance calendar)
-          and a <b>DEPLOY</b> answer (build &amp; buy budget), kept apart. GOVERN separates a{' '}
-          <b>duty</b> (the law moved — comply or risk sanction) from a <b>market norm</b> (table
-          stakes — compete or lose work); the two have different remedies and are never averaged
-          into one verdict. A norm requires a <b>named actor who can withhold something</b>{' '}
-          (an insurer withholding coverage, a client withholding the engagement) to require it,
-          not just a high adoption score. Calls resting on thin evidence are marked <b>thin</b>;
-          a requirement from a carrier the firm itself named clears that floor.
+          The first is whether you have to do it. If the answer is yes, bad economics are not a
+          reason to skip it. The second is whether it pays to put AI on the work. A rule requiring
+          something is not a reason to put AI on it.
+        </p>
+        <p className="text-[13px] text-[var(--text)] max-w-[820px] mt-1.5 leading-relaxed">
+          &ldquo;You have to&rdquo; comes in two kinds, and they need different responses. A{' '}
+          <b>duty</b> is something the law already requires, so the choice is comply or risk being
+          sanctioned. A <b>market norm</b> is something your peers have started doing, so the choice
+          is match it or lose work. The two are never blended into one answer.
+        </p>
+        <p className="text-[13px] text-[var(--text)] max-w-[820px] mt-1.5 leading-relaxed">
+          A market norm only counts if someone with something to withhold actually requires it. An
+          insurer who can drop your coverage. A client who can take the engagement elsewhere. A high
+          adoption score on its own is not enough.
+        </p>
+        <p className="text-[13px] text-[var(--text)] max-w-[820px] mt-1.5 leading-relaxed">
+          Where the evidence behind a call is thin, the page says so. A requirement from a carrier
+          you named yourself clears that bar, because one carrier requiring something of you is a
+          stronger signal than several requiring it of the market in general.
         </p>
       </header>
 
