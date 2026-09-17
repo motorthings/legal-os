@@ -77,6 +77,14 @@
   --rose: #E8756D;
   --violet: #E0537F;
   --slate: #A79FA3;
+  /* Rank-chart ramp. The semantic accents are too close together to carry four categories
+     (--amber is gold and so is --primary), so appellate and trial court were near-identical
+     in the bar and the legend. Chart-only, ordered strongest to weakest. */
+  --rk-app: #E0A94A;
+  --rk-trial: #B06A35;
+  --rk-statute: #7FB56F;
+  --rk-guide: #6B7A88;
+
 }
 
 body {

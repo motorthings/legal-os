@@ -182,10 +182,10 @@ function Meter({ label, seed, now }: { label: string; seed: number; now: number 
 // evidence and what kind of authority it is — a duty resting on seven circuit courts must
 // not look like one resting on two trial orders and five bar opinions when the totals match.
 const STRENGTH_SEGMENTS: { key: keyof FaultLine['strength']; label: string; color: string }[] = [
-  { key: 'appellate', label: 'appellate court', color: 'var(--primary)' },
-  { key: 'trial', label: 'trial court', color: 'var(--amber)' },
-  { key: 'primary', label: 'statute or rule', color: 'var(--metric)' },
-  { key: 'guidance', label: 'bar guidance', color: 'var(--text-muted)' },
+  { key: 'appellate', label: 'appellate court', color: 'var(--rk-app)' },
+  { key: 'trial', label: 'trial court', color: 'var(--rk-trial)' },
+  { key: 'primary', label: 'statute or rule', color: 'var(--rk-statute)' },
+  { key: 'guidance', label: 'bar guidance', color: 'var(--rk-guide)' },
 ];
 
 function RankChart({ duties, watched }: { duties: FaultLine[]; watched: FaultLine[] }) {
@@ -494,6 +494,7 @@ export default function RadarPage() {
   // and the scatter are depth for a reader who wants it.
   const [showWatch, setShowWatch] = useState(false);
   const [showScatter, setShowScatter] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -789,26 +790,6 @@ export default function RadarPage() {
         </div>
       </section>
 
-      {/* WHAT THIS DOES NOT CLAIM — the only part of the old milestone block worth keeping.
-          The lead-time prose went because every item now carries its own "first signal Nd
-          before it bound" on the board, and the actionable-now list repeated two entries that
-          are already on the list above. */}
-      {ms && (
-        <section className="card p-4 md:p-6">
-          <p className="eyebrow mb-2">What this list does not claim</p>
-          <p className="text-[12.5px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
-            The order is a sort for attention, not a view about which ruling lands next, and the
-            numbers are positions in that sort rather than a confidence score. On its own record
-            the engine flagged <b>{ms.engine_grade.called} of {ms.engine_grade.n}</b> lines, read
-            as retrodiction rather than as a track record, since the feed was curated by people
-            who knew how those events turned out. The blindside rate,{' '}
-            {Math.round((ms.blindside.blindside_rate ?? 0) * 100)}% ({ms.blindside.n_no_precursor}
-            /{ms.blindside.n_standing_events}), is a floor rather than an exact figure: that scan
-            runs over a hindsight-curated feed and so reads low by construction.
-          </p>
-        </section>
-      )}
-
       {/* chart — scoring provenance, below the fold */}
       <section className="card p-4 md:p-6">
         {/* The whole block is the toggle. Previously only the heading was a button and the
@@ -883,8 +864,13 @@ export default function RadarPage() {
       {/* full queue */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <p className="eyebrow">{view === 'gap' ? 'Build vs buy — a different question, ranked by supply against demand'
-            : 'The same eleven, in detail — click any row to open its evidence'}</p>
+          <button onClick={() => setShowDetail((v) => !v)} className="w-full text-left">
+            <p className="eyebrow">
+              {view === 'gap'
+                ? '▸ build vs buy — a different question, ranked by supply against demand'
+                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — the same eleven, in detail. Each row opens to its meters and evidence`}
+            </p>
+          </button>
           {view === 'gap' ? (
             <span className="text-[11px] text-[var(--text-muted)]">sorted by gap (demand − supply)</span>
           ) : (
@@ -898,10 +884,11 @@ export default function RadarPage() {
           )}
         </div>
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem_1.5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
             <span>#</span><span>Control · fault line</span><span>Lead</span><span>Coverage</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
           </div>
-          {tableRows.map((f) => {
+          {showDetail && (
+            tableRows.map((f) => {
             const lead = leadBucket(f.lead);
             const open = expanded === f.id;
             return (
@@ -986,7 +973,8 @@ export default function RadarPage() {
                 )}
               </div>
             );
-          })}
+          })
+          )}
         </div>
       </section>
     </div>

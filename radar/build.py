@@ -145,12 +145,12 @@ def render(data):
                &nbsp;|&nbsp; <b>E enablement</b> seed {r['enable_seed']} → {r['enable']} ({r['n_enable_evidence']} items, w={r['enable_weighted']})
                &nbsp;|&nbsp; <b>S software</b> seed {r['software_seed']} → {r['software']} ({r['n_software_evidence']} moves, w={r['software_weighted']})
                &nbsp;|&nbsp; <b>queue</b> {r['queue']} · lead {_esc(r['lead'])}</p>
-            <table class="ev"><thead><tr><th>Date</th><th>Demo</th><th>L1 capability evidence (weighted low, labeled — not a ruling)</th></tr></thead>
-              <tbody>{cap_rows}</tbody></table>
-            <table class="ev"><thead><tr><th>Date</th><th>Tier</th><th>L2 ruling evidence (provenance)</th></tr></thead>
-              <tbody>{ev_rows}</tbody></table>
-            <table class="ev"><thead><tr><th>Date</th><th>Market</th><th>L3 adoption signal</th></tr></thead>
-              <tbody>{adopt_rows}</tbody></table>
+            <div class="tw"><table class="ev"><thead><tr><th>Date</th><th>Demo</th><th>L1 capability evidence (weighted low, labeled — not a ruling)</th></tr></thead>
+              <tbody>{cap_rows}</tbody></table></div>
+            <div class="tw"><table class="ev"><thead><tr><th>Date</th><th>Tier</th><th>L2 ruling evidence (provenance)</th></tr></thead>
+              <tbody>{ev_rows}</tbody></table></div>
+            <div class="tw"><table class="ev"><thead><tr><th>Date</th><th>Market</th><th>L3 adoption signal</th></tr></thead>
+              <tbody>{adopt_rows}</tbody></table></div>
           </div>
         </details>""")
 
@@ -166,7 +166,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2>The same eleven, in detail <span class="meta">open any row for its meters and evidence</span></h2>
+      <h2><details class="det"><summary class="det-s">show &mdash; the same eleven, in detail</summary></details></h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
@@ -175,9 +175,11 @@ def render(data):
         binding the signal is on the market (an insurer changing a renewal form &gt; a pundit essay).
         <b>Queue</b> is the intersection: both high means the control is urgent <i>and</i> about to be
         mandatory. That's the third order, where the practice-building work lives.</p>
-      <table class="ev"><thead><tr><th>Control</th><th>L1 cap</th><th>L2 rule</th><th>L3 adopt</th>
+      <details class="det"><summary class="det-s">show &mdash; each row opens to its meters and evidence</summary>
+      <div class="tw"><table class="ev"><thead><tr><th>Control</th><th>L1 cap</th><th>L2 rule</th><th>L3 adopt</th>
         <th>Queue</th><th>Lead</th><th>Fault line</th></tr></thead>
-      <tbody>{q_rows}</tbody></table>
+      <tbody>{q_rows}</tbody></table></div>
+      </details>
     </div>"""
 
     # --- Milestone panel: the actionable half, graded on the record -----------
@@ -234,10 +236,10 @@ def render(data):
     # overview here was the meter table at the bottom. Bar length is the number of sources,
     # coloured by KIND of authority: seven circuit courts and seven bar opinions are not
     # the same claim even when the totals match.
-    _seg_order = [("appellate", "appellate court", "var(--primary)"),
-                  ("trial", "trial court", "var(--amber)"),
-                  ("primary", "statute or rule", "var(--metric)"),
-                  ("guidance", "bar guidance", "var(--dim)")]
+    _seg_order = [("appellate", "appellate court", "var(--rk-app)"),
+                  ("trial", "trial court", "var(--rk-trial)"),
+                  ("primary", "statute or rule", "var(--rk-statute)"),
+                  ("guidance", "bar guidance", "var(--rk-guide)")]
     _watching = [w for w in watching if w.get("watch_reason")]
     _all = duties + _watching
     _max = max([x["strength"]["total"] for x in _all] or [1])
@@ -311,27 +313,6 @@ def render(data):
         for a in ms["actionable_now"]
     ) or '<li class="src">none — every control with a precursor has since bound</li>'
     hr_ms = "n/a" if ms["engine_grade"]["hit_rate"] is None else f'{int(ms["engine_grade"]["hit_rate"]*100)}%'
-    # --- What this list does not claim ---------------------------------------
-    # The lead-time prose and the actionable-now list were cut: every row on the board
-    # already carries its own "first signal Nd before it bound", and the two precursor
-    # entries already appear in the watch list. This keeps only the limit, restated so it
-    # reads as a sentence -- the old version interpolated engine_grade.question, which is a
-    # QUESTION string, mid-sentence and produced "flagged 2/12 of these lines was the line
-    # flagged 90d before the antecedent appeared?".
-    _bs = bs
-    ms_panel = f"""
-    <div class="cal">
-      <h2>What this list does not claim</h2>
-      <p class="small">The order is a sort for attention, not a view about which ruling lands
-        next, and the numbers are positions in that sort rather than a confidence score. On its own
-        record the engine flagged <b>{ms["engine_grade"]["called"]} of {ms["engine_grade"]["n"]}</b>
-        lines, read as retrodiction rather than as a track record, since the feed was curated by
-        people who knew how those events turned out. The blindside rate,
-        {int((_bs["blindside_rate"] or 0) * 100)}% ({_bs["n_no_precursor"]}/{_bs["n_standing_events"]}),
-        is a floor rather than an exact figure: that scan runs over a hindsight-curated feed and so
-        reads low by construction.</p>
-    </div>"""
-
     cal = calibration.report()
     cal_rows = "".join(
         f'<tr><td class="d">{_esc(r["date"])}</td>'
@@ -371,9 +352,9 @@ def render(data):
         {cond_line}. A called L1 with no L2 event yet means the capability outran the law
         (reported, not scored as a fail). The seed set is small and the L1 lane is young — its
         first-of-kind capabilities have no precursor to call from — so this is the honest record so far.</p>
-      <table class="ev"><thead><tr><th>Landed</th><th>Order</th><th>Result</th><th>Fault line</th>
+      <div class="tw"><table class="ev"><thead><tr><th>Landed</th><th>Order</th><th>Result</th><th>Fault line</th>
         <th>Reading (lead→event)</th><th>Resolution</th></tr></thead>
-      <tbody>{cal_rows}</tbody></table>
+      <tbody>{cal_rows}</tbody></table></div>
     </div>"""
 
     tier_legend = " &nbsp; ".join(
@@ -386,7 +367,17 @@ def render(data):
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Legal-AI Fault-Line Radar</title>
 <style>
-  :root {{ --bg:#0f1216; --panel:#161b22; --ink:#e6e6e6; --dim:#9aa7b4; --line:#2a323c; }}
+  :root {{ --bg:#0f1216; --panel:#161b22; --ink:#e6e6e6; --dim:#9aa7b4; --line:#2a323c;
+    /* Semantic accents. These were MISSING from this palette, so every var(--primary),
+       var(--amber) and var(--metric) reference on the page silently resolved to nothing
+       -- colour-coded elements rendered with no background at all. The rank chart made
+       it visible because its whole point is the colour encoding. Keep this block in step
+       with the tokens the templates reference. */
+    --primary:#e8b04b; --amber:#c9a227; --metric:#6fae8f; --rose:#e0603a;
+    /* Rank-chart ramp. The semantic accents are not far enough apart to carry four
+       categories: --primary and --amber are both gold, so "appellate" and "trial court"
+       were near-identical in the bar AND in the legend. Chart-only, strongest to weakest. */
+    --rk-app:#e8b04b; --rk-trial:#b06a35; --rk-statute:#6fae8f; --rk-guide:#5a6672; }}
   * {{ box-sizing:border-box; }}
   body {{ margin:0; background:var(--bg); color:var(--ink);
     font-family:'Source Code Pro',ui-monospace,Menlo,monospace; line-height:1.5; }}
@@ -401,6 +392,10 @@ def render(data):
   summary {{ cursor:pointer; list-style:none; padding:.85rem 1rem; display:flex;
     align-items:center; gap:.7rem; flex-wrap:wrap; }}
   summary::-webkit-details-marker {{ display:none; }}
+  .det-s {{ cursor:pointer; list-style:none; }}
+  .det-s::-webkit-details-marker {{ display:none; }}
+  .det-s::before {{ content:'\\25b8  '; color:var(--dim); }}
+  .det[open] > .det-s::before {{ content:'\\25be  '; }}
   .chev {{ margin-left:auto; color:var(--dim); font-size:.8rem; transition:transform .15s; }}
   details[open] > summary .chev {{ transform:rotate(90deg); }}
   @media (prefers-reduced-motion: reduce) {{ .chev {{ transition:none; }} }}
@@ -416,6 +411,7 @@ def render(data):
   .vec.build {{ color:#8fd3b0; }}
   .vec.small {{ color:var(--dim); font-size:.74rem; }}
   b {{ color:#cfd8e3; }}
+  .tw {{ overflow-x:auto; }}
   table.ev {{ width:100%; border-collapse:collapse; font-size:.78rem; margin-top:.4rem; }}
   table.ev th {{ text-align:left; color:var(--dim); border-bottom:1px solid var(--line);
     padding:.3rem .4rem; font-weight:600; }}
@@ -458,7 +454,7 @@ def render(data):
   .watch-d summary::marker {{ color:var(--dim); }}
   /* The whole board — one stacked bar per duty, in list order. */
   .rk {{ margin:.9rem 0 0; }}
-  .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(9rem,1fr) 3fr 2rem;
+  .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 2rem;
     gap:.6rem; align-items:center; margin:0 0 .32rem; }}
   .rk-n {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
     text-align:right; }}
@@ -496,7 +492,6 @@ def render(data):
     <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
   {rank_panel}
   {duty_panel}
-  {ms_panel}
   {''.join(rows)}
   {queue_panel}
   {cal_panel}
