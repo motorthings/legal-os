@@ -204,6 +204,10 @@ def render(data):
         f'&nbsp; <b>L2</b> {d["pressure_seed"]}&rarr;{d["pressure"]} '
         f'&nbsp; <b>L3</b> {d["adoption_seed"]}&rarr;{d["adoption"]} '
         f'&nbsp; <b>E</b> {d["enable_seed"]}&rarr;{d["enable"]}</p>'
+        # The legend sits beside the meters it labels, where the exception is legible: this
+        # line's own readings are the counterexample to any one-way cascade. Shared with the
+        # app page through copy.json, so the two cannot describe the meters differently.
+        f'<p class="mtr-note">{_c("meters_legend")}</p>'
         f'<p class="vec"><b>Why now:</b> {_esc(d["vector"])}</p>'
         f'<p class="vec"><b>What to put in place:</b> {_esc(d["build_now"])}</p>'
         + "".join(
@@ -461,6 +465,7 @@ def render(data):
   .act details summary {{ cursor:pointer; font-size:.72rem; font-weight:700; color:#7fb0e8; }}
   .act-ev {{ margin:.5rem 0 0; font-size:.75rem; color:var(--fg); }}
   .act-ev .mtr {{ font-family:'Source Code Pro',monospace; font-size:.68rem; color:var(--dim); margin:.4rem 0; }}
+  .act-ev .mtr-note {{ font-size:.66rem; color:var(--dim); margin:.35rem 0 .7rem; max-width:38rem; line-height:1.5; }}
   .act-ev .d {{ font-family:'Source Code Pro',monospace; color:var(--dim); margin-right:.35rem; }}
   .act-ev .src {{ display:block; color:var(--dim); font-size:.68rem; margin:.1rem 0 .5rem .4rem; }}
   .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;

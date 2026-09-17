@@ -106,6 +106,7 @@ interface Copy {
   board_heading: string;
   board_blurb: string;
   actions_heading: string;
+  meters_legend: string;
   seq_cta: string;
 }
 
@@ -491,7 +492,6 @@ function EvidenceList({ items, empty }: { items: Evidence[]; empty: string }) {
 export default function RadarPage() {
   const [data, setData] = useState<RadarData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showPrimer, setShowPrimer] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [sort, setSort] = useState<'urgency' | 'move'>('urgency');
@@ -539,6 +539,7 @@ export default function RadarPage() {
   const copy: Copy = data.copy ?? {
     board_heading: 'The whole board', board_blurb: '',
     actions_heading: 'What to do',
+    meters_legend: '',
     seq_cta: '',
   };
 
@@ -625,15 +626,16 @@ export default function RadarPage() {
           <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text-strong)] leading-tight">
             What the record already requires — and how much warning it gave
           </h1>
+          <p className="text-[13px] text-[var(--text)] max-w-[720px] mt-1.5 leading-relaxed">
+            A fault line is a rule likely to shift, and the control you should build before it
+            does.
+          </p>
           <p className="font-mono text-[12px] text-[var(--text-muted)] mt-1.5">
             {data.as_of} · {data.n_items} tracked items · deterministic, replayable
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/radar/advisory" className="btn-secondary no-underline">Sequence for your firm →</Link>
-          <button onClick={() => setShowPrimer((s) => !s)} className="btn-secondary">
-            {showPrimer ? 'Hide' : 'How this works'}
-          </button>
         </div>
       </header>
 
@@ -651,27 +653,6 @@ export default function RadarPage() {
       )}
 
       {/* primer */}
-      {showPrimer && (
-        <div className="card p-5 grid md:grid-cols-3 gap-6">
-          <div>
-            <p className="eyebrow mb-1.5">What a fault line is</p>
-            <p className="text-[13px] text-[var(--text)] leading-relaxed">A place where legal-AI capability is outrunning the rules — a rule likely to shift, and the control you should build before it does.</p>
-          </div>
-          <div>
-            <p className="eyebrow mb-1.5">The three stages</p>
-            <ul className="text-[13px] text-[var(--text)] leading-relaxed space-y-1">
-              <li><b>L1 capability</b> — the tech clears a bar (a benchmark, a study).</li>
-              <li><b>L2 ruling</b> — courts and bars start to act.</li>
-              <li><b>L3 adoption</b> — insurers and buyers make the fix table stakes.</li>
-            </ul>
-          </div>
-          <div>
-            <p className="eyebrow mb-1.5">Reading the scores</p>
-            <p className="text-[13px] text-[var(--text)] leading-relaxed">Every meter is 0–10, weighted by source authority not volume. 7 is high. High <b>L2 and L3</b> together is the build-now queue.</p>
-          </div>
-        </div>
-      )}
-
       {/* THE WHOLE BOARD — the shape of the list above, before the detail */}
       <section className="card p-4 md:p-6">
         <p className="eyebrow mb-2">{copy.board_heading}</p>
@@ -757,12 +738,23 @@ export default function RadarPage() {
 
                       {/* The meters, moved up here from the old detail table so a duty has ONE
                           place: the action, then its readings, then its sources. */}
-                      <div className="grid md:grid-cols-2 gap-x-6 gap-y-3">
-                        <Meter label="L1 capability" seed={d.capability_seed} now={d.capability} />
-                        <Meter label="L2 ruling pressure" seed={d.pressure_seed} now={d.pressure} />
-                        <Meter label="L3 adoption" seed={d.adoption_seed} now={d.adoption} />
-                        <Meter label="E market enablement" seed={d.enable_seed ?? 0}
-                               now={d.enable ?? d.enable_seed ?? 0} />
+                      <div>
+                        <div className="grid md:grid-cols-2 gap-x-6 gap-y-3">
+                          <Meter label="L1 capability" seed={d.capability_seed} now={d.capability} />
+                          <Meter label="L2 ruling pressure" seed={d.pressure_seed} now={d.pressure} />
+                          <Meter label="L3 adoption" seed={d.adoption_seed} now={d.adoption} />
+                          <Meter label="E market enablement" seed={d.enable_seed ?? 0}
+                                 now={d.enable ?? d.enable_seed ?? 0} />
+                        </div>
+                        {/* The legend lives beside the meters it labels. It used to sit in a
+                            "How this works" panel three screens above, framed as a one-way
+                            L1 to L2 to L3 cascade, which the design doc calls a forced frame:
+                            convergence and vendor_liability both carry L2 above 8 with L1 at
+                            2.5. Reading it here, next to this line's own readings, is where
+                            the exception is legible. */}
+                        <p className="text-[11px] text-[var(--text-muted)] leading-relaxed mt-3 max-w-[640px]">
+                          {copy.meters_legend}
+                        </p>
                       </div>
 
                       <div className="space-y-2">

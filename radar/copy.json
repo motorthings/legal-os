@@ -1,7 +1,8 @@
 {
   "_note": "Copy that must read identically on BOTH surfaces: the static page (build.py -> docs/radar/index.html) and the in-app page (frontend/src/app/radar/page.tsx). Only strings BOTH render belong here \u2014 a one-sided entry is just a second place to drift. Both read this file; tests/test_copy_contract.py fails if either hardcodes one of these strings.",
   "board_heading": "The whole board",
-  "board_blurb": "Bar length is how many sources stand behind the duty. The colours are what kind of authority they are, because seven circuit courts and seven bar opinions are not the same claim. The order is not bar length. A control the law requires comes before one the market merely expects, and within that, the control with the shortest warning window on the record comes first. How many sources stand behind a line tells you how much to trust it. It does not tell you what to do about it.",
+  "board_blurb": "Bar length is how many sources stand behind the duty, and the colours are what kind of authority they are.",
+  "meters_legend": "Every meter reads 0 to 10, weighted by source authority rather than volume. L1 is what the AI can already do. L2 is what courts and bars have done about it. L3 is whether insurers and buyers have made the fix table stakes. The lines do not all run in that order: a statute can move L2 with almost no L1 behind it.",
   "actions_heading": "What to do",
   "seg_appellate": "appellate court",
   "seg_trial": "trial court",

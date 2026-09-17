@@ -18,6 +18,9 @@ interface FaultLine {
   software: number;
   queue: number;
   lead: string;
+  is_duty: boolean;
+  /** The shared ordering tuple, from radar/ordering.py. Lower sorts first. */
+  order_key?: number[];
   model_rules: string[];
 }
 interface RadarData {
@@ -144,7 +147,20 @@ export default function ReferencePage() {
   if (error) return <div className="p-8 text-[var(--rose)]">{error}</div>;
   if (!data) return <div className="p-8 text-[var(--text-muted)] font-mono text-sm">Loading…</div>;
 
-  const lines = [...data.fault_lines].sort((a, b) => b.queue - a.queue);
+  // Duties first, then the lines not required yet. Within the duties, the shared ordering
+  // rule from radar/ordering.py: shortest measured warning window first. This used to sort
+  // by `queue`, which is now an internal sort rather than a public claim, so the reference
+  // was presenting a superseded order under a heading that promised the current one.
+  const lines = [...data.fault_lines].sort((a, b) => {
+    if (a.is_duty !== b.is_duty) return a.is_duty ? -1 : 1;
+    if (a.is_duty && a.order_key && b.order_key) {
+      for (let i = 0; i < Math.max(a.order_key.length, b.order_key.length); i++) {
+        const d = (a.order_key[i] ?? 0) - (b.order_key[i] ?? 0);
+        if (d !== 0) return d;
+      }
+    }
+    return b.pressure - a.pressure;
+  });
   const tiers = Object.entries(data.tiers);
 
   return (
@@ -157,8 +173,8 @@ export default function ReferencePage() {
             The whole picture, in one scroll
           </h1>
           <p className="text-[15px] text-[var(--text)] leading-relaxed max-w-2xl mt-3">
-            What the radar forecasts, how it scores, how evidence earns the right to move a meter —
-            and where the pressure is building right now. Each part reveals as you reach it.
+            What the radar reads off the record, how it scores, how evidence earns the right to move
+            a meter — and what is building right now. Each part reveals as you reach it.
           </p>
           <p className="font-mono text-[12px] text-[var(--text-muted)] mt-2">
             {data.as_of} · {data.n_items} tracked items · deterministic &amp; replayable
@@ -167,7 +183,7 @@ export default function ReferencePage() {
       </Reveal>
 
       {/* part 1 — what it is */}
-      <Part n="1" title="What it is" delay={0} lede="The radar forecasts where legal AI is headed by tracking fault lines — the places a new AI capability rubs against an existing legal duty. It never predicts dates. It measures pressure, weighted by who is doing the pushing.">
+      <Part n="1" title="What it is" delay={0} lede="The radar tracks fault lines — the places a new AI capability rubs against an existing legal duty. It reports what the record already shows and how much warning it gave, not what happens next. Where a reading is a sort rather than a claim, the page says so.">
         <div className="grid md:grid-cols-3 gap-4">
           {[
             { tag: 'Part A', color: 'var(--primary)', q: 'Will a court, bar, or law move on this?', p: 'Graded against what actually happened. This is the part that earns trust by being scored, not by sounding sure.' },
@@ -201,18 +217,25 @@ export default function ReferencePage() {
       </Part>
 
       {/* part 2 — fault lines */}
-      <Part n="2" title="The eleven fault lines" delay={80} lede="Five meters each, 0–10. A line fires when it crosses 7. Sorted by how much pressure is building.">
+      <Part n="2" title="The eleven fault lines" delay={80} lede="Five meters each, 0 to 10. A control is required of a firm once ruling pressure reaches 8.0 on ruling evidence alone; the lines below that threshold are shown too, labelled as not yet required. Duties come first, then those, and within each the shortest measured warning window leads. That is the order the radar page uses.">
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-[1.6fr_0.9fr_0.9fr_0.9fr_0.9fr] gap-1 px-4 py-2 border-b border-[var(--border)] text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>Fault line</span><span className="text-center">Cap</span><span className="text-center">Rule</span><span className="text-center">Adopt</span><span className="text-center">Enable</span>
+          <div className="grid grid-cols-[1.6fr_0.75fr_0.75fr_0.75fr_0.75fr_0.8fr] gap-1 px-4 py-2 border-b border-[var(--border)] text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <span>Fault line</span><span className="text-center">Cap</span><span className="text-center">Soft</span><span className="text-center">Rule</span><span className="text-center">Adopt</span><span className="text-center">Enable</span>
           </div>
           {lines.map((f) => (
-            <div key={f.id} className="grid grid-cols-[1.6fr_0.9fr_0.9fr_0.9fr_0.9fr] gap-1 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0">
+            <div key={f.id} className="grid grid-cols-[1.6fr_0.75fr_0.75fr_0.75fr_0.75fr_0.8fr] gap-1 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0">
               <div className="min-w-0">
-                <p className="text-[13px] font-semibold text-[var(--text-strong)] leading-tight">{f.title}</p>
+                <p className="text-[13px] font-semibold text-[var(--text-strong)] leading-tight">
+                  {f.title}
+                  {f.is_duty ? (
+                    <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--rose)]">duty</span>
+                  ) : (
+                    <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">not required</span>
+                  )}
+                </p>
                 <p className="text-[11px] text-[var(--text-muted)] truncate">{f.control}</p>
               </div>
-              {[f.capability, f.pressure, f.adoption, f.enable].map((v, i) => (
+              {[f.capability, f.software, f.pressure, f.adoption, f.enable].map((v, i) => (
                 <span key={i} className="text-center font-mono text-[12px] font-bold" style={{ color: meterColor(v) }}>{v.toFixed(1)}</span>
               ))}
             </div>
@@ -280,9 +303,11 @@ export default function ReferencePage() {
         <div className="card p-5" style={{ background: 'var(--metric-dim)', borderColor: 'var(--border-bright)' }}>
           <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--metric)] mb-1.5">The open signal</p>
           <p className="text-[14px] text-[var(--text)] leading-relaxed">
-            No insurer has yet made a certified AI tool a condition of malpractice coverage, and no bar
-            has adopted a named benchmark. When one does, that is the event that flips the method layer
-            from voluntary to enforceable. That absence is what to watch.
+            Carriers have started asking. CNA added AI-governance questions to malpractice renewals and
+            underwriting in June 2026, which is a questionnaire rather than a condition, and no bar has
+            yet adopted a named benchmark. The event to watch is the step past asking: an insurer naming
+            a certified tool as a condition of coverage. That is what flips the method layer from
+            voluntary to enforceable.
           </p>
         </div>
         <p className="text-[12px] text-[var(--text-muted)] mt-3">
