@@ -218,7 +218,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
                   <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
                 </div>
               )}
-              <div className="grid grid-cols-[1.3rem_1fr_4.5rem] gap-2 items-center">
+              <div className="grid grid-cols-[1.3rem_1fr_6rem] gap-2 items-center">
                 <span className="font-mono text-[11px] font-bold text-[var(--text-muted)] text-right">
                   {startAt + i}
                 </span>
@@ -259,7 +259,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
           </span>
         ))}
         <span className="text-[10.5px] text-[var(--text-muted)]">
-          &middot; bar length = total sources, trailing number = same
+          
         </span>
       </div>
     </div>
@@ -651,7 +651,7 @@ export default function RadarPage() {
       <section className="card p-4 md:p-6">
         <p className="eyebrow mb-2">{copy.board_heading}</p>
 <p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">{copy.board_blurb}</p>
-        <div className="grid grid-cols-[1.3rem_1fr_4.5rem] gap-2 mb-1.5">
+        <div className="grid grid-cols-[1.3rem_1fr_6rem] gap-2 mb-1.5">
           <span />
           <span className="eyebrow">Duty</span>
           <span className="eyebrow text-right whitespace-nowrap"># of sources</span>

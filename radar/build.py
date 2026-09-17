@@ -263,7 +263,7 @@ def render(data):
       <p class="small">{_c("board_blurb")}</p>
       <div class="rk-head"><span></span><span>Duty</span><span># of sources</span></div>
       <div class="rk">{_bars_for(duties, 1)}</div>
-      <div class="rk-legend">{_legend}<span class="src">&middot; trailing number = total sources</span></div>
+      <div class="rk-legend">{_legend}</div>
     </div>"""
 
     duty_panel = f"""
@@ -438,11 +438,11 @@ def render(data):
   .watch-d summary::marker {{ color:var(--dim); }}
   /* The whole board — one stacked bar per duty, in list order. */
   .rk {{ margin:0; }}
-  .rk-head {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 4.5rem;
+  .rk-head {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 6rem;
     gap:.6rem; margin:.9rem 0 .35rem; white-space:nowrap; font-size:.62rem; font-weight:700;
     letter-spacing:.07em; text-transform:uppercase; color:var(--dim); }}
   .rk-head span:last-child {{ text-align:right; grid-column:4; }}
-  .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 4.5rem;
+  .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 6rem;
     gap:.6rem; align-items:center; margin:0 0 .32rem; }}
   .rk-n {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
     text-align:right; }}
