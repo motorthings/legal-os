@@ -214,7 +214,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel }:
           const total = s?.total ?? 0;
           return (
             <div key={f.id}>
-              {i === duties.length && (
+              {i === duties.length && duties.length > 0 && watched.length > 0 && (
                 <div className="flex items-center gap-2 my-2.5">
                   <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
@@ -225,7 +225,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel }:
               )}
               <div className="grid grid-cols-[1.3rem_1fr_2rem] gap-2 items-center">
                 <span className="font-mono text-[11px] font-bold text-[var(--text-muted)] text-right">
-                  {i + 1}
+                  {startAt + i}
                 </span>
                 <div className="min-w-0">
                   <div className="text-[11.5px] text-[var(--text)] truncate" title={f.action}>
@@ -658,7 +658,7 @@ export default function RadarPage() {
           behind the duty; the colours are what kind of authority they are, because seven
           circuit courts and seven bar opinions are not the same claim.
         </p>
-        <RankChart duties={duties} watched={watched} splitLabel={copy.watch_lead} />
+        <RankChart duties={duties} watched={[]} splitLabel={copy.watch_lead} />
       </section>
 
       {/* WHAT TO DO — the answer, first, with the evidence attached to each item */}
@@ -766,6 +766,12 @@ export default function RadarPage() {
                 {duties.length + watched.length} &mdash; {copy.watch_lead}
               </h3>
             </button>
+            {showWatch && (
+              <div className="mt-3 mb-4">
+                <RankChart duties={[]} watched={watched} startAt={duties.length + 1}
+                           splitLabel={copy.watch_lead} />
+              </div>
+            )}
             {showWatch && (
               <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px] mt-1.5 mb-3">
                 The same single ranking continues below the line. These sit under the threshold, so
