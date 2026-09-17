@@ -115,7 +115,6 @@ export default function RadarAdvisoryPage() {
   // Only the work. A row whose GOVERN verdict is 'no-mandate' has nothing for the firm to
   // do, and a list that includes it is a list of eleven things when the answer is seven.
   const actionRows = a.rows.filter((r) => r.govern !== 'no-mandate');
-  const actionLines = new Set(actionRows.map((r) => r.fault_line));
 
   const gc = a.verdict_counts.govern;
   const dc = a.verdict_counts.deploy;
@@ -179,35 +178,20 @@ export default function RadarAdvisoryPage() {
         </div>
       </div>
 
-      {/* plan — the order to do them in */}
-      <div className="card p-4">
-        <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold mb-2">
-          Sequence · duties first, shortest measured lead first
-        </p>
-        {/* Two columns dropped here, on Charlie's read. The lead in days is the SORT key
-            and the list is already sorted by it, so printing it restated the order. The
-            "why" column said "a duty, and the firm is ready" on six of seven rows, and a
-            sentence that repeats down a column carries no information. The ordering rationale
-            is in the panel subtitle, stated once. */}
-        <ol className="space-y-1">
-          {a.plan.filter((p) => actionLines.has(p.fault_line)).map((p) => (
-            <li key={p.fault_line} className="grid grid-cols-[1.5rem_max-content_1fr] gap-3 items-center">
-              <span className="font-mono text-[11px] text-[var(--text-muted)]">{p.sequence}</span>
-              <span className="text-[12px] text-[var(--text)] truncate">{p.control}</span>
-              {lane(p.govern, GOV_ACCENT)}
-            </li>
-          ))}
-        </ol>
-      </div>
-
       {/* rows */}
       <div className="card overflow-hidden">
+        <p className="px-4 pt-3 pb-1 text-[11.5px] text-[var(--text-muted)]">
+          Ordered for you: duties before market norms, and within each, the shortest
+          measured lead first — a control whose antecedents historically bound in 192
+          days gives less warning than one that bound in 907, so it is nearer the top.
+        </p>
         <div className="grid grid-cols-[1fr_13rem_12rem_7rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-          <span>Control · fault line</span><span>GOVERN · stand up?</span><span>DEPLOY · put AI on it?</span><span>L2 · L3 · E</span>
+          <span># · Control · fault line</span><span>GOVERN · stand up?</span><span>DEPLOY · put AI on it?</span><span>L2 · L3 · E</span>
         </div>
         {[...actionRows].sort((x, y) => x.sequence - y.sequence).map((r) => (
           <div key={r.fault_line} className="grid grid-cols-[1fr_13rem_12rem_7rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0 hover:bg-[var(--sunken)]">
             <span>
+              <span className="font-mono text-[11px] text-[var(--text-muted)] mr-2">{r.sequence}</span>
               <span className="text-[13px] font-semibold text-[var(--text-strong)]">
                 {r.control}
                 {r.mandated && <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[var(--rose)]">duty</span>}
