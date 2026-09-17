@@ -503,6 +503,7 @@ export default function RadarPage() {
   const [showWatch, setShowWatch] = useState(false);
   const [showScatter, setShowScatter] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [showProof, setShowProof] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -808,22 +809,42 @@ export default function RadarPage() {
               acting on it is compliance rather than a bet on a prediction. The order is a sort for
               attention across controls you cannot all stand up at once, and it is graded against
               its own record{' '}
-              <span
-                className="underline decoration-dotted cursor-help text-[var(--text)]"
-                title={
-                  'How it is graded: for every event that landed, the engine replays itself 90 ' +
-                  'days earlier using only evidence available then, and checks whether the right ' +
-                  'line was already flagged. It flagged 2 of 12. Those results are retrodiction ' +
-                  'rather than a track record, because the feed was curated by people who knew how ' +
-                  'the events turned out. Real forward skill only starts from a ruling dated after ' +
-                  'the 2026-09-17 freeze, and none has landed yet.'
-                }
+              <button
+                onClick={() => setShowProof((v) => !v)}
+                className="underline decoration-dotted text-[var(--text)] hover:text-[var(--primary)]"
+                aria-expanded={showProof}
               >
                 rather than asserted
-              </span>
+              </button>
               . Where the evidence is thin, it says so; where a control is not required yet, this
               page does not pretend otherwise.
             </p>
+            {showProof && (
+              <div className="mt-4 border border-[var(--border-bright)] rounded-lg p-4 bg-[var(--sunken)] max-w-[820px]">
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <p className="eyebrow">How the ranking is graded</p>
+                  <button
+                    onClick={() => setShowProof(false)}
+                    className="text-[11px] text-[var(--text-muted)] hover:text-[var(--text)]"
+                    aria-label="Close"
+                  >
+                    close
+                  </button>
+                </div>
+                <p className="text-[12px] text-[var(--text)] leading-relaxed">
+                  For every event that landed, the engine replays itself 90 days earlier using only
+                  evidence available at that date, and checks whether the right line was already
+                  flagged. It flagged <b>2 of 12</b>.
+                </p>
+                <p className="text-[12px] text-[var(--text)] leading-relaxed mt-2">
+                  Those results are <b>retrodiction, not a track record</b>: the feed and the
+                  thresholds were written by people who already knew how those events turned out.
+                  Real forward skill only begins with a ruling dated after the 2026-09-17 freeze,
+                  and none has landed yet, so the out-of-sample result is 0 of 0. That column is
+                  the one that will eventually say whether the ordering is any good.
+                </p>
+              </div>
+            )}
           </div>
           <div>
             <p className="eyebrow mb-1">Why your fee structure changes the answer</p>
