@@ -161,7 +161,7 @@ export default function RadarAdvisoryPage() {
       </div>
 
       {/* headline economics */}
-      <div className="card p-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+      <div className="card p-4 space-y-3">
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Economic gate</p>
           <p className="font-mono text-lg font-extrabold text-[var(--text-strong)]">
