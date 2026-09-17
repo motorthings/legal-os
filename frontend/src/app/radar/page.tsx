@@ -104,8 +104,6 @@ interface Copy {
   board_blurb: string;
   actions_heading: string;
   watch_lead: string;
-  detail_heading_suffix: string;
-  detail_hint: string;
   seq_cta: string;
 }
 
@@ -539,7 +537,7 @@ export default function RadarPage() {
   const copy: Copy = data.copy ?? {
     board_heading: 'The whole board', board_sub: '', board_blurb: '',
     actions_heading: 'What to do', watch_lead: 'not required yet',
-    detail_heading_suffix: 'the same eleven, in detail', detail_hint: '', seq_cta: '',
+    seq_cta: '',
   };
 
   const threshold = callThreshold ?? 8.0;
@@ -726,25 +724,56 @@ export default function RadarPage() {
                   </div>
 
                   {open && (
-                    <div className="mt-3 pl-7 space-y-2">
+                    <div className="mt-4 pl-7 space-y-4">
                       <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
                         Model Rules: {d.model_rules.join(' · ')} · our shorthand for this line is
                         &ldquo;{d.control}&rdquo;
                       </p>
-                      {d.evidence.slice(0, 12).map((e, k) => (
-                        <div key={k} className="text-[11.5px] leading-snug">
-                          <span className="font-mono text-[10.5px] text-[var(--text-muted)]">{e.date}</span>{' '}
-                          <span className="text-[var(--text)]">{e.title}</span>
-                          <span className="block text-[10.5px] text-[var(--text-muted)] pl-1">
-                            {e.source} · {e.tier}
-                          </span>
-                        </div>
-                      ))}
-                      {d.evidence.length > 12 && (
-                        <p className="text-[10.5px] text-[var(--text-muted)]">
-                          + {d.evidence.length - 12} more, shown in full further down the page
+
+                      {/* The meters, moved up here from the old detail table so a duty has ONE
+                          place: the action, then its readings, then its sources. */}
+                      <div className="grid md:grid-cols-2 gap-x-6 gap-y-3">
+                        <Meter label="L1 capability" seed={d.capability_seed} now={d.capability} />
+                        <Meter label="L2 ruling pressure" seed={d.pressure_seed} now={d.pressure} />
+                        <Meter label="L3 adoption" seed={d.adoption_seed} now={d.adoption} />
+                        <Meter label="E market enablement" seed={d.enable_seed ?? 0}
+                               now={d.enable ?? d.enable_seed ?? 0} />
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-[11.5px] leading-relaxed">
+                          <span className="eyebrow block mb-0.5">Why now</span>
+                          <span className="text-[var(--text)]">{d.vector}</span>
                         </p>
-                      )}
+                        <p className="text-[11.5px] leading-relaxed">
+                          <span className="eyebrow block mb-0.5">What to put in place</span>
+                          <span className="text-[var(--text)]">{d.build_now}</span>
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="eyebrow mb-1">The sources behind it</p>
+                        {d.evidence.map((e, k) => (
+                          <div key={k} className="text-[11.5px] leading-snug">
+                            <span className="font-mono text-[10.5px] text-[var(--text-muted)]">{e.date}</span>{' '}
+                            <span className="text-[var(--text)]">{e.title}</span>
+                            <span className="block text-[10.5px] text-[var(--text-muted)] pl-1">
+                              {e.source} · {e.tier}
+                            </span>
+                          </div>
+                        ))}
+                        {(d.adoption_evidence ?? []).length > 0 && (
+                          <>
+                            <p className="eyebrow mb-1 pt-2">Market signals</p>
+                            {d.adoption_evidence.map((e, k) => (
+                              <div key={`a${k}`} className="text-[11.5px] leading-snug">
+                                <span className="font-mono text-[10.5px] text-[var(--text-muted)]">{e.date}</span>{' '}
+                                <span className="text-[var(--text)]">{e.title}</span>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -817,195 +846,6 @@ export default function RadarPage() {
         </div>
       </section>
 
-      {/* chart — scoring provenance, below the fold */}
-      <section className="card p-4 md:p-6">
-        {/* The whole block is the toggle. Previously only the heading was a button and the
-            description sat outside it, so clicking the sentence that said "expand" did
-            nothing — which is exactly what it looked like you should click. */}
-        <button
-          onClick={() => setShowScatter((v) => !v)}
-          className="w-full text-left hover:bg-[var(--sunken)] rounded-md transition-colors -m-1 p-1"
-        >
-          <p className="eyebrow mb-2">
-            {showScatter ? '\u25be hide' : '\u25b8 show'} &mdash; where each reading sits
-            <span className="font-normal normal-case tracking-normal text-[var(--text-muted)]">
-              {' '}· law against market, and how the numbers above were computed
-            </span>
-          </p>
-          {!showScatter && (
-            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed max-w-[880px]">
-              The eleven plotted against each other: right is how far the law has moved, up is how
-              far the market has. Same numbers as the list, so you can find any duty on the board.
-            </p>
-          )}
-        </button>
-        <div style={{ display: showScatter ? undefined : 'none' }}>
-        {/* The chart and the list above use ONE numbering now, so say it, and say which
-            mark means which tier — otherwise the reader has to infer the encoding twice. */}
-        <p className="text-[11.5px] text-[var(--text-muted)] leading-relaxed mb-3 max-w-[880px]">
-          Each dot is numbered to match its place in the list above. A <b>solid ring</b> means
-          required now; a <b>dashed ring</b> means on watch. Position is the two readings:
-          right is how far the law has moved, up is how far the market has moved. A dot high and
-          right is a control that is both required and being made table stakes; a dot far right
-          and low is one the law has moved on that the market has not. Dot size is the
-          intersection of the two.
-        </p>
-        <div className="inline-flex rounded-lg border border-[var(--border)] overflow-hidden text-left mb-3">
-          {(['urgency', 'gap'] as const).map((v) => (
-            <button key={v} onClick={() => setView(v)} className={`px-3 py-1.5 ${view === v ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
-              <span className="block text-[12px] font-bold leading-tight">{v === 'urgency' ? 'For firms' : 'For advisors'}</span>
-              <span className={`block text-[10px] leading-tight ${view === v ? 'text-white opacity-80' : 'text-[var(--text-muted)]'}`}>{v === 'urgency' ? 'Urgency · what to do first' : 'Build vs buy · where the build is'}</span>
-            </button>
-          ))}
-        </div>
-        {view === 'urgency' ? (
-          <Chart lines={duties} ranks={ranks} hovered={hovered} onHover={setHovered} onPick={pick} />
-        ) : (
-          <GapChart lines={duties} ranks={gapRanks} hovered={hovered} onHover={setHovered} onPick={pick} />
-        )}
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3 text-[11px] text-[var(--text-muted)]">
-          {view === 'urgency' ? (
-            <>
-              <span className="font-semibold text-[var(--text)]">Lead time:</span>
-              {(['now', 'soon', 'later'] as Lead[]).map((l) => (
-                <span key={l} className="inline-flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: LEAD_COLOR[l] }} /> {LEAD_LABEL[l]}
-                </span>
-              ))}
-            </>
-          ) : (
-            <>
-              <span className="font-semibold text-[var(--text)]">Vendor momentum (S):</span>
-              {(['arriving', 'building', 'idle'] as Momentum[]).map((m) => (
-                <span key={m} className="inline-flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: S_COLOR[m] }} /> {S_LABEL[m]}
-                </span>
-              ))}
-            </>
-          )}
-          <span>Dot size = queue score · number = its position in the list above · hover to inspect, click to expand</span>
-        </div>
-        </div>
-      </section>
-
-      {/* full queue */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <button onClick={() => setShowDetail((v) => !v)} className="w-full text-left">
-            <p className="eyebrow">
-              {view === 'gap'
-                ? '▸ build vs buy — a different question, ranked by supply against demand'
-                : `${showDetail ? '\u25be hide' : '\u25b8 show'} — ${copy.detail_heading_suffix}`}
-            </p>
-          </button>
-          {view === 'gap' ? (
-            <span className="text-[11px] text-[var(--text-muted)]">sorted by gap (demand − supply)</span>
-          ) : (
-            <div className="inline-flex rounded-full border border-[var(--border)] overflow-hidden text-[11px] font-semibold">
-              {(['urgency', 'move'] as const).map((s) => (
-                <button key={s} onClick={() => setSort(s)} className={`px-3 py-1.5 ${sort === s ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
-                  {s === 'urgency' ? 'Urgency' : 'Biggest move'}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="card overflow-hidden">
-          {showDetail && (
-          <div className="grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem_1.5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-            <span>#</span><span>Control · fault line</span><span>Lead</span><span>Coverage</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
-          </div>
-          )}
-          {showDetail && (
-            tableRows.map((f) => {
-            const lead = leadBucket(f.lead);
-            const open = expanded === f.id;
-            return (
-              <div key={f.id} id={`row-${f.id}`} className={`border-b border-[var(--border)] last:border-0 ${hovered === f.id ? 'bg-[var(--brand-tint)]' : ''}`}>
-                <button onClick={() => pick(f.id)} onMouseEnter={() => setHovered(f.id)} onMouseLeave={() => setHovered(null)} className="w-full grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem_1.5rem] gap-2 px-4 py-2.5 items-center text-left hover:bg-[var(--sunken)]">
-                  <span className="font-mono text-[13px] font-bold text-[var(--text-muted)]">{rowRanks.get(f.id)}</span>
-                  <span>
-                    <span className="text-[13px] font-semibold text-[var(--text-strong)]">{f.control}</span>
-                    <span className="block text-[11px] text-[var(--text-muted)]">{f.title}</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-[12px]">
-                    <span className="w-2 h-2 rounded-full" style={{ background: LEAD_COLOR[lead] }} />{LEAD_LABEL[lead]}
-                  </span>
-                  <span className="flex flex-col items-start leading-tight">
-                    <span className="text-[11px] font-semibold" style={{ color: coverageColor(f.lanes_populated ?? 0) }}>
-                      {f.lanes_populated ?? 0}/5 lanes
-                    </span>
-                    {f.stale_days != null ? (
-                      <span className="text-[10px] font-mono" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
-                    ) : (
-                      <span className="text-[10px] text-[var(--text-muted)] font-mono">—</span>
-                    )}
-                  </span>
-                  <span className="font-mono text-[13px] text-[var(--text)]">
-                    {view === 'gap'
-                      ? `${whole(f.adoption)}·${whole(f.enable ?? f.enable_seed ?? 0)}·${whole(f.software ?? f.software_seed ?? 0)}`
-                      : `${whole(f.capability)}·${whole(f.pressure)}·${whole(f.adoption)}·${whole(f.enable ?? f.enable_seed ?? 0)}`}
-                  </span>
-                  <span className="text-[13px] text-[var(--text-muted)] text-center">{open ? '\u25be' : '\u25b8'}</span>
-                  <span className="font-mono text-[13px] font-bold text-[var(--text-strong)]">
-                    {view === 'gap' ? (
-                      <>{signed(f.adoption - (f.enable ?? f.enable_seed ?? 0))} <span className="text-[10px] text-[var(--primary)]">gap</span></>
-                    ) : (
-                      <>{whole(f.queue)} <span className="text-[10px] text-[var(--primary)]">{signed(queueDelta(f))}</span></>
-                    )}
-                  </span>
-                </button>
-                {open && (
-                  <div className="px-4 pb-5 pt-1 grid md:grid-cols-2 gap-5 bg-[var(--sunken)]">
-                    <div className="space-y-3">
-                      <Meter label="L1 capability" seed={f.capability_seed} now={f.capability} />
-                      <Meter label="L2 ruling pressure" seed={f.pressure_seed} now={f.pressure} />
-                      <Meter label="L3 adoption" seed={f.adoption_seed} now={f.adoption} />
-                      <Meter label="E market enablement" seed={f.enable_seed ?? 0} now={f.enable ?? f.enable_seed ?? 0} />
-                      <div className="pt-1">
-                        <p className="eyebrow mb-1">Why now</p>
-                        <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.vector}</p>
-                      </div>
-                      <div>
-                        <p className="eyebrow mb-1">What to put in place</p>
-                        <p className="text-[12px] text-[var(--text)] leading-relaxed">{f.build_now}</p>
-                        <p className="text-[11px] text-[var(--text-muted)] mt-1">Model rules: {f.model_rules.join(', ')}</p>
-                        {f.lanes && (
-                          <p className="text-[11px] text-[var(--text-muted)] mt-1 font-mono">
-                            Evidence per lane: {LANE_KEYS.map(([k, label]) => `${label}:${f.lanes![k] ?? 0}`).join(' · ')}
-                          </p>
-                        )}
-                        {f.last_evidence_date && f.stale_days != null && (
-                          <p className="text-[11px] text-[var(--text-muted)] mt-1">
-                            Last evidence {f.last_evidence_date} ·{' '}
-                            <span className="font-semibold" style={{ color: staleColor(f.stale_days) }}>{staleLabel(f.stale_days)}</span>
-                          </p>
-                        )}
-                        {f.reviewed_days != null && (
-                          <p className="text-[11px] text-[var(--text-muted)] mt-1">
-                            Reviewed {f.reviewed_on} · <span className="font-semibold" style={{ color: '#8FBFAE' }}>{f.reviewed_days}d ago</span> — checked, dormant
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="eyebrow mb-1.5">L2 ruling evidence</p>
-                        <EvidenceList items={f.evidence} empty="No ruling evidence yet." />
-                      </div>
-                      <div>
-                        <p className="eyebrow mb-1.5">L3 adoption evidence</p>
-                        <EvidenceList items={f.adoption_evidence} empty="Not scored yet — no market signal recorded." />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })
-          )}
-        </div>
-      </section>
     </div>
   );
 }

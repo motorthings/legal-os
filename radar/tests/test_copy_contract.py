@@ -126,7 +126,7 @@ def test_both_surfaces_name_the_same_sections():
     if not STATIC_PAGE.exists():
         return
     html = STATIC_PAGE.read_text()
-    for key in ("board_heading", "actions_heading", "watch_lead", "detail_heading_suffix"):
+    for key in ("board_heading", "actions_heading", "watch_lead"):
         assert _copy()[key] in html, f"static page lost the {key} heading"
 
 
