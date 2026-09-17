@@ -868,8 +868,8 @@
         "software": 0
       },
       "lanes_populated": 2,
-      "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_on": "2026-09-17",
+      "reviewed_days": 0
     },
     {
       "id": "confidentiality",
@@ -1168,8 +1168,8 @@
         "software": 0
       },
       "lanes_populated": 2,
-      "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_on": "2026-09-17",
+      "reviewed_days": 0
     },
     {
       "id": "competence",

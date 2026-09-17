@@ -1,49 +1,87 @@
-"""Report which fault lines need re-curation (stale or thin), for the weekly CI nudge.
+"""Report which fault lines need attention, for the weekly CI nudge.
 
-Reads the already-regenerated data.json and prints a one-line summary to stdout. The CI
-folds this into its commit message and opens a GitHub issue when the list is non-empty,
-so the gap surfaces in git AND pings via GitHub notifications — instead of requiring a
-human to open the app and read the Coverage column.
+Reads the LIVE landscape when one exists, falling back to the frozen data.json. This
+matters more than it looks:
 
-A line "needs re-curation" when it is stale (no new authority in >180 days) or thin
-(<=2 of the 5 evidence lanes populated). Both are the honest signals that the duty has
-not crystallized into law yet and a Descrybe pass may find nothing — still worth surfacing.
+  The nudge used to read the frozen `data.json` while the re-curation skill wrote the
+  frozen `feed.jsonl`, so the two agreed. After the 2026-09-17 fork, curation writes the
+  LIVE corpus. Reading the frozen landscape would have made this a loop by construction:
+  act on the nudge, change nothing it measures, get the same nudge next week forever.
+
+A line needs attention when it is stale (no new authority in >180 days) or thin (<=2 of 5
+lanes populated). The two are NOT the same problem and do not take the same fix:
+
+  stale             -> case-law discovery (`/refresh-radar`) can resolve it
+  thin on ruling    -> case-law discovery can resolve it
+  thin on adoption  -> it usually cannot. Verified 2026-09-17: nine T1 orders admitted
+                       across `disclosure` and `confidentiality` moved neither line off
+                       2/5 lanes, because every item landed in the ruling lane, which was
+                       already the populated one. Those lanes fill from market actors
+                       (insurer / procurement / deployment), not from primary law.
+
+So the report now says which fix applies. A thin-on-adoption line is often not a debt at
+all: on 2026-09-17 the ACC/Everlaw survey showed 80% of in-house counsel neither require
+nor encourage GenAI use by outside counsel and 59% do not know whether their firms use it,
+so the empty adoption lane was an accurate reading rather than a curation gap. Where that
+is the finding, mark the line reviewed rather than padding it.
 """
 import json
 import sys
 from pathlib import Path
 
-DATA = Path(__file__).resolve().parents[1] / "docs" / "radar" / "data.json"
+REPO = Path(__file__).resolve().parents[1]
+LIVE = REPO / "docs" / "radar" / "live.json"     # refreshable — what curation can change
+FROZEN = REPO / "docs" / "radar" / "data.json"   # the experiment's landscape
+
+# Lanes that primary-law discovery cannot fill: they need a market actor.
+MARKET_LANES = ("adoption", "enable", "software")
+
+
+def landscape_path():
+    return LIVE if LIVE.exists() else FROZEN
+
+
+def diagnose(f):
+    """(needs_attention, why, fix) for one fault line."""
+    stale_days = f.get("stale_days") or 0
+    lanes = f.get("lanes_populated") or 0
+    reviewed_days = f.get("reviewed_days")   # None if never reviewed
+    stale = stale_days > 180
+    thin = lanes <= 2
+    # A line reviewed within 30 days is "checked, dormant" — not a re-curation gap.
+    if (not (stale or thin)) or (reviewed_days is not None and reviewed_days <= 30):
+        return False, "", ""
+
+    populated = {k for k, v in (f.get("lanes") or {}).items() if v > 0}
+    empty_market = [l for l in MARKET_LANES if l not in populated]
+    why = []
+    if stale:
+        why.append(f"stale {stale_days}d")
+    if thin:
+        why.append(f"{lanes}/5 lanes")
+    if thin and empty_market and "ruling" in populated:
+        return (True, ", ".join(why),
+                f"market discovery (empty: {'/'.join(empty_market)}) — case search will not move it")
+    return True, ", ".join(why), "case-law discovery (/refresh-radar)"
 
 
 def needy_lines(data):
     out = []
     for f in data.get("fault_lines", []):
-        stale_days = f.get("stale_days") or 0
-        lanes = f.get("lanes_populated") or 0
-        reviewed_days = f.get("reviewed_days")   # None if never reviewed
-        stale = stale_days > 180
-        thin = lanes <= 2
-        # A line reviewed within 30 days is "checked, dormant" — not a re-curation gap.
-        recently_reviewed = reviewed_days is not None and reviewed_days <= 30
-        if (not (stale or thin)) or recently_reviewed:
-            continue
-        why = []
-        if stale:
-            why.append(f"stale {stale_days}d")
-        if thin:
-            why.append(f"{lanes}/5 lanes")
-        out.append(f"{f['id']} ({', '.join(why)})")
+        needs, why, fix = diagnose(f)
+        if needs:
+            out.append(f"{f['id']} ({why}) — {fix}")
     return out
 
 
 def main():
-    if not DATA.exists():
-        print("no radar data.json yet")
+    path = landscape_path()
+    if not path.exists():
+        print("no radar landscape yet")
         return 0
-    data = json.loads(DATA.read_text())
+    data = json.loads(path.read_text())
     needy = needy_lines(data)
-    print("needs re-curation: " + ", ".join(needy) if needy else "all fault lines current")
+    print("needs re-curation: " + " | ".join(needy) if needy else "all fault lines current")
     return 0
 
 
