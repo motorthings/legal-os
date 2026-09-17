@@ -441,7 +441,7 @@ def render(data):
   .rk-head {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 6rem;
     gap:.6rem; margin:.9rem 0 .35rem; white-space:nowrap; font-size:.62rem; font-weight:700;
     letter-spacing:.07em; text-transform:uppercase; color:var(--dim); }}
-  .rk-head span:last-child {{ grid-column:4; }}
+  .rk-head span:last-child {{ grid-column:4; text-align:center; }}
   .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 6rem;
     gap:.6rem; align-items:center; margin:0 0 .32rem; }}
   .rk-n {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
@@ -452,7 +452,8 @@ def render(data):
   .rk-fill {{ display:flex; height:8px; border-radius:2px; overflow:hidden;
     background:var(--line); }}
   .rk-fill i {{ display:block; height:100%; }}
-  .rk-t {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim); }}
+  .rk-t {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
+    text-align:center; }}
   .rk-split {{ display:flex; align-items:center; gap:.6rem; margin:.7rem 0 .5rem; }}
   .rk-split span {{ flex:1; border-top:1px dashed var(--line); }}
   .rk-split em {{ font-style:normal; font-size:.6rem; font-weight:700; letter-spacing:.06em;
