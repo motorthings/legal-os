@@ -755,6 +755,10 @@ export default function RadarPage() {
 
 
 
+      </section>
+
+      {/* NOT REQUIRED YET — its own panel, not a child of the action list */}
+      <section className="card p-4 md:p-6">
         {/* NOT REQUIRED YET — suppressing these made the page read as if agentic supervision
             did not exist, when it is the one line with a live bill in Congress. */}
         {watched.length > 0 && (
@@ -907,9 +911,11 @@ export default function RadarPage() {
           )}
         </div>
         <div className="card overflow-hidden">
+          {showDetail && (
           <div className="grid grid-cols-[2rem_1fr_5rem_6rem_9rem_5rem_1.5rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
             <span>#</span><span>Control · fault line</span><span>Lead</span><span>Coverage</span><span>{view === 'gap' ? 'L3·E·S' : 'L1·L2·L3·E'}</span><span>{view === 'gap' ? 'Gap' : 'Queue'}</span>
           </div>
+          )}
           {showDetail && (
             tableRows.map((f) => {
             const lead = leadBucket(f.lead);

@@ -248,3 +248,12 @@
 {"ts": "2026-09-17T19:47:28.281395+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
 {"ts": "2026-09-17T19:47:28.282219+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
 {"ts": "2026-09-17T19:47:28.886605+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "not traced (pass --trace)"}
+{"ts": "2026-09-17T19:50:59.415514+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T19:50:59.416921+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T19:51:00.495078+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "not traced (pass --trace)"}
+{"ts": "2026-09-17T19:52:02.722644+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T19:52:02.723731+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T19:52:03.463441+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "not traced (pass --trace)"}
+{"ts": "2026-09-17T19:52:24.166813+00:00", "event": "kb_reconciled", "n_items": 108, "duplicates": 0, "shared_source": 4}
+{"ts": "2026-09-17T19:52:24.167545+00:00", "event": "reliability", "boosted": 0, "out_of_sample_rulings": 0}
+{"ts": "2026-09-17T19:52:24.777380+00:00", "event": "built", "n_items": 108, "n_fault_lines": 11, "as_of": "2026-09-17", "rising": 6, "hit_rate": 0.44, "snapshots": 5, "artifact": "not traced (pass --trace)"}

@@ -176,7 +176,7 @@ def render(data):
     )
     queue_panel = f"""
     <div class="cal queue">
-      <h2><details class="det"><summary class="det-s">show &mdash; {_c("detail_heading_suffix")}</summary></details></h2>
+      <h2>{_c("detail_heading_suffix")}</h2>
       <p class="small">Not the headline — the working. Three lanes per fault line.
         <b>L1 capability</b> = can AI now do the thing
         that creates the fault line (weighted low, labeled — a demonstration, not a ruling).
@@ -185,7 +185,7 @@ def render(data):
         binding the signal is on the market (an insurer changing a renewal form &gt; a pundit essay).
         <b>Queue</b> is the intersection: both high means the control is urgent <i>and</i> about to be
         mandatory. That's the third order, where the practice-building work lives.</p>
-      <details class="det"><summary class="det-s">show &mdash; each row opens to its meters and evidence</summary>
+      <details class="det"><summary class="det-s"><span class="chev">&#9656;</span> show &mdash; each row opens to its meters and evidence</summary>
       <div class="tw"><table class="ev"><thead><tr><th>Control</th><th>L1 cap</th><th>L2 rule</th><th>L3 adopt</th>
         <th>Queue</th><th>Lead</th><th>Fault line</th></tr></thead>
       <tbody>{q_rows}</tbody></table></div>
@@ -285,14 +285,16 @@ def render(data):
       <div class="rk-legend">{_legend}<span class="src">&middot; trailing number = total sources</span></div>
     </div>"""
 
-    watch_block = f"""
+    watch_panel = f"""
+    <div class="cal">
       <details class="watch-d"><summary class="watch-h"><span class="chev">&#9656;</span> show &mdash; {len(duties) + 1} to
         {len(duties) + len(watching)} not required yet</summary>
       <p class="small">The same single ranking continues below the line. These sit under the
         threshold, so nothing yet obliges you to act, but they are on the same list because a
         control can be worth building before it is required. The reason differs per line: a bill
         in Congress is a fact, while a reading near the line is only our own dial moving.</p>
-      <ul class="acts">{watch_rows}</ul></details>""" if watch_rows else ""
+      <ul class="acts">{watch_rows}</ul></details>
+    </div>""" if watch_rows else ""
     duty_panel = f"""
     <div class="cal">
       <h2>{_c("actions_heading")}
@@ -302,7 +304,6 @@ def render(data):
         depend on which jurisdiction you practise in. Ordered by how well the record supports each
         one. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
-      {watch_block}
     </div>"""
     ms_rows = "".join(
         f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
@@ -499,6 +500,7 @@ def render(data):
     <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
   {rank_panel}
   {duty_panel}
+  {watch_panel}
   {''.join(rows)}
   {queue_panel}
   {cal_panel}
