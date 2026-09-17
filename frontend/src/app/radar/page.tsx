@@ -100,7 +100,6 @@ interface Milestones {
 
 interface Copy {
   board_heading: string;
-  board_sub: string;
   board_blurb: string;
   actions_heading: string;
   seq_cta: string;
@@ -219,7 +218,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
                   <span className="h-px flex-1 border-t border-dashed border-[var(--border-bright)]" />
                 </div>
               )}
-              <div className="grid grid-cols-[1.3rem_1fr_2rem] gap-2 items-center">
+              <div className="grid grid-cols-[1.3rem_1fr_4.5rem] gap-2 items-center">
                 <span className="font-mono text-[11px] font-bold text-[var(--text-muted)] text-right">
                   {startAt + i}
                 </span>
@@ -244,7 +243,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
                     })}
                   </div>
                 </div>
-                <span className="font-mono text-[11px] text-[var(--text-muted)] text-right">
+                <span className="font-mono text-[11px] text-[var(--text-muted)] text-right" title="Number of sources">
                   {total}
                 </span>
               </div>
@@ -533,7 +532,7 @@ export default function RadarPage() {
   // Shared copy, published inside data.json by radar/build.py so both renderers read the
   // same strings. Fallback keeps the page readable if an older data.json is served.
   const copy: Copy = data.copy ?? {
-    board_heading: 'The whole board', board_sub: '', board_blurb: '',
+    board_heading: 'The whole board', board_blurb: '',
     actions_heading: 'What to do',
     seq_cta: '',
   };
@@ -651,11 +650,12 @@ export default function RadarPage() {
       {/* THE WHOLE BOARD — the shape of the list above, before the detail */}
       <section className="card p-4 md:p-6">
         <p className="eyebrow mb-2">{copy.board_heading}</p>
-        <p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">
-          The same eleven in the same order, one bar each. Bar length is how many sources stand
-          behind the duty; the colours are what kind of authority they are, because seven
-          circuit courts and seven bar opinions are not the same claim.
-        </p>
+<p className="text-[12.5px] text-[var(--text)] leading-relaxed max-w-[880px] mb-4">{copy.board_blurb}</p>
+        <div className="grid grid-cols-[1.3rem_1fr_4.5rem] gap-2 mb-1.5">
+          <span />
+          <span className="eyebrow">Duty</span>
+          <span className="eyebrow text-right whitespace-nowrap"># of sources</span>
+        </div>
         <RankChart duties={duties} watched={[]} />
       </section>
 

@@ -4068,7 +4068,6 @@
   "copy": {
     "_note": "Copy that must read identically on BOTH surfaces: the static page (build.py -> docs/radar/index.html) and the in-app page (frontend/src/app/radar/page.tsx). Only strings BOTH render belong here \u2014 a one-sided entry is just a second place to drift. Both read this file; tests/test_copy_contract.py fails if either hardcodes one of these strings.",
     "board_heading": "The whole board",
-    "board_sub": "the six required now, in the same order, one bar each",
     "board_blurb": "Bar length is how many sources stand behind the duty; the colours are what kind of authority they are, because seven circuit courts and seven bar opinions are not the same claim.",
     "actions_heading": "What to do",
     "seg_appellate": "appellate court",
