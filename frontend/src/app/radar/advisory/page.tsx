@@ -184,16 +184,17 @@ export default function RadarAdvisoryPage() {
         <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold mb-2">
           Sequence · duties first, shortest measured lead first
         </p>
+        {/* Two columns dropped here, on Charlie's read. The lead in days is the SORT key
+            and the list is already sorted by it, so printing it restated the order. The
+            "why" column said "a duty, and the firm is ready" on six of seven rows, and a
+            sentence that repeats down a column carries no information. The ordering rationale
+            is in the panel subtitle, stated once. */}
         <ol className="space-y-1">
           {a.plan.filter((p) => actionLines.has(p.fault_line)).map((p) => (
-            <li key={p.fault_line} className="grid grid-cols-[1.5rem_1fr_13rem_4.5rem_1fr] gap-2 items-center">
+            <li key={p.fault_line} className="grid grid-cols-[1.5rem_max-content_1fr] gap-3 items-center">
               <span className="font-mono text-[11px] text-[var(--text-muted)]">{p.sequence}</span>
               <span className="text-[12px] text-[var(--text)] truncate">{p.control}</span>
               {lane(p.govern, GOV_ACCENT)}
-              <span className="font-mono text-[10.5px] text-[var(--text-muted)]">
-                {p.lead_days ? `${p.lead_days}d` : '—'}
-              </span>
-              <span className="text-[10px] text-[var(--text-muted)] truncate">{p.why}</span>
             </li>
           ))}
         </ol>
