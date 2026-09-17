@@ -243,7 +243,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
                     })}
                   </div>
                 </div>
-                <span className="font-mono text-[11px] text-[var(--text-muted)] text-right" title="Number of sources">
+                <span className="font-mono text-[11px] text-[var(--text-muted)]" title="Number of sources">
                   {total}
                 </span>
               </div>
@@ -654,7 +654,7 @@ export default function RadarPage() {
         <div className="grid grid-cols-[1.3rem_1fr_6rem] gap-2 mb-1.5">
           <span />
           <span className="eyebrow">Duty</span>
-          <span className="eyebrow text-right whitespace-nowrap"># of sources</span>
+          <span className="eyebrow whitespace-nowrap"># of sources</span>
         </div>
         <RankChart duties={duties} watched={[]} />
       </section>
