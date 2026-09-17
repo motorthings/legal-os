@@ -139,9 +139,14 @@ live in separate lanes so speculation never masquerades as legal fact (see backl
 - [x] JSONL audit logging
 - [x] **Calibration layer** (`calibration.py`) — point-in-time backtest (replay the
       engine N days before each ruling landed, using only prior evidence; "called?" +
-      lead), pressure time-series snapshots, and an immutable per-run audit artifact
-      (`history/runs/`) capturing knobs, evidence, weights, math, predictions, backtest.
-      The engine earns trust by being graded, not by asserting the future.
+      lead) plus pressure time-series snapshots. The engine earns trust by being graded,
+      not by asserting the future.
+      **Run artifacts are off by default (2026-09-17).** `python radar/run.py --trace`
+      writes one to `history/runs/` when a replayable record of a specific run is wanted.
+      Nothing in the repo reads them, and each re-embeds the full evidence set and weight
+      math, so auto-writing one per run grew the directory by 4 MB in an afternoon. The
+      writer in `calibration.py` is untouched — that file is a frozen input and this
+      decision should not cost a re-freeze.
 - [x] **Calibration honesty layer** (2026-09-14) — the recall backtest can't see false
       positives, so it's paired with: a **precision / base-rate grid** (precision,
       flag-rate, lift over a line×month grid — currently precision 0.10, lift 1.59); a

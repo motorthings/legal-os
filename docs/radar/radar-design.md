@@ -192,9 +192,16 @@ landed, in `radar/history/resolutions.jsonl`), it replays the engine `LEAD_DAYS`
 the event using only prior evidence and checks whether the right meter already read ≥
 `CALL_THRESHOLD` (7.0) — "called?" plus lead. It reports hit rate overall and per order, two
 cascade conditionals (`P(L2|L1)`, `P(L3|L2)`), an "outran" set (capability called with no
-ruling yet), a pressure time-series (`history/snapshots.jsonl`), and immutable per-run audit
-artifacts (`history/runs/run-*.json`). The seed set is small and the L1 lane is young, so hit
-rates are reported honestly as such.
+ruling yet), and a pressure time-series (`history/snapshots.jsonl`). The seed set is small and
+the L1 lane is young, so hit rates are reported honestly as such.
+
+Per-run audit artifacts (`history/runs/run-*.json`) are **off by default as of 2026-09-17**;
+`python radar/run.py --trace` writes one on request. Nothing in the repo reads them, and each
+re-embeds the full evidence set and weight math, so auto-writing one per run grew the directory
+to 4 MB and 129k lines in a single afternoon while the weekly CI added another every week. The
+writer in `calibration.py` is deliberately untouched — that file is a frozen input, and a
+housekeeping decision should not cost a re-freeze. Traced runs are still reproducible; there
+just is not a copy of every run on disk.
 
 ### 4.5 Outputs
 
@@ -303,8 +310,8 @@ EARNED and kept strictly separate (backlog 8b).
   multiplier is 1.0 and scoring is byte-identical to Layer-2 — the loop is wired and
   dormant, not faked. It begins learning only from genuine forward evidence.
 - **Wired into the OS** — `run.py` refreshes the ledger every pass; the reliability ledger
-  hash is captured in each run artifact's knobs so a score replays against the exact
-  learning state it used. Tested (`tests/test_reliability.py`, 4/4: dormant-today,
+  hash is captured in a run artifact's knobs (`--trace`) so a traced score replays against
+  the exact learning state it used. Tested (`tests/test_reliability.py`, 4/4: dormant-today,
   in-sample-gated, earns-and-caps, effective-cap-below-primary).
 
 ## 5.6 Network fetchers — allowlist-bound, offline by default (2026-09-14)
@@ -717,8 +724,8 @@ leg.
 
 ### Roadmap markers
 
-- **Shipped (v1):** 11 fault lines, tier model, deterministic weighted scorer, calibration +
-  run artifacts, seeded feed, scheduled regen. See §4.
+- **Shipped (v1):** 11 fault lines, tier model, deterministic weighted scorer, calibration,
+  seeded feed, scheduled regen. See §4.
 - **Existing, separate (Part C):** law-firm-sim and legal-sim (shared engine, `FirmSignature`,
   Monte Carlo/Bayesian, AI Profit Paradox).
 - **Shipped 2026-09-07 (seam, two-verdict):** `radar/advisory.py` maps the four effect-orders into a

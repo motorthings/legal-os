@@ -61,10 +61,16 @@ jobs:
           # the "Verify the freeze held" step above fails the run if any of them moved, so
           # a change there should be a human decision with a KNOBS_FROZEN_AT bump, never a
           # bot commit.
+          # NOTE: radar/history/runs is deliberately NOT committed. Run artifacts are
+          # write-only (nothing reads them) and each re-embeds the full evidence set and
+          # weight math, so auto-committing one per run grew the directory by 4 MB in a
+          # single afternoon. Run `python radar/run.py --trace` when a replayable record of
+          # a specific run is actually wanted, and commit it by hand if it matters.
           git add radar/sources/feed_live.jsonl radar/sources/harvested_live.jsonl \
                   radar/history/admissions.jsonl radar/history/snapshots.jsonl \
-                  radar/history/runs radar/history/source_reliability.json \
-                  radar/history/reviewed.json radar/history/milestones.jsonl || true
+                  radar/history/source_reliability.json \
+                  radar/history/reviewed.json radar/history/milestones.jsonl \
+                  radar/history/leverage.jsonl || true
           if git diff --cached --quiet; then
             echo "No change in radar output."
           else
