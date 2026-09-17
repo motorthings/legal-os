@@ -112,6 +112,11 @@ export default function RadarAdvisoryPage() {
   if (!data) return <div className="p-8 text-[var(--text-muted)] font-mono text-sm">Loading advisory…</div>;
 
   const a = data[slug];
+  // Only the work. A row whose GOVERN verdict is 'no-mandate' has nothing for the firm to
+  // do, and a list that includes it is a list of eleven things when the answer is seven.
+  const actionRows = a.rows.filter((r) => r.govern !== 'no-mandate');
+  const actionLines = new Set(actionRows.map((r) => r.fault_line));
+
   const gc = a.verdict_counts.govern;
   const dc = a.verdict_counts.deploy;
 
@@ -166,7 +171,7 @@ export default function RadarAdvisoryPage() {
         </div>
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Govern</p>
-          <p className="font-mono text-[13px] text-[var(--text-strong)]">{gc['stand-up-now'] ?? 0} stand up · {gc['build-capacity-first'] ?? 0} build capacity · {gc['match-the-market'] ?? 0} match market · {gc['no-mandate'] ?? 0} no mandate</p>
+          <p className="font-mono text-[13px] text-[var(--text-strong)]">{gc['stand-up-now'] ?? 0} stand up · {gc['build-capacity-first'] ?? 0} build capacity · {gc['match-the-market'] ?? 0} match market{gc['no-mandate'] ? ` · ${gc['no-mandate']} with nothing to do, not shown` : ''}</p>
         </div>
         <div>
           <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold">Deploy</p>
@@ -180,7 +185,7 @@ export default function RadarAdvisoryPage() {
           Sequence · duties first, shortest measured lead first
         </p>
         <ol className="space-y-1">
-          {a.plan.map((p) => (
+          {a.plan.filter((p) => actionLines.has(p.fault_line)).map((p) => (
             <li key={p.fault_line} className="grid grid-cols-[1.5rem_1fr_9rem_4.5rem_1fr] gap-2 items-center">
               <span className="font-mono text-[11px] text-[var(--text-muted)]">{p.sequence}</span>
               <span className="text-[12px] text-[var(--text)] truncate">{p.control}</span>
@@ -199,7 +204,7 @@ export default function RadarAdvisoryPage() {
         <div className="grid grid-cols-[1fr_9rem_9rem_7rem] gap-2 px-4 py-2 border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
           <span>Control · fault line</span><span>GOVERN · stand up?</span><span>DEPLOY · put AI on it?</span><span>L2 · L3 · E</span>
         </div>
-        {[...a.rows].sort((x, y) => x.sequence - y.sequence).map((r) => (
+        {[...actionRows].sort((x, y) => x.sequence - y.sequence).map((r) => (
           <div key={r.fault_line} className="grid grid-cols-[1fr_9rem_9rem_7rem] gap-2 px-4 py-2.5 items-center border-b border-[var(--border)] last:border-0 hover:bg-[var(--sunken)]">
             <span>
               <span className="text-[13px] font-semibold text-[var(--text-strong)]">
