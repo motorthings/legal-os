@@ -3,13 +3,13 @@
   "landscape": {
     "path": "live.json",
     "corpus": "live (frozen curated feed + live additions)",
-    "n_items": 108,
+    "n_items": 117,
     "freshness": {
       "n_curated": 108,
-      "n_live": 0,
-      "newest_evidence": "2026-08-31",
-      "newest_live_evidence": null,
-      "days_since_newest_live": null
+      "n_live": 9,
+      "newest_evidence": "2026-09-03",
+      "newest_live_evidence": "2026-09-03",
+      "days_since_newest_live": 14
     }
   },
   "firm": {
@@ -215,7 +215,7 @@
       "opportunistic": false,
       "required": true,
       "confidence": "supported",
-      "driving_evidence": 12,
+      "driving_evidence": 13,
       "govern": "build-capacity-first",
       "govern_note": "a duty the firm can't meet yet (Order 2 readiness below 6.0)",
       "deploy": "deploy-now",
@@ -224,7 +224,7 @@
         "1_capability": 5.8,
         "2_enablement": 2.0,
         "2_market_enable": 7.9,
-        "3_pressure": 9.3,
+        "3_pressure": 9.4,
         "3_adoption": 5.5,
         "4_gate_full": 7860,
         "4_gate_eff": 2039
@@ -289,7 +289,7 @@
       "opportunistic": false,
       "required": true,
       "confidence": "supported",
-      "driving_evidence": 13,
+      "driving_evidence": 18,
       "govern": "build-capacity-first",
       "govern_note": "a duty the firm can't meet yet (Order 2 readiness below 6.0)",
       "deploy": "deploy-now",
@@ -298,7 +298,7 @@
         "1_capability": 4.5,
         "2_enablement": 2.0,
         "2_market_enable": 6.6,
-        "3_pressure": 9.4,
+        "3_pressure": 9.5,
         "3_adoption": 6.0,
         "4_gate_full": 7860,
         "4_gate_eff": 237
@@ -363,7 +363,7 @@
       "opportunistic": false,
       "required": true,
       "confidence": "supported",
-      "driving_evidence": 14,
+      "driving_evidence": 18,
       "govern": "build-capacity-first",
       "govern_note": "a duty the firm can't meet yet (Order 2 readiness below 6.0)",
       "deploy": "deploy-now",
@@ -372,7 +372,7 @@
         "1_capability": 5.5,
         "2_enablement": 2.0,
         "2_market_enable": 7.2,
-        "3_pressure": 9.5,
+        "3_pressure": 9.6,
         "3_adoption": 6.0,
         "4_gate_full": 7860,
         "4_gate_eff": 1623
@@ -400,7 +400,7 @@
       "opportunistic": false,
       "required": true,
       "confidence": "supported",
-      "driving_evidence": 20,
+      "driving_evidence": 22,
       "govern": "build-capacity-first",
       "govern_note": "a duty the firm can't meet yet (Order 2 readiness below 6.0)",
       "deploy": "deploy-now",

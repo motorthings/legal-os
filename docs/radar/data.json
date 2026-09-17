@@ -1846,8 +1846,8 @@
         "software": 3
       },
       "lanes_populated": 2,
-      "reviewed_on": null,
-      "reviewed_days": null
+      "reviewed_on": "2026-09-17",
+      "reviewed_days": 0
     },
     {
       "id": "vendor_liability",
