@@ -201,7 +201,6 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
   { duties: FaultLine[]; watched: FaultLine[]; startAt?: number; splitLabel?: string }) {
   const rows = [...duties, ...watched];
   const max = Math.max(...rows.map((f) => f.strength?.total ?? 0), 1);
-  const short = (s: string) => (s.length > 44 ? s.slice(0, 43).trimEnd() + '…' : s);
 
   return (
     <div>
@@ -226,7 +225,7 @@ function RankChart({ duties, watched, startAt = 1, splitLabel = '' }:
                 </span>
                 <div className="min-w-0">
                   <div className="text-[11.5px] text-[var(--text)] truncate" title={f.action}>
-                    {short(f.action)}
+                    {f.action}
                   </div>
                   <div
                     className="flex h-[7px] mt-1 rounded-sm overflow-hidden bg-[var(--sunken)]"
