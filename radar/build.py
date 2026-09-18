@@ -335,8 +335,8 @@ def render(data):
       <p class="eyebrow">How it works</p>
       <p class="small">Every reading comes from primary sources &mdash; court orders, statutes, bar
         opinions &mdash; weighted by who said it rather than by how many said it. A vendor blog
-        carries about a hundredth the weight of a bar opinion, so a reading cannot be moved by
-        whoever publishes most. Before anything is admitted, three independent reviews try to break
+        carries a hundred and twenty-fifth the weight of a bar opinion, so it takes 125 of them to
+        outweigh one ruling. Before anything is admitted, three independent reviews try to break
         the claim; what does not survive is dropped rather than softened. Every number here links to
         the sources behind it, so you can check the working instead of trusting the summary.</p>
       <p class="eyebrow">Why the advice is useful</p>

@@ -128,13 +128,23 @@ function Part({
 export default function ReferencePage() {
   const [data, setData] = useState<RadarData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Read the flag threshold from the calibration output rather than restating it, the same
+  // way the radar page does. The Python side already shipped one drift bug from a hardcoded
+  // threshold whose comment claimed to be this number.
+  const [callThreshold, setCallThreshold] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const d = await fetch('/radar/data.json').then((r) => r.json());
-        if (!cancelled) setData(d);
+        const [d, c] = await Promise.all([
+          fetch('/radar/data.json').then((r) => r.json()),
+          fetch('/radar/calibration.json').then((r) => r.json()).catch(() => null),
+        ]);
+        if (!cancelled) {
+          setData(d);
+          setCallThreshold(c?.call_threshold ?? null);
+        }
       } catch {
         if (!cancelled) setError('Could not load radar data.');
       }
@@ -177,7 +187,7 @@ export default function ReferencePage() {
             a meter — and what is building right now. Each part reveals as you reach it.
           </p>
           <p className="font-mono text-[12px] text-[var(--text-muted)] mt-2">
-            {data.as_of} · {data.n_items} tracked items · deterministic &amp; replayable
+            {data.as_of} · {data.n_items}{' '}tracked items · deterministic &amp; replayable
           </p>
         </header>
       </Reveal>
@@ -262,12 +272,12 @@ export default function ReferencePage() {
           ))}
         </div>
         <p className="text-[12px] text-[var(--text-muted)] leading-relaxed mt-3 max-w-3xl">
-          A vendor blog carries about a hundredth of a bar opinion. Ten vendor posts cannot outweigh
-          one ruling. Two things keep it honest: the <b className="text-[var(--text)]">L2 ruling meter
-          is two-sided</b> — an item can argue against a line and drag it down, not just up — and every
-          capital event is <b className="text-[var(--text)]">flagged</b> continuation / origination /
-          direction-shift, because a momentum signal can only predict continuation. A first-of-kind
-          move is labeled, not scored as if it were predictable.
+          A vendor blog carries a hundred and twenty-fifth of a bar opinion, so it takes 125 of them
+          to outweigh one ruling. Two things keep it honest: the <b className="text-[var(--text)]">L2
+          ruling meter is two-sided</b> — an item can argue against a line and drag it down, not just
+          up — and every capital event is <b className="text-[var(--text)]">flagged</b> continuation /
+          origination / direction-shift, because a momentum signal can only predict continuation. A
+          first-of-kind move is labeled, not scored as if it were predictable.
         </p>
       </Part>
 
@@ -298,8 +308,71 @@ export default function ReferencePage() {
         </p>
       </Part>
 
-      {/* part 5 — watch next */}
-      <Part n="5" title="What to watch next" delay={80} lede="The single most valuable signal in the whole system is the thing that has not happened yet.">
+      {/* part 5 — the decision model */}
+      <Part n="5" title="How a line becomes an instruction" delay={80} lede="Scoring is what the record says. This is what it tells a firm to do, and the two are kept apart on purpose. Everything above is true of every firm; everything here depends on who you are.">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="card p-4" style={{ borderTop: '3px solid var(--primary)' }}>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Govern</p>
+            <p className="text-[14px] font-semibold text-[var(--text-strong)] mt-1.5 mb-1">Do you have to do this?</p>
+            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">
+              Answered from the law and the market, never from the economics. A required control is
+              never deferred because the AI math is poor. The billable hour does not excuse a firm
+              from a competence program it is required to have.
+            </p>
+          </div>
+          <div className="card p-4" style={{ borderTop: '3px solid var(--metric)' }}>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--metric)]">Deploy</p>
+            <p className="text-[14px] font-semibold text-[var(--text-strong)] mt-1.5 mb-1">Does it pay to put AI on the work?</p>
+            <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">
+              A separate question with a separate answer. A rule requiring something is not a reason
+              to put AI on it, and on hourly billing more AI is usually a net loss whatever the rule
+              says.
+            </p>
+          </div>
+        </div>
+
+        <div className="card p-4 mt-4">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--amber)] mb-2">Have to comes in two kinds, and they are never blended</p>
+          <div className="space-y-2 text-[13px]">
+            <p>
+              <b className="text-[var(--text)]">A duty</b>{' '}
+              <span className="text-[var(--text-muted)]">
+                — the law has already moved. Ruling pressure at or above {(callThreshold ?? 8.0).toFixed(1)},
+                on ruling evidence alone. The choice is comply or risk being sanctioned.
+              </span>
+            </p>
+            <p>
+              <b className="text-[var(--text)]">A market norm</b>{' '}
+              <span className="text-[var(--text-muted)]">
+                — your peers have started. The choice is match it or lose work.
+              </span>
+            </p>
+          </div>
+          <p className="text-[12px] text-[var(--text)] leading-relaxed mt-3 max-w-3xl">
+            A norm only counts if <b>someone with something to withhold requires it</b>. An insurer who
+            can drop your coverage. A client who can move the engagement. A platform that can withhold
+            the docket. A high adoption score on its own is not enough, and that is deliberate: this is
+            why the model does not use one.
+          </p>
+          <p className="text-[12px] text-[var(--text)] leading-relaxed mt-3 max-w-3xl">
+            Leverage is <b>firm-relative</b>. A carrier you name yourself clears the evidence bar by
+            itself, because one carrier requiring something of you is a stronger signal than two
+            requiring it of the market in general. Naming your carrier is what turns a thin norm into a
+            supported one.
+          </p>
+        </div>
+
+        <p className="text-[12px] text-[var(--text-muted)] mt-3 max-w-3xl">
+          Where the evidence behind a call is thin, the page says so rather than rounding up. Below the
+          duty threshold a line is still shown, labelled as not yet required, with the reason it is
+          worth watching. Run{' '}
+          <Link href="/radar/advisory" className="text-[var(--primary)] hover:underline">the firm advisory</Link>{' '}
+          to see these verdicts against a named posture.
+        </p>
+      </Part>
+
+      {/* part 6 — watch next */}
+      <Part n="6" title="What to watch next" delay={80} lede="The single most valuable signal in the whole system is the thing that has not happened yet.">
         <div className="card p-5" style={{ background: 'var(--metric-dim)', borderColor: 'var(--border-bright)' }}>
           <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--metric)] mb-1.5">The open signal</p>
           <p className="text-[14px] text-[var(--text)] leading-relaxed">

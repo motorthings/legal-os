@@ -102,9 +102,13 @@ const GUIDES: Guide[] = [
     external: true,
   },
   {
-    title: 'Fault-Line Radar — Master Reference',
+    // NOT "Master Reference". The sidebar's Reference item is the live page that reads
+    // data.json; this iframes a written portfolio explainer whose figures are baked in. Two
+    // things called a reference, one of which goes stale on the next CI run, is a trap for
+    // whoever reads the wrong one. Named for what it is instead.
+    title: 'Fault-Line Radar — Portfolio Write-up',
     slug: 'radar-master-reference',
-    desc: 'Everything in one place: the three-part stack, the five meters, the eleven fault lines, how evidence gets admitted and weighted, and the worked example.',
+    desc: 'Everything in one place: the three-part stack, the five meters, the eleven fault lines, how evidence gets admitted and weighted, and the worked example. A written explainer rather than a wired one, so its figures are a snapshot; the live page is Reference in the sidebar.',
     icon: BarChart3,
     category: 'Fault-Line Radar',
     external: true,
