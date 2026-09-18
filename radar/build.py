@@ -28,7 +28,11 @@ def _c(key):
     return COPY[key]
 
 
-TIER_COLOR = {"T1": "#e8b04b", "T2": "#c9a227", "T3": "#6fae8f", "T4": "#7a8aa0", "T5": "#8a5a5a"}
+# Emitted into inline `style="color:…"` attributes, so these must be var() references
+# rather than literal hex: a literal cannot follow the light/dark toggle, and the old
+# gold ramp would have stayed gold in both themes. Defined in PAGE_CSS.
+TIER_COLOR = {"T1": "var(--t1)", "T2": "var(--t2)", "T3": "var(--t3)",
+              "T4": "var(--t4)", "T5": "var(--t5)"}
 
 
 def _esc(s):
@@ -36,13 +40,14 @@ def _esc(s):
 
 
 def _pressure_color(p):
+    """L2 ruling chip fill. var() references for the same reason as TIER_COLOR."""
     if p >= 8:
-        return "#e0603a"
+        return "var(--p-hot)"
     if p >= 6.5:
-        return "#e8b04b"
+        return "var(--p-warm)"
     if p >= 5:
-        return "#c9a227"
-    return "#6f7f95"
+        return "var(--p-mid)"
+    return "var(--p-cool)"
 
 
 def _trend_glyph(t):
@@ -61,23 +66,6 @@ def _strength_line(d, lead_by_line):
     if lead != "—":
         bits.append(f"first signal {lead} before it bound")
     return " · ".join(bits)
-
-
-def _watch_item(w, n):
-    """One row of the 'not required yet' list. Built here rather than inline: nested
-    f-strings with escaped quotes are a syntax error in the expression part, and the
-    stakes line is conditional."""
-    stakes = f'<p class="act-k">{_esc(w["stakes"])}</p>' if w.get("stakes") else ""
-    label = _esc(w["strength"]["label"])
-    return (
-        f'<li class="act watch">'
-        f'<div class="act-h"><span class="act-n">{n}</span>'
-        f'<span class="act-t">{_esc(w["action"])}</span>'
-        f'<span class="act-s thin">{label}</span></div>'
-        f'{stakes}'
-        f'<p class="act-m">{_esc(w["watch_reason"])}</p>'
-        f'</li>'
-    )
 
 
 def _lead_cell(days_list):
@@ -100,6 +88,305 @@ def _staleness(r):
     if d <= 180:
         return f'<span class="mid">· {label} ({d}d)</span>'
     return f'<span class="stale">· {label} — {d}d stale</span>'
+
+
+# --- Page chrome, hoisted out of render()'s f-string -------------------------
+# render() returns ONE f-string, so every literal brace inside it has to be doubled.
+# The stylesheet alone was ~110 lines of doubled braces, and the theme toggle's JS would have
+# added more. These are plain module-level strings instead: braces, comments and quotes
+# are written normally, and the f-string drops each one in with a single {NAME}.
+# Nothing here is interpolated, so none of it needs to be inside an f-string at all.
+#
+# The look matches the legal/ diagram pages (diagrams repo): rose + teal on warm paper,
+# Mulish, sticky nav with breadcrumbs, light/dark toggle. Token names are the same, so
+# the two surfaces read as one family.
+
+PAGE_FONTS = """<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">"""
+
+# Runs before first paint so the stored theme is applied without a flash of the wrong
+# palette. The class toggled is `light`; dark is its absence -- so the dark values live
+# in :root and html.light overrides them, and a reader with no JS gets the paper look.
+PAGE_THEME_HEAD = """<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('diagram-theme');
+      if (t === 'dark') document.documentElement.classList.remove('light');
+      else document.documentElement.classList.add('light');
+    } catch (e) {}
+  })();
+</script>"""
+
+# Breadcrumbs are absolute on purpose: this page is served from the legal-os GitHub Pages
+# site at /legal-os/radar/, where the relative ../index.html the diagram pages use would
+# 404. Every crumb walks back toward the diagrams hub, terminal crumb is this page.
+PAGE_NAV = """<div class="nav">
+  <div class="nav-inner">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="https://sickofancy.ai/diagrams/index.html">Index</a>
+      <span class="sep">/</span>
+      <a href="https://sickofancy.ai/diagrams/legal/index.html">Legal</a>
+      <span class="sep">/</span>
+      <a href="https://sickofancy.ai/diagrams/legal/legal-os-radar.html">Radar</a>
+      <span class="sep">/</span>
+      <span class="current" aria-current="page">Live radar</span>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light and dark theme">&#9788;</button>
+  </div>
+</div>"""
+
+PAGE_THEME_JS = """
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var btn = document.getElementById('themeToggle');
+  var SUN = '\\u263C', MOON = '\\u263E';
+  function paint() {
+    var light = root.classList.contains('light');
+    btn.textContent = light ? MOON : SUN;
+    btn.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+  }
+  btn.addEventListener('click', function () {
+    root.classList.toggle('light');
+    try { localStorage.setItem('diagram-theme', root.classList.contains('light') ? 'light' : 'dark'); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+"""
+
+PAGE_CSS = """
+  :root {
+    --font-body: 'Mulish', 'Segoe UI', Helvetica, sans-serif;
+    --font-mono: 'Mulish', ui-monospace, 'SF Mono', Consolas, monospace;
+    --bg:#171416; --surface:#1E1A1D; --surface2:#262024;
+    --border:#332D31; --border-bright:#463D42;
+    --text:#F5F2F1; --text-dim:#C9C3C1; --text-faint:#8A8481;
+    --primary:#E39CB2; --primary-dim:rgba(227,156,178,0.12);
+    --metric:#5FBF9B; --metric-dim:rgba(95,191,155,0.12);
+    --amber:#D9A05B;  --amber-dim:rgba(217,160,91,0.14);
+    --rose:#E36C89;   --rose-dim:rgba(227,108,137,0.14);
+    --violet:#A78BB8; --violet-dim:rgba(167,139,184,0.14);
+    --slate:#948E8C;  --slate-dim:rgba(148,142,140,0.14);
+    /* Rank-chart ramp. The old four were points on a gold ramp, which only worked while
+       the whole page was gold: --primary and --amber were both gold, so "appellate" and
+       "trial court" were near-identical in the bar AND the legend. These are the family's
+       semantic accents instead, so a bar segment and the same accent elsewhere name the
+       same thing. Bar order runs app -> trial -> statute -> guide, which keeps the two
+       closest hues (rose, violet) apart in a 9px bar. */
+    --rk-app:#E36C89; --rk-trial:#D9A05B; --rk-statute:#5FBF9B; --rk-guide:#A78BB8;
+    /* Evidence tiers (TIER_COLOR in Python) and the L2 pressure chip fills
+       (_pressure_color in Python). Both are emitted as inline var() references rather
+       than literal hex, because a literal hex in an inline style cannot follow the
+       toggle and would leave the old gold ramp showing in one of the two themes. */
+    --t1:#E36C89; --t2:#D9A05B; --t3:#5FBF9B; --t4:#A78BB8; --t5:#8A8481;
+    --p-hot:#B83159; --p-warm:#D9A05B; --p-mid:#B07C2E; --p-cool:#948E8C;
+  }
+  html.light {
+    --bg:#F5F2F1; --surface:#FFFFFF; --surface2:#EDE8E6;
+    --border:#D9D2CE; --border-bright:#C4B9B4;
+    --text:#171416; --text-dim:#4A4442; --text-faint:#8A8481;
+    --primary:#B83159; --primary-dim:rgba(184,49,89,0.10);
+    --metric:#1E8A6A; --metric-dim:rgba(30,138,106,0.10);
+    --amber:#B07C2E;  --amber-dim:rgba(176,124,46,0.10);
+    --rose:#C4506B;   --rose-dim:rgba(196,80,107,0.10);
+    --violet:#8A5A76; --violet-dim:rgba(138,90,118,0.10);
+    --slate:#6A6461;  --slate-dim:rgba(106,100,97,0.10);
+    --rk-app:#C4506B; --rk-trial:#B07C2E; --rk-statute:#1E8A6A; --rk-guide:#8A5A76;
+    --t1:#C4506B; --t2:#B07C2E; --t3:#1E8A6A; --t4:#8A5A76; --t5:#8A8481;
+    --p-hot:#B83159; --p-warm:#B07C2E; --p-mid:#8A6A1E; --p-cool:#6A6461;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--font-body); font-size:15px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    /* The family's two-stop wash. This page is thousands of pixels taller than any
+       diagram page, so it needs no-repeat + fixed or the 40% stop repeats as visible
+       horizontal bands on the way down. */
+    background-image:
+      radial-gradient(at 10% 0%, var(--primary-dim) 0%, transparent 40%),
+      radial-gradient(at 90% 80%, var(--metric-dim) 0%, transparent 40%);
+    background-repeat:no-repeat, no-repeat;
+    background-attachment:fixed, fixed;
+  }
+  .nav { position:sticky; top:0; z-index:100; backdrop-filter:blur(16px);
+    background:var(--surface);
+    background:color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom:1px solid var(--border); }
+  .nav-inner { max-width:1040px; margin:0 auto; padding:12px 24px; display:flex;
+    align-items:center; justify-content:space-between; gap:12px; }
+  .crumbs { font-family:var(--font-mono); font-size:13px; font-weight:600; display:flex;
+    align-items:center; gap:8px; flex-wrap:wrap; }
+  .crumbs a { color:var(--primary); text-decoration:none; }
+  .crumbs a:hover, .crumbs a:focus-visible { text-decoration:underline; outline:none; }
+  .crumbs .sep { color:var(--text-faint); }
+  .crumbs .current { color:var(--text-dim); font-weight:400; }
+  .theme-toggle { width:36px; height:36px; border-radius:10px; border:1px solid var(--border);
+    background:var(--surface); cursor:pointer; display:flex; align-items:center;
+    justify-content:center; font-size:16px; line-height:1; color:var(--text-dim);
+    transition:all .2s; flex-shrink:0; }
+  .theme-toggle:hover, .theme-toggle:focus-visible { border-color:var(--primary);
+    color:var(--primary); outline:none; }
+
+  .container { max-width:1040px; margin:0 auto; padding:44px 24px 80px; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  /* Animated on the hero and the first panel only. There are ~15 panels and 11 fault-line
+     cards below; staggering all of them reads as jank and delays the first paint of the
+     tables, which are the part a reader actually came for. */
+  .hero { margin-bottom:26px; animation:fadeUp .5s ease both; }
+  .hero .kicker { font-family:var(--font-mono); font-size:11px; font-weight:700;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--text-faint); margin-bottom:12px; }
+  .hero h1 { font-size:42px; font-weight:800; letter-spacing:-1px; margin:0 0 10px; max-width:760px;
+    background:linear-gradient(135deg,var(--primary),var(--metric));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero p { font-size:17px; color:var(--text-dim); max-width:760px; margin:0; }
+  .hero .asof { font-family:var(--font-mono); font-size:12.5px; color:var(--text-faint); margin-top:12px; }
+
+  .legend { font-size:13px; color:var(--text-dim); background:var(--surface2);
+    border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin:0 0 18px; }
+  .legend b { color:var(--text); }
+  .legend code { font-family:var(--font-mono); font-size:12px; }
+
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:24px 26px; margin:0 0 18px; }
+  .panel:first-of-type { animation:fadeUp .5s ease .08s both; }
+  .panel h2 { font-size:20px; font-weight:800; letter-spacing:-.2px; margin:0 0 8px; }
+  .panel .small { color:var(--text-dim); font-size:14px; margin:.5rem 0; }
+  .panel .eyebrow { font-family:var(--font-mono); font-size:10px; font-weight:700;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--text-faint); margin:1.2rem 0 .3rem; }
+  .meta { color:var(--text-faint); font-size:11.5px; font-family:var(--font-mono); }
+  .panel h2 .meta { font-weight:600; margin-left:.6rem; }
+  .meta .fresh { color:var(--metric); }
+  .meta .mid { color:var(--amber); }
+  .meta .stale { color:var(--rose); font-weight:700; }
+  b { color:var(--text); }
+  a { color:var(--primary); }
+
+  .fl { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    margin:0 0 10px; overflow:hidden; transition:border-color .15s; }
+  .fl[open] { border-color:var(--border-bright); }
+  summary { cursor:pointer; list-style:none; padding:14px 18px; display:flex;
+    align-items:center; gap:12px; flex-wrap:wrap; }
+  summary::-webkit-details-marker { display:none; }
+  .chev { margin-left:auto; color:var(--text-faint); font-size:12px; transition:transform .15s; }
+  details[open] > summary .chev { transform:rotate(90deg); }
+  .fl summary .meta { margin-left:auto; }
+  .p { font-weight:700; color:#171416; border-radius:6px; padding:2px 8px; min-width:2.6rem;
+    text-align:center; font-family:var(--font-mono); font-size:13px; }
+  .p.a { background:transparent !important; color:var(--metric); border:1px solid var(--metric-dim); }
+  .p.c { background:transparent !important; color:var(--violet); border:1px dashed var(--violet-dim); }
+  .t { font-size:16px; font-weight:700; color:var(--text); }
+  .body { padding:0 18px 18px; border-top:1px solid var(--border); }
+  .vec { margin:.7rem 0; font-size:14px; color:var(--text-dim); }
+  .vec.build { color:var(--metric); }
+  .vec.small { color:var(--text-faint); font-size:12px; }
+
+  .tw { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table.ev { width:100%; border-collapse:collapse; font-size:13px; margin-top:.5rem; }
+  table.ev th { text-align:left; color:var(--text-faint); font-family:var(--font-mono);
+    font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    border-bottom:1px solid var(--border); padding:8px 10px; }
+  table.ev td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top;
+    color:var(--text-dim); }
+  table.ev tr:last-child td { border-bottom:none; }
+  td.d { white-space:nowrap; color:var(--text-faint); font-family:var(--font-mono); font-size:12px; }
+  td.c { text-align:center; white-space:nowrap; color:var(--text-faint); }
+  .queue table.ev td { vertical-align:middle; }
+  .tier { font-weight:700; font-family:var(--font-mono); }
+  .src { color:var(--text-faint); font-size:11.5px; margin-top:2px; font-family:var(--font-mono); }
+  .flag { font-size:10px; background:var(--metric-dim); color:var(--metric); border-radius:4px;
+    padding:1px 6px; margin-left:4px; font-family:var(--font-mono); font-weight:700; }
+  .flag.conflict { background:var(--rose-dim); color:var(--rose); }
+  .hit { color:var(--metric); font-weight:700; }
+  .miss { color:var(--rose); font-weight:700; }
+  .mkt { font-size:11px; background:var(--metric-dim); color:var(--metric); border-radius:4px;
+    padding:2px 6px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.04em; }
+  .cap { font-size:11px; background:var(--violet-dim); color:var(--violet); border-radius:4px;
+    padding:2px 6px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.04em; }
+
+  /* Action list — the answer, before the working. */
+  .acts { list-style:none; margin:16px 0 0; padding:0; }
+  .act { background:var(--surface2); border:1px solid var(--border); border-radius:12px;
+    padding:16px 18px; margin:0 0 10px; }
+  .act-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .act-n { font-family:var(--font-mono); color:var(--text-faint); font-weight:800; font-size:13px; }
+  .act-t { font-size:16px; font-weight:700; color:var(--text); }
+  .act-s { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+    padding:3px 8px; border-radius:5px; font-family:var(--font-mono); }
+  .act-s.strong { background:var(--metric-dim); color:var(--metric); }
+  .act-s.moderate { background:var(--amber-dim); color:var(--amber); }
+  .act-s.thin { background:var(--violet-dim); color:var(--violet); }
+  .act-k { color:var(--text-dim); font-size:14px; margin:10px 0 4px; }
+  .act-m { font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); margin:4px 0 8px; }
+  .act details summary { cursor:pointer; font-family:var(--font-mono); font-size:11.5px;
+    font-weight:700; color:var(--primary); padding:0; }
+  .act details summary:hover { text-decoration:underline; }
+  .act-ev { margin:12px 0 0; padding-top:12px; border-top:1px solid var(--border);
+    font-size:13px; color:var(--text-dim); }
+  .act-ev .mtr { font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin:8px 0; }
+  .act-ev .mtr-note { font-size:12px; color:var(--text-faint); margin:6px 0 12px;
+    max-width:44rem; line-height:1.6; }
+  .act-ev .d { font-family:var(--font-mono); color:var(--text-faint); margin-right:6px; }
+  .act-ev .src { display:block; color:var(--text-faint); font-size:11px; margin:2px 0 8px 6px; }
+
+  .seq { margin:20px 0 0; padding-top:16px; border-top:1px solid var(--border); }
+  /* Text colour is --surface so it flips with the background it sits on: white on the
+     deep light-mode rose, near-black on the pale dark-mode one. */
+  .seq a { display:inline-block; font-family:var(--font-mono); font-size:13px; font-weight:700;
+    text-decoration:none; color:var(--surface); border-radius:10px; padding:12px 22px;
+    background:var(--primary); background:linear-gradient(135deg,var(--primary),var(--metric)); }
+  .seq a:hover { filter:brightness(1.08); }
+
+  /* The whole board — one stacked bar per duty, in list order. */
+  .rk { margin:0; }
+  .rk-head, .rk-row { display:grid; grid-template-columns:1.5rem minmax(0,1.3fr) 2.4fr 4.5rem;
+    gap:10px; }
+  .rk-head { margin:16px 0 6px; font-family:var(--font-mono); font-size:10px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); }
+  /* The count spans the bar and total columns; it labels both. */
+  .rk-head span:nth-child(3) { grid-column:3 / span 2; }
+  .rk-row { align-items:center; margin:0 0 6px; }
+  .rk-n { font-family:var(--font-mono); font-size:12px; color:var(--text-faint); text-align:right; }
+  .rk-l { font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; }
+  .rk-b { display:block; }
+  .rk-fill { display:flex; height:9px; border-radius:5px; overflow:hidden; background:var(--surface2); }
+  .rk-fill i { display:block; height:100%; }
+  .rk-t { font-family:var(--font-mono); font-size:12px; color:var(--text-faint); text-align:center; }
+  .rk-split { display:flex; align-items:center; gap:10px; margin:12px 0 8px; }
+  .rk-split span { flex:1; border-top:1px dashed var(--border); }
+  .rk-split em { font-style:normal; font-family:var(--font-mono); font-size:10px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); }
+  .rk-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:14px; padding-top:12px;
+    border-top:1px solid var(--border); font-size:12px; color:var(--text-dim); }
+  .rk-legend span { display:inline-flex; align-items:center; gap:6px; }
+  .rk-legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+
+  .footer { margin-top:40px; padding-top:18px; border-top:1px solid var(--border);
+    font-size:13px; color:var(--text-faint); }
+  .footer code { font-family:var(--font-mono); color:var(--text-dim); }
+
+  @media (max-width:768px) {
+    .container { padding:32px 18px 64px; }
+    .nav-inner { padding:10px 18px; }
+    .hero h1 { font-size:28px; }
+    .hero p { font-size:16px; }
+    .panel { padding:18px; }
+  }
+  /* The chart's label column used to be minmax(15rem,...), which is wider than a 375px
+     viewport and forced a horizontal page scroll. Let it wrap instead. */
+  @media (max-width:640px) {
+    .rk-head { display:none; }
+    .rk-row { grid-template-columns:1.1rem minmax(0,1fr) 1.1fr 2rem; gap:6px; }
+    .rk-l { white-space:normal; font-size:12px; line-height:1.35; }
+    .rk-legend { gap:10px; font-size:11.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+"""
 
 
 def render(data):
@@ -163,16 +450,9 @@ def render(data):
           </div>
         </details>""")
 
-    # --- Operating-model queue: the intersection, sorted by both meters high ---
-    # Duties only. The five watching lines live in their own collapsed section and nowhere
-    # else, so this panel does not re-present them under a different ordering.
-    # --- Milestone panel: the actionable half, graded on the record -----------
-    # This panel answers the question a firm actually asks ("how long do I have, and
-    # what is already required of me") without asserting a forecast. Lead time is
-    # measured antecedent -> binding event, which is a fact about the past.
+    # Graded milestones supply the antecedent -> binding lead time, which is a fact about
+    # the past: how much warning the record gave before each control became binding.
     ms = milestones.grade()
-    bs = milestones.blindside_scan()
-    lt = ms["lead_time_days"]
 
     # --- What the record already requires of any firm -------------------------
     # Firm-independent: `mandated` is the law having moved, which does not depend on who
@@ -224,18 +504,18 @@ def render(data):
     # near list as much as the now list; it just has to be labelled as not-yet-required.
     watching = sorted([fl for fl in fls if not fl["is_duty"]],
                       key=lambda r: (-r["pressure"], -r["strength"]["total"]))
-    watch_rows = "".join(_watch_item(w, i) for i, w in
-                         enumerate((x for x in watching if x.get("watch_reason")),
-                                   len(duties) + 1))
     # --- The whole board: the same eleven, one bar each ----------------------
     # The app page leads with this; the static page had no equivalent at all, so the only
     # overview here was the meter table at the bottom. Bar length is the number of sources,
     # coloured by KIND of authority: seven circuit courts and seven bar opinions are not
     # the same claim even when the totals match.
-    _seg_order = [("appellate", "appellate court", "var(--rk-app)"),
-                  ("trial", "trial court", "var(--rk-trial)"),
-                  ("primary", "statute or rule", "var(--rk-statute)"),
-                  ("guidance", "bar guidance", "var(--rk-guide)")]
+    # Labels come from copy.json, not from literals here. They are the same four strings,
+    # but the copy contract pins them and the app page reads the same keys — typing them
+    # twice is how the two surfaces start naming the same thing differently.
+    _seg_order = [("appellate", _c("seg_appellate"), "var(--rk-app)"),
+                  ("trial", _c("seg_trial"), "var(--rk-trial)"),
+                  ("primary", _c("seg_primary"), "var(--rk-statute)"),
+                  ("guidance", _c("seg_guidance"), "var(--rk-guide)")]
     _watching = [w for w in watching if w.get("watch_reason")]
     _all = duties + _watching
     _max = max([x["strength"]["total"] for x in _all] or [1])
@@ -264,16 +544,16 @@ def render(data):
     _legend = "".join(f'<span><i style="background:{col}"></i>{lab}</span>'
                       for _k, lab, col in _seg_order)
     rank_panel = f"""
-    <div class="cal">
+    <section class="panel">
       <h2>{_c("board_heading")}</h2>
       <p class="small">{_c("board_blurb")}</p>
       <div class="rk-head"><span></span><span>Duty</span><span># of sources</span></div>
       <div class="rk">{_bars_for(duties, 1)}</div>
       <div class="rk-legend">{_legend}</div>
-    </div>"""
+    </section>"""
 
     duty_panel = f"""
-    <div class="cal">
+    <section class="panel">
       <h2>{_c("actions_heading")}
         <span class="meta">{len(duties)} controls already required of any firm, whichever jurisdiction you practise in</span></h2>
       <p class="small">Each of these is a control the law has already moved on, at or above the
@@ -283,24 +563,8 @@ def render(data):
         so it comes first. The source count beside each one tells you how much to trust the line,
         not how soon to act on it. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
-      <p class="seq"><a href="/radar/advisory">{_c("seq_cta")} &rarr;</a></p>
-    </div>"""
-    ms_rows = "".join(
-        f'<tr><td class="d">{_esc(r["antecedent_date"] or "—")}</td>'
-        f'<td>{_esc(r["fault_line"])}</td>'
-        f'<td>{_esc((r["antecedent"] or "")[:70])}</td>'
-        f'<td class="c">{("—" if r["lead_days"] is None else str(r["lead_days"]) + "d")}</td>'
-        f'<td>{"<span class=\'hit\'>" + _esc(r["status"]) + "</span>" if r["status"] == "landed" else _esc(r["status"])}</td>'
-        f'<td>{_esc((r["binding"] or "not yet landed")[:58])}</td>'
-        f'<td class="c">{"Y" if r["called_before_antecedent"] else "·"}</td></tr>'
-        for r in sorted(ms["milestones"], key=lambda x: x["antecedent_date"] or "9999")
-    )
-    actionable = "".join(
-        f'<li><b>{_esc(a["fault_line"])}</b> — precursor on the record {_esc(a["precursor_date"])}: '
-        f'{_esc(a["precursor"])}</li>'
-        for a in ms["actionable_now"]
-    ) or '<li class="src">none — every control with a precursor has since bound</li>'
-    hr_ms = "n/a" if ms["engine_grade"]["hit_rate"] is None else f'{int(ms["engine_grade"]["hit_rate"]*100)}%'
+      <p class="seq"><a href="https://sickofancy.ai/diagrams/legal/legal-os-radar.html">{_c("seq_cta")} &rarr;</a></p>
+    </section>"""
     cal = calibration.report()
     cal_rows = "".join(
         f'<tr><td class="d">{_esc(r["date"])}</td>'
@@ -330,7 +594,7 @@ def render(data):
     # The page asserts throughout and never says why it should be believed, or why the
     # firm-specific answer is worth more than the general one. Same copy as the app page.
     why_panel = f"""
-    <div class="cal">
+    <section class="panel">
       <h2>Why this is worth your time</h2>
       <p class="eyebrow">How it works</p>
       <p class="small">Every reading comes from primary sources &mdash; court orders, statutes, bar
@@ -353,10 +617,10 @@ def render(data):
         &ldquo;should we adopt AI&rdquo; but &ldquo;which work is worth it at <em>our</em> fee
         structure, and which is worth deferring&rdquo; &mdash; and that answer is firm-specific, which
         is why the advisory layer asks for your pricing model before it tells you what to do.</p>
-    </div>"""
+    </section>"""
 
     cal_panel = f"""
-    <div class="cal">
+    <section class="panel">
       <h2>Calibration <span class="meta">grading the ranking across three orders, not asserting the future</span></h2>
       <p class="small">The engine tracks a cascade: <b>L1 capability</b> (AI can now do it) →
         <b>L2 ruling</b> (a court/bar moves) → <b>L3 adoption</b> (the control becomes table stakes).
@@ -372,7 +636,7 @@ def render(data):
       <div class="tw"><table class="ev"><thead><tr><th>Landed</th><th>Order</th><th>Result</th><th>Fault line</th>
         <th>Reading (lead→event)</th><th>Resolution</th></tr></thead>
       <tbody>{cal_rows}</tbody></table></div>
-    </div>"""
+    </section>"""
 
     tier_legend = " &nbsp; ".join(
         f'<span style="color:{TIER_COLOR[t]}">{t} {info["weight"]}</span> {info["label"]}'
@@ -380,141 +644,23 @@ def render(data):
     )
 
     return f"""<!doctype html>
-<html lang="en"><head>
+<html lang="en" class="light"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="The live Fault-Line Radar: what the record already requires of a firm, how well the evidence supports each control, and the sources behind every reading.">
+<link rel="icon" type="image/svg+xml" href="https://sickofancy.ai/diagrams/icon.svg">
 <title>Legal-AI Fault-Line Radar</title>
-<style>
-  :root {{ --bg:#0f1216; --panel:#161b22; --ink:#e6e6e6; --dim:#9aa7b4; --line:#2a323c;
-    /* Semantic accents. These were MISSING from this palette, so every var(--primary),
-       var(--amber) and var(--metric) reference on the page silently resolved to nothing
-       -- colour-coded elements rendered with no background at all. The rank chart made
-       it visible because its whole point is the colour encoding. Keep this block in step
-       with the tokens the templates reference. */
-    --primary:#e8b04b; --amber:#c9a227; --metric:#6fae8f; --rose:#e0603a;
-    /* Rank-chart ramp. The semantic accents are not far enough apart to carry four
-       categories: --primary and --amber are both gold, so "appellate" and "trial court"
-       were near-identical in the bar AND in the legend. Chart-only, strongest to weakest. */
-    --rk-app:#e8b04b; --rk-trial:#b06a35; --rk-statute:#6fae8f; --rk-guide:#5a6672; }}
-  * {{ box-sizing:border-box; }}
-  body {{ margin:0; background:var(--bg); color:var(--ink);
-    font-family:'Source Code Pro',ui-monospace,Menlo,monospace; line-height:1.5; }}
-  .wrap {{ max-width:960px; margin:0 auto; padding:2.4rem 1.2rem 4rem; }}
-  h1 {{ font-family:Fraunces,Georgia,serif; font-weight:600; font-size:1.9rem; margin:0 0 .2rem; }}
-  .sub {{ color:var(--dim); margin:0 0 .2rem; }}
-  .asof {{ color:var(--dim); font-size:.82rem; margin:.4rem 0 1.4rem; }}
-  .legend {{ font-size:.74rem; color:var(--dim); border:1px solid var(--line);
-    border-radius:8px; padding:.6rem .8rem; margin-bottom:1.6rem; }}
-  .fl {{ background:var(--panel); border:1px solid var(--line); border-radius:10px;
-    margin:.6rem 0; overflow:hidden; }}
-  summary {{ cursor:pointer; list-style:none; padding:.85rem 1rem; display:flex;
-    align-items:center; gap:.7rem; flex-wrap:wrap; }}
-  summary::-webkit-details-marker {{ display:none; }}
-  .det-s {{ cursor:pointer; list-style:none; }}
-  .det-s::-webkit-details-marker {{ display:none; }}
-  .det-s::before {{ content:'\\25b8  '; color:var(--dim); }}
-  .det[open] > .det-s::before {{ content:'\\25be  '; }}
-  .chev {{ margin-left:auto; color:var(--dim); font-size:.8rem; transition:transform .15s; }}
-  details[open] > summary .chev {{ transform:rotate(90deg); }}
-  @media (prefers-reduced-motion: reduce) {{ .chev {{ transition:none; }} }}
-  .p {{ font-weight:700; color:#111; border-radius:6px; padding:.1rem .5rem; min-width:2.6rem;
-    text-align:center; font-family:Fraunces,serif; }}
-  .t {{ font-family:Fraunces,serif; font-size:1.06rem; }}
-  .meta {{ color:var(--dim); font-size:.74rem; margin-left:auto; }}
-  .meta .fresh {{ color:#8fd3b0; }}
-  .meta .mid {{ color:#c9a227; }}
-  .meta .stale {{ color:#e0603a; font-weight:600; }}
-  .body {{ padding:0 1rem 1rem; border-top:1px solid var(--line); }}
-  .vec {{ margin:.6rem 0; font-size:.86rem; }}
-  .vec.build {{ color:#8fd3b0; }}
-  .vec.small {{ color:var(--dim); font-size:.74rem; }}
-  b {{ color:#cfd8e3; }}
-  .tw {{ overflow-x:auto; }}
-  table.ev {{ width:100%; border-collapse:collapse; font-size:.78rem; margin-top:.4rem; }}
-  table.ev th {{ text-align:left; color:var(--dim); border-bottom:1px solid var(--line);
-    padding:.3rem .4rem; font-weight:600; }}
-  table.ev td {{ padding:.35rem .4rem; border-bottom:1px solid #20262e; vertical-align:top; }}
-  td.d {{ white-space:nowrap; color:var(--dim); }}
-  .tier {{ font-weight:700; }}
-  .src {{ color:var(--dim); font-size:.72rem; margin-top:.15rem; }}
-  .flag {{ font-size:.62rem; background:#243; color:#8fd3b0; border-radius:4px;
-    padding:.02rem .3rem; margin-left:.3rem; }}
-  .flag.conflict {{ background:#422; color:#e0a0a0; }}
-  footer {{ color:var(--dim); font-size:.72rem; margin-top:2rem; border-top:1px solid var(--line);
-    padding-top:1rem; }}
-  a {{ color:#7fb0e0; }}
-  .cal {{ background:#12171d; border:1px solid var(--line); border-radius:10px;
-    padding:1rem 1.1rem; margin:0 0 1.6rem; }}
-  .cal h2 {{ font-family:Fraunces,serif; font-size:1.28rem; font-weight:600; margin:0 0 .35rem; }}
-  .cal .eyebrow {{ font-size:.68rem; font-weight:700; letter-spacing:.07em;
-    text-transform:uppercase; color:var(--dim); margin:.9rem 0 .25rem; }}
-  .cal .small {{ color:var(--dim); font-size:.78rem; margin:.3rem 0 .7rem; }}
-  /* Action list — the answer, before the working. */
-  .acts {{ list-style:none; margin:.9rem 0 0; padding:0; }}
-  .act {{ border:1px solid var(--line); border-radius:8px; padding:.8rem .9rem; margin:0 0 .6rem; }}
-  .act-h {{ display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }}
-  .act-n {{ font-family:'Source Code Pro',monospace; color:var(--dim); font-weight:700; }}
-  .act-t {{ font-size:.95rem; font-weight:700; color:var(--fg); }}
-  .act-s {{ font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
-    padding:.1rem .4rem; border-radius:4px; }}
-  .act-s.strong {{ background:#1f3326; color:#8fd3b0; }}
-  .act-s.moderate {{ background:#33291a; color:#e8b04b; }}
-  .act-s.thin {{ background:#2a2436; color:#c7b3e0; }}
-  .act-k {{ color:var(--fg); font-size:.82rem; margin:.45rem 0 .3rem; }}
-  .act-m {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
-    margin:.2rem 0 .45rem; }}
-  .act details summary {{ cursor:pointer; font-size:.72rem; font-weight:700; color:#7fb0e8; }}
-  .act-ev {{ margin:.5rem 0 0; font-size:.75rem; color:var(--fg); }}
-  .act-ev .mtr {{ font-family:'Source Code Pro',monospace; font-size:.68rem; color:var(--dim); margin:.4rem 0; }}
-  .act-ev .mtr-note {{ font-size:.66rem; color:var(--dim); margin:.35rem 0 .7rem; max-width:38rem; line-height:1.5; }}
-  .act-ev .d {{ font-family:'Source Code Pro',monospace; color:var(--dim); margin-right:.35rem; }}
-  .act-ev .src {{ display:block; color:var(--dim); font-size:.68rem; margin:.1rem 0 .5rem .4rem; }}
-  .watch-h {{ font-family:Fraunces,serif; font-size:.9rem; margin:1.4rem 0 .2rem;
-    padding-top:.9rem; border-top:1px solid var(--line); }}
-  .seq {{ margin:1.1rem 0 0; padding-top:.9rem; border-top:1px solid var(--line); }}
-  .seq a {{ color:var(--primary); font-weight:700; font-size:.82rem; text-decoration:none; }}
-  .seq a:hover {{ text-decoration:underline; }}
-  .act.watch {{ opacity:.86; }}
-  .watch-d summary {{ cursor:pointer; }}
-  .watch-d summary::marker {{ color:var(--dim); }}
-  /* The whole board — one stacked bar per duty, in list order. */
-  .rk {{ margin:0; }}
-  .rk-head {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 6rem;
-    gap:.6rem; margin:.9rem 0 .35rem; white-space:nowrap; font-size:.62rem; font-weight:700;
-    letter-spacing:.07em; text-transform:uppercase; color:var(--dim); }}
-  .rk-head span:last-child {{ grid-column:4; text-align:center; }}
-  .rk-row {{ display:grid; grid-template-columns:1.5rem minmax(15rem,1.1fr) 2.6fr 6rem;
-    gap:.6rem; align-items:center; margin:0 0 .32rem; }}
-  .rk-n {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
-    text-align:right; }}
-  .rk-l {{ font-size:.76rem; color:var(--fg); white-space:nowrap; overflow:hidden;
-    text-overflow:ellipsis; }}
-  .rk-b {{ display:block; }}
-  .rk-fill {{ display:flex; height:8px; border-radius:2px; overflow:hidden;
-    background:var(--line); }}
-  .rk-fill i {{ display:block; height:100%; }}
-  .rk-t {{ font-family:'Source Code Pro',monospace; font-size:.7rem; color:var(--dim);
-    text-align:center; }}
-  .rk-split {{ display:flex; align-items:center; gap:.6rem; margin:.7rem 0 .5rem; }}
-  .rk-split span {{ flex:1; border-top:1px dashed var(--line); }}
-  .rk-split em {{ font-style:normal; font-size:.6rem; font-weight:700; letter-spacing:.06em;
-    text-transform:uppercase; color:var(--dim); }}
-  .rk-legend {{ display:flex; flex-wrap:wrap; gap:.9rem; margin-top:.9rem;
-    padding-top:.7rem; border-top:1px solid var(--line); font-size:.68rem; color:var(--dim); }}
-  .rk-legend span {{ display:inline-flex; align-items:center; gap:.35rem; }}
-  .rk-legend i {{ width:9px; height:9px; border-radius:2px; display:inline-block; }}
-  .hit {{ color:#8fd3b0; font-weight:700; }}
-  .miss {{ color:#e0a0a0; font-weight:700; }}
-  .p.a {{ background:transparent !important; color:#8fd3b0; border:1px solid #2a4a3a; }}
-  .p.c {{ background:transparent !important; color:#c7b3e0; border:1px dashed #4a3a5a; }}
-  .mkt {{ font-size:.66rem; background:#1f3326; color:#8fd3b0; border-radius:4px; padding:.05rem .35rem; text-transform:uppercase; letter-spacing:.03em; }}
-  .cap {{ font-size:.66rem; background:#2a2436; color:#c7b3e0; border-radius:4px; padding:.05rem .35rem; text-transform:uppercase; letter-spacing:.03em; }}
-  td.c {{ text-align:center; white-space:nowrap; color:var(--dim); }}
-  .queue table.ev td {{ vertical-align:middle; }}
-</style></head>
-<body><div class="wrap">
-  <h1>Legal-AI Fault-Line Radar</h1>
-  <p class="sub">Where AI stresses a legal duty, ranked by what the record already shows — capability (L1) → ruling (L2) → control adoption (L3), weighted by authority, not volume.</p>
-  <p class="asof">As of {data['as_of']} · {data['n_items']} tracked items · each fault line shows L1 capability / L2 ruling / L3 adoption (0-10)</p>
+{PAGE_FONTS}
+{PAGE_THEME_HEAD}
+<style>{PAGE_CSS}</style></head>
+<body>
+{PAGE_NAV}
+<div class="container">
+  <div class="hero">
+    <div class="kicker">Legal AI OS &middot; the live board</div>
+    <h1>Legal-AI Fault-Line Radar</h1>
+    <p>Where AI stresses a legal duty, ranked by what the record already shows — capability (L1) → ruling (L2) → control adoption (L3), weighted by authority, not volume.</p>
+    <p class="asof">As of {data['as_of']} · {data['n_items']} tracked items · each fault line shows L1 capability / L2 ruling / L3 adoption (0-10)</p>
+  </div>
   <div class="legend"><b>Source authority</b> (weight): &nbsp; {tier_legend}
     <br>Volume never moves a reading. A vendor blog (T5) carries ~1/100 of an ABA opinion (T2) and ~1/125 of a binding ruling (T1).
     <br><b>What the ranking is for:</b> eleven controls are on this board and a firm cannot stand all of them up at once, so the ordering is a sort for attention. It is graded on its own, below, and is not a claim about which ruling lands next.</div>
@@ -523,12 +669,14 @@ def render(data):
   {why_panel}
   {''.join(rows)}
   {cal_panel}
-  <footer>
+  <footer class="footer">
     Generated by <code>radar/</code> in legal-os. Deterministic, replayable scores; every pressure
     reading cites its evidence and weight. Figures reflect the tracked feed at generation time —
     verify primary sources before relying on any number.
   </footer>
-</div></body></html>"""
+</div>
+<script>{PAGE_THEME_JS}</script>
+</body></html>"""
 
 
 def milestone_report():
