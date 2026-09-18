@@ -118,17 +118,20 @@ PAGE_THEME_HEAD = """<script>
   })();
 </script>"""
 
-# Breadcrumbs are absolute on purpose: this page is served from the legal-os GitHub Pages
-# site at /legal-os/radar/, where the relative ../index.html the diagram pages use would
-# 404. Every crumb walks back toward the diagrams hub, terminal crumb is this page.
+# Breadcrumbs. This page is served from the legal-os GitHub Pages site at
+# /legal-os/radar/, so the plain `../index.html` the diagram pages use would resolve
+# inside legal-os and land on the wrong page. These are relative paths out to the
+# diagrams tree instead -- `../../` steps up to the domain root, then down into
+# /diagrams/. Same method the rest of the family uses (relative, not a hardcoded
+# domain), so it survives a domain change or a local preview.
 PAGE_NAV = """<div class="nav">
   <div class="nav-inner">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="https://sickofancy.ai/diagrams/index.html">Index</a>
+      <a href="../../diagrams/index.html">Index</a>
       <span class="sep">/</span>
-      <a href="https://sickofancy.ai/diagrams/legal/index.html">Legal</a>
+      <a href="../../diagrams/legal/index.html">Legal</a>
       <span class="sep">/</span>
-      <a href="https://sickofancy.ai/diagrams/legal/legal-os-radar.html">Radar</a>
+      <a href="../../diagrams/legal/legal-os-radar.html">Radar</a>
       <span class="sep">/</span>
       <span class="current" aria-current="page">Live radar</span>
     </nav>
@@ -563,7 +566,7 @@ def render(data):
         so it comes first. The source count beside each one tells you how much to trust the line,
         not how soon to act on it. Open any of them to read the sources yourself.</p>
       <ol class="acts">{duty_rows}</ol>
-      <p class="seq"><a href="https://sickofancy.ai/diagrams/legal/legal-os-radar.html">{_c("seq_cta")} &rarr;</a></p>
+      <p class="seq"><a href="../../diagrams/legal/legal-os-radar.html">{_c("seq_cta")} &rarr;</a></p>
     </section>"""
     cal = calibration.report()
     cal_rows = "".join(
@@ -647,7 +650,7 @@ def render(data):
 <html lang="en" class="light"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="The live Fault-Line Radar: what the record already requires of a firm, how well the evidence supports each control, and the sources behind every reading.">
-<link rel="icon" type="image/svg+xml" href="https://sickofancy.ai/diagrams/icon.svg">
+<link rel="icon" type="image/svg+xml" href="../../diagrams/icon.svg">
 <title>Legal-AI Fault-Line Radar</title>
 {PAGE_FONTS}
 {PAGE_THEME_HEAD}
